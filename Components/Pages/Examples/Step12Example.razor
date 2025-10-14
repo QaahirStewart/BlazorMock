@@ -1,0 +1,378 @@
+@page "/examples/step12"
+@inject ILearningProgressService ProgressService
+@rendermode InteractiveServer
+
+<div class="min-h-screen py-8 bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <div class="mb-8">
+            <a href="/guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Guide
+            </a>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 break-words">🎯 Step 12: Pay & Expense Calculation</h1>
+                    <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">Build a service to calculate driver pay and route expenses.</p>
+                </div>
+                
+            </div>
+        </div>
+
+    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🎯 Learning Objectives
+            </h2>
+            <ul class="space-y-2 text-sm sm:text-base lg:text-lg text-gray-700">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Create a service for business calculations</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Calculate driver pay based on multiple factors</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Estimate route costs and fuel expenses</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Calculate profitability and margins</span>
+                </li>
+            </ul>
+        </div>
+
+    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🏗️ Create ScheduleService
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Services/ScheduleService.cs
+namespace BlazorMock.Services;
+
+/// &lt;summary&gt;
+/// Service for calculating driver pay and route expenses.
+/// Centralizes all financial calculations for the trucking app.
+/// &lt;/summary&gt;
+public class ScheduleService
+{
+    // Constants for calculations
+    private const decimal FuelPricePerGallon = 3.85m;
+    private const double AverageMpg = 6.5; // Miles per gallon for trucks
+    private const decimal HazmatBonus = 250m;
+    private const decimal OversizedBonus = 300m;
+    private const decimal LongHaulBonusPerMile = 0.15m;
+
+    /// &lt;summary&gt;
+    /// Calculates total driver pay for a route.
+    /// Includes base pay, experience multiplier, and route type bonuses.
+    /// &lt;/summary&gt;
+    public decimal CalculateDriverPay(Route route, Driver driver)
+    {
+        // Calculate estimated drive time in hours
+        double driveTime = route.GetEstimatedDriveTime();
+        
+        // Base pay = hourly rate * drive time
+        decimal basePay = driver.HourlyRate * (decimal)driveTime;
+
+        // Experience multiplier (1% bonus per year, max 25%)
+        decimal experienceMultiplier = 1.0m + Math.Min(driver.YearsOfExperience * 0.01m, 0.25m);
+        decimal payWithExperience = basePay * experienceMultiplier;
+
+        // Route type bonuses
+        decimal routeBonus = route.Type switch
+        {
+            RouteType.Hazmat =&gt; HazmatBonus,
+            RouteType.Oversized =&gt; OversizedBonus,
+            RouteType.LongHaul =&gt; route.DistanceMiles * LongHaulBonusPerMile,
+            _ =&gt; 0m
+        };
+
+        return payWithExperience + routeBonus;
+    }
+
+    /// &lt;summary&gt;
+    /// Estimates fuel cost for a route based on distance.
+    /// &lt;/summary&gt;
+    public decimal EstimateFuelCost(int distanceMiles)
+    {
+        double gallonsNeeded = distanceMiles / AverageMpg;
+        return (decimal)gallonsNeeded * FuelPricePerGallon;
+    }
+
+    /// &lt;summary&gt;
+    /// Calculates total route cost including driver pay and fuel.
+    /// &lt;/summary&gt;
+    public decimal CalculateTotalRouteCost(Route route, Driver driver)
+    {
+        decimal driverPay = CalculateDriverPay(route, driver);
+        decimal fuelCost = EstimateFuelCost(route.DistanceMiles);
+        
+        // Add other estimated costs (maintenance, tolls, etc.)
+        decimal otherCosts = route.DistanceMiles * 0.10m; // $0.10 per mile
+
+        return driverPay + fuelCost + otherCosts;
+    }
+
+    /// &lt;summary&gt;
+    /// Suggests minimum revenue needed for profitability.
+    /// Adds 20% profit margin to total costs.
+    /// &lt;/summary&gt;
+    public decimal SuggestMinimumRevenue(Route route, Driver driver)
+    {
+        decimal totalCost = CalculateTotalRouteCost(route, driver);
+        return totalCost * 1.20m; // 20% profit margin
+    }
+
+    /// &lt;summary&gt;
+    /// Calculates profit margin percentage for a route.
+    /// &lt;/summary&gt;
+    public decimal CalculateProfitMargin(Route route, Driver driver)
+    {
+        decimal totalCost = CalculateTotalRouteCost(route, driver);
+        if (route.Revenue == 0) return 0;
+
+        decimal profit = route.Revenue - totalCost;
+        return (profit / route.Revenue) * 100;
+    }
+}</code></pre>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+                <p class="text-sm sm:text-base text-blue-800 break-words">
+                    <strong>💡 Pro Tip:</strong> Keep all business calculations in a service so they're reusable and testable!
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🔧 Register Service in Program.cs
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Program.cs
+using BlazorMock.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Register ScheduleService as Scoped
+// Scoped = one instance per user session/circuit
+builder.Services.AddScoped&lt;ScheduleService&gt;();
+
+var app = builder.Build();</code></pre>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                📝 Use Service in Components
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/routes/create"
+@@inject ScheduleService ScheduleService
+@@inject AppDbContext DbContext
+
+&lt;h1&gt;Create New Route&lt;/h1&gt;
+
+&lt;EditForm Model="newRoute" OnValidSubmit="HandleValidSubmit"&gt;
+    &lt;!-- Form fields for route, driver, truck selection --&gt;
+
+    &lt;!-- Display calculated values --&gt;
+    @@if (selectedDriver != null)
+    {
+        &lt;div class="calculations-panel"&gt;
+            &lt;h3&gt;Estimated Costs&lt;/h3&gt;
+            
+            &lt;div class="calculation-row"&gt;
+                &lt;span&gt;Driver Pay:&lt;/span&gt;
+                &lt;span&gt;$@@estimatedDriverPay.ToString("N2")&lt;/span&gt;
+            &lt;/div&gt;
+
+            &lt;div class="calculation-row"&gt;
+                &lt;span&gt;Fuel Cost:&lt;/span&gt;
+                &lt;span&gt;$@@estimatedFuelCost.ToString("N2")&lt;/span&gt;
+            &lt;/div&gt;
+
+            &lt;div class="calculation-row"&gt;
+                &lt;span&gt;Total Cost:&lt;/span&gt;
+                &lt;span&gt;$@@totalCost.ToString("N2")&lt;/span&gt;
+            &lt;/div&gt;
+
+            &lt;div class="calculation-row highlight"&gt;
+                &lt;span&gt;Suggested Revenue:&lt;/span&gt;
+                &lt;span&gt;$@@suggestedRevenue.ToString("N2")&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class="form-group"&gt;
+            &lt;label&gt;Actual Revenue:&lt;/label&gt;
+            &lt;InputNumber @@bind-Value="newRoute.Revenue" 
+                         @@bind-Value:after="CalculateProfit" /&gt;
+        &lt;/div&gt;
+
+        @@if (profitMargin != 0)
+        {
+            &lt;div class="profit-display @@GetProfitClass()"&gt;
+                Profit Margin: @@profitMargin.ToString("N2")%
+            &lt;/div&gt;
+        }
+    }
+
+    &lt;button type="submit"&gt;Create Route&lt;/button&gt;
+&lt;/EditForm&gt;
+
+@@code {
+    private Route newRoute = new();
+    private Driver? selectedDriver;
+    
+    private decimal estimatedDriverPay;
+    private decimal estimatedFuelCost;
+    private decimal totalCost;
+    private decimal suggestedRevenue;
+    private decimal profitMargin;
+
+    private async Task OnDriverOrDistanceChanged()
+    {
+        if (newRoute.DriverId &gt; 0 && newRoute.DistanceMiles &gt; 0)
+        {
+            selectedDriver = await DbContext.Drivers.FindAsync(newRoute.DriverId);
+            
+            if (selectedDriver != null)
+            {
+                // Calculate all values using the service
+                estimatedDriverPay = ScheduleService.CalculateDriverPay(newRoute, selectedDriver);
+                estimatedFuelCost = ScheduleService.EstimateFuelCost(newRoute.DistanceMiles);
+                totalCost = ScheduleService.CalculateTotalRouteCost(newRoute, selectedDriver);
+                suggestedRevenue = ScheduleService.SuggestMinimumRevenue(newRoute, selectedDriver);
+            }
+        }
+    }
+
+    private void CalculateProfit()
+    {
+        if (selectedDriver != null && newRoute.Revenue &gt; 0)
+        {
+            profitMargin = ScheduleService.CalculateProfitMargin(newRoute, selectedDriver);
+        }
+    }
+
+    private string GetProfitClass()
+    {
+        return profitMargin switch
+        {
+            &gt;= 20 =&gt; "profit-good",     // Green
+            &gt;= 10 =&gt; "profit-ok",       // Yellow
+            _ =&gt; "profit-bad"            // Red
+        };
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Save calculated values to the route
+        newRoute.DriverPay = estimatedDriverPay;
+        newRoute.EstimatedFuelCost = estimatedFuelCost;
+
+        DbContext.Routes.Add(newRoute);
+        await DbContext.SaveChangesAsync();
+        
+        Navigation.NavigateTo("/routes");
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                📊 Calculation Breakdown
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
+                    <h3 class="font-semibold text-green-900 mb-2 text-sm sm:text-base">Driver Pay Formula</h3>
+                    <div class="text-xs sm:text-sm text-green-800 space-y-1 font-mono">
+                        <div>Base = Rate × Hours</div>
+                        <div>Bonus = Experience × 1%</div>
+                        <div>Special = Route Type Bonus</div>
+                        <div class="font-bold pt-2">Total = Base + Bonus + Special</div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+                    <h3 class="font-semibold text-blue-900 mb-2 text-sm sm:text-base">Total Cost Formula</h3>
+                    <div class="text-xs sm:text-sm text-blue-800 space-y-1 font-mono">
+                        <div>Driver Pay</div>
+                        <div>+ Fuel Cost</div>
+                        <div>+ Maintenance ($0.10/mi)</div>
+                        <div class="font-bold pt-2">= Total Route Cost</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🔑 Key Takeaways
+            </h2>
+            <ul class="space-y-3 text-sm sm:text-base lg:text-lg text-gray-700">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Create services for complex business logic</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Use constants for values that may change</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Calculate values before saving to database</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Show real-time calculations to users</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Use switch expressions for type-based logic</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 break-words">Ready to move on?</h3>
+                    <p class="text-sm sm:text-base text-gray-600 break-words">Mark this step as complete to track your progress!</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="@(async ()=> await ProgressService.MarkStepIncompleteAsync(12))" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isComplete = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync(12);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    private async Task MarkComplete()
+    {
+        await ProgressService.MarkStepCompleteAsync(12);
+        isComplete = true;
+    }
+}

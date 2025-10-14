@@ -1,0 +1,30 @@
+@page "/counter"
+
+<div class="bg-black/3 rounded-2xl p-5 sm:p-6 max-w-lg mx-auto">
+    <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4 break-words">Counter</h1>
+    <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed break-words">A simple example of event binding and component state.</p>
+
+    <div class="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6">
+        <div class="text-center mb-6">
+            <p class="text-xs sm:text-sm text-gray-500">Current count</p>
+            <p class="text-3xl sm:text-4xl font-bold text-gray-900">@count</p>
+        </div>
+
+        <div class="flex items-center justify-center gap-2 sm:gap-3">
+            <button class="px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+                @onclick="Decrement">-1</button>
+            <button class="px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full text-white bg-gray-900 hover:opacity-90"
+                @onclick="Increment">+1</button>
+            <button class="px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+                @onclick="Reset">Reset</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int count = 0;
+
+    private void Increment() => count++;
+    private void Decrement() => count--;
+    private void Reset() => count = 0;
+}

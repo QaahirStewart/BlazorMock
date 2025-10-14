@@ -1,0 +1,847 @@
+@page "/guide"
+@inject ILearningProgressService ProgressService
+@implements IDisposable
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+
+<PageTitle>Blazor Learning Guide</PageTitle>
+
+<div class="min-h-screen py-8">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 break-words">
+                📚 Blazor Learning Guide
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed break-words">
+                Step-by-step guide to building a Trucking Schedule App
+            </p>
+                @if (completedCount >= 4)
+            {
+                <div class="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-2">
+                    <span class="text-sm sm:text-base text-green-600 font-semibold">Phase 1 Complete!</span>
+                    <span class="text-sm sm:text-base text-green-600">✓ Steps 1-4</span>
+                </div>
+            }
+        </div>
+
+        <!-- Date/Time Card -->
+        <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
+            <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 flex items-center break-words">
+                <span class="mr-2">📅</span>
+                Today's Information
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="rounded-2xl p-5  bg-white border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">📅</span>
+                        <span class="px-3 py-1 rounded-full border border-gray-200 text-gray-600 text-xs">Today</span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-gray-500 mb-1">Current Date</p>
+                    <p class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 break-words">
+                        @DateTime.Now.ToString("dddd, MMMM dd, yyyy")
+                    </p>
+                </div>
+                <div class="rounded-2xl p-5  bg-white border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">⏰</span>
+                        <span class="px-3 py-1 rounded-full border border-gray-200 text-gray-600 text-xs">Now</span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-gray-500 mb-1">Current Time</p>
+                    <p class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 break-words">
+                        @DateTime.Now.ToString("hh:mm tt")
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- What You'll Learn Overview -->
+        <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
+            <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 flex items-center break-words">
+                <span class="mr-2">🎯</span>
+                What You'll Learn
+            </h3>
+            <div class="grid sm:grid-cols-1 gap-3 sm:gap-4">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-sm sm:text-base text-gray-800 break-words">Blazor Server components and routing</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-sm sm:text-base text-gray-800 break-words">Forms and validation</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-sm sm:text-base text-gray-800 break-words">Entity Framework Core</span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-sm sm:text-base text-gray-800 break-words">Driver and truck management</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-sm sm:text-base text-gray-800 break-words">Route scheduling and assignments</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 1: Entry-Level Header -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-6 mb-8 mt-12">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">🔰 Phase 1: Entry-Level (No Database)</h2>
+            <p class="text-sm sm:text-base text-gray-700 break-words">Learn Blazor fundamentals: components, events, forms, and validation.</p>
+        </div>
+
+        <!-- Step 1: New Clean Project -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step1?.IsComplete == true)
+                    {
+                        <span class="inline-flex flex-none h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">1</span>
+                    }
+                    🎯 Step 1: New Clean Project
+                </h3>
+                @if (step1?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Create a new Blazor Server app with interactive mode and set up Tailwind CSS v4 for styling.</p>
+              
+            
+                <a href="/examples/step1" class="inline-flex items-center gap-2 px-4 py-2 bg-black/85 hover:bg-black text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 2: Razor Syntax & Display -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step2?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">2</span>
+                    }
+                    🎯 Step 2: Razor Syntax & Display
+                </h3>
+                @if (step2?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Learn Razor syntax with @@page directive and display dynamic C# content like DateTime.</p>
+               
+                <div class="grid sm:grid-cols-2 gap-4 mb-4">
+                    <div class="rounded-2xl p-4 bg-white border border-gray-200">
+                        <p class="text-xs sm:text-sm text-gray-500 mb-1">Live Demo - Date</p>
+                        <p class="text-base sm:text-lg font-semibold text-gray-900 break-words">
+                            @DateTime.Now.ToString("dddd, MMMM dd")
+                        </p>
+                    </div>
+                    <div class="rounded-2xl p-4 bg-white border border-gray-200">
+                        <p class="text-xs sm:text-sm text-gray-500 mb-1">Live Demo - Time</p>
+                        <p class="text-base sm:text-lg font-semibold text-gray-900 break-words">
+                            @DateTime.Now.ToString("hh:mm:ss tt")
+                        </p>
+                    </div>
+                </div>
+                <a href="/examples/step2" class="inline-flex items-center gap-2 px-4 py-2 bg-black/85 hover:bg-black text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 3: Reusable Components -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step3?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">3</span>
+                    }
+                    🎯 Step 3: Reusable Components
+                </h3>
+                @if (step3?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Built reusable components that accept parameters from parent components, enabling code reuse and composition.</p>
+                <div class="grid sm:grid-cols-2 gap-4 mb-4">
+                    <GreetingCard Name="John Doe" Message="Welcome to your trucking dashboard!" />
+                    <GreetingCard Name="Sarah Smith" Message="Great job on your delivery!" />
+                </div>
+                <a href="/examples/step3" class="inline-flex items-center gap-2 px-4 py-2 bg-black/85 hover:bg-black text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 4: Event Binding -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step4?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">4</span>
+                    }
+                    🎯 Step 4: Event Binding
+                </h3>
+                @if (step4?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Handle user interactions with event binding, update component state, and trigger UI re-renders automatically.</p>
+                
+                <!-- Counter Demo matching /counter styling -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-4">
+                    <div class="text-center mb-6">
+                        <p class="text-xs sm:text-sm text-gray-500">Current count</p>
+                        <p class="text-3xl sm:text-4xl font-bold text-gray-900">@currentCount</p>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-2 sm:gap-3">
+                        <button class="px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+                            @onclick="Decrement">-1</button>
+                        <button class="px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full text-white bg-gray-900 hover:opacity-90"
+                            @onclick="Increment">+1</button>
+                        <button class="px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+                            @onclick="Reset">Reset</button>
+                    </div>
+                </div>
+                
+                <a href="/examples/step4" class="inline-flex items-center gap-2 px-4 py-2 bg-black/85 hover:bg-black text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 5: Forms & Validation -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step5?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">5</span>
+                    }
+                    🎯 Step 5: Forms & Validation
+                </h3>
+                @if (step5?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Create forms with validation using EditForm, DataAnnotationsValidator, and validation attributes to ensure data quality.</p>
+                
+                <!-- Interactive Driver Form Demo -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <h4 class="text-sm sm:text-base font-semibold text-gray-800 mb-3">🚗 Try It: Driver Registration Form</h4>
+                    
+                    <EditForm Model="driverModel" OnValidSubmit="HandleDriverSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="mb-3 text-xs sm:text-sm text-red-600" />
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                <InputText class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white" @bind-Value="driverModel.FirstName" />
+                                <ValidationMessage For="() => driverModel.FirstName" class="text-xs text-red-600 mt-1" />
+                            </div>
+                            <div>
+                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                <InputText class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white" @bind-Value="driverModel.LastName" />
+                                <ValidationMessage For="() => driverModel.LastName" class="text-xs text-red-600 mt-1" />
+                            </div>
+                            <div>
+                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <InputText type="email" class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white" @bind-Value="driverModel.Email" />
+                                <ValidationMessage For="() => driverModel.Email" class="text-xs text-red-600 mt-1" />
+                            </div>
+                            <div>
+                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Years Experience</label>
+                                <InputNumber class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white" @bind-Value="driverModel.YearsExperience" />
+                                <ValidationMessage For="() => driverModel.YearsExperience" class="text-xs text-red-600 mt-1" />
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="submit" class="px-4 py-2 text-sm sm:text-base rounded-lg bg-orange-600 hover:bg-orange-700 text-white transition-colors">
+                                Submit Driver
+                            </button>
+                            <button type="button" class="px-4 py-2 text-sm sm:text-base rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors" @onclick="ResetDriverForm">
+                                Reset
+                            </button>
+                        </div>
+                    </EditForm>
+
+                    @if (driverSubmitted)
+                    {
+                        <div class="mt-3 rounded-lg border border-green-200 p-3 bg-green-50">
+                            <div class="text-sm font-semibold text-green-800 mb-1">✅ Driver Registered Successfully!</div>
+                            <div class="text-xs sm:text-sm text-green-700">
+                                <div><strong>Name:</strong> @driverModel.FirstName @driverModel.LastName</div>
+                                <div><strong>Email:</strong> @driverModel.Email</div>
+                                <div><strong>Experience:</strong> @driverModel.YearsExperience years</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <a href="/examples/step5" class="inline-flex items-center gap-2 px-4 py-2 bg-black/85 hover:bg-black text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Phase 2: Intermediate Header -->
+        <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-6 mb-8 mt-12">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">🧩 Phase 2: Intermediate (Database & State)</h2>
+            <p class="text-sm sm:text-base text-gray-700 break-words">Learn Entity Framework Core, database operations, and state management.</p>
+        </div>
+
+        <!-- Step 6: Routing & Navigation -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step6?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-white text-sm">6</span>
+                    }
+                    🎯 Step 6: Routing & Navigation
+                </h3>
+                @if (step6?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200 mb-4">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Master page routing with the @@page directive, build navigation menus with NavLink, and navigate programmatically.</p>
+                
+                <!-- Interactive Demo -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">🎮 Try It: Interactive Navigation Demo</h4>
+                    <p class="text-xs sm:text-sm text-gray-600 mb-3 break-words">Test navigation features right here on the guide page!</p>
+                    
+                    <div class="space-y-3">
+                        <!-- NavLink Examples -->
+                        <div class="bg-white rounded-lg p-3 border border-gray-200">
+                            <p class="text-xs font-semibold text-gray-700 mb-2">NavLink (declarative navigation):</p>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="/" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs sm:text-sm transition-colors">
+                                    → Home
+                                </a>
+                                <a href="/counter" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs sm:text-sm transition-colors">
+                                    → Counter
+                                </a>
+                                <a href="/tips" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs sm:text-sm transition-colors">
+                                    → Tips
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- NavigationManager Example -->
+                        <div class="bg-white rounded-lg p-3 border border-gray-200">
+                            <p class="text-xs font-semibold text-gray-700 mb-2">NavigationManager (programmatic navigation):</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button @onclick="NavigateToProgress" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded text-xs sm:text-sm transition-colors">
+                                    ▶ Navigate to Progress
+                                </button>
+                                <button @onclick="NavigateToDriverForm" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded text-xs sm:text-sm transition-colors">
+                                    ▶ Navigate to Driver Form
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Current Location Display -->
+                        <div class="bg-white rounded-lg p-3 border border-gray-200">
+                            <p class="text-xs font-semibold text-gray-700 mb-1">Current URL:</p>
+                            <code class="text-xs text-purple-600 break-all">@currentUrl</code>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="/examples/step6" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 7: EF Core Models -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step7?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-white text-sm">7</span>
+                    }
+                    🎯 Step 7: EF Core Models
+                </h3>
+                @if (step7?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Create domain models for Entity Framework Core with data annotations, enums, and relationships between Driver, Truck, and Route.</p>
+
+                <!-- Minimal Inline Example (Models only) -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <p class="text-xs sm:text-sm text-gray-600 mb-2">📝 Minimum Example:</p>
+                    <div class="grid gap-3">
+                        <pre class="text-[11px] sm:text-xs text-gray-800 font-mono bg-white border border-gray-200 rounded p-3 overflow-x-auto"><code>public enum LicenseLevel { ClassC = 1, ClassB = 2, ClassA = 3 }</code></pre>
+                        <pre class="text-[11px] sm:text-xs text-gray-800 font-mono bg-white border border-gray-200 rounded p-3 overflow-x-auto"><code>using System.ComponentModel.DataAnnotations;
+public class Driver {
+  public int Id { get; set; }
+  [Required, StringLength(100)] public string Name { get; set; } = string.Empty;
+  [Required] public LicenseLevel LicenseLevel { get; set; }
+  [Range(0,50)] public int YearsOfExperience { get; set; }
+  public ICollection&lt;Route&gt; Routes { get; set; } = new List&lt;Route&gt;();
+}</code></pre>
+                        <pre class="text-[11px] sm:text-xs text-gray-800 font-mono bg-white border border-gray-200 rounded p-3 overflow-x-auto"><code>public class Route {
+  public int Id { get; set; }
+  [Required, StringLength(200)] public string Destination { get; set; } = string.Empty;
+  public int DriverId { get; set; }
+  public Driver Driver { get; set; } = null!;
+}</code></pre>
+                    </div>
+                    <p class="mt-2 text-[11px] sm:text-xs text-gray-600">Scope check: models only (DbContext and migrations come in Step 8).</p>
+                </div>
+                <a href="/examples/step7" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 8: DbContext Setup -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step8?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-white text-sm">8</span>
+                    }
+                    🎯 Step 8: DbContext Setup
+                </h3>
+                @if (step8?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Configure Entity Framework Core with SQLite, create AppDbContext, set up connection strings, and create your first migration.</p>
+                <a href="/examples/step8" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 9: CRUD Operations -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step9?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-white text-sm">9</span>
+                    }
+                    🎯 Step 9: CRUD Operations
+                </h3>
+                @if (step9?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Learn to Create, Read, Update, and Delete database records. Master async operations, Include() for related data, and EditForm integration.</p>
+                <a href="/examples/step9" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 10: State Management -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step10?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-white text-sm">10</span>
+                    }
+                    🎯 Step 10: State Management
+                </h3>
+                @if (step10?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Share data between components using state services. Learn about service lifetimes, events, and the StateHasChanged() method.</p>
+                <a href="/examples/step10" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Phase 3: Advanced Header -->
+        <div class="bg-gradient-to-r from-orange-100 to-red-100 rounded-2xl p-6 mb-8 mt-12">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">🚀 Phase 3: Advanced (Business Logic & Dashboards)</h2>
+            <p class="text-sm sm:text-base text-gray-700 break-words">Implement business rules, calculations, and data visualization.</p>
+        </div>
+
+        <!-- Step 11: Assignment Logic -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step11?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">11</span>
+                    }
+                    🎯 Step 11: Assignment Logic
+                </h3>
+                @if (step11?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Implement business rules to validate driver-truck-route assignments. Check license levels, experience requirements, and availability.</p>
+                <a href="/examples/step11" class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 12: Pay Calculation -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step12?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">12</span>
+                    }
+                    🎯 Step 12: Pay Calculation
+                </h3>
+                @if (step12?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Build calculation services for driver pay, fuel costs, and profit margins. Learn financial formulas and route cost estimation.</p>
+                <a href="/examples/step12" class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 13: Dashboard -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step13?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">13</span>
+                    }
+                    🎯 Step 13: Dashboard & Reports
+                </h3>
+                @if (step13?.IsComplete == true)
+                {
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Build a professional dashboard with KPI cards, data filtering, financial summaries, and visual status indicators using LINQ aggregation.</p>
+                <a href="/examples/step13" class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm sm:text-base rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Links Section -->
+        <div class="bg-black/3 rounded-2xl mt-12">
+            <div class="bg-black/90 rounded-2xl p-5 sm:p-6 text-white">
+                <h3 class="text-lg sm:text-xl font-semibold mb-4 text-center break-words">📚 Learning Resources</h3>
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                    <a href="/guide" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl flex-shrink-0">📖</span>
+                            <div class="min-w-0">
+                                <div class="text-sm sm:text-base font-semibold break-words">Full Learning Guide</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">Detailed steps with code examples</div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/tips" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl flex-shrink-0">💡</span>
+                            <div class="min-w-0">
+                                <div class="text-sm sm:text-base font-semibold break-words">Tips System</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">Browse 20+ Blazor & C# topics</div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl flex-shrink-0">📊</span>
+                            <div class="min-w-0">
+                                <div class="text-sm sm:text-base font-semibold break-words">Track Progress</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">View all 13 steps & completion</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="text-center text-xs sm:text-sm text-gray-300 break-words">
+                    <strong>Progress:</strong> @completedCount/13 steps complete @if (completedCount >= 4) { <span>- Phase 1 ✅</span> }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int currentCount = 0;
+    private StepProgress? step1, step2, step3, step4, step5, step6, step7, step8, step9, step10, step11, step12, step13;
+    private int completedCount = 0;
+    private string currentUrl = "";
+
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProgressAsync();
+        UpdateCurrentUrl();
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateCurrentUrl();
+        StateHasChanged();
+    }
+
+    private void UpdateCurrentUrl()
+    {
+        currentUrl = Navigation.Uri;
+    }
+
+    private async Task LoadProgressAsync()
+    {
+        step1 = await ProgressService.GetStepAsync(1);
+        step2 = await ProgressService.GetStepAsync(2);
+        step3 = await ProgressService.GetStepAsync(3);
+        step4 = await ProgressService.GetStepAsync(4);
+        step5 = await ProgressService.GetStepAsync(5);
+        step6 = await ProgressService.GetStepAsync(6);
+        step7 = await ProgressService.GetStepAsync(7);
+        step8 = await ProgressService.GetStepAsync(8);
+        step9 = await ProgressService.GetStepAsync(9);
+        step10 = await ProgressService.GetStepAsync(10);
+        step11 = await ProgressService.GetStepAsync(11);
+        step12 = await ProgressService.GetStepAsync(12);
+        step13 = await ProgressService.GetStepAsync(13);
+        completedCount = await ProgressService.GetCompletedCountAsync();
+    }
+
+    private void Increment() => currentCount++;
+    private void Decrement() => currentCount--;
+    private void Reset() => currentCount = 0;
+
+    // Interactive driver form demo for Step 5
+    private DriverFormModel driverModel = new();
+    private bool driverSubmitted = false;
+
+    private void HandleDriverSubmit()
+    {
+        driverSubmitted = true;
+    }
+
+    private void ResetDriverForm()
+    {
+        driverModel = new();
+        driverSubmitted = false;
+    }
+
+    // Interactive navigation demo methods for Step 6
+    private void NavigateToProgress()
+    {
+        Navigation.NavigateTo("/progress");
+    }
+
+    private void NavigateToDriverForm()
+    {
+        Navigation.NavigateTo("/driverform");
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+
+    // Driver form model for Step 5 demo
+    public class DriverFormModel
+    {
+        [Required(ErrorMessage = "First name is required")]
+        [StringLength(50, ErrorMessage = "First name must be less than 50 characters")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Last name is required")]
+        [StringLength(50, ErrorMessage = "Last name must be less than 50 characters")]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        public string Email { get; set; } = string.Empty;
+
+        [Range(0, 60, ErrorMessage = "Years of experience must be between 0 and 60")]
+        public int? YearsExperience { get; set; }
+    }
+}

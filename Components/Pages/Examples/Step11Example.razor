@@ -1,0 +1,353 @@
+@page "/examples/step11"
+@inject ILearningProgressService ProgressService
+@rendermode InteractiveServer
+
+<div class="min-h-screen py-8 bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <div class="mb-8">
+            <a href="/guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Guide
+            </a>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 break-words">🎯 Step 11: Assignment Logic & Business Rules</h1>
+                    <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">Implement business rules and validation for driver-truck-route assignments.</p>
+                </div>
+                
+            </div>
+        </div>
+
+    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🎯 Learning Objectives
+            </h2>
+            <ul class="space-y-2 text-sm sm:text-base lg:text-lg text-gray-700">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Validate driver license levels match truck requirements</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Check driver experience for route types</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Verify availability status before assignment</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Display validation errors to users</span>
+                </li>
+            </ul>
+        </div>
+
+    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🏗️ Assignment Form Component
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/assignments/create"
+@@inject AppDbContext DbContext
+@@inject NavigationManager Navigation
+@@using Microsoft.EntityFrameworkCore
+
+&lt;h1&gt;Create New Assignment&lt;/h1&gt;
+
+@@if (errorMessage != null)
+{
+    &lt;div class="alert alert-danger"&gt;
+        @@errorMessage
+    &lt;/div&gt;
+}
+
+&lt;EditForm Model="newRoute" OnValidSubmit="HandleValidSubmit"&gt;
+    &lt;DataAnnotationsValidator /&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;Route Number:&lt;/label&gt;
+        &lt;InputText @@bind-Value="newRoute.RouteNumber" /&gt;
+    &lt;/div&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;Select Driver:&lt;/label&gt;
+        &lt;InputSelect @@bind-Value="newRoute.DriverId" @@bind-Value:after="OnDriverChanged"&gt;
+            &lt;option value="0"&gt;-- Select Driver --&lt;/option&gt;
+            @@foreach (var driver in availableDrivers)
+            {
+                &lt;option value="@@driver.Id"&gt;
+                    @@driver.Name (@@driver.LicenseLevel, @@driver.YearsOfExperience yrs)
+                &lt;/option&gt;
+            }
+        &lt;/InputSelect&gt;
+    &lt;/div&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;Select Truck:&lt;/label&gt;
+        &lt;InputSelect @@bind-Value="newRoute.TruckId" @@bind-Value:after="ValidateAssignment"&gt;
+            &lt;option value="0"&gt;-- Select Truck --&lt;/option&gt;
+            @@foreach (var truck in availableTrucks)
+            {
+                &lt;option value="@@truck.Id"&gt;
+                    @@truck.GetDisplayName() (@@truck.Class)
+                &lt;/option&gt;
+            }
+        &lt;/InputSelect&gt;
+    &lt;/div&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;Route Type:&lt;/label&gt;
+        &lt;InputSelect @@bind-Value="newRoute.Type" @@bind-Value:after="ValidateAssignment"&gt;
+            @@foreach (var type in Enum.GetValues&lt;RouteType&gt;())
+            {
+                &lt;option value="@@type"&gt;@@type&lt;/option&gt;
+            }
+        &lt;/InputSelect&gt;
+    &lt;/div&gt;
+
+    @@* Show validation warnings *@@
+    @@if (validationWarnings.Any())
+    {
+        &lt;div class="alert alert-warning"&gt;
+            &lt;h4&gt;Validation Warnings:&lt;/h4&gt;
+            &lt;ul&gt;
+                @@foreach (var warning in validationWarnings)
+                {
+                    &lt;li&gt;@@warning&lt;/li&gt;
+                }
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    }
+
+    &lt;button type="submit" disabled="@@(!isValid)"&gt;Create Assignment&lt;/button&gt;
+    &lt;a href="/routes"&gt;Cancel&lt;/a&gt;
+&lt;/EditForm&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                ✅ Validation Logic
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@code {
+    private Route newRoute = new();
+    private List&lt;Driver&gt; availableDrivers = new();
+    private List&lt;Truck&gt; availableTrucks = new();
+    private List&lt;string&gt; validationWarnings = new();
+    private string? errorMessage;
+    private bool isValid = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load only available drivers and trucks
+        availableDrivers = await DbContext.Drivers
+            .Where(d =&gt; d.IsAvailable)
+            .ToListAsync();
+
+        availableTrucks = await DbContext.Trucks
+            .Where(t =&gt; t.IsAvailable && !t.InMaintenance)
+            .ToListAsync();
+    }
+
+    private void OnDriverChanged()
+    {
+        ValidateAssignment();
+    }
+
+    private void ValidateAssignment()
+    {
+        validationWarnings.Clear();
+        isValid = true;
+
+        if (newRoute.DriverId == 0 || newRoute.TruckId == 0)
+        {
+            isValid = false;
+            return;
+        }
+
+        var driver = availableDrivers.FirstOrDefault(d =&gt; d.Id == newRoute.DriverId);
+        var truck = availableTrucks.FirstOrDefault(t =&gt; t.Id == newRoute.TruckId);
+
+        if (driver == null || truck == null) return;
+
+        // Rule 1: Check license level matches truck class
+        if (!truck.CanBeOperatedBy(driver))
+        {
+            validationWarnings.Add(
+                $"❌ {driver.Name} has {driver.LicenseLevel} license, " +
+                $"but this truck requires {truck.GetRequiredLicenseLevel()}."
+            );
+            isValid = false;
+        }
+
+        // Rule 2: Check experience for route type
+        bool hasExperience = newRoute.Type switch
+        {
+            RouteType.Hazmat =&gt; driver.YearsOfExperience &gt;= 2,
+            RouteType.Oversized =&gt; driver.YearsOfExperience &gt;= 3,
+            RouteType.LongHaul =&gt; driver.YearsOfExperience &gt;= 1,
+            _ =&gt; true
+        };
+
+        if (!hasExperience)
+        {
+            validationWarnings.Add(
+                $"⚠️ {driver.Name} has {driver.YearsOfExperience} years experience. " +
+                $"{newRoute.Type} routes require more experience."
+            );
+            isValid = false;
+        }
+
+        // Rule 3: Check truck maintenance status
+        if (truck.NeedsMaintenanceSoon())
+        {
+            validationWarnings.Add(
+                $"⚠️ {truck.GetDisplayName()} needs maintenance soon " +
+                $"(within {truck.NextMaintenanceMileage - truck.CurrentMileage} miles)."
+            );
+            // Warning only - still allow assignment
+        }
+
+        // Success message
+        if (isValid && !validationWarnings.Any())
+        {
+            validationWarnings.Add("✅ Assignment is valid and ready to create!");
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (!isValid)
+        {
+            errorMessage = "Cannot create assignment. Please fix validation errors.";
+            return;
+        }
+
+        try
+        {
+            // Create the route assignment
+            DbContext.Routes.Add(newRoute);
+            await DbContext.SaveChangesAsync();
+
+            // Mark driver and truck as unavailable
+            var driver = await DbContext.Drivers.FindAsync(newRoute.DriverId);
+            var truck = await DbContext.Trucks.FindAsync(newRoute.TruckId);
+
+            if (driver != null) driver.IsAvailable = false;
+            if (truck != null) truck.IsAvailable = false;
+
+            await DbContext.SaveChangesAsync();
+
+            Navigation.NavigateTo("/routes");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error creating assignment: {ex.Message}";
+        }
+    }
+}</code></pre>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+                <p class="text-sm sm:text-base text-blue-800 break-words">
+                    <strong>💡 Pro Tip:</strong> Use @@bind-Value:after to trigger validation immediately when the user selects an option!
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🎨 Business Rules Summary
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                    <h3 class="font-semibold text-red-900 mb-2 text-sm sm:text-base">❌ Hard Rules</h3>
+                    <ul class="text-xs sm:text-sm text-red-800 space-y-1">
+                        <li>✓ License level must match truck class</li>
+                        <li>✓ Driver must have required experience</li>
+                        <li>✓ Driver must be available</li>
+                        <li>✓ Truck must be available</li>
+                        <li>✓ Truck must not be in maintenance</li>
+                    </ul>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg">
+                    <h3 class="font-semibold text-yellow-900 mb-2 text-sm sm:text-base">⚠️ Soft Warnings</h3>
+                    <ul class="text-xs sm:text-sm text-yellow-800 space-y-1">
+                        <li>✓ Truck needs maintenance soon</li>
+                        <li>✓ Driver approaching max hours</li>
+                        <li>✓ Route is very long distance</li>
+                        <li>✓ Weather conditions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🔑 Key Takeaways
+            </h2>
+            <ul class="space-y-3 text-sm sm:text-base lg:text-lg text-gray-700">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Business rules protect data integrity</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Validate on both client and server side</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Use model methods for reusable validation logic</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Provide clear, user-friendly error messages</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Disable submit button when validation fails</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 break-words">Ready to move on?</h3>
+                    <p class="text-sm sm:text-base text-gray-600 break-words">Mark this step as complete to track your progress!</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="@(async ()=> await ProgressService.MarkStepIncompleteAsync(11))" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isComplete = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync(11);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    private async Task MarkComplete()
+    {
+        await ProgressService.MarkStepCompleteAsync(11);
+        isComplete = true;
+    }
+}

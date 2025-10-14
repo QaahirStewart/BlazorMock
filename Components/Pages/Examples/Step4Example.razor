@@ -1,0 +1,173 @@
+@page "/examples/step4"
+@inject ILearningProgressService ProgressService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Step 4: Event Binding - Example</PageTitle>
+
+<div class="min-h-screen py-8 bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <div class="mb-8">
+            <a href="/" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Home
+            </a>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                🎯 Step 4: Event Binding
+            </h1>
+            <p class="text-xl text-gray-600">
+                Handle user interactions with event binding, update component state, and trigger UI re-renders automatically.
+            </p>
+        </div>
+
+        <!-- What You Learned -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">📘 What You'll Learn</h2>
+            <p class="text-gray-700 mb-6">Event binding allows your components to respond to user interactions. Blazor automatically re-renders the UI when component state changes.</p>
+            
+            <h3 class="text-lg font-semibold text-gray-700 mb-3">Code Example - Counter.razor:</h3>
+            <pre class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">&#64;page "/counter"
+
+&lt;h1&gt;Counter&lt;/h1&gt;
+&lt;p&gt;Current count: &#64;currentCount&lt;/p&gt;
+
+&lt;button &#64;onclick="Increment"&gt;+1&lt;/button&gt;
+&lt;button &#64;onclick="Decrement"&gt;-1&lt;/button&gt;
+&lt;button &#64;onclick="Reset"&gt;Reset&lt;/button&gt;
+
+&#64;code {
+  private int currentCount = 0;
+  
+  private void Increment()
+  {
+    currentCount++;
+  }
+  
+  private void Decrement()
+  {
+    currentCount--;
+  }
+  
+  private void Reset()
+  {
+    currentCount = 0;
+  }
+}</pre>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p class="text-sm text-blue-800 font-semibold mb-2">💡 Key Points:</p>
+                <ul class="text-sm text-blue-700 list-disc ml-5 space-y-1">
+                    <li><code>&#64;onclick</code> → Bind a method to button click events</li>
+                    <li>State changes automatically trigger UI updates</li>
+                    <li>Use <code>private void</code> for synchronous event handlers</li>
+                    <li>Use <code>private async Task</code> for async operations</li>
+                </ul>
+            </div>
+            
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <p class="text-sm text-gray-600 mb-3"><strong>💡 Key Concepts:</strong> &#64;onclick, state management, private methods, automatic re-rendering</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#onclick" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">&#64;onclick</a>
+                    <a href="/tips#private-void-increment" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">private methods</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                <div class="text-center mb-6">
+                    <p class="text-sm text-gray-500">Current count</p>
+                    <p class="text-4xl font-bold text-gray-900">@currentCount</p>
+                </div>
+
+                <div class="flex items-center justify-center gap-3">
+                    <button class="px-4 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+                        @onclick="Decrement">-1</button>
+                    <button class="px-4 py-2 rounded-full text-white bg-gray-900 hover:opacity-90"
+                        @onclick="Increment">+1</button>
+                    <button class="px-4 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+                        @onclick="Reset">Reset</button>
+                </div>
+            </div>
+            
+            <p class="text-xs text-gray-600 mt-4 text-center">💡 Click buttons to see state changes in real-time!</p>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Ready to move on?</h3>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your progress.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkCompleteStep" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between">
+            <a href="/examples/step3" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 3
+            </a>
+            <a href="/examples/step5" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 5
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int currentCount = 0;
+    private bool isComplete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync(4);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    private void Increment()
+    {
+        currentCount++;
+    }
+
+    private void Decrement()
+    {
+        currentCount--;
+    }
+
+    private void Reset()
+    {
+        currentCount = 0;
+    }
+
+    private async Task MarkCompleteStep()
+    {
+        await ProgressService.MarkStepCompleteAsync(4);
+        isComplete = true;
+    }
+
+    private async Task ResetStep()
+    {
+        await ProgressService.MarkStepIncompleteAsync(4);
+        isComplete = false;
+    }
+}

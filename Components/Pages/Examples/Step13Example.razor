@@ -1,0 +1,442 @@
+@page "/examples/step13"
+@inject ILearningProgressService ProgressService
+@rendermode InteractiveServer
+
+<div class="min-h-screen py-8 bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-6xl">
+        <div class="mb-8">
+            <a href="/guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Guide
+            </a>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 break-words">🎯 Step 13: Dashboard & Reports</h1>
+                    <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">Build a dashboard to visualize routes, drivers, and financials.</p>
+                </div>
+                
+            </div>
+        </div>
+
+    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🎯 Learning Objectives
+            </h2>
+            <ul class="space-y-2 text-sm sm:text-base lg:text-lg text-gray-700">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Display summary statistics and KPIs</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Filter and sort data dynamically</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Use conditional styling for status indicators</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Aggregate data with LINQ queries</span>
+                </li>
+            </ul>
+        </div>
+
+    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                📊 Dashboard Component
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/dashboard"
+@@inject AppDbContext DbContext
+@@using Microsoft.EntityFrameworkCore
+@@rendermode InteractiveServer
+
+&lt;div class="dashboard-container"&gt;
+    &lt;h1&gt;📊 Trucking Dashboard&lt;/h1&gt;
+
+    &lt;!-- KPI Cards --&gt;
+    &lt;div class="kpi-grid"&gt;
+        &lt;div class="kpi-card bg-blue-50 border-blue-500"&gt;
+            &lt;div class="kpi-label"&gt;Active Routes&lt;/div&gt;
+            &lt;div class="kpi-value"&gt;@@stats.ActiveRoutes&lt;/div&gt;
+            &lt;div class="kpi-change"&gt;@@stats.RouteChangePercent% from last month&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class="kpi-card bg-green-50 border-green-500"&gt;
+            &lt;div class="kpi-label"&gt;Available Drivers&lt;/div&gt;
+            &lt;div class="kpi-value"&gt;@@stats.AvailableDrivers&lt;/div&gt;
+            &lt;div class="kpi-change"&gt;Out of @@stats.TotalDrivers total&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class="kpi-card bg-purple-50 border-purple-500"&gt;
+            &lt;div class="kpi-label"&gt;Available Trucks&lt;/div&gt;
+            &lt;div class="kpi-value"&gt;@@stats.AvailableTrucks&lt;/div&gt;
+            &lt;div class="kpi-change"&gt;@@stats.TrucksInMaintenance in maintenance&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class="kpi-card bg-yellow-50 border-yellow-500"&gt;
+            &lt;div class="kpi-label"&gt;Monthly Revenue&lt;/div&gt;
+            &lt;div class="kpi-value"&gt;$@@stats.MonthlyRevenue.ToString("N0")&lt;/div&gt;
+            &lt;div class="kpi-change @@GetProfitClass(stats.ProfitMargin)"&gt;
+                @@stats.ProfitMargin.ToString("N1")% profit margin
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Active Routes Table --&gt;
+    &lt;div class="dashboard-section"&gt;
+        &lt;div class="section-header"&gt;
+            &lt;h2&gt;🚚 Active Routes&lt;/h2&gt;
+            &lt;select @@bind="routeFilter" @@bind:after="LoadData"&gt;
+                &lt;option value="all"&gt;All Routes&lt;/option&gt;
+                &lt;option value="scheduled"&gt;Scheduled&lt;/option&gt;
+                &lt;option value="inprogress"&gt;In Progress&lt;/option&gt;
+                &lt;option value="delayed"&gt;Delayed&lt;/option&gt;
+            &lt;/select&gt;
+        &lt;/div&gt;
+
+        &lt;table class="dashboard-table"&gt;
+            &lt;thead&gt;
+                &lt;tr&gt;
+                    &lt;th&gt;Route #&lt;/th&gt;
+                    &lt;th&gt;Driver&lt;/th&gt;
+                    &lt;th&gt;Origin → Destination&lt;/th&gt;
+                    &lt;th&gt;Distance&lt;/th&gt;
+                    &lt;th&gt;Status&lt;/th&gt;
+                    &lt;th&gt;Revenue&lt;/th&gt;
+                &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+                @@foreach (var route in GetFilteredRoutes())
+                {
+                    &lt;tr&gt;
+                        &lt;td&gt;@@route.RouteNumber&lt;/td&gt;
+                        &lt;td&gt;@@route.Driver.Name&lt;/td&gt;
+                        &lt;td&gt;@@route.Origin → @@route.Destination&lt;/td&gt;
+                        &lt;td&gt;@@route.DistanceMiles mi&lt;/td&gt;
+                        &lt;td&gt;
+                            &lt;span class="status-badge @@GetStatusClass(route.Status)"&gt;
+                                @@route.Status
+                            &lt;/span&gt;
+                        &lt;/td&gt;
+                        &lt;td&gt;$@@route.Revenue.ToString("N2")&lt;/td&gt;
+                    &lt;/tr&gt;
+                }
+            &lt;/tbody&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Driver Availability --&gt;
+    &lt;div class="dashboard-section"&gt;
+        &lt;h2&gt;👥 Driver Status&lt;/h2&gt;
+        &lt;div class="driver-grid"&gt;
+            @@foreach (var driver in drivers.Take(8))
+            {
+                &lt;div class="driver-card @@(driver.IsAvailable ? "available" : "unavailable")"&gt;
+                    &lt;div class="driver-name"&gt;@@driver.Name&lt;/div&gt;
+                    &lt;div class="driver-license"&gt;@@driver.LicenseLevel&lt;/div&gt;
+                    &lt;div class="driver-status"&gt;
+                        @@(driver.IsAvailable ? "✓ Available" : "⚠ On Route")
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            }
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Financial Summary --&gt;
+    &lt;div class="dashboard-section"&gt;
+        &lt;h2&gt;💰 Financial Summary&lt;/h2&gt;
+        &lt;div class="financial-grid"&gt;
+            &lt;div class="financial-row"&gt;
+                &lt;span&gt;Total Revenue (This Month):&lt;/span&gt;
+                &lt;span class="amount positive"&gt;$@@stats.MonthlyRevenue.ToString("N2")&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="financial-row"&gt;
+                &lt;span&gt;Total Driver Pay:&lt;/span&gt;
+                &lt;span class="amount"&gt;$@@stats.TotalDriverPay.ToString("N2")&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="financial-row"&gt;
+                &lt;span&gt;Total Fuel Costs:&lt;/span&gt;
+                &lt;span class="amount"&gt;$@@stats.TotalFuelCost.ToString("N2")&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="financial-row"&gt;
+                &lt;span&gt;Other Expenses:&lt;/span&gt;
+                &lt;span class="amount"&gt;$@@stats.OtherExpenses.ToString("N2")&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="financial-row total"&gt;
+                &lt;span&gt;Net Profit:&lt;/span&gt;
+                &lt;span class="amount @@(stats.NetProfit &gt; 0 ? "positive" : "negative")"&gt;
+                    $@@stats.NetProfit.ToString("N2")
+                &lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🧮 Dashboard Logic
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@code {
+    private List&lt;Route&gt; routes = new();
+    private List&lt;Driver&gt; drivers = new();
+    private DashboardStats stats = new();
+    private string routeFilter = "all";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        // Load routes with related data
+        routes = await DbContext.Routes
+            .Include(r =&gt; r.Driver)
+            .Include(r =&gt; r.Truck)
+            .Where(r =&gt; r.Status == RouteStatus.Scheduled || 
+                        r =&gt; r.Status == RouteStatus.InProgress)
+            .OrderBy(r =&gt; r.ScheduledStartDate)
+            .ToListAsync();
+
+        // Load all drivers
+        drivers = await DbContext.Drivers
+            .OrderBy(d =&gt; d.Name)
+            .ToListAsync();
+
+        // Calculate statistics
+        await CalculateStats();
+    }
+
+    private async Task CalculateStats()
+    {
+        var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
+        // Get routes for current month
+        var monthlyRoutes = await DbContext.Routes
+            .Where(r =&gt; r.ScheduledStartDate &gt;= startOfMonth)
+            .ToListAsync();
+
+        stats = new DashboardStats
+        {
+            ActiveRoutes = routes.Count(r =&gt; r.Status == RouteStatus.InProgress),
+            AvailableDrivers = await DbContext.Drivers.CountAsync(d =&gt; d.IsAvailable),
+            TotalDrivers = await DbContext.Drivers.CountAsync(),
+            AvailableTrucks = await DbContext.Trucks.CountAsync(t =&gt; t.IsAvailable),
+            TrucksInMaintenance = await DbContext.Trucks.CountAsync(t =&gt; t.InMaintenance),
+            
+            // Financial calculations
+            MonthlyRevenue = monthlyRoutes.Sum(r =&gt; r.Revenue),
+            TotalDriverPay = monthlyRoutes.Sum(r =&gt; r.DriverPay),
+            TotalFuelCost = monthlyRoutes.Sum(r =&gt; r.EstimatedFuelCost),
+            OtherExpenses = monthlyRoutes.Count * 150m // Estimated $150 per route
+        };
+
+        // Calculate net profit
+        stats.NetProfit = stats.MonthlyRevenue - 
+                         (stats.TotalDriverPay + stats.TotalFuelCost + stats.OtherExpenses);
+
+        // Calculate profit margin percentage
+        if (stats.MonthlyRevenue &gt; 0)
+        {
+            stats.ProfitMargin = (stats.NetProfit / stats.MonthlyRevenue) * 100;
+        }
+    }
+
+    private IEnumerable&lt;Route&gt; GetFilteredRoutes()
+    {
+        return routeFilter switch
+        {
+            "scheduled" =&gt; routes.Where(r =&gt; r.Status == RouteStatus.Scheduled),
+            "inprogress" =&gt; routes.Where(r =&gt; r.Status == RouteStatus.InProgress),
+            "delayed" =&gt; routes.Where(r =&gt; r.Status == RouteStatus.Delayed),
+            _ =&gt; routes
+        };
+    }
+
+    private string GetStatusClass(RouteStatus status)
+    {
+        return status switch
+        {
+            RouteStatus.Scheduled =&gt; "status-scheduled",   // Blue
+            RouteStatus.InProgress =&gt; "status-active",     // Green
+            RouteStatus.Completed =&gt; "status-completed",   // Gray
+            RouteStatus.Delayed =&gt; "status-delayed",       // Red
+            RouteStatus.Cancelled =&gt; "status-cancelled",   // Red
+            _ =&gt; ""
+        };
+    }
+
+    private string GetProfitClass(decimal margin)
+    {
+        return margin switch
+        {
+            &gt;= 20 =&gt; "profit-excellent",  // Green
+            &gt;= 10 =&gt; "profit-good",       // Yellow
+            _ =&gt; "profit-poor"             // Red
+        };
+    }
+}
+
+// Helper class for dashboard statistics
+public class DashboardStats
+{
+    public int ActiveRoutes { get; set; }
+    public int AvailableDrivers { get; set; }
+    public int TotalDrivers { get; set; }
+    public int AvailableTrucks { get; set; }
+    public int TrucksInMaintenance { get; set; }
+    public decimal MonthlyRevenue { get; set; }
+    public decimal TotalDriverPay { get; set; }
+    public decimal TotalFuelCost { get; set; }
+    public decimal OtherExpenses { get; set; }
+    public decimal NetProfit { get; set; }
+    public decimal ProfitMargin { get; set; }
+    public decimal RouteChangePercent { get; set; }
+}</code></pre>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+                <p class="text-sm sm:text-base text-blue-800 break-words">
+                    <strong>💡 Pro Tip:</strong> Use LINQ methods like Sum(), Count(), and Where() to aggregate data efficiently!
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🎨 Dashboard Styling
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>/* Dashboard Styles */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.kpi-card {
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid;
+}
+
+.kpi-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.status-scheduled { background: #dbeafe; color: #1e40af; }
+.status-active { background: #d1fae5; color: #065f46; }
+.status-delayed { background: #fee2e2; color: #991b1b; }
+
+.driver-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.driver-card {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.driver-card.available {
+    background: #d1fae5;
+    border: 2px solid #10b981;
+}
+
+.driver-card.unavailable {
+    background: #fee2e2;
+    border: 2px solid #ef4444;
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🔑 Key Takeaways
+            </h2>
+            <ul class="space-y-3 text-sm sm:text-base lg:text-lg text-gray-700">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Use KPI cards to highlight important metrics</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">LINQ queries make data aggregation easy</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Conditional CSS classes provide visual feedback</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Filter data without database queries using LINQ</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Load related data with Include() for efficiency</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 break-words">🎉 Congratulations!</h3>
+                    <p class="text-sm sm:text-base text-gray-600 break-words">You've completed all 13 steps of the Blazor learning guide! Mark this final step complete to celebrate your achievement.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="@(async ()=> await ProgressService.MarkStepIncompleteAsync(13))" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isComplete = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync(13);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    private async Task MarkComplete()
+    {
+        await ProgressService.MarkStepCompleteAsync(13);
+        isComplete = true;
+    }
+}

@@ -1,0 +1,407 @@
+@page "/examples/step5"
+@inject ILearningProgressService ProgressService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorMock.Models
+
+<PageTitle>Step 5: Forms & Validation - Example</PageTitle>
+
+<div class="min-h-screen py-8 bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <div class="mb-8">
+            <a href="/" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Home
+            </a>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                🎯 Step 5: Forms & Validation
+            </h1>
+            <p class="text-xl text-gray-600">
+                Create forms with validation using EditForm, DataAnnotationsValidator, and validation attributes to ensure data quality.
+            </p>
+        </div>
+
+        <!-- What You'll Learn -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">📘 What You'll Learn</h2>
+            <p class="text-gray-700 mb-6">Blazor provides powerful form handling with built-in validation. Use EditForm component with data annotations for robust form validation.</p>
+            
+            <h3 class="text-lg font-semibold text-gray-700 mb-3">Basic EditForm Structure:</h3>
+            <pre class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">@("<EditForm Model=\"driver\" OnValidSubmit=\"HandleSubmit\">")
+  @("<DataAnnotationsValidator />")
+  @("<ValidationSummary />")
+  
+  @("<div>")
+    @("<label>Name:</label>")
+    @("<InputText @bind-Value=\"driver.Name\" />")
+    @("<ValidationMessage For=\"() => driver.Name\" />")
+  @("</div>")
+  
+  @("<button type=\"submit\">Submit</button>")
+@("</EditForm>")
+
+@("@code {")
+  private Driver driver = new();
+  
+  private void HandleSubmit()
+  {
+    // Process valid form data
+  }
+@("}")
+
+public class Driver
+{
+  [Required(ErrorMessage = "Name is required")]
+  [StringLength(50)]
+  public string Name { get; set; } = string.Empty;
+  
+  [EmailAddress]
+  public string Email { get; set; } = string.Empty;
+}</pre>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p class="text-sm text-blue-800 font-semibold mb-2">💡 Key Components:</p>
+                <ul class="text-sm text-blue-700 list-disc ml-5 space-y-1">
+                    <li><code>EditForm</code> → Blazor's form component with automatic validation</li>
+                    <li><code>DataAnnotationsValidator</code> → Enables validation attributes on model</li>
+                    <li><code>ValidationSummary</code> → Shows all validation errors in one place</li>
+                    <li><code>ValidationMessage</code> → Displays errors for specific fields</li>
+                    <li><code>OnValidSubmit</code> → Event fired only when form data is valid</li>
+                    <li><code>InputText</code>, <code>InputNumber</code>, <code>InputSelect</code> → Blazor input components</li>
+                </ul>
+            </div>
+            
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <p class="text-sm text-gray-600 mb-3"><strong>💡 Key Concepts:</strong> EditForm, DataAnnotationsValidator, Input Components, Validation Attributes, Two-Way Binding</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#editform--validation" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">EditForm</a>
+                    <a href="/tips#validation-attributes" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">Validation</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Demo -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🚗 Interactive Demo: Driver Registration Form</h2>
+            <p class="text-gray-700 mb-6">Try submitting the form with invalid data to see validation in action. All fields have specific requirements.</p>
+            
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                <EditForm Model="driver" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator />
+                    
+                    @* Show validation summary at the top *@
+                    <div class="mb-4">
+                        <ValidationSummary class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3" />
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <!-- First Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                First Name <span class="text-red-500">*</span>
+                            </label>
+                            <InputText 
+                                @bind-Value="driver.FirstName" 
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" 
+                                placeholder="Enter first name" />
+                            <ValidationMessage For="() => driver.FirstName" class="text-xs text-red-600 mt-1 block" />
+                        </div>
+
+                        <!-- Last Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Last Name <span class="text-red-500">*</span>
+                            </label>
+                            <InputText 
+                                @bind-Value="driver.LastName" 
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" 
+                                placeholder="Enter last name" />
+                            <ValidationMessage For="() => driver.LastName" class="text-xs text-red-600 mt-1 block" />
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Email <span class="text-red-500">*</span>
+                            </label>
+                            <InputText 
+                                type="email"
+                                @bind-Value="driver.Email" 
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" 
+                                placeholder="driver@example.com" />
+                            <ValidationMessage For="() => driver.Email" class="text-xs text-red-600 mt-1 block" />
+                        </div>
+
+                        <!-- CDL Number -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                CDL Number <span class="text-red-500">*</span>
+                            </label>
+                            <InputText 
+                                @bind-Value="driver.CdlNumber" 
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" 
+                                placeholder="e.g., CDL123456" />
+                            <ValidationMessage For="() => driver.CdlNumber" class="text-xs text-red-600 mt-1 block" />
+                            <p class="text-xs text-gray-500 mt-1">Must be 4-20 characters</p>
+                        </div>
+
+                        <!-- Years Experience -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Years of Experience <span class="text-red-500">*</span>
+                            </label>
+                            <InputNumber 
+                                @bind-Value="driver.YearsExperience" 
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" 
+                                placeholder="0" />
+                            <ValidationMessage For="() => driver.YearsExperience" class="text-xs text-red-600 mt-1 block" />
+                            <p class="text-xs text-gray-500 mt-1">Must be between 0 and 60</p>
+                        </div>
+
+                        <!-- License Level (Enum) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                License Level <span class="text-red-500">*</span>
+                            </label>
+                            <InputSelect 
+                                @bind-Value="driver.LicenseLevel" 
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white">
+                                <option value="">-- Select License Level --</option>
+                                @foreach (var level in Enum.GetValues<LicenseLevel>())
+                                {
+                                    <option value="@level">@GetLicenseDisplay(level)</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => driver.LicenseLevel" class="text-xs text-red-600 mt-1 block" />
+                        </div>
+                    </div>
+
+                    <!-- Additional Certifications -->
+                    <div class="mb-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <InputCheckbox @bind-Value="driver.HasHazmatEndorsement" class="w-4 h-4 text-orange-600 rounded focus:ring-orange-500" />
+                            <span class="text-sm text-gray-700">Hazmat Endorsement</span>
+                        </label>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex flex-wrap gap-3">
+                        <button type="submit" class="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors">
+                            🚗 Submit Driver Registration
+                        </button>
+                        <button type="button" @onclick="ResetForm" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Reset Form
+                        </button>
+                    </div>
+                </EditForm>
+
+                @if (submitted)
+                {
+                    <div class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">✅</span>
+                            <div class="flex-1">
+                                <h4 class="text-lg font-semibold text-green-800 mb-2">Driver Registered Successfully!</h4>
+                                <div class="text-sm text-green-700 space-y-1">
+                                    <p><strong>Name:</strong> @driver.FirstName @driver.LastName</p>
+                                    <p><strong>Email:</strong> @driver.Email</p>
+                                    <p><strong>CDL Number:</strong> @driver.CdlNumber</p>
+                                    <p><strong>License Level:</strong> @(driver.LicenseLevel is null ? "" : GetLicenseDisplay(driver.LicenseLevel.Value))</p>
+                                    <p><strong>Years Experience:</strong> @driver.YearsExperience years</p>
+                                    <p><strong>Hazmat Certified:</strong> @(driver.HasHazmatEndorsement ? "Yes ☢️" : "No")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Validation Attributes Reference -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">� Common Validation Attributes</h2>
+            <p class="text-gray-700 mb-4">Blazor supports all standard .NET data annotation attributes for validation:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">[Required]</h3>
+                    <p class="text-sm text-gray-600 mb-2">Ensures field has a value</p>
+                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Required(ErrorMessage = "Name required")]</pre>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">[StringLength]</h3>
+                    <p class="text-sm text-gray-600 mb-2">Limits string length</p>
+                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[StringLength(50, MinimumLength = 2)]</pre>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">[EmailAddress]</h3>
+                    <p class="text-sm text-gray-600 mb-2">Validates email format</p>
+                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[EmailAddress]</pre>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">[Range]</h3>
+                    <p class="text-sm text-gray-600 mb-2">Sets numeric range</p>
+                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Range(0, 60)]</pre>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">[RegularExpression]</h3>
+                    <p class="text-sm text-gray-600 mb-2">Custom pattern matching</p>
+                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[RegularExpression(@@"^\d{{3}}-\d{{2}}-\d{{4}}$")]</pre>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">[Compare]</h3>
+                    <p class="text-sm text-gray-600 mb-2">Compares two properties</p>
+                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Compare(nameof(Password))]</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold text-blue-800 mb-3">💡 Pro Tips</h3>
+            <ul class="space-y-2 text-sm text-blue-700">
+                <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    <span><strong>OnValidSubmit vs OnSubmit:</strong> Use <code class="bg-blue-100 px-1 rounded">OnValidSubmit</code> to only handle valid forms, or <code class="bg-blue-100 px-1 rounded">OnSubmit</code> to handle all submissions.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    <span><strong>ValidationSummary:</strong> Shows all validation errors in one place at the top of the form.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    <span><strong>ValidationMessage:</strong> Shows errors for specific fields. Use <code class="bg-blue-100 px-1 rounded">For="() => model.Property"</code> syntax.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    <span><strong>Input Components:</strong> Use <code class="bg-blue-100 px-1 rounded">InputText</code>, <code class="bg-blue-100 px-1 rounded">InputNumber</code>, <code class="bg-blue-100 px-1 rounded">InputSelect</code>, <code class="bg-blue-100 px-1 rounded">InputCheckbox</code>, etc. for automatic validation.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    <span><strong>Custom Validation:</strong> Create custom validation attributes by inheriting from <code class="bg-blue-100 px-1 rounded">ValidationAttribute</code>.</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Ready to move on?</h3>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your progress.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between">
+            <a href="/examples/step4" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 4
+            </a>
+            <a href="/guide" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Back to Guide
+                <span>🏠</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isComplete;
+    private bool submitted = false;
+    private Driver driver = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync(5);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    private async Task MarkComplete()
+    {
+        await ProgressService.MarkStepCompleteAsync(5);
+        isComplete = true;
+    }
+
+    private async Task ResetStep()
+    {
+        await ProgressService.MarkStepIncompleteAsync(5);
+        isComplete = false;
+    }
+
+    private void HandleValidSubmit()
+    {
+        submitted = true;
+    }
+
+    private void ResetForm()
+    {
+        driver = new();
+        submitted = false;
+    }
+
+    public class Driver
+    {
+        [Required(ErrorMessage = "First name is required")]
+        [StringLength(50, ErrorMessage = "First name must be less than 50 characters")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Last name is required")]
+        [StringLength(50, ErrorMessage = "Last name must be less than 50 characters")]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "CDL number is required")]
+        [StringLength(20, MinimumLength = 4, ErrorMessage = "CDL number must be between 4 and 20 characters")]
+        public string CdlNumber { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Years of experience is required")]
+        [Range(0, 60, ErrorMessage = "Years of experience must be between 0 and 60")]
+        public int? YearsExperience { get; set; }
+
+        [Required(ErrorMessage = "License level is required")]
+        public LicenseLevel? LicenseLevel { get; set; }
+
+        public bool HasHazmatEndorsement { get; set; }
+    }
+
+    private static string GetLicenseDisplay(LicenseLevel level)
+    {
+        // Use DisplayAttribute when available; fallback to enum name
+        var member = typeof(LicenseLevel).GetMember(level.ToString()).FirstOrDefault();
+        if (member is not null)
+        {
+            var displayAttr = (DisplayAttribute?)Attribute.GetCustomAttribute(member, typeof(DisplayAttribute));
+            if (displayAttr?.Name is string name && !string.IsNullOrWhiteSpace(name))
+            {
+                return name;
+            }
+        }
+        return level.ToString();
+    }
+}

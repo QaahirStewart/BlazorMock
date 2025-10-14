@@ -1,0 +1,321 @@
+@page "/examples/step8"
+@inject ILearningProgressService ProgressService
+@rendermode InteractiveServer
+
+<div class="min-h-screen py-8 bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <div class="mb-8">
+            <a href="/guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Guide
+            </a>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 break-words">
+                🎯 Step 8: Setup EF Core & DbContext
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">
+                Configure Entity Framework Core with a SQLite database.
+            </p>
+        </div>
+
+        <!-- Learning Objectives -->
+    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🎯 Learning Objectives
+            </h2>
+            <ul class="space-y-2 text-sm sm:text-base lg:text-lg text-gray-700">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Install EF Core NuGet packages</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Create AppDbContext class</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Configure database connection</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Create and apply migrations</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Step 1: Install Packages -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                📦 Step 1: Install EF Core NuGet Packages
+            </h2>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
+                Install the required Entity Framework Core packages for SQLite support.
+            </p>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code># Install EF Core SQLite provider
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+
+# Install EF Core tools for migrations
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+
+# Install EF Core design-time components
+dotnet add package Microsoft.EntityFrameworkCore.Design</code></pre>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+                <p class="text-sm sm:text-base text-blue-800 break-words">
+                    <strong>💡 Pro Tip:</strong> SQLite is perfect for learning - it's a file-based database that requires no server setup!
+                </p>
+            </div>
+        </div>
+
+        <!-- Step 2: Create DbContext -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🗄️ Step 2: Create AppDbContext
+            </h2>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
+                The DbContext is your gateway to the database. It manages entity objects and database operations.
+            </p>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>using Microsoft.EntityFrameworkCore;
+using BlazorMock.Models;
+
+namespace BlazorMock.Data;
+
+/// &lt;summary&gt;
+/// Main database context for the trucking application.
+/// Manages all entity sets and database configuration.
+/// &lt;/summary&gt;
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options)
+        : base(options)
+    {
+    }
+
+    // DbSet properties - represent tables in the database
+    public DbSet&lt;Driver&gt; Drivers { get; set; } = null!;
+    public DbSet&lt;Truck&gt; Trucks { get; set; } = null!;
+    public DbSet&lt;Route&gt; Routes { get; set; } = null!;
+
+    /// &lt;summary&gt;
+    /// Configure model relationships and constraints
+    /// &lt;/summary&gt;
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // Configure Driver entity
+        modelBuilder.Entity&lt;Driver&gt;(entity =&gt;
+        {
+            entity.HasKey(e =&gt; e.Id);
+            entity.Property(e =&gt; e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e =&gt; e.HourlyRate).HasColumnType("decimal(10,2)");
+            
+            // One driver can have many routes
+            entity.HasMany(d =&gt; d.Routes)
+                  .WithOne(r =&gt; r.Driver)
+                  .HasForeignKey(r =&gt; r.DriverId);
+        });
+
+        // Configure Truck entity
+        modelBuilder.Entity&lt;Truck&gt;(entity =&gt;
+        {
+            entity.HasKey(e =&gt; e.Id);
+            entity.Property(e =&gt; e.TruckNumber).IsRequired().HasMaxLength(50);
+            
+            // One truck can have many routes
+            entity.HasMany(t =&gt; t.Routes)
+                  .WithOne(r =&gt; r.Truck)
+                  .HasForeignKey(r =&gt; r.TruckId);
+        });
+
+        // Configure Route entity
+        modelBuilder.Entity&lt;Route&gt;(entity =&gt;
+        {
+            entity.HasKey(e =&gt; e.Id);
+            entity.Property(e =&gt; e.RouteNumber).IsRequired().HasMaxLength(50);
+            entity.Property(e =&gt; e.EstimatedFuelCost).HasColumnType("decimal(10,2)");
+            entity.Property(e =&gt; e.DriverPay).HasColumnType("decimal(10,2)");
+            entity.Property(e =&gt; e.Revenue).HasColumnType("decimal(10,2)");
+        });
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Step 3: Configure Connection String -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🔗 Step 3: Add Connection String
+            </h2>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
+                Add the database connection string to appsettings.json:
+            </p>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=trucking.db"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information"
+    }
+  }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- Step 4: Register DbContext -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🔌 Step 4: Register DbContext in Program.cs
+            </h2>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
+                Configure dependency injection to make the DbContext available throughout your app:
+            </p>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>using Microsoft.EntityFrameworkCore;
+using BlazorMock.Data;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+// Register DbContext with SQLite
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
+var app = builder.Build();
+
+// Rest of Program.cs...</code></pre>
+            </div>
+        </div>
+
+        <!-- Step 5: Create Migrations -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🔄 Step 5: Create and Apply Migrations
+            </h2>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
+                Migrations are version control for your database schema. They track changes and allow you to update the database structure.
+            </p>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code># Create your first migration
+dotnet ef migrations add InitialCreate
+
+# Apply the migration to create the database
+dotnet ef database update
+
+# View migration status
+dotnet ef migrations list</code></pre>
+            </div>
+
+            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4">
+                <p class="text-sm sm:text-base text-yellow-800 break-words">
+                    <strong>⚠️ Important:</strong> Run migrations every time you change your models!
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base break-words">
+                        Common Migration Commands
+                    </h3>
+                    <div class="text-xs sm:text-sm text-gray-700 space-y-1">
+                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">add</code> - Create new migration</div>
+                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">remove</code> - Delete last migration</div>
+                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">update</code> - Apply migrations</div>
+                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">list</code> - Show all migrations</div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base break-words">
+                        Migration Workflow
+                    </h3>
+                    <ol class="text-xs sm:text-sm text-gray-700 space-y-1 list-decimal list-inside">
+                        <li class="break-words">Change your models</li>
+                        <li class="break-words">Create migration</li>
+                        <li class="break-words">Review generated code</li>
+                        <li class="break-words">Apply to database</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Takeaways -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 break-words">
+                🔑 Key Takeaways
+            </h2>
+            <ul class="space-y-3 text-sm sm:text-base lg:text-lg text-gray-700">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">DbContext is your gateway to the database</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">DbSet properties represent database tables</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">OnModelCreating configures relationships and constraints</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Migrations track database schema changes</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Always run migrations after changing models</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Mark Complete Button -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 break-words">Ready to move on?</h3>
+                    <p class="text-sm sm:text-base text-gray-600 break-words">Mark this step as complete to track your progress!</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="@(async ()=> await ProgressService.MarkStepIncompleteAsync(8))" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isComplete = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync(8);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    private async Task MarkComplete()
+    {
+        await ProgressService.MarkStepCompleteAsync(8);
+        isComplete = true;
+    }
+}

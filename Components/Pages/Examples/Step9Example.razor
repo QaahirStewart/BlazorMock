@@ -1,0 +1,356 @@
+@page "/examples/step9"
+@inject ILearningProgressService ProgressService
+@rendermode InteractiveServer
+
+<div class="min-h-screen py-8 bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <div class="mb-8">
+            <a href="/guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Guide
+            </a>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 break-words">🎯 Step 9: CRUD Operations</h1>
+                    <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">Create, Read, Update, and Delete database records.</p>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 break-words">
+                🎯 Learning Objectives
+            </h2>
+            <ul class="space-y-2 text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Inject DbContext into Blazor components</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Load data asynchronously with OnInitializedAsync</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Create, Update, and Delete records</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Handle errors and provide user feedback</span>
+                </li>
+            </ul>
+        </div>
+
+    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 break-words">
+                📖 READ: List All Drivers
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/drivers"
+@@inject AppDbContext DbContext
+@@using Microsoft.EntityFrameworkCore
+
+&lt;h1&gt;Drivers&lt;/h1&gt;
+
+@@if (drivers == null)
+{
+    &lt;p&gt;Loading...&lt;/p&gt;
+}
+else if (!drivers.Any())
+{
+    &lt;p&gt;No drivers found. Add one to get started!&lt;/p&gt;
+}
+else
+{
+    &lt;table class="w-full"&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;Name&lt;/th&gt;
+                &lt;th&gt;License&lt;/th&gt;
+                &lt;th&gt;Experience&lt;/th&gt;
+                &lt;th&gt;Actions&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            @@foreach (var driver in drivers)
+            {
+                &lt;tr&gt;
+                    &lt;td&gt;@@driver.Name&lt;/td&gt;
+                    &lt;td&gt;@@driver.LicenseLevel&lt;/td&gt;
+                    &lt;td&gt;@@driver.YearsOfExperience years&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;button @@onclick="() =&gt; EditDriver(driver.Id)"&gt;
+                            Edit
+                        &lt;/button&gt;
+                        &lt;button @@onclick="() =&gt; DeleteDriver(driver.Id)"&gt;
+                            Delete
+                        &lt;/button&gt;
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+            }
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+}
+
+&lt;a href="/drivers/add"&gt;Add New Driver&lt;/a&gt;
+
+@@code {
+    private List&lt;Driver&gt;? drivers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load all drivers from database
+        drivers = await DbContext.Drivers.ToListAsync();
+    }
+
+    private void EditDriver(int id)
+    {
+        Navigation.NavigateTo($"/drivers/edit/{id}");
+    }
+
+    private async Task DeleteDriver(int id)
+    {
+        var driver = await DbContext.Drivers.FindAsync(id);
+        if (driver != null)
+        {
+            DbContext.Drivers.Remove(driver);
+            await DbContext.SaveChangesAsync();
+            
+            // Reload the list
+            drivers = await DbContext.Drivers.ToListAsync();
+        }
+    }
+}</code></pre>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+                <p class="text-sm sm:text-base text-blue-800 break-words">
+                    <strong>💡 Pro Tip:</strong> Use `ToListAsync()` instead of `ToList()` to avoid blocking the UI thread!
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                ➕ CREATE: Add New Driver
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/drivers/add"
+@@inject AppDbContext DbContext
+@@inject NavigationManager Navigation
+
+&lt;h1&gt;Add New Driver&lt;/h1&gt;
+
+&lt;EditForm Model="newDriver" OnValidSubmit="HandleValidSubmit"&gt;
+    &lt;DataAnnotationsValidator /&gt;
+    &lt;ValidationSummary /&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;Name:&lt;/label&gt;
+        &lt;InputText @@bind-Value="newDriver.Name" /&gt;
+        &lt;ValidationMessage For="() =&gt; newDriver.Name" /&gt;
+    &lt;/div&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;License Number:&lt;/label&gt;
+        &lt;InputText @@bind-Value="newDriver.LicenseNumber" /&gt;
+        &lt;ValidationMessage For="() =&gt; newDriver.LicenseNumber" /&gt;
+    &lt;/div&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;License Level:&lt;/label&gt;
+        &lt;InputSelect @@bind-Value="newDriver.LicenseLevel"&gt;
+            &lt;option value=""&gt;Select...&lt;/option&gt;
+            @@foreach (var level in Enum.GetValues&lt;LicenseLevel&gt;())
+            {
+                &lt;option value="@@level"&gt;@@level&lt;/option&gt;
+            }
+        &lt;/InputSelect&gt;
+    &lt;/div&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;Years of Experience:&lt;/label&gt;
+        &lt;InputNumber @@bind-Value="newDriver.YearsOfExperience" /&gt;
+        &lt;ValidationMessage For="() =&gt; newDriver.YearsOfExperience" /&gt;
+    &lt;/div&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;Hourly Rate:&lt;/label&gt;
+        &lt;InputNumber @@bind-Value="newDriver.HourlyRate" /&gt;
+    &lt;/div&gt;
+
+    &lt;button type="submit"&gt;Save Driver&lt;/button&gt;
+    &lt;a href="/drivers"&gt;Cancel&lt;/a&gt;
+&lt;/EditForm&gt;
+
+@@code {
+    private Driver newDriver = new();
+
+    private async Task HandleValidSubmit()
+    {
+        // Add driver to database
+        DbContext.Drivers.Add(newDriver);
+        await DbContext.SaveChangesAsync();
+
+        // Navigate back to list
+        Navigation.NavigateTo("/drivers");
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                ✏️ UPDATE: Edit Existing Driver
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/drivers/edit/{DriverId:int}"
+@@inject AppDbContext DbContext
+@@inject NavigationManager Navigation
+
+&lt;h1&gt;Edit Driver&lt;/h1&gt;
+
+@@if (driver == null)
+{
+    &lt;p&gt;Loading...&lt;/p&gt;
+}
+else
+{
+    &lt;EditForm Model="driver" OnValidSubmit="HandleValidSubmit"&gt;
+        &lt;DataAnnotationsValidator /&gt;
+        &lt;ValidationSummary /&gt;
+
+        &lt;!-- Same form fields as Add page --&gt;
+
+        &lt;button type="submit"&gt;Update Driver&lt;/button&gt;
+        &lt;a href="/drivers"&gt;Cancel&lt;/a&gt;
+    &lt;/EditForm&gt;
+}
+
+@@code {
+    [Parameter]
+    public int DriverId { get; set; }
+
+    private Driver? driver;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load the driver from database
+        driver = await DbContext.Drivers.FindAsync(DriverId);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Update the driver in database
+        DbContext.Drivers.Update(driver!);
+        await DbContext.SaveChangesAsync();
+
+        // Navigate back to list
+        Navigation.NavigateTo("/drivers");
+    }
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🔍 Advanced: Loading Related Data
+            </h2>
+            
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Load driver WITH their routes (eager loading)
+protected override async Task OnInitializedAsync()
+{
+    driver = await DbContext.Drivers
+        .Include(d =&gt; d.Routes)  // Load related routes
+        .FirstOrDefaultAsync(d =&gt; d.Id == DriverId);
+}
+
+// Display routes in the UI
+@@if (driver?.Routes.Any() == true)
+{
+    &lt;h3&gt;Assigned Routes&lt;/h3&gt;
+    &lt;ul&gt;
+        @@foreach (var route in driver.Routes)
+        {
+            &lt;li&gt;@@route.RouteNumber: @@route.Origin → @@route.Destination&lt;/li&gt;
+        }
+    &lt;/ul&gt;
+}</code></pre>
+            </div>
+
+            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+                <p class="text-sm sm:text-base text-yellow-800 break-words">
+                    <strong>⚠️ Important:</strong> Use `Include()` to load related data. Without it, navigation properties will be null!
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
+                🔑 Key Takeaways
+            </h2>
+            <ul class="space-y-3 text-sm sm:text-base lg:text-lg text-gray-700">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Inject DbContext with `@@inject AppDbContext DbContext`</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Load data in `OnInitializedAsync()` method</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Always use async methods: `ToListAsync()`, `FindAsync()`, `SaveChangesAsync()`</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Navigate after save with `NavigationManager.NavigateTo()`</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
+                    <span class="break-words min-w-0">Use `Include()` to load related data (eager loading)</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 break-words">Ready to move on?</h3>
+                    <p class="text-sm sm:text-base text-gray-600 break-words">Mark this step as complete to track your progress!</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="@(async ()=> await ProgressService.MarkStepIncompleteAsync(9))" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isComplete = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync(9);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    private async Task MarkComplete()
+    {
+        await ProgressService.MarkStepCompleteAsync(9);
+        isComplete = true;
+    }
+}

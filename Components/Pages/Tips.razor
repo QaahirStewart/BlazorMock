@@ -1,0 +1,283 @@
+@page "/tips"
+@using BlazorMock.Services
+@inject ITipsService TipsService
+@inject NavigationManager Navigation
+@implements IDisposable
+
+@if (selectedTechnology is null && selectedCategory is null)
+{
+    <!-- Landing: Pick Blazor or C# -->
+    <div class="py-8">
+        <div class="w-full mx-auto px-4 max-w-6xl">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-4 text-gray-900 break-words text-center">ELI5 — Quick Tips</h1>
+            <p class="text-gray-700 text-base sm:text-lg mb-8 leading-relaxed break-words text-center max-w-2xl mx-auto">
+                Pick a technology to explore practical tips, examples, and ELI5 explanations.
+            </p>
+
+            <div class="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                @if (blazorCats.Count > 0)
+                {
+                    <button type="button" @onclick="SelectBlazor"
+                        class="rounded-2xl p-8 bg-white border-2 border-gray-200 hover:border-purple-400 hover:shadow-lg transition-all text-left">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/blazor/blazor-original.svg" alt="Blazor" class="size-12 flex-shrink-0 mb-4" />
+                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 break-words">Blazor</h2>
+                        <p class="text-sm sm:text-base text-gray-700 leading-relaxed break-words mb-4">
+                            Master Blazor components, routing, forms, lifecycle hooks, JS interop, and data binding.
+                        </p>
+                        <div class="text-sm text-purple-600 font-medium">@blazorCats.Count categories · @blazorCats.Sum(c => grouped[c].Count) tips →</div>
+                    </button>
+                }
+
+                @if (csharpCats.Count > 0)
+                {
+                    <button type="button" @onclick="SelectCSharp"
+                        class="rounded-2xl p-8 bg-white border-2 border-gray-200 hover:border-blue-400 hover:shadow-lg transition-all text-left">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="C#" class="size-12 flex-shrink-0 mb-4" />
+                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 break-words">C#</h2>
+                        <p class="text-sm sm:text-base text-gray-700 leading-relaxed break-words mb-4">
+                            Explore C# language features, types, collections, async patterns, and modern syntax.
+                        </p>
+                        <div class="text-sm text-blue-600 font-medium">@csharpCats.Count categories · @csharpCats.Sum(c => grouped[c].Count) tips →</div>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+}
+else if (selectedCategory is null)
+{
+    <!-- Category picker for selected technology -->
+    <div class="py-8">
+        <div class="w-full mx-auto px-4 max-w-4xl">
+            <div class="mb-6">
+                <button type="button" class="text-sm text-gray-600 hover:underline" @onclick="BackToTechnologies">← Back to technologies</button>
+            </div>
+
+            <h1 class="text-2xl sm:text-3xl font-bold mb-2 text-gray-900 break-words">@selectedTechnology Tips</h1>
+            <p class="text-sm sm:text-base text-gray-600 mb-6 break-words">Pick a category to view tips.</p>
+
+            <div class="space-y-3">
+                @foreach (var c in (selectedTechnology == "Blazor" ? blazorCats : csharpCats))
+                {
+                    <button type="button"
+                        class="w-full text-left px-4 sm:px-5 py-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-between gap-2"
+                        @onclick="() => SelectCategory(c)">
+                        <span class="text-base sm:text-lg font-medium text-gray-900 break-words min-w-0">@CategoryDisplay(c)</span>
+                        <span class="text-sm text-gray-500 whitespace-nowrap">@grouped[c].Count tips</span>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Tip detail view -->
+    <div class="py-8">
+        <div class="w-full mx-auto px-4 max-w-4xl">
+            <div class="mb-4 flex items-center gap-4">
+                <button type="button" class="text-sm text-gray-600 hover:underline whitespace-nowrap" @onclick="BackToCategories">← @selectedTechnology categories</button>
+            </div>
+
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6 break-words">@CategoryDisplay(selectedCategory)</h2>
+
+            <div class="space-y-3">
+                @for (int i = 0; i < grouped[selectedCategory].Count; i++)
+                {
+                    var index = i;
+                    var t = grouped[selectedCategory][index];
+                    <div id="@t.Slug" class="rounded-2xl border border-gray-200 bg-white">
+                        <button type="button" class="w-full text-left px-3 sm:px-4 py-3 flex items-center justify-between gap-2"
+                            @onclick="() => Toggle(index)">
+                            <div class="min-w-0">
+                                <div class="text-xs sm:text-sm text-gray-500 break-words">@t.Type</div>
+                                <div class="text-sm sm:text-base font-medium text-gray-900 break-words">@t.Title</div>
+                            </div>
+                            <div
+                                class="text-gray-400 transition-transform duration-200 @(openIndex == index ? "rotate-180" : "rotate-0")">
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </button>
+
+                        @if (openIndex == index)
+                        {
+                            <div class="px-4 pb-4 pt-0 space-y-4">
+                                <!-- Card 1: Short ELI5 + Example + Tips -->
+                                <div class="rounded-xl ">
+                                    <div class="p-4">
+                                        <div class="text-xs text-gray-500 mb-2 font-semibold">Summary</div>
+                                        <div class="text-sm text-gray-700 mb-3 whitespace-pre-wrap">@t.ELI5</div>
+
+                                        <div class="text-xs text-gray-500 mb-2">Example</div>
+                                        <pre class="bg-gray-50 p-3 rounded text-sm font-mono w-full max-w-full overflow-x-hidden"
+                                            style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;">@((MarkupString)System.Net.WebUtility.HtmlEncode(t.Example))</pre>
+
+                                        <div class="text-xs text-gray-500 mt-3">Tips</div>
+                                        <ul class="list-disc ml-5 text-sm text-gray-700 mt-1">
+                                            @foreach (var tip in t.Tips)
+                                            {
+                                                <li>@tip</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Card 2: ELI5 — Deep Dive -->
+                                <div class="rounded-xl border border-gray-200 bg-blue-50/40">
+                                    <div class="p-4">
+                                        <div class="text-xs text-gray-600 mb-2 font-semibold">ELI5 — Deep Dive</div>
+                                        <div class="text-sm text-gray-800 whitespace-pre-wrap">@(string.IsNullOrWhiteSpace(t.LongELI5) ?
+                                                                        t.ELI5 : t.LongELI5)</div>
+
+                                        @if (!string.IsNullOrWhiteSpace(t.ELI5Example))
+                                        {
+                                            <div class="text-xs text-gray-600 mb-2 font-semibold mt-3">ELI5 Example</div>
+                                            <pre class="bg-blue-100 p-3 rounded text-sm font-mono w-full max-w-full overflow-x-hidden"
+                                                style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;">@((MarkupString)System.Net.WebUtility.HtmlEncode(t.ELI5Example))</pre>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private readonly Dictionary<string, List<TipTopic>> grouped = new(StringComparer.OrdinalIgnoreCase);
+    private List<string> categories = [];
+    private List<string> blazorCats = [];
+    private List<string> csharpCats = [];
+    private List<string> otherCats = [];
+    private string? selectedTechnology;
+    private string? selectedCategory;
+    private int? openIndex;
+
+    protected override void OnInitialized()
+    {
+        foreach (var c in TipsService.Categories)
+        {
+            var list = TipsService.GetByCategory(c).ToList();
+            if (list.Count == 0) continue;
+            grouped[c] = list;
+            categories.Add(c);
+        }
+
+        blazorCats = categories.Where(c => c.StartsWith("Blazor", StringComparison.OrdinalIgnoreCase)).OrderBy(c => c).ToList();
+        csharpCats = categories.Where(c => c.StartsWith("C#", StringComparison.OrdinalIgnoreCase)).OrderBy(c => c).ToList();
+        otherCats = categories.Except(blazorCats.Concat(csharpCats), StringComparer.OrdinalIgnoreCase).OrderBy(c => c).ToList();
+        
+        // Handle URL hash navigation
+        Navigation.LocationChanged += HandleLocationChanged;
+        HandleUrlHash();
+    }
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            HandleUrlHash();
+        }
+    }
+    
+    private void HandleLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        HandleUrlHash();
+        StateHasChanged();
+    }
+    
+    private void HandleUrlHash()
+    {
+        var uri = new Uri(Navigation.Uri);
+        var hash = uri.Fragment.TrimStart('#');
+        
+        if (string.IsNullOrEmpty(hash)) return;
+        
+        // Find the tip with matching slug
+        foreach (var category in categories)
+        {
+            var tips = grouped[category];
+            for (int i = 0; i < tips.Count; i++)
+            {
+                if (tips[i].Slug.Equals(hash, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Determine technology from category
+                    if (category.StartsWith("Blazor", StringComparison.OrdinalIgnoreCase))
+                        selectedTechnology = "Blazor";
+                    else if (category.StartsWith("C#", StringComparison.OrdinalIgnoreCase))
+                        selectedTechnology = "C#";
+                    
+                    selectedCategory = category;
+                    openIndex = i;
+                    return;
+                }
+            }
+        }
+    }
+    
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= HandleLocationChanged;
+    }
+
+    private void SelectTechnology(string tech)
+    {
+        selectedTechnology = tech;
+        selectedCategory = null;
+        openIndex = null;
+    }
+
+    private void SelectBlazor() => SelectTechnology("Blazor");
+    private void SelectCSharp() => SelectTechnology("C#");
+
+    private void SelectCategory(string category)
+    {
+        selectedCategory = category;
+        openIndex = null;
+    }
+
+    private void BackToTechnologies()
+    {
+        selectedTechnology = null;
+        selectedCategory = null;
+        openIndex = null;
+        Navigation.NavigateTo("/tips", false);
+    }
+
+    private void BackToCategories()
+    {
+        selectedCategory = null;
+        openIndex = null;
+        Navigation.NavigateTo("/tips", false);
+    }
+
+    private void Toggle(int index)
+    {
+        if (openIndex == index)
+        {
+            openIndex = null;
+            // Remove hash from URL when closing
+            Navigation.NavigateTo("/tips", false);
+        }
+        else
+        {
+            openIndex = index;
+            // Update URL with the tip's slug when opening
+            if (selectedCategory != null && grouped.ContainsKey(selectedCategory))
+            {
+                var tip = grouped[selectedCategory][index];
+                Navigation.NavigateTo($"/tips#{tip.Slug}", false);
+            }
+        }
+    }
+
+    private static string CategoryDisplay(string category)
+    => category.Contains('—') ? category[(category.IndexOf('—') + 1)..].Trim() : category;
+}

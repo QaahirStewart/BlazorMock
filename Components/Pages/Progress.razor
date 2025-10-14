@@ -1,0 +1,149 @@
+@page "/progress"
+@inject ILearningProgressService ProgressService
+@rendermode InteractiveServer
+
+<PageTitle>Learning Progress</PageTitle>
+
+<div class="min-h-screen py-8">
+    <div class="w-full mx-auto px-4">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 break-words">
+                📊 Your Learning Progress
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">
+                Track your journey through the Blazor learning path
+            </p>
+        </div>
+
+        <!-- Progress Summary Card -->
+        <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
+            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <div class="min-w-0">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">@completedCount / 13 Steps Complete</h2>
+                        <p class="text-sm sm:text-base text-gray-600 break-words">@Math.Round((completedCount / 13.0) * 100, 1)% Progress</p>
+                    </div>
+                    <button @onclick="ResetProgress" class="px-4 py-2 border border-gray-300 text-red-700 text-sm sm:text-base rounded-lg hover:bg-red-50 whitespace-nowrap">
+                        🔄 Reset All Progress
+                    </button>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-4">
+                    <div class="bg-green-500 h-4 rounded-full transition-all duration-300" 
+                         style="width: @((completedCount / 13.0) * 100)%"></div>
+                </div>
+                
+                @if (completedCount >= 4)
+                {
+                    <div class="flex items-center gap-2 text-green-700 bg-green-50 rounded-lg p-3">
+                        <span class="text-lg sm:text-xl">🎉</span>
+                        <span class="text-sm sm:text-base font-semibold break-words">Phase 1 Complete! Great job!</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Steps List -->
+        <div class="bg-black/3 rounded-2xl p-5 sm:p-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 break-words">All Steps</h2>
+            
+            @if (allSteps != null)
+            {
+                <div class="space-y-4">
+                    @foreach (var step in allSteps)
+                    {
+                        <div class="bg-white rounded-xl p-5 border border-gray-200">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                                <div class="flex items-center gap-4 flex-1 min-w-0">
+                                    @if (step.IsComplete)
+                                    {
+                                        <span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-lg">✓</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 font-semibold">@step.StepNumber</span>
+                                    }
+                                    
+                                    <div class="min-w-0 flex-1">
+                                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 break-words">Step @step.StepNumber: @step.Title</h3>
+                                        @if (step.IsComplete && step.CompletedDate.HasValue)
+                                        {
+                                            <p class="text-xs sm:text-sm text-gray-500 break-words">
+                                                Completed on @step.CompletedDate.Value.ToString("MMM dd, yyyy")
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center gap-2 flex-shrink-0 sm:ml-auto">
+                                    @if (step.IsComplete)
+                                    {
+                                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium whitespace-nowrap">Complete</span>
+                                        <button @onclick="() => ToggleStep(step.StepNumber)" 
+                                                class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 whitespace-nowrap">
+                                            Mark Incomplete
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium whitespace-nowrap">Not Started</span>
+                                        <button @onclick="() => ToggleStep(step.StepNumber)" 
+                                                class="px-3 py-1 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 whitespace-nowrap">
+                                            Mark Complete
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Back to Home -->
+        <div class="mt-8 text-center">
+            <a href="/" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                <span>←</span>
+                Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<StepProgress>? allSteps;
+    private int completedCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProgressAsync();
+    }
+
+    private async Task LoadProgressAsync()
+    {
+        allSteps = await ProgressService.GetAllStepsAsync();
+        completedCount = await ProgressService.GetCompletedCountAsync();
+    }
+
+    private async Task ToggleStep(int stepNumber)
+    {
+        var step = allSteps?.FirstOrDefault(s => s.StepNumber == stepNumber);
+        if (step != null)
+        {
+            if (step.IsComplete)
+                await ProgressService.MarkStepIncompleteAsync(stepNumber);
+            else
+                await ProgressService.MarkStepCompleteAsync(stepNumber);
+
+            await LoadProgressAsync();
+        }
+    }
+
+    private async Task ResetProgress()
+    {
+        await ProgressService.ResetAllProgressAsync();
+        await LoadProgressAsync();
+    }
+}

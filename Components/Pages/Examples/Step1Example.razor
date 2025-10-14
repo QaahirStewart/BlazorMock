@@ -1,0 +1,150 @@
+@page "/examples/step1"
+@inject ILearningProgressService ProgressService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Step 1: New Clean Project - Example</PageTitle>
+
+<div class="min-h-screen py-8 bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <div class="mb-8">
+            <a href="/" class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Home
+            </a>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 break-words">
+                🎯 Step 1: New Clean Project
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">
+                Create a new Blazor Server application with interactive rendering mode and set up Tailwind CSS v4 for modern styling.
+            </p>
+        </div>
+
+        <!-- What You'll Do -->
+        <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 break-words">📘 What You'll Do</h2>
+            
+            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 1.1: Create New Blazor Project</h3>
+            <pre class="bg-gray-100 p-3 sm:p-4 rounded-lg text-xs sm:text-sm font-mono w-full max-w-full overflow-x-auto mb-4" style="white-space:pre-wrap;overflow-wrap:anywhere;">dotnet new blazor -o BlazorAppName --interactivity Server --all-interactive --empty</pre>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-6">
+                <p class="text-xs sm:text-sm text-blue-800 font-semibold mb-2">💡 What this does:</p>
+                <ul class="text-xs sm:text-sm text-blue-700 list-disc ml-5 space-y-1">
+                    <li class="break-words"><code class="break-all">-o BlazorAppName</code> → Names your project</li>
+                    <li class="break-words"><code class="break-all">--interactivity Server</code> → Enables Blazor Server mode</li>
+                    <li class="break-words"><code class="break-all">--all-interactive</code> → All components are interactive by default</li>
+                    <li class="break-words"><code class="break-all">--empty</code> → Clean template without sample pages</li>
+                </ul>
+            </div>
+            
+            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 1.2: Install Tailwind CSS v4</h3>
+            <pre class="bg-gray-100 p-3 sm:p-4 rounded text-xs sm:text-sm font-mono w-full max-w-full overflow-x-auto mb-4" style="white-space:pre-wrap;overflow-wrap:anywhere;">npm install tailwindcss @@tailwindcss/cli</pre>
+            
+            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 1.3: Create Styles Folder & input.css</h3>
+            <p class="text-xs sm:text-sm text-gray-600 mb-2 break-words">Create folder: <code class="bg-gray-100 px-2 py-1 rounded text-xs sm:text-sm">Styles</code></p>
+            <p class="text-xs sm:text-sm text-gray-600 mb-2 break-words">Create file: <code class="bg-gray-100 px-2 py-1 rounded text-xs sm:text-sm break-all">Styles/input.css</code></p>
+            <p class="text-xs sm:text-sm text-gray-600 mb-4 break-words">Content: <code class="bg-gray-100 px-2 py-1 rounded font-mono text-xs sm:text-sm break-all">@@import "tailwindcss";</code></p>
+            
+            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 1.4: Build Tailwind CSS</h3>
+            <pre class="bg-gray-100 p-3 sm:p-4 rounded text-xs sm:text-sm font-mono w-full max-w-full overflow-x-auto mb-4" style="white-space:pre-wrap;overflow-wrap:anywhere;">npx @@tailwindcss/cli -i ./Styles/input.css -o ./wwwroot/tailwind.css --watch</pre>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4 mb-6">
+                <p class="text-xs sm:text-sm text-yellow-800 break-words"><strong>⚡ Note:</strong> The <code class="break-all">--watch</code> flag keeps the process running and rebuilds CSS when you make changes. Keep this terminal open while developing.</p>
+            </div>
+            
+            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 1.5: Link CSS in App.razor</h3>
+            <p class="text-xs sm:text-sm text-gray-600 mb-2 break-words">Add to your <code class="bg-gray-100 px-2 py-1 rounded text-xs sm:text-sm break-all">Components/App.razor</code> file in the <code class="break-all">&lt;head&gt;</code> section:</p>
+            <pre class="bg-gray-100 p-3 sm:p-4 rounded text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4" style="white-space:pre-wrap;overflow-wrap:anywhere;">&lt;link rel="stylesheet" href="@@Assets["tailwind.css"]" /&gt;</pre>
+            
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <p class="text-xs sm:text-sm text-gray-600 mb-2 break-words"><strong>💡 Key Concepts:</strong> dotnet CLI, npm packages, Tailwind v4, Asset pipeline</p>
+                <p class="text-xs sm:text-sm text-gray-600 break-words"><strong>✅ Result:</strong> Clean Blazor Server project with Tailwind CSS ready for styling!</p>
+            </div>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 break-words">🎬 Live Demo</h2>
+            <p class="text-sm sm:text-base text-gray-600 mb-4 leading-relaxed break-words">Example of what you can display with your new setup:</p>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="rounded-2xl p-5 bg-white border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">📅</span>
+                        <span class="px-3 py-1 rounded-full border border-gray-200 text-gray-600 text-xs">Today</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-1">Current Date</p>
+                    <p class="text-2xl font-semibold text-gray-900">
+                        @DateTime.Now.ToString("dddd, MMMM dd, yyyy")
+                    </p>
+                </div>
+                <div class="rounded-2xl p-5 bg-white border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">⏰</span>
+                        <span class="px-3 py-1 rounded-full border border-gray-200 text-gray-600 text-xs">Now</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-1">Current Time</p>
+                    <p class="text-2xl font-semibold text-gray-900">
+                        @DateTime.Now.ToString("hh:mm tt")
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Ready to move on?</h3>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your progress.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between">
+            <a href="/guide" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Back to Guide
+            </a>
+            <a href="/examples/step2" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 2
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isComplete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync(1);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    private async Task MarkComplete()
+    {
+        await ProgressService.MarkStepCompleteAsync(1);
+        isComplete = true;
+    }
+
+    private async Task ResetStep()
+    {
+        await ProgressService.MarkStepIncompleteAsync(1);
+        isComplete = false;
+    }
+}

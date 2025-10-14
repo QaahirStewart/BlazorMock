@@ -1,0 +1,820 @@
+@page "/guide"
+@inject ILearningProgressService ProgressService
+@rendermode InteractiveServer
+
+<PageTitle>Blazor Learning Guide</PageTitle>
+
+<div class="min-h-screen py-8">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                🚀 Blazor Learning Guide
+            </h1>
+            <p class="text-xl text-gray-600 mb-4">
+                Step-by-step guide to building a Trucking Schedule App
+            </p>
+            <div class="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-2">
+                <span class="text-green-600 font-semibold">Phase 1 Complete!</span>
+                <span class="text-green-600">✓ Steps 1-4</span>
+            </div>
+        </div>
+
+        <!-- Date/Time Card -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                <span class="mr-2">📅</span>
+                Today's Information
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="rounded-2xl p-5  bg-white border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">📅</span>
+                        <span class="px-3 py-1 rounded-full border border-gray-200 text-gray-600 text-xs">Today</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-1">Current Date</p>
+                    <p class="text-2xl font-semibold text-gray-900">
+                        @DateTime.Now.ToString("dddd, MMMM dd, yyyy")
+                    </p>
+                </div>
+                <div class="rounded-2xl p-5  bg-white border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">⏰</span>
+                        <span class="px-3 py-1 rounded-full border border-gray-200 text-gray-600 text-xs">Now</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-1">Current Time</p>
+                    <p class="text-2xl font-semibold text-gray-900">
+                        @DateTime.Now.ToString("hh:mm tt")
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- What You'll Learn Overview -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                <span class="mr-2">🎯</span>
+                What You'll Learn
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-gray-800">Blazor Server components and routing</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-gray-800">Forms and validation</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-gray-800">Entity Framework Core</span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-gray-800">Driver and truck management</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-gray-800">Route scheduling and assignments</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: New Clean Project -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step1?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">1</span>
+                    }
+                    🎯 Step 1: New Clean Project
+                </h3>
+                @if (step1?.IsComplete == true)
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                        <button @onclick="() => ToggleStep(1)" class="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                        <button @onclick="() => ToggleStep(1)" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Mark Complete</button>
+                    </div>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-gray-700 mb-4">Create a new Blazor Server app with interactive mode and set up Tailwind CSS v4 for styling.</p>
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm font-semibold text-gray-700 mb-2">🔧 Commands:</p>
+                    <pre class="text-xs font-mono text-gray-800 mb-2">dotnet new blazor -o BlazorAppName --interactivity Server --all-interactive --empty</pre>
+                    <pre class="text-xs font-mono text-gray-800">npm install tailwindcss @@tailwindcss/cli</pre>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div class="rounded-2xl p-4 bg-white border border-gray-200">
+                        <p class="text-sm text-gray-500 mb-1">Current Date</p>
+                        <p class="text-xl font-semibold text-gray-900">
+                            @DateTime.Now.ToString("dddd, MMMM dd, yyyy")
+                        </p>
+                    </div>
+                    <div class="rounded-2xl p-4 bg-white border border-gray-200">
+                        <p class="text-sm text-gray-500 mb-1">Current Time</p>
+                        <p class="text-xl font-semibold text-gray-900">
+                            @DateTime.Now.ToString("hh:mm tt")
+                        </p>
+                    </div>
+                </div>
+                <a href="/examples/step1" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 2: Razor Syntax & Display -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step2?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">2</span>
+                    }
+                    🎯 Step 2: Razor Syntax & Display
+                </h3>
+                @if (step2?.IsComplete == true)
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                        <button @onclick="() => ToggleStep(2)" class="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                        <button @onclick="() => ToggleStep(2)" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Mark Complete</button>
+                    </div>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-gray-700 mb-4">Learn Razor syntax with @@page directive and display dynamic C# content like DateTime.</p>
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <p class="text-sm font-semibold text-gray-700 mb-2">📝 Example Code:</p>
+                    <pre class="text-xs font-mono text-gray-800">@@page "/"
+&lt;h1&gt;Welcome!&lt;/h1&gt;
+&lt;p&gt;Today is: @@DateTime.Now.ToString("dddd, MMMM dd, yyyy")&lt;/p&gt;</pre>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div class="rounded-2xl p-4 bg-white border border-gray-200">
+                        <p class="text-sm text-gray-500 mb-1">Live Demo - Date</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            @DateTime.Now.ToString("dddd, MMMM dd")
+                        </p>
+                    </div>
+                    <div class="rounded-2xl p-4 bg-white border border-gray-200">
+                        <p class="text-sm text-gray-500 mb-1">Live Demo - Time</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            @DateTime.Now.ToString("hh:mm:ss tt")
+                        </p>
+                    </div>
+                </div>
+                <a href="/examples/step2" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 3: Reusable Components -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step3?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">3</span>
+                    }
+                    🎯 Step 3: Reusable Components
+                </h3>
+                @if (step3?.IsComplete == true)
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                        <button @onclick="() => ToggleStep(3)" class="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                        <button @onclick="() => ToggleStep(3)" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Mark Complete</button>
+                    </div>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-gray-700 mb-4">Built reusable components that accept parameters from parent components, enabling code reuse and composition.</p>
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <GreetingCard Name="John Doe" Message="Welcome to your trucking dashboard!" />
+                    <GreetingCard Name="Sarah Smith" Message="Great job on your delivery!" />
+                </div>
+                <a href="/examples/step3" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 4: Event Binding -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step4?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">4</span>
+                    }
+                    🎯 Step 4: Event Binding
+                </h3>
+                @if (step4?.IsComplete == true)
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                        <button @onclick="() => ToggleStep(4)" class="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium">Not Started</span>
+                        <button @onclick="() => ToggleStep(4)" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Mark Complete</button>
+                    </div>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-gray-700 mb-4">Handle user interactions with event binding, update component state, and trigger UI re-renders automatically.</p>
+                
+                <!-- Counter Demo matching /counter styling -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-4">
+                    <div class="text-center mb-6">
+                        <p class="text-sm text-gray-500">Current count</p>
+                        <p class="text-4xl font-bold text-gray-900">@currentCount</p>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-3">
+                        <button class="px-4 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+                            @onclick="Decrement">-1</button>
+                        <button class="px-4 py-2 rounded-full text-white bg-gray-900 hover:opacity-90"
+                            @onclick="Increment">+1</button>
+                        <button class="px-4 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+                            @onclick="Reset">Reset</button>
+                    </div>
+                </div>
+                
+                <a href="/examples/step4" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Code & Details
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 5: Forms & Validation -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if (step4?.IsComplete == true)
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">5</span>
+                    }
+                    🎯 Step 5: Forms & Validation
+                </h3>
+                @if (step5?.IsComplete == true)
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+                        <button @onclick="() => ToggleStep(5)" class="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-sm font-medium">Next Up</span>
+                        <button @onclick="() => ToggleStep(5)" class="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700">Mark Complete</button>
+                    </div>
+                }
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-gray-700 mb-4">Create forms with validation using EditForm, DataAnnotationsValidator, and validation attributes to ensure data quality.</p>
+                <a href="/examples/step5" class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors">
+                    <span>📖</span>
+                    View Preview & Code
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Links Section -->
+        <div class="bg-black/3 rounded-2xl mt-12">
+            <div class="bg-black/90 rounded-2xl p-6 text-white">
+                <h3 class="text-xl font-semibold mb-4 text-center">📚 Learning Resources</h3>
+                <div class="grid md:grid-cols-3 gap-4 mb-4">
+                    <a href="/guide" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">📖</span>
+                            <div>
+                                <div class="font-semibold">Full Learning Guide</div>
+                                <div class="text-sm text-gray-300">Detailed steps with code examples</div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/tips" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">💡</span>
+                            <div>
+                                <div class="font-semibold">Tips System</div>
+                                <div class="text-sm text-gray-300">Browse 20+ Blazor & C# topics</div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">📊</span>
+                            <div>
+                                <div class="font-semibold">Track Progress</div>
+                                <div class="text-sm text-gray-300">View all 13 steps & completion</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="text-center text-sm text-gray-300">
+                    <strong>Progress:</strong> @completedCount/13 steps complete @if (completedCount >= 4) { <span>- Phase 1 ✅</span> }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int currentCount = 0;
+    private StepProgress? step1, step2, step3, step4, step5;
+    private int completedCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProgressAsync();
+    }
+
+    private async Task LoadProgressAsync()
+    {
+        step1 = await ProgressService.GetStepAsync(1);
+        step2 = await ProgressService.GetStepAsync(2);
+        step3 = await ProgressService.GetStepAsync(3);
+        step4 = await ProgressService.GetStepAsync(4);
+        step5 = await ProgressService.GetStepAsync(5);
+        completedCount = await ProgressService.GetCompletedCountAsync();
+    }
+
+    private async Task ToggleStep(int stepNumber)
+    {
+        var step = stepNumber switch
+        {
+            1 => step1,
+            2 => step2,
+            3 => step3,
+            4 => step4,
+            5 => step5,
+            _ => null
+        };
+
+        if (step != null)
+        {
+            if (step.IsComplete)
+                await ProgressService.MarkStepIncompleteAsync(stepNumber);
+            else
+                await ProgressService.MarkStepCompleteAsync(stepNumber);
+
+            await LoadProgressAsync();
+        }
+    }
+
+    private void Increment() => currentCount++;
+    private void Decrement() => currentCount--;
+    private void Reset() => currentCount = 0;
+}
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-gray-800">Entity Framework Core</span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-gray-800">Driver and truck management</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
+                        <span
+                            class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
+                        <span class="text-gray-800">Route scheduling and assignments</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Overview -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">📊 Your Progress</h3>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-xl p-4 border border-gray-200">
+                    <div class="text-2xl font-bold text-green-600 mb-1">4/13</div>
+                    <div class="text-sm text-gray-600">Core Steps Complete</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-gray-200">
+                    <div class="text-2xl font-bold text-blue-600 mb-1">20+</div>
+                    <div class="text-sm text-gray-600">Tips Available</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-gray-200">
+                    <div class="text-2xl font-bold text-orange-600 mb-1">Phase 1</div>
+                    <div class="text-sm text-gray-600">Entry Level ✓</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: New Clean Project -->
+        <div id="step1" class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    🎯 Step 1: New Clean Project
+                </h3>
+                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+            </div>
+            
+            <div class="bg-white rounded-xl p-5 border border-gray-200 mb-4">
+                <h4 class="font-semibold text-gray-800 mb-2">📘 What You'll Do</h4>
+                <p class="text-gray-700 mb-4">Create a new Blazor Server application with interactive rendering mode and set up Tailwind CSS v4 for modern styling.</p>
+                
+                <h5 class="font-semibold text-gray-700 mb-2">Step 1.1: Create New Blazor Project</h5>
+                <pre class="bg-gray-900 text-green-400 p-4 rounded text-sm font-mono w-full max-w-full overflow-x-auto mb-4" style="white-space:pre-wrap;overflow-wrap:anywhere;">dotnet new blazor -o BlazorAppName --interactivity Server --all-interactive --empty</pre>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                    <p class="text-sm text-blue-800"><strong>💡 What this does:</strong></p>
+                    <ul class="text-sm text-blue-700 list-disc ml-5 mt-2 space-y-1">
+                        <li><code>-o BlazorAppName</code> → Names your project</li>
+                        <li><code>--interactivity Server</code> → Enables Blazor Server mode</li>
+                        <li><code>--all-interactive</code> → All components are interactive by default</li>
+                        <li><code>--empty</code> → Clean template without sample pages</li>
+                    </ul>
+                </div>
+                
+                <h5 class="font-semibold text-gray-700 mb-2">Step 1.2: Install Tailwind CSS v4</h5>
+                <pre class="bg-gray-900 text-green-400 p-4 rounded text-sm font-mono w-full max-w-full overflow-x-auto mb-3" style="white-space:pre-wrap;overflow-wrap:anywhere;">npm install tailwindcss @@tailwindcss/cli</pre>
+                
+                <h5 class="font-semibold text-gray-700 mb-2">Step 1.3: Create Styles Folder & input.css</h5>
+                <p class="text-sm text-gray-600 mb-2">Create folder: <code class="bg-gray-100 px-2 py-1 rounded">Styles</code></p>
+                <p class="text-sm text-gray-600 mb-2">Create file: <code class="bg-gray-100 px-2 py-1 rounded">Styles/input.css</code></p>
+                <p class="text-sm text-gray-600 mb-3">Content: <code class="bg-gray-100 px-2 py-1 rounded font-mono">@@import "tailwindcss";</code></p>
+                
+                <h5 class="font-semibold text-gray-700 mb-2">Step 1.4: Build Tailwind CSS</h5>
+                <pre class="bg-gray-900 text-green-400 p-4 rounded text-sm font-mono w-full max-w-full overflow-x-auto mb-4" style="white-space:pre-wrap;overflow-wrap:anywhere;">npx @@tailwindcss/cli -i ./Styles/input.css -o ./wwwroot/tailwind.css --watch</pre>
+                
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                    <p class="text-sm text-yellow-800"><strong>⚡ Note:</strong> The <code>--watch</code> flag keeps the process running and rebuilds CSS when you make changes. Keep this terminal open while developing.</p>
+                </div>
+                
+                <h5 class="font-semibold text-gray-700 mb-2">Step 1.5: Link CSS in App.razor</h5>
+                <p class="text-sm text-gray-600 mb-2">Add to your <code class="bg-gray-100 px-2 py-1 rounded">Components/App.razor</code> file in the <code>&lt;head&gt;</code> section:</p>
+                <pre class="bg-gray-50 p-3 rounded text-sm font-mono w-full max-w-full overflow-x-hidden" style="white-space:pre-wrap;overflow-wrap:anywhere;">&lt;link rel="stylesheet" href="@@Assets["tailwind.css"]" /&gt;</pre>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <p class="text-sm text-gray-600 mb-2"><strong>💡 Key Concepts:</strong> dotnet CLI, npm packages, Tailwind v4, Asset pipeline</p>
+                    <p class="text-sm text-gray-600"><strong>✅ Result:</strong> Clean Blazor Server project with Tailwind CSS ready for styling!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Razor Syntax & Display -->
+        <div id="step2" class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    🎯 Step 2: Razor Syntax & Display
+                </h3>
+                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+            </div>
+            
+            <div class="bg-white rounded-xl p-5 border border-gray-200 mb-4">
+                <h4 class="font-semibold text-gray-800 mb-2">📘 What You Learned</h4>
+                <p class="text-gray-700 mb-4">Learned Razor syntax to combine HTML markup with C# code, used the @@page directive for routing, and displayed dynamic content using C# expressions like DateTime.Now.</p>
+                
+                <h5 class="font-semibold text-gray-700 text-sm mb-2">Code Example - Home.razor:</h5>
+                <pre class="bg-gray-50 p-3 rounded text-sm font-mono w-full max-w-full overflow-x-hidden mb-3" style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;">@@page "/"
+
+&lt;PageTitle&gt;Home&lt;/PageTitle&gt;
+
+&lt;div class="container"&gt;
+    &lt;h1&gt;Welcome to Our App!&lt;/h1&gt;
+    
+    &lt;div class="date-time-display"&gt;
+        &lt;p&gt;📅 Today is: @@DateTime.Now.ToString("dddd, MMMM dd, yyyy")&lt;/p&gt;
+        &lt;p&gt;⏰ Current time: @@DateTime.Now.ToString("hh:mm:ss tt")&lt;/p&gt;
+    &lt;/div&gt;
+    
+    &lt;p&gt;The year is: @@DateTime.Now.Year&lt;/p&gt;
+&lt;/div&gt;</pre>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                    <p class="text-sm text-blue-800"><strong>💡 Key Points:</strong></p>
+                    <ul class="text-sm text-blue-700 list-disc ml-5 mt-2 space-y-1">
+                        <li><code>@@page "/"</code> → Defines the route URL for this component</li>
+                        <li><code>@@DateTime.Now</code> → Access C# code inline with @@ symbol</li>
+                        <li><code>.ToString("format")</code> → Format dates and times</li>
+                        <li>Razor mixes HTML and C# seamlessly</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <p class="text-sm text-gray-600 mb-2"><strong>💡 Key Concepts:</strong> @@page directive, Razor syntax (@@), DateTime, ToString formatting</p>
+                    <a href="/tips" class="text-sm text-blue-600 hover:underline">→ See related tips: @@page route</a>
+                </div>
+            </div>
+
+            <!-- Live Demo -->
+            <div class="mt-4">
+                <h4 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>🎬</span> Live Demo
+                </h4>
+                <div class="grid md:grid-cols-2 gap-4 mb-3">
+                    <div class="rounded-2xl p-5 bg-white border border-gray-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">📅</span>
+                            <span class="px-3 py-1 rounded-full border border-gray-200 text-gray-600 text-xs">Today</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-1">Current Date</p>
+                        <p class="text-2xl font-semibold text-gray-900">
+                            @DateTime.Now.ToString("dddd, MMMM dd, yyyy")
+                        </p>
+                    </div>
+                    <div class="rounded-2xl p-5 bg-white border border-gray-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">⏰</span>
+                            <span class="px-3 py-1 rounded-full border border-gray-200 text-gray-600 text-xs">Now</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-1">Current Time</p>
+                        <p class="text-2xl font-semibold text-gray-900">
+                            @DateTime.Now.ToString("hh:mm tt")
+                        </p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-600 text-center">💡 This updates automatically when you refresh the page!</p>
+            </div>
+        </div>
+
+        <!-- Step 3: Reusable Components -->
+        <div id="step3" class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    🎯 Step 3: Reusable Components
+                </h3>
+                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+            </div>
+            
+            <div class="bg-white rounded-xl p-5 border border-gray-200 mb-4">
+                <h4 class="font-semibold text-gray-800 mb-2">📘 What You Learned</h4>
+                <p class="text-gray-700 mb-3">Built reusable components that accept parameters from parent components, enabling code reuse and composition.</p>
+                
+                <h5 class="font-semibold text-gray-700 text-sm mb-2">Code Example - GreetingCard.razor:</h5>
+                <pre class="bg-gray-50 p-3 rounded text-sm font-mono w-full max-w-full overflow-x-hidden mb-3" style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;">&lt;div class="card"&gt;
+  &lt;h3&gt;@@Name&lt;/h3&gt;
+  &lt;p&gt;@@Message&lt;/p&gt;
+&lt;/div&gt;
+
+@@code {
+  [Parameter] public string Name { get; set; } = "Guest";
+  [Parameter] public string Message { get; set; } = "Welcome!";
+}</pre>
+                
+                <h5 class="font-semibold text-gray-700 text-sm mb-2">Usage:</h5>
+                <pre class="bg-gray-50 p-3 rounded text-sm font-mono w-full max-w-full overflow-x-hidden" style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;">&lt;GreetingCard Name="John" Message="Hello from parent!" /&gt;</pre>
+                
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <p class="text-sm text-gray-600 mb-2"><strong>💡 Key Concepts:</strong> [Parameter] attribute, component reuse, property binding</p>
+                    <a href="/tips" class="text-sm text-blue-600 hover:underline">→ See related tips: [Parameter]</a>
+                </div>
+            </div>
+
+            <!-- Live Demo -->
+            <div class="mt-4">
+                <h4 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>🎬</span> Live Demo
+                </h4>
+                <div class="grid md:grid-cols-2 gap-4 mb-3">
+                    <GreetingCard Name="John Doe" Message="Welcome to your trucking dashboard!" />
+                    <GreetingCard Name="Sarah Smith" Message="Great job on your delivery!" />
+                </div>
+                <p class="text-xs text-gray-600 text-center">💡 Reusable components with custom parameters!</p>
+            </div>
+        </div>
+
+        <!-- Step 4: Event Binding -->
+        <div id="step4" class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white text-sm">✓</span>
+                    🎯 Step 4: Event Binding
+                </h3>
+                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Complete</span>
+            </div>
+            
+            <div class="bg-white rounded-xl p-5 border border-gray-200 mb-4">
+                <h4 class="font-semibold text-gray-800 mb-2">📘 What You Learned</h4>
+                <p class="text-gray-700 mb-3">Handled user interactions with event binding, updated component state, and triggered UI re-renders automatically.</p>
+                
+                <h5 class="font-semibold text-gray-700 text-sm mb-2">Code Example - Counter.razor:</h5>
+                <pre class="bg-gray-50 p-3 rounded text-sm font-mono w-full max-w-full overflow-x-hidden" style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;">@@page "/counter"
+
+&lt;h1&gt;Counter&lt;/h1&gt;
+&lt;p&gt;Current count: @@currentCount&lt;/p&gt;
+&lt;button @@onclick="Increment"&gt;Click me&lt;/button&gt;
+
+@@code {
+  private int currentCount = 0;
+  
+  private void Increment() {
+    currentCount++;
+  }
+}</pre>
+                
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <p class="text-sm text-gray-600 mb-2"><strong>💡 Key Concepts:</strong> @@onclick, state management, private methods, void vs async Task</p>
+                    <a href="/tips" class="text-sm text-blue-600 hover:underline">→ See related tips: @@onclick, private void Increment()</a>
+                </div>
+            </div>
+
+            <!-- Live Demo -->
+            <div class="mt-4">
+                <h4 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>🎬</span> Live Demo
+                </h4>
+                
+                <!-- Counter Demo matching /counter styling -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-3">
+                    <div class="text-center mb-6">
+                        <p class="text-sm text-gray-500">Current count</p>
+                        <p class="text-4xl font-bold text-gray-900">@currentCount</p>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-3">
+                        <button class="px-4 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+                            @onclick="Decrement">-1</button>
+                        <button class="px-4 py-2 rounded-full text-white bg-gray-900 hover:opacity-90"
+                            @onclick="Increment">+1</button>
+                        <button class="px-4 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+                            @onclick="Reset">Reset</button>
+                    </div>
+                </div>
+                
+                <p class="text-xs text-gray-600 text-center">💡 Click buttons to see state changes in real-time!</p>
+            </div>
+        </div>
+
+        <!-- Step 5: Forms & Validation (Next Step) -->
+        <div id="step5" class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white text-sm">5</span>
+                    🎯 Step 5: Forms & Validation
+                </h3>
+                <span class="px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-sm font-medium">Next Up</span>
+            </div>
+            
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <h4 class="font-semibold text-gray-800 mb-2">📋 What You'll Learn</h4>
+                <p class="text-gray-700 mb-3">Create forms with validation using EditForm, DataAnnotationsValidator, and validation attributes to ensure data quality.</p>
+                
+                <h5 class="font-semibold text-gray-700 text-sm mb-2">Preview - DriverForm.razor:</h5>
+                <pre class="bg-gray-50 p-3 rounded text-sm font-mono w-full max-w-full overflow-x-hidden" style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;">&lt;EditForm Model="driver" OnValidSubmit="HandleSubmit"&gt;
+  &lt;DataAnnotationsValidator /&gt;
+  &lt;ValidationSummary /&gt;
+  
+  &lt;InputText @@bind-Value="driver.Name" /&gt;
+  &lt;ValidationMessage For="() =&gt; driver.Name" /&gt;
+  
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/EditForm&gt;
+
+@@code {
+  private Driver driver = new();
+  
+  private void HandleSubmit() {
+    // Save driver
+  }
+}
+
+public class Driver {
+  [Required] public string Name { get; set; }
+}</pre>
+                
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <p class="text-sm text-gray-600 mb-2"><strong>💡 Key Concepts:</strong> EditForm, DataAnnotationsValidator, [Required], ValidationMessage</p>
+                    <a href="/tips" class="text-sm text-blue-600 hover:underline">→ See related tips: EditForm + Validation, Validation attributes</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links Section -->
+        <div class="bg-black/3 rounded-2xl mt-12">
+            <div class="bg-black/90 rounded-2xl p-6 text-white">
+                <h3 class="text-xl font-semibold mb-4 text-center">� Learning Resources</h3>
+                <div class="grid md:grid-cols-3 gap-4 mb-4">
+                    <a href="/" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">🏠</span>
+                            <div>
+                                <div class="font-semibold">Home</div>
+                                <div class="text-sm text-gray-300">Back to welcome page</div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/tips" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">💡</span>
+                            <div>
+                                <div class="font-semibold">Tips System</div>
+                                <div class="text-sm text-gray-300">Browse 20+ Blazor & C# topics</div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">�</span>
+                            <div>
+                                <div class="font-semibold">Track Progress</div>
+                                <div class="text-sm text-gray-300">View all 13 steps & completion</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="text-center text-sm text-gray-300">
+                    <strong>Progress:</strong> 4/13 steps complete - Phase 1 ✅
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int currentCount = 0;
+
+    private void Increment()
+    {
+        currentCount++;
+    }
+
+    private void Decrement()
+    {
+        currentCount--;
+    }
+
+    private void Reset()
+    {
+        currentCount = 0;
+    }
+}
