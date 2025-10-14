@@ -40,4 +40,5 @@ D:\BlazorMock\obj\Debug\net10.0\BlazorMock.genruntimeconfig.cache
 D:\BlazorMock\obj\Debug\net10.0\ref\BlazorMock.dll
 D:\BlazorMock\bin\Debug\net10.0\package-lock.json
 D:\BlazorMock\bin\Debug\net10.0\package.json
-D:\BlazorMock\obj\Debug\net10.0\compressed\gcy26kcw0l-{0}-40v56z45lh-40v56z45lh.gz
+D:\BlazorMock\obj\Debug\net10.0\BlazorMock.sourcelink.json
+D:\BlazorMock\obj\Debug\net10.0\compressed\gcy26kcw0l-{0}-vnl5986n35-vnl5986n35.gz

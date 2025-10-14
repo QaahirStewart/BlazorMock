@@ -2,7 +2,7 @@
 @inject ILearningProgressService ProgressService
 @rendermode InteractiveServer
 
-<div class="min-h-screen py-8 bg-gray-50">
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
         <div class="mb-8">
             <a href="/guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
@@ -10,10 +10,12 @@
             </a>
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                 <div class="min-w-0 flex-1">
-                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 break-words">🎯 Step 9: CRUD Operations</h1>
-                    <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">Create, Read, Update, and Delete database records.</p>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 break-words">🎯 Step 9: CRUD Operations
+                    </h1>
+                    <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">Create, Read,
+                        Update, and Delete database records.</p>
                 </div>
-                
+
             </div>
         </div>
 
@@ -41,11 +43,11 @@
             </ul>
         </div>
 
-    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 break-words">
                 📖 READ: List All Drivers
             </h2>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/drivers"
 @@inject AppDbContext DbContext
@@ -126,7 +128,8 @@ else
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
                 <p class="text-sm sm:text-base text-blue-800 break-words">
-                    <strong>💡 Pro Tip:</strong> Use `ToListAsync()` instead of `ToList()` to avoid blocking the UI thread!
+                    <strong>💡 Pro Tip:</strong> Use `ToListAsync()` instead of `ToList()` to avoid blocking the UI
+                    thread!
                 </p>
             </div>
         </div>
@@ -135,7 +138,7 @@ else
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 ➕ CREATE: Add New Driver
             </h2>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/drivers/add"
 @@inject AppDbContext DbContext
@@ -205,7 +208,7 @@ else
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 ✏️ UPDATE: Edit Existing Driver
             </h2>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/drivers/edit/{DriverId:int}"
 @@inject AppDbContext DbContext
@@ -259,7 +262,7 @@ else
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 🔍 Advanced: Loading Related Data
             </h2>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Load driver WITH their routes (eager loading)
 protected override async Task OnInitializedAsync()
@@ -284,7 +287,8 @@ protected override async Task OnInitializedAsync()
 
             <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
                 <p class="text-sm sm:text-base text-yellow-800 break-words">
-                    <strong>⚠️ Important:</strong> Use `Include()` to load related data. Without it, navigation properties will be null!
+                    <strong>⚠️ Important:</strong> Use `Include()` to load related data. Without it, navigation
+                    properties will be null!
                 </p>
             </div>
         </div>
@@ -304,7 +308,8 @@ protected override async Task OnInitializedAsync()
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
-                    <span class="break-words min-w-0">Always use async methods: `ToListAsync()`, `FindAsync()`, `SaveChangesAsync()`</span>
+                    <span class="break-words min-w-0">Always use async methods: `ToListAsync()`, `FindAsync()`,
+                        `SaveChangesAsync()`</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
@@ -321,18 +326,22 @@ protected override async Task OnInitializedAsync()
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="min-w-0 flex-1">
                     <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 break-words">Ready to move on?</h3>
-                    <p class="text-sm sm:text-base text-gray-600 break-words">Mark this step as complete to track your progress!</p>
+                    <p class="text-sm sm:text-base text-gray-600 break-words">Mark this step as complete to track your
+                        progress!</p>
                 </div>
                 @if (isComplete)
                 {
                     <div class="flex items-center gap-3">
                         <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
-                        <button @onclick="@(async ()=> await ProgressService.MarkStepIncompleteAsync(9))" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                        <button @onclick="@(async () => await ProgressService.MarkStepIncompleteAsync(9))"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
                     </div>
                 }
                 else
                 {
-                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark
+                        as Complete</button>
                 }
             </div>
         </div>

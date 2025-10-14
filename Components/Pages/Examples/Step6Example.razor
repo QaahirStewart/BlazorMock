@@ -4,23 +4,25 @@
 @implements IDisposable
 @rendermode InteractiveServer
 
-<div class="min-h-screen py-8 bg-gray-50">
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
         <!-- Header -->
         <div class="mb-8">
-            <a href="/" class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
-                <span>←</span> Back to Home
+            <a href="/guide"
+                class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Guide
             </a>
             <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 break-words">
                 🎯 Step 6: Routing & Navigation
             </h1>
             <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">
-                Define routes, navigate between pages, and use NavLink with active state and NavigationManager for programmatic navigation.
+                Define routes, navigate between pages, and use NavLink with active state and NavigationManager for
+                programmatic navigation.
             </p>
         </div>
 
         <!-- Learning Objectives -->
-    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 break-words">
                 🎯 Learning Objectives
             </h2>
@@ -45,14 +47,15 @@
         </div>
 
         <!-- Concept 1: page Directive -->
-    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 break-words">
                 📄 The @@page Directive
             </h2>
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
-                The @@page directive tells Blazor what URL should navigate to this component. You can have multiple @@page directives for the same component!
+                The @@page directive tells Blazor what URL should navigate to this component. You can have multiple
+                @@page directives for the same component!
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/home"
 @@page "/"
@@ -66,20 +69,22 @@
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
                 <p class="text-sm sm:text-base text-blue-800 break-words">
-                    <strong>💡 Pro Tip:</strong> Use route parameters like @@page "/driver/{driverId:int}" to pass data through URLs!
+                    <strong>💡 Pro Tip:</strong> Use route parameters like @@page "/driver/{driverId:int}" to pass data
+                    through URLs!
                 </p>
             </div>
         </div>
 
         <!-- Concept 2: NavLink Component -->
-    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 break-words">
                 🔗 NavLink Component
             </h2>
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
-                NavLink is a special component that generates an anchor tag with automatic active state styling. It's perfect for navigation menus!
+                NavLink is a special component that generates an anchor tag with automatic active state styling. It's
+                perfect for navigation menus!
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>&lt;!-- NavLink automatically adds "active" class when the route matches --&gt;
 &lt;NavLink href="/" class="nav-item" Match="NavLinkMatch.All"&gt;
@@ -119,14 +124,14 @@
         </div>
 
         <!-- Concept 3: Navigation Menu Example -->
-    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 break-words">
                 🍔 Building a Navigation Menu
             </h2>
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
                 Here's a complete example of a responsive navigation menu you can add to MainLayout.razor:
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>&lt;!-- MainLayout.razor --&gt;
 &lt;div class="min-h-screen bg-gray-50"&gt;
@@ -185,7 +190,7 @@
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
                 Sometimes you need to navigate from code (like after saving a form). Use NavigationManager for this!
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/driver/add"
 @@inject NavigationManager Navigation
@@ -218,7 +223,8 @@
 
             <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
                 <p class="text-sm sm:text-base text-yellow-800 break-words">
-                    <strong>⚠️ Important:</strong> Always inject NavigationManager at the top of your component with @@inject NavigationManager Navigation
+                    <strong>⚠️ Important:</strong> Always inject NavigationManager at the top of your component with
+                    @@inject NavigationManager Navigation
                 </p>
             </div>
         </div>
@@ -234,22 +240,22 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button @onclick='() => Navigation.NavigateTo("/")'
-                        class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm sm:text-base break-words">
+                    class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm sm:text-base break-words">
                     Navigate to Home
                 </button>
-                
+
                 <button @onclick='() => Navigation.NavigateTo("/guide")'
-                        class="px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm sm:text-base break-words">
+                    class="px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm sm:text-base break-words">
                     Navigate to Guide
                 </button>
-                
+
                 <button @onclick='() => Navigation.NavigateTo("/tips")'
-                        class="px-4 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm sm:text-base break-words">
+                    class="px-4 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm sm:text-base break-words">
                     Navigate to Tips
                 </button>
-                
+
                 <button @onclick="GoBack"
-                        class="px-4 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm sm:text-base break-words">
+                    class="px-4 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm sm:text-base break-words">
                     Go Back (History)
                 </button>
             </div>
@@ -262,26 +268,32 @@
         </div>
 
         <!-- Key Takeaways -->
-    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 break-words">
                 🔑 Key Takeaways
             </h2>
             <ul class="space-y-3 text-sm sm:text-base lg:text-lg text-gray-700">
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
-                    <span class="break-words min-w-0">Use <code class="bg-gray-200 px-2 py-1 rounded">@@page</code> directive to define routes for components</span>
+                    <span class="break-words min-w-0">Use <code class="bg-gray-200 px-2 py-1 rounded">@@page</code>
+                        directive to define routes for components</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
-                    <span class="break-words min-w-0">Use <code class="bg-gray-200 px-2 py-1 rounded">NavLink</code> for navigation menus with automatic active state</span>
+                    <span class="break-words min-w-0">Use <code class="bg-gray-200 px-2 py-1 rounded">NavLink</code> for
+                        navigation menus with automatic active state</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
-                    <span class="break-words min-w-0">Inject <code class="bg-gray-200 px-2 py-1 rounded">NavigationManager</code> for programmatic navigation</span>
+                    <span class="break-words min-w-0">Inject <code
+                            class="bg-gray-200 px-2 py-1 rounded">NavigationManager</code> for programmatic
+                        navigation</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
-                    <span class="break-words min-w-0">Use <code class="bg-gray-200 px-2 py-1 rounded">Match="NavLinkMatch.All"</code> for exact route matching</span>
+                    <span class="break-words min-w-0">Use <code
+                            class="bg-gray-200 px-2 py-1 rounded">Match="NavLinkMatch.All"</code> for exact route
+                        matching</span>
                 </li>
             </ul>
         </div>
@@ -297,12 +309,14 @@
                 {
                     <div class="flex items-center gap-3">
                         <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
-                        <button @onclick="@(async ()=> await ProgressService.MarkStepIncompleteAsync(6))" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                        <button @onclick="@(async () => await ProgressService.MarkStepIncompleteAsync(6))"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
                     </div>
                 }
                 else
                 {
-                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
                         Mark as Complete
                     </button>
                 }

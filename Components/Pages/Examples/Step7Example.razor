@@ -6,7 +6,7 @@
 @using System.Linq
 @rendermode InteractiveServer
 
-<div class="min-h-screen py-8 bg-gray-50">
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
         <!-- Header -->
         <div class="mb-8">
@@ -33,7 +33,8 @@
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
-                    <span class="break-words min-w-0">Use Data Annotations for validation and database configuration</span>
+                    <span class="break-words min-w-0">Use Data Annotations for validation and database
+                        configuration</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
@@ -54,7 +55,7 @@
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
                 The Driver model represents a truck driver with license information, experience, and availability.
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>using System.ComponentModel.DataAnnotations;
 
@@ -99,7 +100,7 @@ public class Driver
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
                 Enums provide type-safe options for categorical data. Perfect for dropdowns and validation.
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>public enum LicenseLevel
 {
@@ -116,7 +117,8 @@ public class Driver
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
                 <p class="text-sm sm:text-base text-blue-800 break-words">
-                    <strong>💡 Pro Tip:</strong> Use the [Display] attribute to show user-friendly names in forms and dropdowns!
+                    <strong>💡 Pro Tip:</strong> Use the [Display] attribute to show user-friendly names in forms and
+                    dropdowns!
                 </p>
             </div>
         </div>
@@ -126,7 +128,7 @@ public class Driver
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 🏷️ Common Data Annotations
             </h2>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-gray-50 p-4 rounded-lg">
                     <h3 class="font-semibold text-gray-900 mb-3 text-sm sm:text-base">Validation</h3>
@@ -182,7 +184,7 @@ public class Driver
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
                 Entity Framework Core supports various relationship types through navigation properties.
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>// One-to-Many: One Driver has Many Routes
 public class Driver
@@ -242,7 +244,7 @@ public class Route
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
                 Models can contain methods for business logic related to the entity.
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>public class Driver
 {
@@ -289,45 +291,45 @@ public class Route
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Name:</label>
-                    <input type="text" @bind="sampleDriver.Name" 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900" 
-                           placeholder="John Doe" />
+                    <input type="text" @bind="sampleDriver.Name"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900"
+                        placeholder="John Doe" />
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">License Number:</label>
-                    <input type="text" @bind="sampleDriver.LicenseNumber" 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900" 
-                           placeholder="CDL123456" />
+                    <input type="text" @bind="sampleDriver.LicenseNumber"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900"
+                        placeholder="CDL123456" />
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">License Level:</label>
                     <InputSelect @bind-Value="sampleDriver.LicenseLevel"
-                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900">
                         @foreach (var level in Enum.GetValues<LicenseLevel>())
                         {
                             <option value="@level">@GetLicenseDisplay(level)</option>
                         }
                     </InputSelect>
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Years of Experience:</label>
                     <input type="number" @bind="sampleDriver.YearsOfExperience" min="0" max="50"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900" />
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900" />
                 </div>
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Hourly Rate:</label>
                     <input type="number" @bind="sampleDriver.HourlyRate" min="0" max="200" step="0.01"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900" />
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900" />
                 </div>
-                
+
                 <div class="flex items-center">
                     <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <input type="checkbox" @bind="sampleDriver.IsAvailable" 
-                               class="w-5 h-5 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
+                        <input type="checkbox" @bind="sampleDriver.IsAvailable"
+                            class="w-5 h-5 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
                         Available for Assignment
                     </label>
                 </div>
@@ -354,11 +356,13 @@ public class Route
             <ul class="space-y-3 text-sm sm:text-base lg:text-lg text-gray-700">
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
-                    <span class="break-words min-w-0">Models are POCOs (Plain Old CLR Objects) - simple C# classes</span>
+                    <span class="break-words min-w-0">Models are POCOs (Plain Old CLR Objects) - simple C#
+                        classes</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
-                    <span class="break-words min-w-0">Use Data Annotations for validation and database configuration</span>
+                    <span class="break-words min-w-0">Use Data Annotations for validation and database
+                        configuration</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
@@ -390,12 +394,14 @@ public class Route
                 {
                     <div class="flex items-center gap-3">
                         <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
-                        <button @onclick="@(async ()=> await ProgressService.MarkStepIncompleteAsync(7))" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                        <button @onclick="@(async () => await ProgressService.MarkStepIncompleteAsync(7))"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
                     </div>
                 }
                 else
                 {
-                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
                         Mark as Complete
                     </button>
                 }
@@ -406,7 +412,7 @@ public class Route
 
 @code {
     private bool isComplete = false;
-    
+
     // Sample driver for interactive demo
     private class SampleDriver
     {
@@ -431,7 +437,7 @@ public class Route
         await ProgressService.MarkStepCompleteAsync(7);
         isComplete = true;
     }
-    
+
     private static string GetLicenseDisplay(LicenseLevel level)
     {
         var member = typeof(LicenseLevel).GetMember(level.ToString()).FirstOrDefault();

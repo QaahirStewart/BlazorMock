@@ -2,7 +2,7 @@
 @inject ILearningProgressService ProgressService
 @rendermode InteractiveServer
 
-<div class="min-h-screen py-8 bg-gray-50">
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
         <!-- Header -->
         <div class="mb-8">
@@ -18,7 +18,7 @@
         </div>
 
         <!-- Learning Objectives -->
-    <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 🎯 Learning Objectives
             </h2>
@@ -50,7 +50,7 @@
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
                 Install the required Entity Framework Core packages for SQLite support.
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code># Install EF Core SQLite provider
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite
@@ -64,7 +64,8 @@ dotnet add package Microsoft.EntityFrameworkCore.Design</code></pre>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
                 <p class="text-sm sm:text-base text-blue-800 break-words">
-                    <strong>💡 Pro Tip:</strong> SQLite is perfect for learning - it's a file-based database that requires no server setup!
+                    <strong>💡 Pro Tip:</strong> SQLite is perfect for learning - it's a file-based database that
+                    requires no server setup!
                 </p>
             </div>
         </div>
@@ -77,7 +78,7 @@ dotnet add package Microsoft.EntityFrameworkCore.Design</code></pre>
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
                 The DbContext is your gateway to the database. It manages entity objects and database operations.
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>using Microsoft.EntityFrameworkCore;
 using BlazorMock.Models;
@@ -154,7 +155,7 @@ public class AppDbContext : DbContext
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
                 Add the database connection string to appsettings.json:
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>{
   "ConnectionStrings": {
@@ -177,7 +178,7 @@ public class AppDbContext : DbContext
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
                 Configure dependency injection to make the DbContext available throughout your app:
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>using Microsoft.EntityFrameworkCore;
 using BlazorMock.Data;
@@ -205,9 +206,10 @@ var app = builder.Build();
                 🔄 Step 5: Create and Apply Migrations
             </h2>
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
-                Migrations are version control for your database schema. They track changes and allow you to update the database structure.
+                Migrations are version control for your database schema. They track changes and allow you to update the
+                database structure.
             </p>
-            
+
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
                 <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code># Create your first migration
 dotnet ef migrations add InitialCreate
@@ -231,10 +233,14 @@ dotnet ef migrations list</code></pre>
                         Common Migration Commands
                     </h3>
                     <div class="text-xs sm:text-sm text-gray-700 space-y-1">
-                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">add</code> - Create new migration</div>
-                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">remove</code> - Delete last migration</div>
-                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">update</code> - Apply migrations</div>
-                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">list</code> - Show all migrations</div>
+                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">add</code> - Create new
+                            migration</div>
+                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">remove</code> - Delete last
+                            migration</div>
+                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">update</code> - Apply
+                            migrations</div>
+                        <div class="break-words"><code class="bg-gray-200 px-2 py-1 rounded">list</code> - Show all
+                            migrations</div>
                     </div>
                 </div>
 
@@ -286,18 +292,22 @@ dotnet ef migrations list</code></pre>
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="min-w-0 flex-1">
                     <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 break-words">Ready to move on?</h3>
-                    <p class="text-sm sm:text-base text-gray-600 break-words">Mark this step as complete to track your progress!</p>
+                    <p class="text-sm sm:text-base text-gray-600 break-words">Mark this step as complete to track your
+                        progress!</p>
                 </div>
                 @if (isComplete)
                 {
                     <div class="flex items-center gap-3">
                         <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
-                        <button @onclick="@(async ()=> await ProgressService.MarkStepIncompleteAsync(8))" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                        <button @onclick="@(async () => await ProgressService.MarkStepIncompleteAsync(8))"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
                     </div>
                 }
                 else
                 {
-                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark
+                        as Complete</button>
                 }
             </div>
         </div>

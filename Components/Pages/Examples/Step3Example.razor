@@ -5,26 +5,29 @@
 
 <PageTitle>Step 3: Reusable Components - Example</PageTitle>
 
-<div class="min-h-screen py-8 bg-gray-50">
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
         <!-- Header -->
         <div class="mb-8">
-            <a href="/" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
-                <span>←</span> Back to Home
+            <a href="/guide"
+                class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Guide
             </a>
             <h1 class="text-4xl font-bold text-gray-900 mb-4">
                 🎯 Step 3: Reusable Components
             </h1>
             <p class="text-xl text-gray-600">
-                Build reusable components that accept parameters from parent components, enabling code reuse and composition.
+                Build reusable components that accept parameters from parent components, enabling code reuse and
+                composition.
             </p>
         </div>
 
         <!-- What You Learned -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">📘 What You'll Learn</h2>
-            <p class="text-gray-700 mb-6">Components are the building blocks of Blazor apps. You can create reusable components that accept parameters, making your code modular and maintainable.</p>
-            
+            <p class="text-gray-700 mb-6">Components are the building blocks of Blazor apps. You can create reusable
+                components that accept parameters, making your code modular and maintainable.</p>
+
             <h3 class="text-lg font-semibold text-gray-700 mb-3">Code Example - GreetingCard.razor:</h3>
             <pre class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">&lt;div class="card"&gt;
   &lt;h3&gt;&#64;Name&lt;/h3&gt;
@@ -35,11 +38,11 @@
   [Parameter] public string Name { get; set; } = "Guest";
   [Parameter] public string Message { get; set; } = "Welcome!";
 }</pre>
-            
+
             <h3 class="text-lg font-semibold text-gray-700 mb-3">Usage in Parent Component:</h3>
             <pre class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">&lt;GreetingCard Name="John" Message="Hello from parent!" /&gt;
 &lt;GreetingCard Name="Sarah" Message="Welcome to the app!" /&gt;</pre>
-            
+
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <p class="text-sm text-blue-800 font-semibold mb-2">💡 Key Points:</p>
                 <ul class="text-sm text-blue-700 list-disc ml-5 space-y-1">
@@ -49,12 +52,14 @@
                     <li>Promotes code reuse and consistency</li>
                 </ul>
             </div>
-            
+
             <div class="mt-6 pt-6 border-t border-gray-200">
-                <p class="text-sm text-gray-600 mb-3"><strong>💡 Key Concepts:</strong> [Parameter] attribute, component reuse, property binding</p>
+                <p class="text-sm text-gray-600 mb-3"><strong>💡 Key Concepts:</strong> [Parameter] attribute, component
+                    reuse, property binding</p>
                 <div class="flex items-center gap-2">
                     <span class="text-sm text-gray-600">→ Related tips:</span>
-                    <a href="/tips#parameter" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">[Parameter]</a>
+                    <a href="/tips#parameter"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">[Parameter]</a>
                 </div>
             </div>
         </div>
@@ -80,12 +85,14 @@
                 {
                     <div class="flex items-center gap-3">
                         <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
-                        <button @onclick="ResetStep" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
                     </div>
                 }
                 else
                 {
-                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
                         Mark as Complete
                     </button>
                 }
@@ -94,11 +101,13 @@
 
         <!-- Navigation -->
         <div class="flex items-center justify-between">
-            <a href="/examples/step2" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <a href="/examples/step2"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <span>←</span>
                 Previous: Step 2
             </a>
-            <a href="/examples/step4" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+            <a href="/examples/step4"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                 Next: Step 4
                 <span>→</span>
             </a>
