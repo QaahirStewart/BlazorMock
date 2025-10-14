@@ -8,6 +8,7 @@ Welcome to the documentation hub. This repo includes a guided learning path to b
 
 ## Step-by-step progression
 
+0. [Step 00 — Prerequisites & VS Code Setup](./Steps/Step00.md)
 1. [Step 01 — New Clean Project](./Steps/Step01.md)
 2. [Step 02 — Razor Syntax & Display](./Steps/Step02.md)
 3. [Step 03 — Reusable Components](./Steps/Step03.md)

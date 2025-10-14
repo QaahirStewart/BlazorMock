@@ -12,6 +12,12 @@ This guide is designed for use with a local LLM assistant in VS Code (e.g., GPT-
 
 ---
 
+## 🧰 Before You Start
+
+If you're starting from a blank machine, complete [Step 00 — Prerequisites & VS Code Setup](./Steps/Step00.md). It covers installing the .NET SDK, Node.js, and helpful VS Code extensions, plus verifying your environment.
+
+---
+
 ## 🔰 Phase 1: Entry-Level (No Database)
 
 ### Step 1: New Clean Project

@@ -26,6 +26,8 @@
             }
         </div>
 
+
+
         <!-- Date/Time Card -->
         <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
             <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 flex items-center break-words">
@@ -96,6 +98,47 @@
                             assignments</span>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Step 0: Prerequisites & VS Code Setup -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    <span
+                        class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">0</span>
+                    🧰 Step 0: Prerequisites & VS Code Setup
+                </h3>
+                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">Setup</span>
+            </div>
+            <div class="bg-white rounded-xl p-5 border border-gray-200">
+                <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">
+                    Get your machine ready: install the .NET SDK, Node.js (for Tailwind build), and VS Code with the C#,
+                    Razor, and Tailwind CSS IntelliSense extensions.
+                </p>
+                <ul class="list-disc ml-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                    <li>Install .NET SDK (10.0+)</li>
+                    <li>Install Node.js LTS and npm</li>
+                    <li>Install VS Code + extensions: C#, Razor, Tailwind CSS IntelliSense</li>
+                    <li>Verify tools: <span class="font-mono">dotnet --info</span>, <span class="font-mono">node
+                            -v</span>, <span class="font-mono">npm -v</span></li>
+                </ul>
+                <div class="flex flex-wrap gap-2">
+                    <a href="https://dotnet.microsoft.com/download" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-black/85 hover:bg-black text-white text-sm sm:text-base rounded-lg transition-colors">
+                        .NET Download →
+                    </a>
+                    <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">
+                        Node.js (LTS) →
+                    </a>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit"
+                        target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">
+                        VS Code C# →
+                    </a>
+                </div>
+                <p class="text-xs sm:text-sm text-gray-600 mt-3">See Docs/Steps/Step00.md for the full checklist.</p>
             </div>
         </div>
 
@@ -595,8 +638,17 @@ public class Driver {
             </div>
             <div class="bg-white rounded-xl p-5 border border-gray-200">
                 <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Configure Entity
-                    Framework Core with SQLite, create AppDbContext, set up connection strings, and create your first
-                    migration.</p>
+                    Framework Core with SQLite, create <span class="font-mono">AppDbContext</span>, set up connection
+                    strings, and create/apply
+                    your first migration. This project applies pending migrations on startup in development.</p>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
+                    <p class="text-xs sm:text-sm text-gray-700 mb-2">Quick CLI (run in project folder):</p>
+                    <ul class="list-disc ml-5 space-y-1 text-[11px] sm:text-xs text-gray-700">
+                        <li>dotnet tool install --global dotnet-ef <span class="text-gray-500">(once)</span></li>
+                        <li>dotnet ef migrations add InitialCreate</li>
+                        <li>dotnet ef database update</li>
+                    </ul>
+                </div>
                 <a href="/examples/step8"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base rounded-lg transition-colors">
                     <span>📖</span>
@@ -633,14 +685,37 @@ public class Driver {
             </div>
             <div class="bg-white rounded-xl p-5 border border-gray-200">
                 <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Learn to Create, Read,
-                    Update, and Delete database records. Master async operations, Include() for related data, and
+                    Update, and Delete database records. Master async operations, <span
+                        class="font-mono">Include()</span> for related data, and
                     EditForm integration.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+                    <a href="/drivers"
+                        class="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:bg-gray-50">Drivers
+                        CRUD →</a>
+                    <a href="/trucks"
+                        class="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:bg-gray-50">Trucks
+                        CRUD →</a>
+                    <a href="/routes"
+                        class="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:bg-gray-50">Routes
+                        CRUD (+ Include) →</a>
+                </div>
+                <p class="text-xs sm:text-sm text-gray-600 mb-2">Note: In Development, sample Drivers, Trucks, and Routes are auto-seeded so you can explore lists immediately.</p>
                 <a href="/examples/step9"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base rounded-lg transition-colors">
                     <span>📖</span>
                     View Code & Details
                     <span>→</span>
                 </a>
+                @if (OperatingSystem.IsWindows() && Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                {
+                    <div class="mt-3">
+                        <button @onclick="ResetSampleDataAsync" class="px-3 py-2 text-xs sm:text-sm rounded-lg border border-gray-300 hover:bg-gray-50">Reset sample data (Dev)</button>
+                        @if (!string.IsNullOrEmpty(resetMessage))
+                        {
+                            <div class="mt-2 text-xs text-gray-600">@resetMessage</div>
+                        }
+                    </div>
+                }
             </div>
         </div>
 
@@ -948,5 +1023,26 @@ public class Driver {
 
         [Range(0, 60, ErrorMessage = "Years of experience must be between 0 and 60")]
         public int? YearsExperience { get; set; }
+    }
+
+    // Dev-only: Reset sample data
+    private string? resetMessage;
+    private async Task ResetSampleDataAsync()
+    {
+        try
+        {
+            using var http = new HttpClient { BaseAddress = new Uri(Navigation.BaseUri) };
+            var resp = await http.PostAsync("dev/reset-sample-data", null);
+            resetMessage = resp.IsSuccessStatusCode ? "Sample data reset. Refreshing..." : $"Reset failed: {resp.StatusCode}";
+            if (resp.IsSuccessStatusCode)
+            {
+                await Task.Delay(600);
+                Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            resetMessage = $"Reset error: {ex.Message}";
+        }
     }
 }

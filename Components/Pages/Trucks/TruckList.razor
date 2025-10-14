@@ -1,0 +1,222 @@
+@page "/trucks"
+@using BlazorMock.Data
+@using BlazorMock.Models
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<AppDbContext> DbFactory
+@rendermode InteractiveServer
+
+<PageTitle>Trucks</PageTitle>
+
+<div class="min-h-screen">
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 break-words">🚚 Trucks</h1>
+
+    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 mb-6">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-3">📝 Add Truck</h2>
+        <EditForm Model="newTruck" OnValidSubmit="AddTruckAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="mb-3 text-xs sm:text-sm text-red-600" />
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Truck Number</label>
+                    <InputText class="w-full rounded-lg border border-gray-300 p-2" @bind-Value="newTruck.TruckNumber" />
+                    <ValidationMessage For="() => newTruck.TruckNumber" class="text-xs text-red-600 mt-1" />
+                </div>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Make</label>
+                    <InputText class="w-full rounded-lg border border-gray-300 p-2" @bind-Value="newTruck.Make" />
+                    <ValidationMessage For="() => newTruck.Make" class="text-xs text-red-600 mt-1" />
+                </div>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Model</label>
+                    <InputText class="w-full rounded-lg border border-gray-300 p-2" @bind-Value="newTruck.Model" />
+                    <ValidationMessage For="() => newTruck.Model" class="text-xs text-red-600 mt-1" />
+                </div>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Year</label>
+                    <InputNumber class="w-full rounded-lg border border-gray-300 p-2" @bind-Value="newTruck.Year" />
+                    <ValidationMessage For="() => newTruck.Year" class="text-xs text-red-600 mt-1" />
+                </div>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Class</label>
+                    <InputSelect class="w-full rounded-lg border border-gray-300 p-2" @bind-Value="newTruck.Class">
+                        @foreach (TruckClass c in Enum.GetValues(typeof(TruckClass)))
+                        {
+                            <option value="@c">@c</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Capacity (lbs)</label>
+                    <InputNumber class="w-full rounded-lg border border-gray-300 p-2" @bind-Value="newTruck.CapacityLbs" />
+                    <ValidationMessage For="() => newTruck.CapacityLbs" class="text-xs text-red-600 mt-1" />
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="submit" class="px-4 py-2 text-sm sm:text-base rounded-lg bg-orange-600 hover:bg-orange-700 text-white transition-colors">Add Truck</button>
+                <button type="button" class="px-4 py-2 text-sm sm:text-base rounded-lg border" @onclick="ResetNewTruck">Reset</button>
+            </div>
+        </EditForm>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-200 p-4">
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-3">📋 Current Trucks</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-200 rounded-xl overflow-hidden">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left p-2 border-b">Truck #</th>
+                        <th class="text-left p-2 border-b">Make</th>
+                        <th class="text-left p-2 border-b">Model</th>
+                        <th class="text-left p-2 border-b">Year</th>
+                        <th class="text-left p-2 border-b">Class</th>
+                        <th class="text-left p-2 border-b">Capacity</th>
+                        <th class="text-left p-2 border-b">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (trucks is null)
+                    {
+                        <tr><td colspan="7" class="p-3">Loading...</td></tr>
+                    }
+                    else if (!trucks.Any())
+                    {
+                        <tr><td colspan="7" class="p-3">No trucks yet.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var t in trucks)
+                        {
+                            var isEditing = editTruck?.Id == t.Id;
+                            <tr class="odd:bg-white even:bg-gray-50 align-top">
+                                <td class="p-2 border-b">
+                                    @if (isEditing) { <InputText class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editTruck!.TruckNumber" /> }
+                                    else { @t.TruckNumber }
+                                </td>
+                                <td class="p-2 border-b">
+                                    @if (isEditing) { <InputText class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editTruck!.Make" /> }
+                                    else { @t.Make }
+                                </td>
+                                <td class="p-2 border-b">
+                                    @if (isEditing) { <InputText class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editTruck!.Model" /> }
+                                    else { @t.Model }
+                                </td>
+                                <td class="p-2 border-b">
+                                    @if (isEditing) { <InputNumber class="w-24 rounded border border-gray-300 p-1.5" @bind-Value="editTruck!.Year" /> }
+                                    else { @t.Year }
+                                </td>
+                                <td class="p-2 border-b">
+                                    @if (isEditing)
+                                    {
+                                        <InputSelect class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editTruck!.Class">
+                                            @foreach (TruckClass c in Enum.GetValues(typeof(TruckClass)))
+                                            {
+                                                <option value="@c">@c</option>
+                                            }
+                                        </InputSelect>
+                                    }
+                                    else { @t.Class }
+                                </td>
+                                <td class="p-2 border-b">
+                                    @if (isEditing) { <InputNumber class="w-28 rounded border border-gray-300 p-1.5" @bind-Value="editTruck!.CapacityLbs" /> }
+                                    else { @t.CapacityLbs }
+                                </td>
+                                <td class="p-2 border-b whitespace-nowrap">
+                                    @if (isEditing)
+                                    {
+                                        <button class="px-3 py-1 rounded bg-green-600 text-white mr-1" @onclick="() => SaveEditAsync(t.Id)">Save</button>
+                                        <button class="px-3 py-1 rounded border" @onclick="CancelEdit">Cancel</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="px-3 py-1 rounded border mr-1" @onclick="() => BeginEdit(t)">Edit</button>
+                                        <button class="px-3 py-1 rounded border hover:bg-gray-50" @onclick="() => DeleteTruckAsync(t.Id)">Delete</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Truck>? trucks;
+    private Truck newTruck = new() { Class = TruckClass.Light, Year = DateTime.Now.Year };
+    private Truck? editTruck;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        trucks = await db.Trucks.OrderBy(t => t.TruckNumber).ToListAsync();
+    }
+
+    private async Task AddTruckAsync()
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        db.Trucks.Add(newTruck);
+        await db.SaveChangesAsync();
+        newTruck = new() { Class = TruckClass.Light, Year = DateTime.Now.Year };
+        await LoadAsync();
+    }
+
+    private void ResetNewTruck()
+    {
+        newTruck = new() { Class = TruckClass.Light, Year = DateTime.Now.Year };
+    }
+
+    private async Task DeleteTruckAsync(int id)
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        var entity = await db.Trucks.FindAsync(id);
+        if (entity is not null)
+        {
+            db.Remove(entity);
+            await db.SaveChangesAsync();
+            await LoadAsync();
+        }
+    }
+
+    private void BeginEdit(Truck t)
+    {
+        editTruck = new Truck
+        {
+            Id = t.Id,
+            TruckNumber = t.TruckNumber,
+            Make = t.Make,
+            Model = t.Model,
+            Year = t.Year,
+            Class = t.Class,
+            CapacityLbs = t.CapacityLbs
+        };
+    }
+
+    private void CancelEdit() => editTruck = null;
+
+    private async Task SaveEditAsync(int id)
+    {
+        if (editTruck is null) return;
+        using var db = await DbFactory.CreateDbContextAsync();
+        var entity = await db.Trucks.FindAsync(id);
+        if (entity is null) return;
+
+        entity.TruckNumber = editTruck.TruckNumber;
+        entity.Make = editTruck.Make;
+        entity.Model = editTruck.Model;
+        entity.Year = editTruck.Year;
+        entity.Class = editTruck.Class;
+        entity.CapacityLbs = editTruck.CapacityLbs;
+
+        await db.SaveChangesAsync();
+        editTruck = null;
+        await LoadAsync();
+    }
+}

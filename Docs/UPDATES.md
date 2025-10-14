@@ -1,5 +1,54 @@
 # Recent Updates & Improvements
 
+## October 14, 2025 (Build & EF housekeeping)
+
+### ✅ Build verified, EF packages aligned
+
+- Verified Release build: passed with no errors
+- Applied EF Core migrations to local SQLite DB (`blazormock.db`)
+- On run, app started successfully on http://localhost:4001 (port 4000 was in use)
+- Pinned EF Core package versions in `BlazorMock.csproj` to resolve NU1603 warnings:
+  - Microsoft.EntityFrameworkCore 9.0.0-rc.1.24451.1
+  - Microsoft.EntityFrameworkCore.Sqlite 9.0.0-rc.1.24451.1
+  - Microsoft.EntityFrameworkCore.Design 9.0.0-rc.1.24451.1
+- Note: `System.Drawing.Common` 4.7.0 reports a known vulnerability (NU1904). Not used directly by app UI; consider removing transitive source or upgrading if introduced later.
+
+### Run tips
+
+- Default profile binds to http://localhost:4000; if busy, use http://localhost:4001
+- Development-only reset endpoint: POST http://localhost:4001/dev/reset-sample-data
+
+## October 14, 2025 (Later)
+
+### 🧰 Added Step 00 — Prerequisites & VS Code Setup
+
+- New doc: `Docs/Steps/Step00.md`
+- Updated indexes and guides:
+  - `Docs/README.md` — inserted Step 00 at top of step list
+  - `Docs/BlazorLearningGuide.md` — added "Before You Start" section linking Step 00
+  - `Docs/BlazorLearningChecklist.md` — added Step 00 checklist items
+
+Why: Learners starting from a blank machine can now set up .NET, Node.js, and VS Code confidently before Step 01.
+
+### 🗄️ EF Core: Switch to Migrations and CRUD references
+
+- Replaced `EnsureCreated()` with `db.Database.Migrate()` at startup in `Program.cs` (development-friendly)
+- Documented migrations workflow in `Docs/Steps/Step08.md`
+- Expanded CRUD guidance and linked in-app pages in `Docs/Steps/Step09.md`
+- Updated in-app `Guide.razor` Step 8 and Step 9 cards:
+  - Step 8 now shows quick CLI for `dotnet-ef` and mentions auto-apply migrations
+  - Step 9 links directly to `/drivers`, `/trucks`, and `/routes` pages and calls out `Include()` usage
+
+Impact: The app now follows a proper EF Core migrations workflow and learners can explore complete, styled CRUD examples.
+
+### 🌱 Development Seed Data
+
+- Added `Data/DevDataSeeder.cs` and invoked it in Development only (after migrations)
+- Seeds sample Drivers, Trucks, and Routes for immediate CRUD exploration
+- Guide (Step 9) notes that sample data appears automatically in Development
+
+Impact: New learners can see populated lists without manual entry, making the demo more illustrative.
+
 ## October 14, 2025
 
 ### ✨ New: Blazor & C# Tips (existing categories)

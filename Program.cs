@@ -1,5 +1,7 @@
 using BlazorMock.Components;
 using BlazorMock.Services;
+using BlazorMock.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,11 @@ builder.Services.AddSingleton<ITipsContributor, LifecycleAdvancedTipsContributor
 builder.Services.AddSingleton<ITipsContributor, DataBindingTipsContributor>();
 builder.Services.AddSingleton<ITipsContributor, CSharpLanguageTipsContributor>();
 
+// EF Core - SQLite
+var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=blazormock.db";
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
+    options.UseSqlite(connectionString));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,12 +54,35 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// Seed tips from contributors
+// Seed tips and development data
 using (var scope = app.Services.CreateScope())
 {
     var tips = scope.ServiceProvider.GetRequiredService<ITipsService>();
     foreach (var c in scope.ServiceProvider.GetServices<ITipsContributor>())
         tips.AddContributor(c);
+
+    // Ensure database exists
+    var dbFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+    using var db = dbFactory.CreateDbContext();
+    // Apply pending EF Core migrations at startup (safe for dev)
+    db.Database.Migrate();
+
+    // Development seed data for quick demos
+    if (app.Environment.IsDevelopment())
+    {
+        await DevDataSeeder.SeedAsync(db);
+    }
+}
+
+// Development-only: endpoint to reset sample data
+if (app.Environment.IsDevelopment())
+{
+    app.MapPost("/dev/reset-sample-data", async (IDbContextFactory<AppDbContext> factory) =>
+    {
+        await using var db = await factory.CreateDbContextAsync();
+        await DevDataSeeder.ResetAsync(db);
+        return Results.Ok(new { status = "reset", at = DateTime.UtcNow });
+    });
 }
 
 app.Run();

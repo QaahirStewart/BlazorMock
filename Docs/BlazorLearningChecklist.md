@@ -13,6 +13,7 @@ This checklist version allows you to track your progress through each step. Chec
 - [x] **Typography System** - Responsive, consistent typography across all pages
 - [x] **Mobile-First Design** - All components optimized for mobile through desktop
 - [x] **Accessibility** - Proper text wrapping, readable font sizes, responsive layouts
+- [ ] **Step 00 Complete** - Prerequisites & VS Code setup
 - [ ] **Step 1 Complete** - New clean project with Tailwind v4 setup
 - [ ] **Step 2 Complete** - Razor syntax and dynamic content
 - [ ] **Step 3 Complete** - Reusable components with parameters
@@ -33,6 +34,18 @@ This checklist version allows you to track your progress through each step. Chec
 ---
 
 ## 🔰 Phase 1: Entry-Level (No Database)
+
+### Step 00: Prerequisites & VS Code Setup
+
+- [ ] Install .NET SDK (v10 or later)
+- [ ] Install Node.js LTS and npm
+- [ ] Install VS Code
+- [ ] Add extensions: C#, Razor, Tailwind CSS IntelliSense
+- [ ] Verify tools: dotnet, node, npm versions
+- [ ] Create/open your project workspace folder
+- [ ] Read `Docs/Steps/Step00.md`
+
+---
 
 ### Step 1: New Clean Project
 

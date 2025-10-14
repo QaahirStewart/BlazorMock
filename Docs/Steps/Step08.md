@@ -4,8 +4,62 @@
 - Next step: [Step 09 — CRUD Operations & Related Data](./Step09.md)
 - Previous: [Step 07 — EF Core Models](./Step07.md)
 
-What you'll do:
+In this step you will:
 
-- Add DbContext and connection string
-- Register in Program.cs
-- Create and apply migrations
+- Add a SQLite connection string
+- Register `AppDbContext` in `Program.cs`
+- Create and apply your first EF Core migration
+
+## 1) Connection string (appsettings.json)
+
+Add or verify a connection string named `Default`:
+
+```
+{
+	"ConnectionStrings": {
+		"Default": "Data Source=blazormock.db"
+	}
+}
+```
+
+## 2) Register DbContext (Program.cs)
+
+Register an `IDbContextFactory<AppDbContext>` using SQLite, and apply migrations at startup in development:
+
+```csharp
+using BlazorMock.Data;
+using Microsoft.EntityFrameworkCore;
+
+var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=blazormock.db";
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
+		options.UseSqlite(connectionString));
+
+// ... after app = builder.Build(); inside a scope:
+using (var scope = app.Services.CreateScope())
+{
+		var dbFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+		using var db = dbFactory.CreateDbContext();
+		db.Database.Migrate(); // applies pending migrations in dev
+}
+```
+
+Note: We use `Migrate()` instead of `EnsureCreated()` so schema changes are tracked in migrations.
+
+## 3) Install CLI tool and create migration
+
+Run these in the project folder:
+
+```
+dotnet tool install --global dotnet-ef   # first time only
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+```
+
+Results:
+
+- A `Migrations/` folder is added to your project with the migration files.
+- A `blazormock.db` SQLite file is created (or updated).
+
+If the database already existed from `EnsureCreated()`, switch to `Migrate()` and then generate a new migration to bring the project into a migrations-based workflow.
+
+You're now ready to build CRUD pages in Step 09.
