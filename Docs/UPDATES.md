@@ -1,3 +1,13 @@
+## 2025-10-15
+
+- Reworked the Guide experience into phase cards on `/guide`:
+  - Phase 1: Entry-Level (No Database)
+  - Phase 2: Data & EF Core
+  - Phase 3: State & Business Logic
+- Added phase details page at `/guide/phase/{id}` showing steps and progress per phase.
+- Kept Learning Resources on the main Guide page and linked a "Full Learning Guide" at `/guide/full`.
+- Introduced `ILearningGuideService` for phase metadata and registered it in DI.
+
 # Recent Updates & Improvements
 
 ## October 15, 2025 (Step 10 demo polish)

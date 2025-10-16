@@ -37,6 +37,7 @@ public class LearningProgressService : ILearningProgressService
     {
         return new List<StepProgress>
         {
+            new() { StepNumber = 0, StepId = "step0", Title = "Prerequisites & VS Code Setup", IsComplete = false },
             new() { StepNumber = 1, StepId = "step1", Title = "New Clean Project", IsComplete = false },
             new() { StepNumber = 2, StepId = "step2", Title = "Razor Syntax & Display", IsComplete = false },
             new() { StepNumber = 3, StepId = "step3", Title = "Reusable Components", IsComplete = false },

@@ -54,6 +54,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/BlazorMock/Components/Pages/Examples/Step0Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xTdGVwMEV4YW1wbGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BlazorMock/Components/Pages/Examples/Step10Example.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xTdGVwMTBFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -116,6 +120,26 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/BlazorMock/Components/Pages/Guide.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Guides/Demos.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcRGVtb3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Guides/FullGuide.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcRnVsbEd1aWRlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Guides/PhaseDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcUGhhc2VEZXRhaWxzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Guide/FullGuide.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZVxGdWxsR3VpZGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Guide/PhaseDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZVxQaGFzZURldGFpbHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/Home.razor]
