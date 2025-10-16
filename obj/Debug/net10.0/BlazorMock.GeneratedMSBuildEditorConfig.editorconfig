@@ -58,6 +58,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xTdGVwMTBFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/BlazorMock/Components/Pages/Examples/Step10/DriverPicker.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xTdGVwMTBcRHJpdmVyUGlja2VyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Examples/Step10/SelectedDriverCard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xTdGVwMTBcU2VsZWN0ZWREcml2ZXJDYXJkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BlazorMock/Components/Pages/Examples/Step11Example.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xTdGVwMTFFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 

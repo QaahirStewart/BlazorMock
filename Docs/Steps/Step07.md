@@ -8,3 +8,9 @@ What you'll do:
 
 - Create `Driver`, `Truck`, `Route` models
 - Add enums and relationships
+
+Summary:
+
+- Define core domain models for the app.
+- Use enums for constrained values.
+- Establish relationships to prepare for EF Core.

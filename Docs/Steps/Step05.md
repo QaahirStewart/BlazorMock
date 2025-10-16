@@ -9,3 +9,9 @@ What you'll do:
 - Use `EditForm`, `DataAnnotationsValidator`, `ValidationSummary`
 - Build `DriverForm.razor`
 - Validate inputs with data annotations
+
+Summary:
+
+- Create a form with validation using `EditForm`.
+- Bind inputs to models decorated with data annotations.
+- Display feedback with `ValidationSummary`.

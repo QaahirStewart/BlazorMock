@@ -10,6 +10,12 @@ What you'll do:
 - Render dynamic values like DateTime
 - Understand Razor expressions
 
+Summary:
+
+- Practice the `@page` directive and basic Razor expressions.
+- Render dynamic data like current date/time.
+- Get comfortable with inline C# in Razor.
+
 Verify:
 
 - Page shows current date/time and updates on refresh

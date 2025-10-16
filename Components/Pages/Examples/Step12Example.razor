@@ -1,6 +1,8 @@
 @page "/examples/step12"
 @inject ILearningProgressService ProgressService
 @rendermode InteractiveServer
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
@@ -47,9 +49,29 @@
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 🏗️ Create ScheduleService
             </h2>
+            <p class="text-sm sm:text-base text-gray-700 mb-3">A dedicated service keeps all pay and expense formulas in
+                one place so they’re easy to reuse and test. Each method focuses on a single concern: driver pay, fuel
+                cost, total route cost, and profit margin.</p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Centralize business logic for reuse across pages</li>
+                <li>Keep constants (like fuel price) in one spot</li>
+                <li>Small methods make unit testing straightforward</li>
+            </ul>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Services/ScheduleService.cs
+                <details class="group">
+                    <summary
+                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button
+                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                            @onclick="CopyServiceCode">Copy</button>
+                        <pre id="s12-code-service" data-code-title="C# (Services/ScheduleService.cs)"
+                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Services/ScheduleService.cs
 namespace BlazorMock.Services;
 
 /// &lt;summary&gt;
@@ -137,7 +159,10 @@ public class ScheduleService
         decimal profit = route.Revenue - totalCost;
         return (profit / route.Revenue) * 100;
     }
-}</code></pre>
+}
+</code></pre>
+                    </div>
+                </details>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -152,9 +177,29 @@ public class ScheduleService
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 🔧 Register Service in Program.cs
             </h2>
+            <p class="text-sm sm:text-base text-gray-700 mb-3">Register the calculation service with dependency
+                injection so pages and components can request it as needed. Scoped lifetime works well for Blazor Server
+                user sessions.</p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Use DI to avoid manual service creation</li>
+                <li>Scoped lifetime: one instance per connected user</li>
+                <li>Keep Program.cs focused on registrations and middleware</li>
+            </ul>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Program.cs
+                <details class="group">
+                    <summary
+                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button
+                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                            @onclick="CopyProgramCode">Copy</button>
+                        <pre id="s12-code-program" data-code-title="Program.cs registration"
+                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Program.cs
 using BlazorMock.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -163,7 +208,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Scoped = one instance per user session/circuit
 builder.Services.AddScoped&lt;ScheduleService&gt;();
 
-var app = builder.Build();</code></pre>
+var app = builder.Build();
+</code></pre>
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -171,9 +219,29 @@ var app = builder.Build();</code></pre>
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 📝 Use Service in Components
             </h2>
+            <p class="text-sm sm:text-base text-gray-700 mb-3">Call the service methods inside a page or component to
+                show real-time estimates (driver pay, fuel, total cost) and to validate profitability before saving a
+                route.</p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Display estimates to help users make decisions</li>
+                <li>Recalculate on user input with simple event handlers</li>
+                <li>Save the computed values alongside the route</li>
+            </ul>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/routes/create"
+                <details class="group">
+                    <summary
+                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button
+                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                            @onclick="CopyPageCode">Copy</button>
+                        <pre id="s12-code-page" data-code-title="Razor + C# (Use Service in Page)"
+                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/routes/create"
 @@inject ScheduleService ScheduleService
 @@inject AppDbContext DbContext
 
@@ -282,7 +350,79 @@ var app = builder.Build();</code></pre>
         
         Navigation.NavigateTo("/routes");
     }
-}</code></pre>
+}
+</code></pre>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- Live Demo: Pay & Expense Calculation -->
+        <div class="bg-black/3 rounded-2xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">🎬 Live Demo: Pay & Expense</h2>
+
+            <div class="bg-white rounded-xl p-4 border border-gray-200">
+                <!-- Controls -->
+                <div class="grid sm:grid-cols-3 gap-3 mb-4">
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1">Base Rate per Mile</label>
+                        <InputNumber @bind-Value="s12BaseRatePerMile" step="0.01"
+                            class="w-full rounded border border-gray-300 p-2" />
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1">Overtime Rate (per hour)</label>
+                        <InputNumber @bind-Value="s12OvertimeRatePerHour" step="1"
+                            class="w-full rounded border border-gray-300 p-2" />
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm"
+                            @onclick="ApplyS12GlobalRates">Apply Rates</button>
+                        <button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm"
+                            @onclick="ResetS12">Reset Sample</button>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="grid sm:grid-cols-4 gap-3 mb-4">
+                    <div class="rounded border p-3">
+                        <div class="text-xs text-gray-500">Total Miles</div>
+                        <div class="text-xl font-semibold">@s12Totals.TotalMiles</div>
+                    </div>
+                    <div class="rounded border p-3">
+                        <div class="text-xs text-gray-500">Total Pay</div>
+                        <div class="text-xl font-semibold">@s12Totals.TotalPay.ToString("C")</div>
+                    </div>
+                    <div class="rounded border p-3">
+                        <div class="text-xs text-gray-500">Total Expenses</div>
+                        <div class="text-xl font-semibold">@s12Totals.TotalExpenses.ToString("C")</div>
+                    </div>
+                    <div class="rounded border p-3">
+                        <div class="text-xs text-gray-500">Avg Cost / Mile</div>
+                        <div class="text-xl font-semibold">@(s12Totals.TotalMiles == 0 ? "-" : (s12Totals.TotalExpenses
+                                                        / s12Totals.TotalMiles).ToString("C"))</div>
+                    </div>
+                </div>
+
+                <!-- Driver comparison bars -->
+                <div class="space-y-3">
+                    @foreach (var row in s12DriverSummaries)
+                    {
+                        var total = row.Pay + row.Expenses;
+                        var payPct = total == 0 ? 0 : (row.Pay / total) * 100m;
+                        var expPct = 100m - payPct;
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between text-xs sm:text-sm">
+                                <div class="font-medium">@row.Driver</div>
+                                <div class="text-gray-600">Pay @row.Pay.ToString("C") · Exp @row.Expenses.ToString("C")
+                                </div>
+                            </div>
+                            <div class="h-3 w-full rounded bg-gray-200 overflow-hidden">
+                                <div class="h-full bg-green-500" style="width:@payPct%"></div>
+                                <div class="h-full bg-amber-500 -mt-3" style="width:@expPct%"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
 
@@ -365,21 +505,165 @@ var app = builder.Build();</code></pre>
                 }
             </div>
         </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 flex items-center justify-between">
+            <a href="/examples/step11" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 11
+            </a>
+            <a href="/examples/step13" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 13
+                <span>→</span>
+            </a>
+        </div>
     </div>
 </div>
 
 @code {
     private bool isComplete = false;
+    private IJSObjectReference? _copyModule;
+
+    // --- Live Demo (Step 12) State ---
+    private decimal s12BaseRatePerMile = 0.65m;
+    private decimal s12OvertimeRatePerHour = 30m;
+    private List<DemoTrip> s12Trips = new();
+    private Step12Totals s12Totals = new();
+    private List<Step12DriverSummary> s12DriverSummaries = new();
 
     protected override async Task OnInitializedAsync()
     {
         var step = await ProgressService.GetStepAsync(12);
         isComplete = step?.IsComplete ?? false;
+        InitializeS12Trips();
+        RecomputeS12();
     }
 
     private async Task MarkComplete()
     {
         await ProgressService.MarkStepCompleteAsync(12);
         isComplete = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
+        }
+    }
+
+    private async Task CopyServiceCode()
+    {
+        if (_copyModule is not null)
+        {
+            await _copyModule.InvokeVoidAsync("copyById", "s12-code-service");
+        }
+    }
+
+    private async Task CopyProgramCode()
+    {
+        if (_copyModule is not null)
+        {
+            await _copyModule.InvokeVoidAsync("copyById", "s12-code-program");
+        }
+    }
+
+    private async Task CopyPageCode()
+    {
+        if (_copyModule is not null)
+        {
+            await _copyModule.InvokeVoidAsync("copyById", "s12-code-page");
+        }
+    }
+
+    // --- Live Demo (Step 12) Logic ---
+    private void InitializeS12Trips()
+    {
+        s12Trips = new()
+{
+new DemoTrip { Driver = "Alex", Miles = 420, RatePerMile = s12BaseRatePerMile, PerDiem = 35m, OvertimeHours = 1m,
+OvertimeRatePerHour = s12OvertimeRatePerHour, FuelCost = 160m },
+new DemoTrip { Driver = "Alex", Miles = 310, RatePerMile = s12BaseRatePerMile, PerDiem = 35m, OvertimeHours = 0m,
+OvertimeRatePerHour = s12OvertimeRatePerHour, FuelCost = 120m },
+new DemoTrip { Driver = "Sam", Miles = 520, RatePerMile = s12BaseRatePerMile, PerDiem = 45m, OvertimeHours = 2m,
+OvertimeRatePerHour = s12OvertimeRatePerHour, FuelCost = 210m },
+new DemoTrip { Driver = "Sam", Miles = 290, RatePerMile = s12BaseRatePerMile, PerDiem = 35m, OvertimeHours = 0m,
+OvertimeRatePerHour = s12OvertimeRatePerHour, FuelCost = 115m },
+};
+    }
+
+    private void ResetS12()
+    {
+        InitializeS12Trips();
+        RecomputeS12();
+    }
+
+    private void ApplyS12GlobalRates()
+    {
+        foreach (var t in s12Trips)
+        {
+            t.RatePerMile = s12BaseRatePerMile;
+            t.OvertimeRatePerHour = s12OvertimeRatePerHour;
+        }
+        RecomputeS12();
+    }
+
+    private decimal ComputeS12Pay(DemoTrip t)
+    => (t.Miles * t.RatePerMile) + (t.OvertimeHours * t.OvertimeRatePerHour) + t.PerDiem;
+
+    private void RecomputeS12()
+    {
+        s12Totals = new Step12Totals
+        {
+            TotalMiles = s12Trips.Sum(x => x.Miles),
+            TotalPay = s12Trips.Sum(ComputeS12Pay),
+            TotalExpenses = s12Trips.Sum(x => x.FuelCost)
+        };
+
+        s12DriverSummaries = s12Trips
+        .GroupBy(t => t.Driver)
+        .Select(g => new Step12DriverSummary
+        {
+            Driver = g.Key,
+            Pay = g.Sum(ComputeS12Pay),
+            Expenses = g.Sum(x => x.FuelCost)
+        })
+        .OrderByDescending(x => x.Pay)
+        .ToList();
+    }
+
+    // Demo types (local to this page)
+    public class DemoTrip
+    {
+        public string Driver { get; set; } = string.Empty;
+        public int Miles { get; set; }
+        public decimal RatePerMile { get; set; }
+        public decimal PerDiem { get; set; }
+        public decimal OvertimeHours { get; set; }
+        public decimal OvertimeRatePerHour { get; set; }
+        public decimal FuelCost { get; set; }
+    }
+
+    public class Step12Totals
+    {
+        public int TotalMiles { get; set; }
+        public decimal TotalPay { get; set; }
+        public decimal TotalExpenses { get; set; }
+    }
+
+    public class Step12DriverSummary
+    {
+        public string Driver { get; set; } = string.Empty;
+        public decimal Pay { get; set; }
+        public decimal Expenses { get; set; }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_copyModule is not null)
+        {
+            await _copyModule.DisposeAsync();
+        }
     }
 }

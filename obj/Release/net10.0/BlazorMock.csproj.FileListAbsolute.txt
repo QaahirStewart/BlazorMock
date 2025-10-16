@@ -154,5 +154,7 @@ d:\BlazorMock\bin\Release\net10.0\runtimes\win-x64\native\e_sqlite3.dll
 d:\BlazorMock\bin\Release\net10.0\runtimes\win-x86\native\e_sqlite3.dll
 d:\BlazorMock\obj\Release\net10.0\BlazorMock.csproj.AssemblyReference.cache
 d:\BlazorMock\obj\Release\net10.0\BlazorMock.sourcelink.json
-d:\BlazorMock\obj\Release\net10.0\compressed\gcy26kcw0l-{0}-vnl5986n35-vnl5986n35.gz
 d:\BlazorMock\obj\Release\net10.0\BlazorMock.csproj.Up2Date
+D:\BlazorMock\obj\Release\net10.0\compressed\5cb4zdb85e-{0}-ejngshkbyn-ejngshkbyn.gz
+D:\BlazorMock\obj\Release\net10.0\compressed\gcy26kcw0l-{0}-kjy8n58y0z-kjy8n58y0z.gz
+D:\BlazorMock\obj\Release\net10.0\compressed\gsmh2u9fd1-{0}-y1jq49z8ia-y1jq49z8ia.gz

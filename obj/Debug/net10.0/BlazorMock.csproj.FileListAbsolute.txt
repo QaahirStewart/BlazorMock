@@ -142,7 +142,6 @@ d:\BlazorMock\obj\Debug\net10.0\scopedcss\Components\Layout\ReconnectModal.razor
 d:\BlazorMock\obj\Debug\net10.0\scopedcss\bundle\BlazorMock.styles.css
 d:\BlazorMock\obj\Debug\net10.0\scopedcss\projectbundle\BlazorMock.bundle.scp.css
 d:\BlazorMock\obj\Debug\net10.0\compressed\gvo3tpfcsa-{0}-4kywy7iv6g-4kywy7iv6g.gz
-d:\BlazorMock\obj\Debug\net10.0\compressed\gcy26kcw0l-{0}-vnl5986n35-vnl5986n35.gz
 d:\BlazorMock\obj\Debug\net10.0\compressed\xllhbke8ux-{0}-13ja33weya-13ja33weya.gz
 d:\BlazorMock\obj\Debug\net10.0\compressed\4x8r1evkwi-{0}-4n3g7fqvoz-4n3g7fqvoz.gz
 d:\BlazorMock\obj\Debug\net10.0\compressed\o361oar9ib-{0}-v6ptob665s-v6ptob665s.gz
@@ -156,3 +155,6 @@ d:\BlazorMock\obj\Debug\net10.0\swae.build.ex.cache
 d:\BlazorMock\obj\Debug\net10.0\BlazorMock.csproj.Up2Date
 d:\BlazorMock\obj\Debug\net10.0\BlazorMock.genruntimeconfig.cache
 d:\BlazorMock\obj\Debug\net10.0\ref\BlazorMock.dll
+D:\BlazorMock\obj\Debug\net10.0\compressed\5cb4zdb85e-{0}-ejngshkbyn-ejngshkbyn.gz
+D:\BlazorMock\obj\Debug\net10.0\compressed\gcy26kcw0l-{0}-kjy8n58y0z-kjy8n58y0z.gz
+D:\BlazorMock\obj\Debug\net10.0\compressed\gsmh2u9fd1-{0}-y1jq49z8ia-y1jq49z8ia.gz

@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject BlazorMock.Services.LayoutState Layout
+@inject IJSRuntime JS
 
 <div class="min-h-screen ">
     <!-- Top Nav -->
@@ -130,6 +131,8 @@
 
 @code {
     private bool isMobileMenuOpen;
+    private IJSObjectReference? _codeModule;
+
 
     private void ToggleMobileMenu()
     {
@@ -140,4 +143,20 @@
     {
         isMobileMenuOpen = false;
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Load code block enhancer and run once per page load
+            try
+            {
+                _codeModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/codeblocks.js");
+                await _codeModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch { /* no-op if module missing */ }
+        }
+    }
+
+
 }

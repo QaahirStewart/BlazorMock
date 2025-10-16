@@ -14,6 +14,9 @@ In this step you will:
 
 Add or verify a connection string named `Default`:
 
+<details>
+  <summary>Show code — appsettings.json</summary>
+
 ```
 {
 	"ConnectionStrings": {
@@ -22,9 +25,14 @@ Add or verify a connection string named `Default`:
 }
 ```
 
+</details>
+
 ## 2) Register DbContext (Program.cs)
 
 Register an `IDbContextFactory<AppDbContext>` using SQLite, and apply migrations at startup in development:
+
+<details>
+  <summary>Show code — Program.cs setup</summary>
 
 ```csharp
 using BlazorMock.Data;
@@ -43,17 +51,24 @@ using (var scope = app.Services.CreateScope())
 }
 ```
 
+</details>
+
 Note: We use `Migrate()` instead of `EnsureCreated()` so schema changes are tracked in migrations.
 
 ## 3) Install CLI tool and create migration
 
 Run these in the project folder:
 
-```
+<details>
+	<summary>Show code — EF Core CLI commands</summary>
+
+```pwsh
 dotnet tool install --global dotnet-ef   # first time only
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
+
+</details>
 
 Results:
 
@@ -63,3 +78,9 @@ Results:
 If the database already existed from `EnsureCreated()`, switch to `Migrate()` and then generate a new migration to bring the project into a migrations-based workflow.
 
 You're now ready to build CRUD pages in Step 09.
+
+Summary:
+
+- Connection string in `appsettings.json`
+- Register `AppDbContext` via factory + call `Migrate()` on startup (dev)
+- Create initial migration and update the database

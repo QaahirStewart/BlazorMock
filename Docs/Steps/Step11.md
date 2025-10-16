@@ -8,3 +8,9 @@ What you'll do:
 
 - Enforce domain rules in forms
 - Validate inputs beyond annotations
+
+Summary:
+
+- Implement custom validation and business rules.
+- Prevent invalid assignments at the UI layer.
+- Surface friendly validation messages.

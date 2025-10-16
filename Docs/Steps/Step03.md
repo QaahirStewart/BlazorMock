@@ -9,3 +9,9 @@ What you'll do:
 - Create `GreetingCard.razor`
 - Accept parameters with `[Parameter]`
 - Reuse component in a page
+
+Summary:
+
+- Build a reusable component with parameters.
+- Compose components within pages.
+- Keep UI logic encapsulated and testable.

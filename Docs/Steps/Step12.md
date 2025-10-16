@@ -8,3 +8,9 @@ What you'll do:
 
 - Implement calculation services
 - Show computed results in UI
+
+Summary:
+
+- Compute pay and expenses with dedicated services or helpers.
+- Bind computed values into UI tables/cards.
+- Prepare data for Step 13 dashboards.

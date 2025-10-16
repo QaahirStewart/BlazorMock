@@ -1,5 +1,7 @@
 @page "/examples/step13"
 @inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 @rendermode InteractiveServer
 
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
@@ -47,9 +49,24 @@
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 📊 Dashboard Component
             </h2>
+            <p class="text-sm sm:text-base text-gray-700 mb-3">This is the Razor markup that lays out the dashboard UI: KPI cards, a routes table with filters, driver availability tiles, and a financial summary section.</p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Decomposes the page into readable sections with accessible headings</li>
+                <li>Uses semantic classes for status badges and grids for responsive layout</li>
+                <li>Keeps the view clean while business logic stays in the code-behind</li>
+            </ul>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/dashboard"
+                <details class="group">
+                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                                @onclick="CopyCompCode">Copy</button>
+                        <pre id="code-comp-pre" class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/dashboard"
 @@inject AppDbContext DbContext
 @@using Microsoft.EntityFrameworkCore
 @@rendermode InteractiveServer
@@ -175,6 +192,8 @@
         &lt;/div&gt;
     &lt;/div&gt;
 &lt;/div&gt;</code></pre>
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -182,9 +201,24 @@
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 🧮 Dashboard Logic
             </h2>
+            <p class="text-sm sm:text-base text-gray-700 mb-3">This is the C# code-behind that loads data and computes metrics. It uses EF Core to load entities and LINQ to aggregate totals for the KPI cards.</p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Separates concerns: data access and calculations live here, not in the view</li>
+                <li>Uses Include() to eagerly load related data efficiently</li>
+                <li>Applies LINQ for aggregation (Sum, Count, Where) and in-memory filtering</li>
+            </ul>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@code {
+                <details class="group">
+                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                                @onclick="CopyLogicCode">Copy</button>
+                        <pre id="code-logic-pre" class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@code {
     private List&lt;Route&gt; routes = new();
     private List&lt;Driver&gt; drivers = new();
     private DashboardStats stats = new();
@@ -301,6 +335,8 @@ public class DashboardStats
     public decimal ProfitMargin { get; set; }
     public decimal RouteChangePercent { get; set; }
 }</code></pre>
+                    </div>
+                </details>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -311,13 +347,83 @@ public class DashboardStats
             </div>
         </div>
 
+        <!-- Live Demo: Mini Dashboard -->
+        <div class="bg-black/3 rounded-2xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">🎬 Live Demo: Mini Dashboard</h2>
+
+            <div class="bg-white rounded-xl p-4 border border-gray-200">
+                <!-- Controls -->
+                <div class="grid sm:grid-cols-3 gap-3 mb-4">
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1">Customer Rate per Mile</label>
+                        <InputNumber @bind-Value="s13CustomerRatePerMile" step="0.01" class="w-full rounded border border-gray-300 p-2" />
+                    </div>
+                    <div class="flex items-end">
+                        <button class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm" @onclick="RecomputeS13">Recalculate</button>
+                    </div>
+                </div>
+
+                <!-- KPI cards -->
+                <div class="grid sm:grid-cols-4 gap-3 mb-4">
+                    <div class="rounded border p-3">
+                        <div class="text-xs text-gray-500">Total Miles</div>
+                        <div class="text-xl font-semibold">@s13Totals.TotalMiles</div>
+                    </div>
+                    <div class="rounded border p-3">
+                        <div class="text-xs text-gray-500">Revenue</div>
+                        <div class="text-xl font-semibold">@s13Totals.Revenue.ToString("C")</div>
+                    </div>
+                    <div class="rounded border p-3">
+                        <div class="text-xs text-gray-500">Cost (Pay + Expenses)</div>
+                        <div class="text-xl font-semibold">@s13Totals.Cost.ToString("C")</div>
+                    </div>
+                    <div class="rounded border p-3">
+                        <div class="text-xs text-gray-500">Profit</div>
+                        <div class="text-xl font-semibold">@s13Totals.Profit.ToString("C")</div>
+                    </div>
+                </div>
+
+                <!-- Profit by Driver bars -->
+                <div class="space-y-3">
+                    @foreach (var row in s13DriverSummaries)
+                    {
+                        var width = s13MaxProfit <= 0 ? 0 : (row.Profit / s13MaxProfit) * 100m;
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between text-xs sm:text-sm">
+                                <div class="font-medium">@row.Driver</div>
+                                <div class="text-gray-600">Rev @row.Revenue.ToString("C") · Cost @row.Cost.ToString("C") · Profit <span class="font-medium">@row.Profit.ToString("C")</span></div>
+                            </div>
+                            <div class="h-3 w-full rounded bg-gray-200 overflow-hidden">
+                                <div class="h-full bg-blue-600" style="width:@width%"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 🎨 Dashboard Styling
             </h2>
+            <p class="text-sm sm:text-base text-gray-700 mb-3">These styles provide a consistent visual language for KPI cards, route statuses, and driver tiles. They improve readability and make the dashboard scannable.</p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Grid layouts adapt to different screen sizes</li>
+                <li>Status badges communicate state through color</li>
+                <li>Class names group styles by component and purpose</li>
+            </ul>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>/* Dashboard Styles */
+                <details class="group">
+                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                                @onclick="CopyStyleCode">Copy</button>
+                        <pre id="code-style-pre" class="text-xs sm:text-sm text-gray-800 font-mono"><code>/* Dashboard Styles */
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -375,6 +481,8 @@ public class DashboardStats
     background: #fee2e2;
     border: 2px solid #ef4444;
 }</code></pre>
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -429,21 +537,161 @@ public class DashboardStats
                 }
             </div>
         </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 flex items-center justify-between">
+            <a href="/examples/step12" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 12
+            </a>
+            <a href="/guide" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Back to Guide
+                <span>🏠</span>
+            </a>
+        </div>
     </div>
 </div>
 
 @code {
     private bool isComplete = false;
+    
+    // --- Live Demo (Step 13) State ---
+    private decimal s13CustomerRatePerMile = 2.10m;
+    private List<DemoTrip> s13Trips = new();
+    private Step13Totals s13Totals = new();
+    private List<Step13DriverSummary> s13DriverSummaries = new();
+    private decimal s13MaxProfit = 0m;
 
     protected override async Task OnInitializedAsync()
     {
         var step = await ProgressService.GetStepAsync(13);
         isComplete = step?.IsComplete ?? false;
+
+        InitializeS13Trips();
+        RecomputeS13();
     }
 
     private async Task MarkComplete()
     {
         await ProgressService.MarkStepCompleteAsync(13);
         isComplete = true;
+    }
+
+    // JS interop for copy buttons
+    private IJSObjectReference? _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
+        }
+    }
+
+    private async Task CopyCompCode()
+    {
+        if (_module is not null)
+            await _module.InvokeVoidAsync("copyById", "code-comp-pre");
+    }
+
+    private async Task CopyLogicCode()
+    {
+        if (_module is not null)
+            await _module.InvokeVoidAsync("copyById", "code-logic-pre");
+    }
+
+    private async Task CopyStyleCode()
+    {
+        if (_module is not null)
+            await _module.InvokeVoidAsync("copyById", "code-style-pre");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is not null)
+        {
+            await _module.DisposeAsync();
+        }
+    }
+
+    // --- Live Demo (Step 13) Logic ---
+    private void InitializeS13Trips()
+    {
+        const decimal baseRatePerMile = 0.65m;
+        const decimal overtimeRatePerHour = 30m;
+
+        s13Trips = new()
+        {
+            new DemoTrip { Driver = "Alex", Miles = 420, RatePerMile = baseRatePerMile, PerDiem = 35m, OvertimeHours = 1m, OvertimeRatePerHour = overtimeRatePerHour, FuelCost = 160m },
+            new DemoTrip { Driver = "Alex", Miles = 310, RatePerMile = baseRatePerMile, PerDiem = 35m, OvertimeHours = 0m, OvertimeRatePerHour = overtimeRatePerHour, FuelCost = 120m },
+            new DemoTrip { Driver = "Sam",  Miles = 520, RatePerMile = baseRatePerMile, PerDiem = 45m, OvertimeHours = 2m, OvertimeRatePerHour = overtimeRatePerHour, FuelCost = 210m },
+            new DemoTrip { Driver = "Sam",  Miles = 290, RatePerMile = baseRatePerMile, PerDiem = 35m, OvertimeHours = 0m, OvertimeRatePerHour = overtimeRatePerHour, FuelCost = 115m },
+        };
+    }
+
+    private decimal ComputePay(DemoTrip t) => (t.Miles * t.RatePerMile) + (t.OvertimeHours * t.OvertimeRatePerHour) + t.PerDiem;
+
+    private void RecomputeS13()
+    {
+        var totalMiles = s13Trips.Sum(t => t.Miles);
+        var revenue = s13Trips.Sum(t => t.Miles * s13CustomerRatePerMile);
+        var cost = s13Trips.Sum(ComputePay) + s13Trips.Sum(t => t.FuelCost);
+        var profit = revenue - cost;
+
+        s13Totals = new Step13Totals
+        {
+            TotalMiles = totalMiles,
+            Revenue = revenue,
+            Cost = cost,
+            Profit = profit
+        };
+
+        s13DriverSummaries = s13Trips
+            .GroupBy(t => t.Driver)
+            .Select(g => new Step13DriverSummary
+            {
+                Driver = g.Key,
+                Revenue = g.Sum(t => t.Miles * s13CustomerRatePerMile),
+                Cost = g.Sum(ComputePay) + g.Sum(t => t.FuelCost)
+            })
+            .Select(r => new Step13DriverSummary
+            {
+                Driver = r.Driver,
+                Revenue = r.Revenue,
+                Cost = r.Cost,
+                Profit = r.Revenue - r.Cost
+            })
+            .OrderByDescending(r => r.Profit)
+            .ToList();
+
+        s13MaxProfit = s13DriverSummaries.Any() ? s13DriverSummaries.Max(r => r.Profit) : 0m;
+    }
+
+    // Demo types (local)
+    public class DemoTrip
+    {
+        public string Driver { get; set; } = string.Empty;
+        public int Miles { get; set; }
+        public decimal RatePerMile { get; set; }
+        public decimal PerDiem { get; set; }
+        public decimal OvertimeHours { get; set; }
+        public decimal OvertimeRatePerHour { get; set; }
+        public decimal FuelCost { get; set; }
+    }
+
+    public class Step13Totals
+    {
+        public int TotalMiles { get; set; }
+        public decimal Revenue { get; set; }
+        public decimal Cost { get; set; }
+        public decimal Profit { get; set; }
+    }
+
+    public class Step13DriverSummary
+    {
+        public string Driver { get; set; } = string.Empty;
+        public decimal Revenue { get; set; }
+        public decimal Cost { get; set; }
+        public decimal Profit { get; set; }
     }
 }

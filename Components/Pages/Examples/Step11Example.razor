@@ -1,5 +1,7 @@
 @page "/examples/step11"
 @inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 @rendermode InteractiveServer
 
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
@@ -47,9 +49,32 @@
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 🏗️ Assignment Form Component
             </h2>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
+                Build a form to create driver–truck–route assignments and surface validation messages as the user
+                selects options.
+            </p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Uses EditForm + DataAnnotations for built-in validation plumbing</li>
+                <li>Driver and Truck selects only include currently available options</li>
+                <li>Route Type has a placeholder and must be selected before submit</li>
+                <li>Change handlers trigger instant validation feedback</li>
+                <li>Submit stays disabled until hard rules pass</li>
+            </ul>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/assignments/create"
+                <details class="group">
+                    <summary
+                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button
+                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                            @onclick="CopyFormCode">Copy</button>
+                        <pre id="s11-code-form" data-code-title="Razor + C# (Assignment Form)"
+                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/assignments/create"
 @@inject AppDbContext DbContext
 @@inject NavigationManager Navigation
 @@using Microsoft.EntityFrameworkCore
@@ -100,6 +125,7 @@
     &lt;div class="form-group"&gt;
         &lt;label&gt;Route Type:&lt;/label&gt;
         &lt;InputSelect @@bind-Value="newRoute.Type" @@bind-Value:after="ValidateAssignment"&gt;
+            &lt;option value=""&gt;-- Select Route Type --&lt;/option&gt;
             @@foreach (var type in Enum.GetValues&lt;RouteType&gt;())
             {
                 &lt;option value="@@type"&gt;@@type&lt;/option&gt;
@@ -124,6 +150,8 @@
     &lt;button type="submit" disabled="@@(!isValid)"&gt;Create Assignment&lt;/button&gt;
     &lt;a href="/routes"&gt;Cancel&lt;/a&gt;
 &lt;/EditForm&gt;</code></pre>
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -131,9 +159,32 @@
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">
                 ✅ Validation Logic
             </h2>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
+                Apply business rules: license level vs. truck, experience vs. route type, and maintenance flags.
+                Disable submit when rules fail; show warnings when applicable.
+            </p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Tracks selected Driver, Truck, and Route Type plus validity</li>
+                <li>Hard rule: license must meet the selected truck’s required class</li>
+                <li>Hard rule: Route Type is required; experience checked per type</li>
+                <li>Soft rule: upcoming maintenance is a warning, not a blocker</li>
+                <li>Aggregates friendly messages; toggles isValid accordingly</li>
+            </ul>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@code {
+                <details class="group">
+                    <summary
+                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button
+                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                            @onclick="CopyValidationCode">Copy</button>
+                        <pre id="s11-code-validation" data-code-title="C# (Validation Logic)"
+                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@code {
     private Route newRoute = new();
     private List&lt;Driver&gt; availableDrivers = new();
     private List&lt;Truck&gt; availableTrucks = new();
@@ -184,8 +235,17 @@
             isValid = false;
         }
 
+        // Route type required
+        if (newRoute.Type is null)
+        {
+            validationWarnings.Add("⚠️ Please select a route type");
+            isValid = false;
+            return;
+        }
+
         // Rule 2: Check experience for route type
-        bool hasExperience = newRoute.Type switch
+        var rt = newRoute.Type.Value;
+        bool hasExperience = rt switch
         {
             RouteType.Hazmat =&gt; driver.YearsOfExperience &gt;= 2,
             RouteType.Oversized =&gt; driver.YearsOfExperience &gt;= 3,
@@ -197,7 +257,7 @@
         {
             validationWarnings.Add(
                 $"⚠️ {driver.Name} has {driver.YearsOfExperience} years experience. " +
-                $"{newRoute.Type} routes require more experience."
+                $"{rt} routes require more experience."
             );
             isValid = false;
         }
@@ -250,6 +310,8 @@
         }
     }
 }</code></pre>
+                    </div>
+                </details>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -285,6 +347,74 @@
                         <li>✓ Route is very long distance</li>
                         <li>✓ Weather conditions</li>
                     </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Demo: Assignment Validator -->
+        <div class="bg-black/3 rounded-2xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">🎬 Live Demo: Assignment Validator</h2>
+
+            <div class="bg-white rounded-xl p-4 border border-gray-200">
+                <div class="grid sm:grid-cols-3 gap-3 mb-4">
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1">Route Type</label>
+                        <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@(demoSelectedRouteType?.ToString() ?? string.Empty)" @onchange="OnDemoRouteTypeChanged">
+                            <option value="">-- Select Route Type --</option>
+                            @foreach (var rt in demoRouteTypes)
+                            {
+                                <option value="@rt">@rt</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1">Truck</label>
+                        <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@demoSelectedTruckId" @onchange="OnDemoTruckChanged">
+                            <option value="">-- Select Truck --</option>
+                            @foreach (var t in demoTrucks)
+                            {
+                                <option value="@t.Id">@t.DisplayName (@t.Class)</option>
+                            }
+                        </select>
+                    </div>  <div>
+                        <label class="block text-xs text-gray-600 mb-1">Driver</label>
+                        <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@demoSelectedDriverId" @onchange="OnDemoDriverChanged">
+                            <option value="">-- Select Driver --</option>
+                            @foreach (var d in demoDrivers)
+                            {
+                                <option value="@d.Id">@d.Name (@d.LicenseLevel, @d.YearsOfExperience yrs)</option>
+                            }
+                        </select>
+                    </div>
+                  
+                </div>
+
+                @if (demoWarnings.Any())
+                {
+                    <div class="rounded border-l-4 border-yellow-500 bg-yellow-50 p-3 mb-3">
+                        <div class="text-xs sm:text-sm text-yellow-800 font-semibold mb-1">Validation Warnings</div>
+                        <ul class="text-xs sm:text-sm text-yellow-800 list-disc ml-5 space-y-1">
+                            @foreach (var w in demoWarnings)
+                            {
+                                <li>@w</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <div class="flex items-center justify-between">
+                    <div class="text-xs sm:text-sm">
+                        <span class="font-semibold">Status:</span>
+                        @if (demoIsValid)
+                        {
+                            <span class="text-green-700">✅ Valid assignment</span>
+                        }
+                        else
+                        {
+                            <span class="text-red-700">❌ Not valid</span>
+                        }
+                    </div>
+                    <button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm" @onclick="ResetDemo">Reset</button>
                 </div>
             </div>
         </div>
@@ -340,11 +470,24 @@
                 }
             </div>
         </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 flex items-center justify-between">
+            <a href="/examples/step10" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 10
+            </a>
+            <a href="/examples/step12" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 12
+                <span>→</span>
+            </a>
+        </div>
     </div>
 </div>
 
 @code {
     private bool isComplete = false;
+    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
@@ -352,9 +495,200 @@
         isComplete = step?.IsComplete ?? false;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
+            // Initialize the inline demo data set for this page
+            SeedDemoData();
+        }
+    }
+
+    private async Task CopyFormCode()
+    {
+        if (_copyModule is not null)
+            await _copyModule.InvokeVoidAsync("copyById", "s11-code-form");
+    }
+
+    private async Task CopyValidationCode()
+    {
+        if (_copyModule is not null)
+            await _copyModule.InvokeVoidAsync("copyById", "s11-code-validation");
+    }
+
     private async Task MarkComplete()
     {
         await ProgressService.MarkStepCompleteAsync(11);
         isComplete = true;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_copyModule is not null)
+        {
+            await _copyModule.DisposeAsync();
+        }
+    }
+
+    // ---- Demo State (local to Step 11 page) ----
+    private enum DemoLicenseLevel { ClassC = 1, ClassB = 2, ClassA = 3 }
+    private enum DemoTruckClass { Light, Medium, Heavy }
+    private enum DemoRouteType { Local, LongHaul, Hazmat, Oversized }
+
+    private class DemoDriver
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public DemoLicenseLevel LicenseLevel { get; set; } = DemoLicenseLevel.ClassC;
+        public int YearsOfExperience { get; set; }
+        public bool IsAvailable { get; set; } = true;
+    }
+
+    private class DemoTruck
+    {
+        public int Id { get; set; }
+        public string DisplayName { get; set; } = string.Empty;
+        public DemoTruckClass Class { get; set; } = DemoTruckClass.Light;
+        public bool IsAvailable { get; set; } = true;
+        public bool InMaintenance { get; set; } = false;
+    }
+
+    private List<DemoDriver> demoDrivers = new();
+    private List<DemoTruck> demoTrucks = new();
+    private List<DemoRouteType> demoRouteTypes = Enum.GetValues<DemoRouteType>().ToList();
+    private int? demoSelectedDriverId;
+    private int? demoSelectedTruckId;
+    private DemoRouteType? demoSelectedRouteType = null;
+    private bool demoIsValid;
+    private List<string> demoWarnings = new();
+
+    // Note: OnAfterRenderAsync is already declared earlier; seed demo data there after module import.
+
+    private void SeedDemoData()
+    {
+        if (demoDrivers.Count == 0)
+        {
+            demoDrivers = new()
+            {
+                new DemoDriver { Id = 1, Name = "Alex",  LicenseLevel = DemoLicenseLevel.ClassA, YearsOfExperience = 5, IsAvailable = true },
+                new DemoDriver { Id = 2, Name = "Sam",   LicenseLevel = DemoLicenseLevel.ClassB, YearsOfExperience = 2, IsAvailable = true },
+                new DemoDriver { Id = 3, Name = "Riley", LicenseLevel = DemoLicenseLevel.ClassC, YearsOfExperience = 1, IsAvailable = true },
+            };
+        }
+        if (demoTrucks.Count == 0)
+        {
+            demoTrucks = new()
+            {
+                new DemoTruck { Id = 1, DisplayName = "Freightliner FL-01", Class = DemoTruckClass.Heavy,  IsAvailable = true,  InMaintenance = false },
+                new DemoTruck { Id = 2, DisplayName = "Volvo VNL-22",     Class = DemoTruckClass.Medium, IsAvailable = true,  InMaintenance = false },
+                new DemoTruck { Id = 3, DisplayName = "Ford F-150",       Class = DemoTruckClass.Light,  IsAvailable = true,  InMaintenance = false },
+            };
+        }
+    }
+
+    private void OnDemoDriverChanged(ChangeEventArgs e)
+    {
+        SeedDemoData();
+        demoSelectedDriverId = int.TryParse(Convert.ToString(e.Value), out var id) ? id : null;
+        ValidateDemo();
+    }
+
+    private void OnDemoTruckChanged(ChangeEventArgs e)
+    {
+        SeedDemoData();
+        demoSelectedTruckId = int.TryParse(Convert.ToString(e.Value), out var id) ? id : null;
+        ValidateDemo();
+    }
+
+    private void OnDemoRouteTypeChanged(ChangeEventArgs e)
+    {
+        var val = Convert.ToString(e.Value);
+        if (string.IsNullOrWhiteSpace(val))
+        {
+            demoSelectedRouteType = null;
+            ValidateDemo();
+            return;
+        }
+        if (Enum.TryParse<DemoRouteType>(val, out var rt))
+        {
+            demoSelectedRouteType = rt;
+            ValidateDemo();
+        }
+    }
+
+    private void ResetDemo()
+    {
+        demoSelectedDriverId = null;
+        demoSelectedTruckId = null;
+        demoSelectedRouteType = null;
+        demoWarnings.Clear();
+        demoIsValid = false;
+    }
+
+    private void ValidateDemo()
+    {
+        SeedDemoData();
+        demoWarnings.Clear();
+        demoIsValid = true;
+
+        var driver = demoSelectedDriverId.HasValue ? demoDrivers.FirstOrDefault(d => d.Id == demoSelectedDriverId.Value) : null;
+        var truck  = demoSelectedTruckId.HasValue  ? demoTrucks.FirstOrDefault(t => t.Id == demoSelectedTruckId.Value) : null;
+
+        if (driver is null || truck is null)
+        {
+            demoIsValid = false;
+            return;
+        }
+
+        if (!driver.IsAvailable)
+        {
+            demoWarnings.Add($"❌ Driver {driver.Name} is not available");
+            demoIsValid = false;
+        }
+
+        if (!truck.IsAvailable || truck.InMaintenance)
+        {
+            demoWarnings.Add($"❌ Truck {truck.DisplayName} is not available (maintenance)");
+            demoIsValid = false;
+        }
+
+        bool licenseOk = truck.Class switch
+        {
+            DemoTruckClass.Heavy  => driver.LicenseLevel == DemoLicenseLevel.ClassA,
+            DemoTruckClass.Medium => driver.LicenseLevel >= DemoLicenseLevel.ClassB,
+            _ => true
+        };
+        if (!licenseOk)
+        {
+            demoWarnings.Add($"❌ {driver.Name} has {driver.LicenseLevel}, but {truck.DisplayName} requires higher license");
+            demoIsValid = false;
+        }
+
+        if (demoSelectedRouteType is null)
+        {
+            demoWarnings.Add("⚠️ Please select a route type");
+            demoIsValid = false;
+            return;
+        }
+
+        var routeType = demoSelectedRouteType.Value;
+        bool hasExperience = routeType switch
+        {
+            DemoRouteType.Hazmat    => driver.YearsOfExperience >= 2,
+            DemoRouteType.Oversized => driver.YearsOfExperience >= 3,
+            DemoRouteType.LongHaul  => driver.YearsOfExperience >= 1,
+            _ => true
+        };
+        if (!hasExperience)
+        {
+            demoWarnings.Add($"⚠️ {driver.Name} has {driver.YearsOfExperience} years; {routeType} routes need more experience");
+            demoIsValid = false;
+        }
+
+        if (demoIsValid && !demoWarnings.Any())
+        {
+            demoWarnings.Add("✅ Assignment is valid and ready!");
+        }
     }
 }

@@ -1,9 +1,11 @@
 @page "/examples/step7"
 @inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
 @using BlazorMock.Models
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations
 @using System.Linq
+@implements IAsyncDisposable
 @rendermode InteractiveServer
 
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
@@ -57,7 +59,17 @@
             </p>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>using System.ComponentModel.DataAnnotations;
+                <details class="group">
+                    <summary
+                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span
+                            class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
+                    <div class="relative mt-3">
+                        <button
+                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                            @onclick="CopyDriverModel">Copy</button>
+                        <pre id="s7-code-driver" data-code-title="C# Model (Driver)"
+                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>using System.ComponentModel.DataAnnotations;
 
 public class Driver
 {
@@ -89,6 +101,8 @@ public class Driver
     // Navigation property - One driver has many routes
     public ICollection&lt;Route&gt; Routes { get; set; } = new List&lt;Route&gt;();
 }</code></pre>
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -102,7 +116,17 @@ public class Driver
             </p>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>public enum LicenseLevel
+                <details class="group">
+                    <summary
+                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span
+                            class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
+                    <div class="relative mt-3">
+                        <button
+                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                            @onclick="CopyEnumCode">Copy</button>
+                        <pre id="s7-code-enum" data-code-title="C# Enum (LicenseLevel)"
+                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>public enum LicenseLevel
 {
     [Display(Name = "Class C (Light Vehicles)")]
     ClassC = 1,
@@ -113,6 +137,8 @@ public class Driver
     [Display(Name = "Class A (Heavy Vehicles)")]
     ClassA = 3
 }</code></pre>
+                    </div>
+                </details>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -186,7 +212,17 @@ public class Driver
             </p>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>// One-to-Many: One Driver has Many Routes
+                <details class="group">
+                    <summary
+                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span
+                            class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
+                    <div class="relative mt-3">
+                        <button
+                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                            @onclick="CopyRelationships">Copy</button>
+                        <pre id="s7-code-relationships" data-code-title="C# Relationships"
+                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>// One-to-Many: One Driver has Many Routes
 public class Driver
 {
     public int Id { get; set; }
@@ -206,6 +242,8 @@ public class Route
     // Navigation property (single)
     public Driver Driver { get; set; } = null!;
 }</code></pre>
+                    </div>
+                </details>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -246,7 +284,17 @@ public class Route
             </p>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>public class Driver
+                <details class="group">
+                    <summary
+                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span
+                            class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
+                    <div class="relative mt-3">
+                        <button
+                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                            @onclick="CopyBusinessLogic">Copy</button>
+                        <pre id="s7-code-business" data-code-title="C# Business Logic"
+                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>public class Driver
 {
     public LicenseLevel LicenseLevel { get; set; }
     public int YearsOfExperience { get; set; }
@@ -276,6 +324,8 @@ public class Route
         return YearsOfExperience + bonus;
     }
 }</code></pre>
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -407,11 +457,26 @@ public class Route
                 }
             </div>
         </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 flex items-center justify-between">
+            <a href="/examples/step6"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 6
+            </a>
+            <a href="/examples/step8"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 8
+                <span>→</span>
+            </a>
+        </div>
     </div>
 </div>
 
 @code {
     private bool isComplete = false;
+    private IJSObjectReference? _copyModule;
 
     // Sample driver for interactive demo
     private class SampleDriver
@@ -436,6 +501,43 @@ public class Route
     {
         await ProgressService.MarkStepCompleteAsync(7);
         isComplete = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
+        }
+    }
+
+    private async Task CopyDriverModel()
+    {
+        if (_copyModule is not null) await _copyModule.InvokeVoidAsync("copyById",
+    "s7-code-driver");
+    }
+    private async Task CopyEnumCode()
+    {
+        if (_copyModule is not null) await _copyModule.InvokeVoidAsync("copyById",
+    "s7-code-enum");
+    }
+    private async Task CopyRelationships()
+    {
+        if (_copyModule is not null) await _copyModule.InvokeVoidAsync("copyById",
+    "s7-code-relationships");
+    }
+    private async Task CopyBusinessLogic()
+    {
+        if (_copyModule is not null) await _copyModule.InvokeVoidAsync("copyById",
+    "s7-code-business");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_copyModule is not null)
+        {
+            await _copyModule.DisposeAsync();
+        }
     }
 
     private static string GetLicenseDisplay(LicenseLevel level)

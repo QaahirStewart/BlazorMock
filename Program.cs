@@ -19,6 +19,7 @@ builder.Services.AddRazorComponents()
 // App services
 builder.Services.AddSingleton<LayoutState>();
 builder.Services.AddScoped<ILearningProgressService, LearningProgressService>();
+builder.Services.AddScoped<AppState>();
 builder.Services.AddSingleton<ITipsService, TipsService>();
 builder.Services.AddSingleton<ITipsContributor, DefaultTipsContributor>();
 builder.Services.AddSingleton<ITipsContributor, FormsTipsContributor>();

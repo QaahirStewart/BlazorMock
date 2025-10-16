@@ -10,6 +10,10 @@ What you'll do:
 - Add helpful VS Code extensions
 - Verify your environment works
 
+Summary:
+
+- Set up the toolchain and confirm everything runs locally. If any check fails, install the missing tool and ensure it’s on PATH.
+
 ## 1) Install Required Tools
 
 - .NET SDK (matches this repo): .NET 10 SDK or later
@@ -28,11 +32,16 @@ What you'll do:
 
 Run these in VS Code terminal (PowerShell):
 
+<details>
+	<summary>Show code — Verification commands</summary>
+
 ```pwsh
 dotnet --info
 node --version
 npm --version
 ```
+
+</details>
 
 You should see versions without errors. If any command isn't found, install or add to PATH.
 

@@ -30,7 +30,7 @@
             <p class="text-gray-700 mb-6">Blazor provides powerful form handling with built-in validation. Use EditForm component with data annotations for robust form validation.</p>
             
             <h3 class="text-lg font-semibold text-gray-700 mb-3">Basic EditForm Structure:</h3>
-            <pre class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">@("<EditForm Model=\"driver\" OnValidSubmit=\"HandleSubmit\">")
+            <pre data-code-title="Razor + C# (EditForm)" class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">@("<EditForm Model=\"driver\" OnValidSubmit=\"HandleSubmit\">")
   @("<DataAnnotationsValidator />")
   @("<ValidationSummary />")
   
@@ -230,37 +230,37 @@ public class Driver
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[Required]</h3>
                     <p class="text-sm text-gray-600 mb-2">Ensures field has a value</p>
-                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Required(ErrorMessage = "Name required")]</pre>
+                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Required(ErrorMessage = "Name required")]</pre>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[StringLength]</h3>
                     <p class="text-sm text-gray-600 mb-2">Limits string length</p>
-                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[StringLength(50, MinimumLength = 2)]</pre>
+                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[StringLength(50, MinimumLength = 2)]</pre>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[EmailAddress]</h3>
                     <p class="text-sm text-gray-600 mb-2">Validates email format</p>
-                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[EmailAddress]</pre>
+                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[EmailAddress]</pre>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[Range]</h3>
                     <p class="text-sm text-gray-600 mb-2">Sets numeric range</p>
-                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Range(0, 60)]</pre>
+                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Range(0, 60)]</pre>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[RegularExpression]</h3>
                     <p class="text-sm text-gray-600 mb-2">Custom pattern matching</p>
-                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[RegularExpression(@@"^\d{{3}}-\d{{2}}-\d{{4}}$")]</pre>
+                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[RegularExpression(@@"^\d{{3}}-\d{{2}}-\d{{4}}$")]</pre>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[Compare]</h3>
                     <p class="text-sm text-gray-600 mb-2">Compares two properties</p>
-                    <pre class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Compare(nameof(Password))]</pre>
+                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Compare(nameof(Password))]</pre>
                 </div>
             </div>
         </div>
@@ -321,9 +321,9 @@ public class Driver
                 <span>←</span>
                 Previous: Step 4
             </a>
-            <a href="/guide" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                Back to Guide
-                <span>🏠</span>
+            <a href="/examples/step6" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 6
+                <span>→</span>
             </a>
         </div>
     </div>

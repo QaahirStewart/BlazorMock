@@ -10,18 +10,18 @@
 - ✅ Step 4: Event Binding (Counter)
 - ✅ Step 5: Forms & Validation (DriverForm)
 
-### Phase 2: Intermediate (Steps 6-10) - IN PROGRESS
+### Phase 2: Intermediate (Steps 6-10) - COMPLETE
 
 - ✅ Step 6 Example: Routing & Navigation tutorial created
 - ✅ Step 7 Models: Driver.cs, Truck.cs, Route.cs with full documentation
 - ✅ Step 7 Example: EF Core Models tutorial created
-- ⏳ Step 8: EF Core DbContext setup needed
-- ⏳ Step 9: CRUD Pages needed
-- ⏳ Step 10: State Management (AppState service) needed
+- ✅ Step 8: EF Core DbContext setup complete (DbContext, migrations, seeding)
+- ✅ Step 9: CRUD Pages implemented with sample data and navigation
+- ✅ Step 10: State Management (AppState service + live demo components)
 
-### Phase 3: Advanced (Steps 11-13) - NOT STARTED
+### Phase 3: Advanced (Steps 11-13) - IN PROGRESS
 
-- ⏳ Step 11: Assignment Logic & Business Rules
+- ✅ Step 11: Assignment Logic & Business Rules (live demo, placeholder + reset)
 - ⏳ Step 12: Pay & Expense Calculation Service
 - ⏳ Step 13: Dashboard & Reports
 
@@ -56,12 +56,12 @@ Components/Pages/Examples/
 ├── Step5Example.razor  ✅ Existing
 ├── Step6Example.razor  ✅ NEW - Routing & Navigation
 ├── Step7Example.razor  ✅ NEW - EF Core Models
-├── Step8Example.razor  ⏳ TODO - DbContext Setup
-├── Step9Example.razor  ⏳ TODO - CRUD Operations
-├── Step10Example.razor ⏳ TODO - State Management
-├── Step11Example.razor ⏳ TODO - Assignment Logic
-├── Step12Example.razor ⏳ TODO - Pay Calculation
-└── Step13Example.razor ⏳ TODO - Dashboard
+├── Step8Example.razor  ✅ DbContext Setup
+├── Step9Example.razor  ✅ CRUD Operations
+├── Step10Example.razor ✅ State Management (AppState)
+├── Step11Example.razor ✅ Assignment Logic
+├── Step12Example.razor ⏳ Pay Calculation
+└── Step13Example.razor ⏳ Dashboard
 ```
 
 ### Services
@@ -71,7 +71,7 @@ Services/
 ├── LearningProgressService.cs  ✅ Enhanced with step ID support
 ├── TipsService.cs              ✅ Existing (20+ tips)
 ├── LayoutState.cs              ✅ Existing
-├── AppState.cs                 ⏳ TODO - For Step 10
+├── AppState.cs                 ✅ For Step 10 (scoped state + events)
 └── ScheduleService.cs          ⏳ TODO - For Step 12
 ```
 

@@ -1,5 +1,7 @@
 @page "/examples/step8"
 @inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 @rendermode InteractiveServer
 
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
@@ -52,7 +54,16 @@
             </p>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code># Install EF Core SQLite provider
+                <details class="group">
+                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                                @onclick="CopyCliCode">Copy</button>
+                        <pre id="s8-code-cli" data-code-title="dotnet CLI" class="text-xs sm:text-sm text-gray-800 font-mono"><code># Install EF Core SQLite provider
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 
 # Install EF Core tools for migrations
@@ -60,6 +71,8 @@ dotnet add package Microsoft.EntityFrameworkCore.Tools
 
 # Install EF Core design-time components
 dotnet add package Microsoft.EntityFrameworkCore.Design</code></pre>
+                    </div>
+                </details>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -79,8 +92,23 @@ dotnet add package Microsoft.EntityFrameworkCore.Design</code></pre>
                 The DbContext is your gateway to the database. It manages entity objects and database operations.
             </p>
 
+            <p class="text-sm sm:text-base text-gray-700 mb-3">Defines your EF Core database context and configures relationships between entities. This is the central place EF uses to map your C# models to database tables.</p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>DbSet properties represent tables</li>
+                <li>OnModelCreating configures keys, lengths, and relationships</li>
+                <li>Keep model rules close to the data by using Data Annotations plus fluent API</li>
+            </ul>
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>using Microsoft.EntityFrameworkCore;
+                <details class="group">
+                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                                @onclick="CopyDbContextCode">Copy</button>
+                        <pre id="s8-code-dbcontext" data-code-title="C# (AppDbContext.cs)" class="text-xs sm:text-sm text-gray-800 font-mono"><code>using Microsoft.EntityFrameworkCore;
 using BlazorMock.Models;
 
 namespace BlazorMock.Data;
@@ -144,6 +172,8 @@ public class AppDbContext : DbContext
         });
     }
 }</code></pre>
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -156,8 +186,17 @@ public class AppDbContext : DbContext
                 Add the database connection string to appsettings.json:
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>{
+                        <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                                <details class="group">
+                                        <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                                                Show code
+                                                <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                                                <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                                        </summary>
+                                        <div class="relative mt-3">
+                                                <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                                                                @onclick="CopyAppSettingsCode">Copy</button>
+                                                <pre id="s8-code-appsettings" data-code-title="appsettings.json" class="text-xs sm:text-sm text-gray-800 font-mono"><code>{
   "ConnectionStrings": {
     "DefaultConnection": "Data Source=trucking.db"
   },
@@ -167,7 +206,9 @@ public class AppDbContext : DbContext
     }
   }
 }</code></pre>
-            </div>
+                                        </div>
+                                </details>
+                        </div>
         </div>
 
         <!-- Step 4: Register DbContext -->
@@ -179,8 +220,23 @@ public class AppDbContext : DbContext
                 Configure dependency injection to make the DbContext available throughout your app:
             </p>
 
+            <p class="text-sm sm:text-base text-gray-700 mb-3">Registers the DbContext with dependency injection so components and services can request it as a constructor parameter. Uses the connection string from configuration.</p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Scoped lifetime is recommended for DbContext in web apps</li>
+                <li>Use configuration for secrets and environment differences</li>
+                <li>Keep Program.cs tidy and focused on registrations</li>
+            </ul>
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code>using Microsoft.EntityFrameworkCore;
+                <details class="group">
+                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                                @onclick="CopyProgramCode">Copy</button>
+                        <pre id="s8-code-program" data-code-title="Program.cs registration" class="text-xs sm:text-sm text-gray-800 font-mono"><code>using Microsoft.EntityFrameworkCore;
 using BlazorMock.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -197,6 +253,8 @@ builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
 var app = builder.Build();
 
 // Rest of Program.cs...</code></pre>
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -210,8 +268,18 @@ var app = builder.Build();
                 database structure.
             </p>
 
+            <p class="text-sm sm:text-base text-gray-700 mb-3">Use EF Core CLI commands to create and apply migrations. Think of migrations as version control for your database schema.</p>
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre class="text-xs sm:text-sm text-gray-800 font-mono"><code># Create your first migration
+                <details class="group">
+                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
+                        Show code
+                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
+                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
+                    </summary>
+                    <div class="relative mt-3">
+                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
+                                @onclick="CopyMigrationsCode">Copy</button>
+                        <pre id="s8-code-migrations" data-code-title="EF CLI (migrations)" class="text-xs sm:text-sm text-gray-800 font-mono"><code># Create your first migration
 dotnet ef migrations add InitialCreate
 
 # Apply the migration to create the database
@@ -219,6 +287,8 @@ dotnet ef database update
 
 # View migration status
 dotnet ef migrations list</code></pre>
+                    </div>
+                </details>
             </div>
 
             <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4">
@@ -311,11 +381,24 @@ dotnet ef migrations list</code></pre>
                 }
             </div>
         </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 flex items-center justify-between">
+            <a href="/examples/step7" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 7
+            </a>
+            <a href="/examples/step9" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 9
+                <span>→</span>
+            </a>
+        </div>
     </div>
 </div>
 
 @code {
     private bool isComplete = false;
+    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
@@ -323,9 +406,51 @@ dotnet ef migrations list</code></pre>
         isComplete = step?.IsComplete ?? false;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
+        }
+    }
+
+    private async Task CopyCliCode()
+    {
+        if (_copyModule is not null)
+            await _copyModule.InvokeVoidAsync("copyById", "s8-code-cli");
+    }
+    private async Task CopyDbContextCode()
+    {
+        if (_copyModule is not null)
+            await _copyModule.InvokeVoidAsync("copyById", "s8-code-dbcontext");
+    }
+    private async Task CopyAppSettingsCode()
+    {
+        if (_copyModule is not null)
+            await _copyModule.InvokeVoidAsync("copyById", "s8-code-appsettings");
+    }
+    private async Task CopyProgramCode()
+    {
+        if (_copyModule is not null)
+            await _copyModule.InvokeVoidAsync("copyById", "s8-code-program");
+    }
+    private async Task CopyMigrationsCode()
+    {
+        if (_copyModule is not null)
+            await _copyModule.InvokeVoidAsync("copyById", "s8-code-migrations");
+    }
+
     private async Task MarkComplete()
     {
         await ProgressService.MarkStepCompleteAsync(8);
         isComplete = true;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_copyModule is not null)
+        {
+            await _copyModule.DisposeAsync();
+        }
     }
 }

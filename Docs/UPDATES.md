@@ -1,5 +1,43 @@
 # Recent Updates & Improvements
 
+## October 15, 2025 (Step 10 demo polish)
+
+### 🧩 Live Demo Components + Copyable Code
+
+- Step 10 Example (`Components/Pages/Examples/Step10Example.razor`)
+  - Restored the Driver demo using two child components:
+    - `Components/Pages/Examples/Step10/DriverPicker.razor`
+    - `Components/Pages/Examples/Step10/SelectedDriverCard.razor`
+  - Added collapsible "Show code" blocks with per-block Copy buttons (matching Step 13 pattern)
+  - Wired copy handlers to use the existing JS module (`Step13Example.razor.js`)
+  - Ensured `SelectedDriverCard.razor` unsubscribes from events by implementing `IDisposable`
+- Build: Verified Release build passes
+
+Impact: Learners can view and copy the exact demo component code in-place, with proper cleanup patterns showcased.
+
+## October 15, 2025 (Step 11 UX polish)
+
+### 🧪 Assignment Validator: placeholders, reset, and bindings
+
+- Guide (`Components/Pages/Guide.razor`, Step 11 card)
+  - Added “-- Select Route Type --” placeholder
+  - Made route type selection nullable, updated change/reset handlers and validation to require a selection
+  - Bound Route/Truck/Driver selects to state so Reset clears visible inputs
+- Step 11 Example (`Components/Pages/Examples/Step11Example.razor`)
+  - Live demo: same placeholder + nullable route type + state bindings + reset behavior
+  - Updated code samples to reflect the placeholder and a simple null-check for route type before experience rules
+  - Added concise bullet-point summaries above the Assignment Form and Validation Logic code blocks (matching Step 13 style)
+- Build: Verified Release build passes
+
+Impact: More intuitive demo UX—Reset now clears all inputs, and users are prompted to pick a route type before validation proceeds. Samples match the live behavior for consistency.
+
+### 🧠 Step 10: State Management Demos
+
+- Added a simple scoped AppState service (`Services/AppState.cs`) and registered it in `Program.cs`
+- Guide (`Components/Pages/Guide.razor`, Step 10 card): Embedded a “Shared Selection” inline demo using AppState
+- Step 10 Example (`Components/Pages/Examples/Step10Example.razor`): Added a “Live Demo: Shared State (AppState)” section
+- Both demos let you pick a driver and see mirrored details via shared state and event notifications
+
 ## October 14, 2025 (Build & EF housekeeping)
 
 ### ✅ Build verified, EF packages aligned

@@ -4,6 +4,7 @@
 @rendermode InteractiveServer
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.EntityFrameworkCore
 
 <PageTitle>Blazor Learning Guide</PageTitle>
 
@@ -699,17 +700,21 @@ public class Driver {
                         class="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm hover:bg-gray-50">Routes
                         CRUD (+ Include) →</a>
                 </div>
-                <p class="text-xs sm:text-sm text-gray-600 mb-2">Note: In Development, sample Drivers, Trucks, and Routes are auto-seeded so you can explore lists immediately.</p>
+                <p class="text-xs sm:text-sm text-gray-600 mb-2">Note: In Development, sample Drivers, Trucks, and
+                    Routes are auto-seeded so you can explore lists immediately.</p>
                 <a href="/examples/step9"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base rounded-lg transition-colors">
                     <span>📖</span>
                     View Code & Details
                     <span>→</span>
                 </a>
-                @if (OperatingSystem.IsWindows() && Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                @if (OperatingSystem.IsWindows() && Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ==
+                                "Development")
                 {
                     <div class="mt-3">
-                        <button @onclick="ResetSampleDataAsync" class="px-3 py-2 text-xs sm:text-sm rounded-lg border border-gray-300 hover:bg-gray-50">Reset sample data (Dev)</button>
+                        <button @onclick="ResetSampleDataAsync"
+                            class="px-3 py-2 text-xs sm:text-sm rounded-lg border border-gray-300 hover:bg-gray-50">Reset
+                            sample data (Dev)</button>
                         @if (!string.IsNullOrEmpty(resetMessage))
                         {
                             <div class="mt-2 text-xs text-gray-600">@resetMessage</div>
@@ -748,6 +753,40 @@ public class Driver {
                 <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Share data between
                     components using state services. Learn about service lifetimes, events, and the StateHasChanged()
                     method.</p>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">🎮 Try It: Shared Selection (State Service)</h4>
+                    <p class="text-xs sm:text-sm text-gray-600 mb-3">Pick a driver in the left dropdown; the selection immediately appears on the right—both bound through a shared scoped service.</p>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <div class="bg-white rounded-lg border border-gray-200 p-3">
+                            <label class="block text-xs text-gray-600 mb-1">Select Driver</label>
+                            <select class="w-full rounded border border-gray-300 p-2 text-sm" @onchange="OnG10PickDriver">
+                                <option value="">-- Choose --</option>
+                                @foreach (var d in g10Drivers)
+                                {
+                                    <option value="@d.Id">@d.Name (@d.LicenseLevel)</option>
+                                }
+                            </select>
+                            @if (!g10Drivers.Any())
+                            {
+                                <div class="mt-2 text-[11px] text-gray-500">No drivers found in database.</div>
+                            }
+                        </div>
+                        <div class="bg-white rounded-lg border border-gray-200 p-3">
+                            <div class="text-xs text-gray-600 mb-1">Current Selection</div>
+                            @if (g10Selected is null)
+                            {
+                                <div class="text-xs sm:text-sm text-gray-700">No driver selected</div>
+                            }
+                            else
+                            {
+                                <div class="text-xs sm:text-sm text-gray-900"><strong>@g10Selected.Name</strong> · @g10Selected.LicenseLevel · @g10Selected.YearsOfExperience yrs</div>
+                            }
+                            <div class="mt-2">
+                                <button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm" @onclick="ClearG10Selection">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <a href="/examples/step10"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm sm:text-base rounded-lg transition-colors">
                     <span>📖</span>
@@ -794,6 +833,72 @@ public class Driver {
                 <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Implement business rules
                     to validate driver-truck-route assignments. Check license levels, experience requirements, and
                     availability.</p>
+
+                <!-- Inline Demo: Assignment Validator -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">🧪 Try It: Assignment Validator</h4>
+
+                    <div class="grid sm:grid-cols-3 gap-3 mb-4">     <div>
+                            <label class="block text-xs text-gray-600 mb-1">Route Type</label>
+                            <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@(g11SelectedRouteType?.ToString() ?? string.Empty)" @onchange="OnG11RouteTypeChanged">
+                                <option value="">-- Select Route Type --</option>
+                                @foreach (var rt in g11RouteTypes)
+                                {
+                                    <option value="@rt">@rt</option>
+                                }
+                            </select>
+                        </div>
+                      
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">Truck</label>
+                            <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@g11SelectedTruckId" @onchange="OnG11TruckChanged">
+                                <option value="">-- Select Truck --</option>
+                                @foreach (var t in g11Trucks)
+                                {
+                                    <option value="@t.Id">@t.DisplayName (@t.Class)</option>
+                                }
+                            </select>
+                        </div>  <div>
+                            <label class="block text-xs text-gray-600 mb-1">Driver</label>
+                            <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@g11SelectedDriverId" @onchange="OnG11DriverChanged">
+                                <option value="">-- Select Driver --</option>
+                                @foreach (var d in g11Drivers)
+                                {
+                                    <option value="@d.Id">@d.Name (@d.LicenseLevel, @d.YearsOfExperience yrs)</option>
+                                }
+                            </select>
+                        </div>
+                   
+                    </div>
+
+                    @if (g11Warnings.Any())
+                    {
+                        <div class="rounded border-l-4 border-yellow-500 bg-yellow-50 p-3 mb-3">
+                            <div class="text-xs sm:text-sm text-yellow-800 font-semibold mb-1">Validation Warnings</div>
+                            <ul class="text-xs sm:text-sm text-yellow-800 list-disc ml-5 space-y-1">
+                                @foreach (var w in g11Warnings)
+                                {
+                                    <li>@w</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="flex items-center justify-between">
+                        <div class="text-xs sm:text-sm">
+                            <span class="font-semibold">Status:</span>
+                            @if (g11IsValid)
+                            {
+                                <span class="text-green-700">✅ Valid assignment</span>
+                            }
+                            else
+                            {
+                                <span class="text-red-700">❌ Not valid</span>
+                            }
+                        </div>
+                        <button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm" @onclick="ResetG11Demo">Reset</button>
+                    </div>
+                </div>
                 <a href="/examples/step11"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm sm:text-base rounded-lg transition-colors">
                     <span>📖</span>
@@ -832,6 +937,75 @@ public class Driver {
                 <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Build calculation
                     services for driver pay, fuel costs, and profit margins. Learn financial formulas and route cost
                     estimation.</p>
+
+                <!-- Inline Demo: Pay & Expense Calculation -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">💵 Try It: Pay & Expense Demo</h4>
+
+                    <!-- Controls -->
+                    <div class="grid sm:grid-cols-3 gap-3 mb-4">
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">Base Rate per Mile</label>
+                            <InputNumber @bind-Value="s12BaseRatePerMile" step="0.01"
+                                class="w-full rounded border border-gray-300 p-2" />
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">Overtime Rate (per hour)</label>
+                            <InputNumber @bind-Value="s12OvertimeRatePerHour" step="1"
+                                class="w-full rounded border border-gray-300 p-2" />
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <button
+                                class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm"
+                                @onclick="ApplyS12GlobalRates">Apply Rates</button>
+                            <button
+                                class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm"
+                                @onclick="ResetDemoTrips">Reset Sample</button>
+                        </div>
+                    </div>
+
+                    <!-- KPIs -->
+                    <div class="grid sm:grid-cols-4 gap-3 mb-4">
+                        <div class="rounded border p-3">
+                            <div class="text-xs text-gray-500">Total Miles</div>
+                            <div class="text-xl font-semibold">@s12Totals.TotalMiles</div>
+                        </div>
+                        <div class="rounded border p-3">
+                            <div class="text-xs text-gray-500">Total Pay</div>
+                            <div class="text-xl font-semibold">@s12Totals.TotalPay.ToString("C")</div>
+                        </div>
+                        <div class="rounded border p-3">
+                            <div class="text-xs text-gray-500">Total Expenses</div>
+                            <div class="text-xl font-semibold">@s12Totals.TotalExpenses.ToString("C")</div>
+                        </div>
+                        <div class="rounded border p-3">
+                            <div class="text-xs text-gray-500">Avg Cost / Mile</div>
+                            <div class="text-xl font-semibold">@(s12Totals.TotalMiles == 0 ? "-" :
+                                                                (s12Totals.TotalExpenses / s12Totals.TotalMiles).ToString("C"))</div>
+                        </div>
+                    </div>
+
+                    <!-- Driver comparison bars -->
+                    <div class="space-y-3">
+                        @foreach (var row in s12DriverSummaries)
+                        {
+                            var total = row.Pay + row.Expenses;
+                            var payPct = total == 0 ? 0 : (row.Pay / total) * 100m;
+                            var expPct = 100m - payPct;
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between text-xs sm:text-sm">
+                                    <div class="font-medium">@row.Driver</div>
+                                    <div class="text-gray-600">Pay @row.Pay.ToString("C") · Exp @row.Expenses.ToString("C")
+                                    </div>
+                                </div>
+                                <div class="h-3 w-full rounded bg-gray-200 overflow-hidden">
+                                    <div class="h-full bg-green-500" style="width:@payPct%"></div>
+                                    <div class="h-full bg-amber-500 -mt-3" style="width:@expPct%"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
                 <a href="/examples/step12"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm sm:text-base rounded-lg transition-colors">
                     <span>📖</span>
@@ -870,6 +1044,62 @@ public class Driver {
                 <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">Build a professional
                     dashboard with KPI cards, data filtering, financial summaries, and visual status indicators using
                     LINQ aggregation.</p>
+                <!-- Inline Demo: Dashboard & Reports -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">📊 Try It: Mini Dashboard</h4>
+
+                    <!-- Controls -->
+                    <div class="grid sm:grid-cols-3 gap-3 mb-4">
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-1">Customer Rate per Mile</label>
+                            <InputNumber @bind-Value="s13CustomerRatePerMile" step="0.01"
+                                class="w-full rounded border border-gray-300 p-2" />
+                        </div>
+                        <div class="flex items-end">
+                            <button
+                                class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm"
+                                @onclick="RecomputeS13">Recalculate</button>
+                        </div>
+                    </div>
+
+                    <!-- KPI cards -->
+                    <div class="grid sm:grid-cols-4 gap-3 mb-4">
+                        <div class="rounded border p-3">
+                            <div class="text-xs text-gray-500">Total Miles</div>
+                            <div class="text-xl font-semibold">@s13Totals.TotalMiles</div>
+                        </div>
+                        <div class="rounded border p-3">
+                            <div class="text-xs text-gray-500">Revenue</div>
+                            <div class="text-xl font-semibold">@s13Totals.Revenue.ToString("C")</div>
+                        </div>
+                        <div class="rounded border p-3">
+                            <div class="text-xs text-gray-500">Cost (Pay + Expenses)</div>
+                            <div class="text-xl font-semibold">@s13Totals.Cost.ToString("C")</div>
+                        </div>
+                        <div class="rounded border p-3">
+                            <div class="text-xs text-gray-500">Profit</div>
+                            <div class="text-xl font-semibold">@s13Totals.Profit.ToString("C")</div>
+                        </div>
+                    </div>
+
+                    <!-- Profit by Driver bars -->
+                    <div class="space-y-3">
+                        @foreach (var row in s13DriverSummaries)
+                        {
+                            var width = s13MaxProfit <= 0 ? 0 : (row.Profit / s13MaxProfit) * 100m;
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between text-xs sm:text-sm">
+                                    <div class="font-medium">@row.Driver</div>
+                                    <div class="text-gray-600">Rev @row.Revenue.ToString("C") · Cost @row.Cost.ToString("C")
+                                        · Profit <span class="font-medium">@row.Profit.ToString("C")</span></div>
+                                </div>
+                                <div class="h-3 w-full rounded bg-gray-200 overflow-hidden">
+                                    <div class="h-full bg-blue-600" style="width:@width%"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
                 <a href="/examples/step13"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm sm:text-base rounded-lg transition-colors">
                     <span>📖</span>
@@ -940,6 +1170,7 @@ public class Driver {
         await LoadProgressAsync();
         UpdateCurrentUrl();
         Navigation.LocationChanged += OnLocationChanged;
+        await LoadG10DriversAsync();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -969,6 +1200,11 @@ public class Driver {
         step12 = await ProgressService.GetStepAsync(12);
         step13 = await ProgressService.GetStepAsync(13);
         completedCount = await ProgressService.GetCompletedCountAsync();
+
+        // Initialize inline demo data (Steps 12 & 13)
+        InitializeDemoTrips();
+        RecomputeS12();
+        RecomputeS13();
     }
 
     private void Increment() => currentCount++;
@@ -1044,5 +1280,356 @@ public class Driver {
         {
             resetMessage = $"Reset error: {ex.Message}";
         }
+    }
+
+    // ===== Inline Demos: Step 12 (Pay & Expense) and Step 13 (Mini Dashboard) =====
+    // Shared sample trips used by both demos
+    private decimal s12BaseRatePerMile = 0.65m;
+    private decimal s12OvertimeRatePerHour = 30m;
+    private decimal s13CustomerRatePerMile = 2.10m;
+
+    private List<DemoTrip> s12Trips = new();
+
+    // Step 12 aggregates
+    private Step12Totals s12Totals = new();
+    private List<Step12DriverSummary> s12DriverSummaries = new();
+
+    // Step 13 aggregates
+    private Step13Totals s13Totals = new();
+    private List<Step13DriverSummary> s13DriverSummaries = new();
+    private decimal s13MaxProfit = 0m;
+
+    private void InitializeDemoTrips()
+    {
+        s12Trips = new()
+{
+new DemoTrip { Driver = "Alex", Miles = 420, RatePerMile = s12BaseRatePerMile, PerDiem = 35m, OvertimeHours = 1m,
+OvertimeRatePerHour = s12OvertimeRatePerHour, FuelCost = 160m },
+new DemoTrip { Driver = "Alex", Miles = 310, RatePerMile = s12BaseRatePerMile, PerDiem = 35m, OvertimeHours = 0m,
+OvertimeRatePerHour = s12OvertimeRatePerHour, FuelCost = 120m },
+new DemoTrip { Driver = "Sam", Miles = 520, RatePerMile = s12BaseRatePerMile, PerDiem = 45m, OvertimeHours = 2m,
+OvertimeRatePerHour = s12OvertimeRatePerHour, FuelCost = 210m },
+new DemoTrip { Driver = "Sam", Miles = 290, RatePerMile = s12BaseRatePerMile, PerDiem = 35m, OvertimeHours = 0m,
+OvertimeRatePerHour = s12OvertimeRatePerHour, FuelCost = 115m },
+};
+    }
+
+    private void ResetDemoTrips()
+    {
+        InitializeDemoTrips();
+        RecomputeS12();
+        RecomputeS13();
+    }
+
+    private void ApplyS12GlobalRates()
+    {
+        foreach (var t in s12Trips)
+        {
+            t.RatePerMile = s12BaseRatePerMile;
+            t.OvertimeRatePerHour = s12OvertimeRatePerHour;
+        }
+        RecomputeS12();
+        RecomputeS13();
+    }
+
+    private decimal ComputeS12Pay(DemoTrip t)
+    => (t.Miles * t.RatePerMile) + (t.OvertimeHours * t.OvertimeRatePerHour) + t.PerDiem;
+
+    private void RecomputeS12()
+    {
+        s12Totals = new Step12Totals
+        {
+            TotalMiles = s12Trips.Sum(x => x.Miles),
+            TotalPay = s12Trips.Sum(ComputeS12Pay),
+            TotalExpenses = s12Trips.Sum(x => x.FuelCost)
+        };
+
+        s12DriverSummaries = s12Trips
+        .GroupBy(t => t.Driver)
+        .Select(g => new Step12DriverSummary
+        {
+            Driver = g.Key,
+            Pay = g.Sum(ComputeS12Pay),
+            Expenses = g.Sum(x => x.FuelCost)
+        })
+        .OrderByDescending(x => x.Pay)
+        .ToList();
+    }
+
+    private void RecomputeS13()
+    {
+        // Compute totals
+        var totalMiles = s12Trips.Sum(t => t.Miles);
+        var revenue = s12Trips.Sum(t => t.Miles * s13CustomerRatePerMile);
+        var cost = s12Trips.Sum(ComputeS12Pay) + s12Trips.Sum(t => t.FuelCost);
+        var profit = revenue - cost;
+
+        s13Totals = new Step13Totals
+        {
+            TotalMiles = totalMiles,
+            Revenue = revenue,
+            Cost = cost,
+            Profit = profit
+        };
+
+        // Per-driver rows
+        s13DriverSummaries = s12Trips
+        .GroupBy(t => t.Driver)
+        .Select(g => new Step13DriverSummary
+        {
+            Driver = g.Key,
+            Revenue = g.Sum(t => t.Miles * s13CustomerRatePerMile),
+            Cost = g.Sum(ComputeS12Pay) + g.Sum(t => t.FuelCost)
+        })
+        .Select(r => new Step13DriverSummary
+        {
+            Driver = r.Driver,
+            Revenue = r.Revenue,
+            Cost = r.Cost,
+            Profit = r.Revenue - r.Cost
+        })
+        .OrderByDescending(r => r.Profit)
+        .ToList();
+
+        s13MaxProfit = s13DriverSummaries.Any() ? s13DriverSummaries.Max(r => r.Profit) : 0m;
+    }
+
+    // ===== Inline Demo: Step 11 (Assignment Validator) =====
+    // Lightweight demo types (local to Guide)
+    private enum G11LicenseLevel { ClassC = 1, ClassB = 2, ClassA = 3 }
+    private enum G11TruckClass { Light, Medium, Heavy }
+    private enum G11RouteType { Local, LongHaul, Hazmat, Oversized }
+
+    private class G11Driver
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public G11LicenseLevel LicenseLevel { get; set; } = G11LicenseLevel.ClassC;
+        public int YearsOfExperience { get; set; }
+        public bool IsAvailable { get; set; } = true;
+    }
+
+    private class G11Truck
+    {
+        public int Id { get; set; }
+        public string DisplayName { get; set; } = string.Empty;
+        public G11TruckClass Class { get; set; } = G11TruckClass.Light;
+        public bool IsAvailable { get; set; } = true;
+        public bool InMaintenance { get; set; } = false;
+    }
+
+    // Demo state
+    private List<G11Driver> g11Drivers = new();
+    private List<G11Truck> g11Trucks = new();
+    private List<G11RouteType> g11RouteTypes = Enum.GetValues<G11RouteType>().ToList();
+    private int? g11SelectedDriverId;
+    private int? g11SelectedTruckId;
+    private G11RouteType? g11SelectedRouteType = null;
+    private bool g11IsValid;
+    private List<string> g11Warnings = new();
+
+    private void EnsureG11Seeded()
+    {
+        if (g11Drivers.Count == 0)
+        {
+            g11Drivers = new()
+            {
+                new G11Driver { Id = 1, Name = "Alex", LicenseLevel = G11LicenseLevel.ClassA, YearsOfExperience = 5, IsAvailable = true },
+                new G11Driver { Id = 2, Name = "Sam",  LicenseLevel = G11LicenseLevel.ClassB, YearsOfExperience = 2, IsAvailable = true },
+                new G11Driver { Id = 3, Name = "Riley",LicenseLevel = G11LicenseLevel.ClassC, YearsOfExperience = 1, IsAvailable = true },
+            };
+        }
+        if (g11Trucks.Count == 0)
+        {
+            g11Trucks = new()
+            {
+                new G11Truck { Id = 1, DisplayName = "Freightliner FL-01", Class = G11TruckClass.Heavy,  IsAvailable = true,  InMaintenance = false },
+                new G11Truck { Id = 2, DisplayName = "Volvo VNL-22",     Class = G11TruckClass.Medium, IsAvailable = true,  InMaintenance = false },
+                new G11Truck { Id = 3, DisplayName = "Ford F-150",       Class = G11TruckClass.Light,  IsAvailable = true,  InMaintenance = false },
+            };
+        }
+    }
+
+    private void OnG11DriverChanged(ChangeEventArgs e)
+    {
+        EnsureG11Seeded();
+        g11SelectedDriverId = int.TryParse(Convert.ToString(e.Value), out var id) ? id : null;
+        ValidateG11();
+    }
+
+    private void OnG11TruckChanged(ChangeEventArgs e)
+    {
+        EnsureG11Seeded();
+        g11SelectedTruckId = int.TryParse(Convert.ToString(e.Value), out var id) ? id : null;
+        ValidateG11();
+    }
+
+    private void OnG11RouteTypeChanged(ChangeEventArgs e)
+    {
+        var val = Convert.ToString(e.Value);
+        if (string.IsNullOrWhiteSpace(val))
+        {
+            g11SelectedRouteType = null;
+            ValidateG11();
+            return;
+        }
+        if (Enum.TryParse<G11RouteType>(val, out var rt))
+        {
+            g11SelectedRouteType = rt;
+            ValidateG11();
+        }
+    }
+
+    private void ResetG11Demo()
+    {
+        g11SelectedDriverId = null;
+        g11SelectedTruckId = null;
+        g11SelectedRouteType = null;
+        g11Warnings.Clear();
+        g11IsValid = false;
+    }
+
+    private void ValidateG11()
+    {
+        EnsureG11Seeded();
+        g11Warnings.Clear();
+        g11IsValid = true;
+
+        var driver = g11SelectedDriverId.HasValue ? g11Drivers.FirstOrDefault(d => d.Id == g11SelectedDriverId.Value) : null;
+        var truck  = g11SelectedTruckId.HasValue  ? g11Trucks.FirstOrDefault(t => t.Id == g11SelectedTruckId.Value) : null;
+
+        if (driver is null || truck is null)
+        {
+            g11IsValid = false;
+            return;
+        }
+
+        if (!driver.IsAvailable)
+        {
+            g11Warnings.Add($"❌ Driver {driver.Name} is not available");
+            g11IsValid = false;
+        }
+
+        if (!truck.IsAvailable || truck.InMaintenance)
+        {
+            g11Warnings.Add($"❌ Truck {truck.DisplayName} is not available (maintenance)");
+            g11IsValid = false;
+        }
+
+        // License vs Truck class
+        bool licenseOk = truck.Class switch
+        {
+            G11TruckClass.Heavy  => driver.LicenseLevel == G11LicenseLevel.ClassA,
+            G11TruckClass.Medium => driver.LicenseLevel >= G11LicenseLevel.ClassB,
+            _ => true
+        };
+        if (!licenseOk)
+        {
+            g11Warnings.Add($"❌ {driver.Name} has {driver.LicenseLevel}, but {truck.DisplayName} requires higher license");
+            g11IsValid = false;
+        }
+
+        // Route type required
+        if (g11SelectedRouteType is null)
+        {
+            g11Warnings.Add("⚠️ Please select a route type");
+            g11IsValid = false;
+            return;
+        }
+
+        // Experience vs Route type
+        var routeType = g11SelectedRouteType.Value;
+        bool hasExperience = routeType switch
+        {
+            G11RouteType.Hazmat    => driver.YearsOfExperience >= 2,
+            G11RouteType.Oversized => driver.YearsOfExperience >= 3,
+            G11RouteType.LongHaul  => driver.YearsOfExperience >= 1,
+            _ => true
+        };
+        if (!hasExperience)
+        {
+            g11Warnings.Add($"⚠️ {driver.Name} has {driver.YearsOfExperience} years; {routeType} routes need more experience");
+            g11IsValid = false;
+        }
+
+        if (g11IsValid && !g11Warnings.Any())
+        {
+            g11Warnings.Add("✅ Assignment is valid and ready!");
+        }
+    }
+
+    // Local demo types
+    public class DemoTrip
+    {
+        public string Driver { get; set; } = string.Empty;
+        public int Miles { get; set; }
+        public decimal RatePerMile { get; set; }
+        public decimal PerDiem { get; set; }
+        public decimal OvertimeHours { get; set; }
+        public decimal OvertimeRatePerHour { get; set; }
+        public decimal FuelCost { get; set; }
+    }
+
+    public class Step12Totals
+    {
+        public int TotalMiles { get; set; }
+        public decimal TotalPay { get; set; }
+        public decimal TotalExpenses { get; set; }
+    }
+
+    public class Step12DriverSummary
+    {
+        public string Driver { get; set; } = string.Empty;
+        public decimal Pay { get; set; }
+        public decimal Expenses { get; set; }
+    }
+
+    public class Step13Totals
+    {
+        public int TotalMiles { get; set; }
+        public decimal Revenue { get; set; }
+        public decimal Cost { get; set; }
+        public decimal Profit { get; set; }
+    }
+
+    public class Step13DriverSummary
+    {
+        public string Driver { get; set; } = string.Empty;
+        public decimal Revenue { get; set; }
+        public decimal Cost { get; set; }
+        public decimal Profit { get; set; }
+    }
+
+    // ===== Inline Demo: Step 10 (State Management) =====
+    [Inject] private AppState AppState { get; set; } = default!;
+    [Inject] private IDbContextFactory<BlazorMock.Data.AppDbContext> DbFactory { get; set; } = default!;
+    private List<Driver> g10Drivers = new();
+    private Driver? g10Selected => AppState.SelectedDriver;
+    private async Task LoadG10DriversAsync()
+    {
+        try
+        {
+            await using var db = await DbFactory.CreateDbContextAsync();
+            g10Drivers = await db.Drivers.OrderBy(d => d.Name).ToListAsync();
+        }
+        catch { g10Drivers = new(); }
+    }
+
+    private void OnG10PickDriver(ChangeEventArgs e)
+    {
+        if (int.TryParse(Convert.ToString(e.Value), out var id))
+        {
+            AppState.SelectDriver(g10Drivers.First(d => d.Id == id));
+        }
+        else
+        {
+            AppState.ClearSelection();
+        }
+        StateHasChanged();
+    }
+    private void ClearG10Selection()
+    {
+        AppState.ClearSelection();
+        StateHasChanged();
     }
 }

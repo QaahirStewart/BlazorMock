@@ -9,3 +9,9 @@ What you'll do:
 - Handle `@onclick`
 - Update component state
 - Build a simple counter
+
+Summary:
+
+- Wire up events like `@onclick` to methods.
+- Update component state and trigger re-rendering.
+- Build a counter to practice state changes.
