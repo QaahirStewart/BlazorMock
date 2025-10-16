@@ -247,6 +247,8 @@ npx @tailwindcss/cli -i ./Styles/input.css -o ./wwwroot/tailwind.css --watch
 
 **📖 View Tutorial:** Visit `/examples/step13` to see the full tutorial with code examples and mark this step complete!
 
+Demo: Explore the finished Trucking Schedule experience at `/demo/trucking-schedule`—grouped schedule, filters, KPIs, and live status actions (Start/Complete).
+
 ---
 
 > “Create a `Dashboard.razor` page that shows upcoming routes, driver availability, and total payroll/expenses with color-coded statuses.”

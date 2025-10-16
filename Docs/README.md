@@ -55,3 +55,4 @@ Welcome to the documentation hub. This repo includes a guided learning path to b
 - /progress — Progress breakdown
 - /tips — ELI5 tips system
 - /examples/step1 … /examples/step13 — Example pages for each step
+- /demo/trucking-schedule — Finished Trucking Schedule Demo (routes, drivers, trucks)

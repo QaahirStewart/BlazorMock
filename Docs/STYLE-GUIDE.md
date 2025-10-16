@@ -314,6 +314,81 @@ Small: text-xs sm:text-sm
 </span>
 ```
 
+**Responsive CRUD List Pattern:**
+
+This pattern provides optimal UX across all device sizes with mobile cards and desktop tables.
+
+Mobile Layout (< 768px) - Card view with `md:hidden`:
+
+```html
+<div class="space-y-3 md:hidden">
+  @foreach (var item in items) {
+  <div class="rounded-2xl border border-gray-200 bg-white p-4">
+    <!-- Display mode -->
+    <div class="mb-3">
+      <div class="text-base font-semibold text-gray-900">@item.Name</div>
+      <div class="text-sm text-gray-600">Detail: @item.Detail</div>
+    </div>
+    <!-- Actions -->
+    <div class="flex flex-wrap gap-2">
+      <button
+        class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+        @onclick="() => BeginEdit(item)"
+      >
+        Edit
+      </button>
+      <button
+        class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+        @onclick="() => DeleteAsync(item.Id)"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+  }
+</div>
+```
+
+Desktop Layout (≥ 768px) - Table view with `hidden md:block`:
+
+```html
+<div class="overflow-x-auto hidden md:block">
+  <table class="min-w-full border border-gray-200 rounded-xl overflow-hidden">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="text-left p-2 border-b">Name</th>
+        <th class="text-left p-2 border-b">Detail</th>
+        <th class="text-left p-2 border-b">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var item in items) {
+      <tr class="hover:bg-gray-50">
+        <td class="p-2 border-b">@item.Name</td>
+        <td class="p-2 border-b">@item.Detail</td>
+        <td class="p-2 border-b">
+          <div class="flex gap-2">
+            <button @onclick="() => BeginEdit(item)">Edit</button>
+            <button @onclick="() => DeleteAsync(item.Id)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+```
+
+Key Benefits:
+
+- Native mobile UX with touch-friendly cards
+- Efficient desktop UX with scannable tables
+- Single codebase serving both layouts
+- Breakpoint at md (768px) aligns with Tailwind conventions
+- Both layouts support inline editing for feature parity
+
+See `Components/Pages/Drivers/DriverList.razor`, `TruckList.razor`, and `RouteList.razor` for complete examples.
+
 ---
 
 ## 📁 File Organization
@@ -589,7 +664,7 @@ class="shadow-sm hover:shadow-md transition-shadow"
 
 ---
 
-**Last Updated:** October 14, 2025  
+**Last Updated:** October 16, 2025  
 **Maintainer:** BlazorMock Project Team
 
 ---

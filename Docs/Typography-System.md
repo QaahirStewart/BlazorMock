@@ -177,6 +177,85 @@ To update typography globally:
 3. Test across all pages
 4. Update this documentation
 
+## Responsive CRUD Pattern
+
+All CRUD list pages (Drivers, Trucks, Routes) implement a consistent responsive pattern:
+
+### Mobile Layout (< 768px)
+
+Cards displayed using `md:hidden`:
+
+```html
+<div class="space-y-3 md:hidden">
+  @foreach (var item in items) {
+  <div class="rounded-2xl border border-gray-200 bg-white p-4">
+    <!-- Item details -->
+    <div class="mb-3">
+      <div class="text-base font-semibold text-gray-900">@item.Name</div>
+      <div class="text-sm text-gray-600">Detail 1</div>
+      <div class="text-sm text-gray-600">Detail 2</div>
+    </div>
+    <!-- Action buttons -->
+    <div class="flex flex-wrap gap-2">
+      <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm">
+        Edit
+      </button>
+      <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm">
+        Delete
+      </button>
+    </div>
+  </div>
+  }
+</div>
+```
+
+### Desktop Layout (≥ 768px)
+
+Tables displayed using `hidden md:block`:
+
+```html
+<div class="overflow-x-auto hidden md:block">
+  <table class="min-w-full border border-gray-200 rounded-xl overflow-hidden">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="text-left p-2 border-b">Column 1</th>
+        <th class="text-left p-2 border-b">Column 2</th>
+        <th class="text-left p-2 border-b">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var item in items) {
+      <tr class="hover:bg-gray-50">
+        <td class="p-2 border-b">@item.Name</td>
+        <td class="p-2 border-b">@item.Detail</td>
+        <td class="p-2 border-b">
+          <div class="flex gap-2">
+            <button>Edit</button>
+            <button>Delete</button>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+```
+
+### Breakpoint Strategy
+
+- **md:hidden**: Show on mobile/tablet (< 768px), hide on desktop
+- **hidden md:block**: Hide on mobile/tablet, show on desktop (≥ 768px)
+- **Benefits**: Native mobile UX with cards, efficient desktop UX with tables
+
+### Edit Mode
+
+Both layouts support inline editing:
+
+- **Mobile**: Labeled inputs in card layout
+- **Desktop**: Inline inputs in table cells
+
+This ensures feature parity across all device sizes.
+
 ## Summary
 
 The typography system ensures:
@@ -187,5 +266,6 @@ The typography system ensures:
 - ✅ **Readable line heights** for better UX
 - ✅ **Mobile-first design** that works on all devices
 - ✅ **Maintainable system** with centralized configuration
+- ✅ **Responsive CRUD pattern** with mobile cards and desktop tables
 
-Last Updated: October 13, 2025
+Last Updated: October 16, 2025

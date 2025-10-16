@@ -5,11 +5,21 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<AppDbContext> DbFactory
+@inject NavigationManager Nav
 @rendermode InteractiveServer
 
 <PageTitle>Drivers</PageTitle>
 
 <div class="min-h-screen">
+    @if (IsFromDemo)
+    {
+        <div
+            class="mb-4 p-3 rounded-lg border border-blue-200 bg-blue-50 text-sm text-blue-800 flex items-center justify-between">
+            <div>You're creating a driver for the Trucking Schedule Demo.</div>
+            <a href="/demo/trucking-schedule" class="px-3 py-1 rounded border border-blue-300 hover:bg-blue-100">← Back to
+                Demo</a>
+        </div>
+    }
     <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 break-words">🚗 Drivers</h1>
 
     <!-- Register New Driver -->
@@ -22,17 +32,20 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                 <div>
                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                    <InputText class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white" @bind-Value="newDriver.Name" />
+                    <InputText class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white"
+                        @bind-Value="newDriver.Name" />
                     <ValidationMessage For="() => newDriver.Name" class="text-xs text-red-600 mt-1" />
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">License Number</label>
-                    <InputText class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white" @bind-Value="newDriver.LicenseNumber" />
+                    <InputText class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white"
+                        @bind-Value="newDriver.LicenseNumber" />
                     <ValidationMessage For="() => newDriver.LicenseNumber" class="text-xs text-red-600 mt-1" />
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">License Level</label>
-                    <InputSelect class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white" @bind-Value="newDriver.LicenseLevel">
+                    <InputSelect class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white"
+                        @bind-Value="newDriver.LicenseLevel">
                         @foreach (LicenseLevel lvl in Enum.GetValues(typeof(LicenseLevel)))
                         {
                             <option value="@lvl">@lvl</option>
@@ -42,19 +55,26 @@
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Years of Experience</label>
-                    <InputNumber class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white" @bind-Value="newDriver.YearsOfExperience" />
+                    <InputNumber class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white"
+                        @bind-Value="newDriver.YearsOfExperience" />
                     <ValidationMessage For="() => newDriver.YearsOfExperience" class="text-xs text-red-600 mt-1" />
                 </div>
                 <div class="sm:col-span-2">
                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email (optional)</label>
-                    <InputText type="email" class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white" @bind-Value="newDriver.Email" />
+                    <InputText type="email"
+                        class="w-full rounded-lg border border-gray-300 p-2 text-sm sm:text-base bg-white"
+                        @bind-Value="newDriver.Email" />
                     <ValidationMessage For="() => newDriver.Email" class="text-xs text-red-600 mt-1" />
                 </div>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-                <button type="submit" class="px-4 py-2 text-sm sm:text-base rounded-lg bg-orange-600 hover:bg-orange-700 text-white transition-colors">Add Driver</button>
-                <button type="button" class="px-4 py-2 text-sm sm:text-base rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors" @onclick="ResetNewDriver">Reset</button>
+                <button type="submit"
+                    class="px-4 py-2 text-sm sm:text-base rounded-lg bg-orange-600 hover:bg-orange-700 text-white transition-colors">Add
+                    Driver</button>
+                <button type="button"
+                    class="px-4 py-2 text-sm sm:text-base rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+                    @onclick="ResetNewDriver">Reset</button>
             </div>
         </EditForm>
 
@@ -73,94 +93,181 @@
 
     <div class="bg-white rounded-2xl border border-gray-200 p-4">
         <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-3">📋 Current Drivers</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full border border-gray-200 rounded-xl overflow-hidden">
-        <thead class="bg-gray-50">
-            <tr>
-                <th class="text-left p-2 border-b">Name</th>
-                <th class="text-left p-2 border-b">License #</th>
-                <th class="text-left p-2 border-b">Level</th>
-                <th class="text-left p-2 border-b">Experience</th>
-                <th class="text-left p-2 border-b">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (drivers is null)
-            {
-                <tr>
-                    <td colspan="5" class="p-3">Loading...</td>
-                </tr>
-            }
-            else if (!drivers.Any())
-            {
-                <tr>
-                    <td colspan="5" class="p-3">No drivers yet.</td>
-                </tr>
-            }
-            else
-            {
+
+        @if (drivers is null)
+        {
+            <div class="p-3 text-sm">Loading...</div>
+        }
+        else if (!drivers.Any())
+        {
+            <div class="p-3 text-sm">No drivers yet.</div>
+        }
+        else
+        {
+            <!-- Mobile: Card list -->
+            <div class="space-y-3 md:hidden">
                 @foreach (var d in drivers)
                 {
                     var isEditing = editDriver?.Id == d.Id;
-                    <tr class="odd:bg-white even:bg-gray-50 align-top">
-                        <td class="p-2 border-b">
-                            @if (isEditing)
-                            {
-                                <InputText class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editDriver!.Name" />
-                            }
-                            else { @d.Name }
-                        </td>
-                        <td class="p-2 border-b">
-                            @if (isEditing)
-                            {
-                                <InputText class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editDriver!.LicenseNumber" />
-                            }
-                            else { @d.LicenseNumber }
-                        </td>
-                        <td class="p-2 border-b">
-                            @if (isEditing)
-                            {
-                                <InputSelect class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editDriver!.LicenseLevel">
-                                    @foreach (LicenseLevel lvl in Enum.GetValues(typeof(LicenseLevel)))
-                                    {
-                                        <option value="@lvl">@lvl</option>
-                                    }
-                                </InputSelect>
-                            }
-                            else { @d.LicenseLevel }
-                        </td>
-                        <td class="p-2 border-b">
-                            @if (isEditing)
-                            {
-                                <InputNumber class="w-24 rounded border border-gray-300 p-1.5" @bind-Value="editDriver!.YearsOfExperience" />
-                            }
-                            else { @d.YearsOfExperience }
-                        </td>
-                        <td class="p-2 border-b whitespace-nowrap">
-                            @if (isEditing)
-                            {
-                                <button class="px-3 py-1 rounded bg-green-600 text-white mr-1" @onclick="() => SaveEditAsync(d.Id)">Save</button>
-                                <button class="px-3 py-1 rounded border" @onclick="CancelEdit">Cancel</button>
-                            }
-                            else
-                            {
-                                <button class="px-3 py-1 rounded border mr-1" @onclick="() => BeginEdit(d)">Edit</button>
-                                <button class="px-3 py-1 rounded border" @onclick="() => DeleteDriverAsync(d.Id)">Delete</button>
-                            }
-                        </td>
-                    </tr>
+                    <div class="rounded-2xl border border-gray-200 bg-white p-4">
+                        @if (isEditing)
+                        {
+                            <div class="space-y-2 mb-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Name</label>
+                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editDriver!.Name" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">License #</label>
+                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editDriver!.LicenseNumber" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Level</label>
+                                    <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editDriver!.LicenseLevel">
+                                        @foreach (LicenseLevel lvl in Enum.GetValues(typeof(LicenseLevel)))
+                                        {
+                                            <option value="@lvl">@lvl</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Experience (years)</label>
+                                    <InputNumber class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editDriver!.YearsOfExperience" />
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm"
+                                    @onclick="() => SaveEditAsync(d.Id)">Save</button>
+                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+                                    @onclick="CancelEdit">Cancel</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mb-3">
+                                <div class="text-base font-semibold text-gray-900">@d.Name</div>
+                                <div class="text-sm text-gray-600">License: @d.LicenseNumber</div>
+                                <div class="text-sm text-gray-600">Level: @d.LicenseLevel</div>
+                                <div class="text-sm text-gray-600">Experience: @d.YearsOfExperience years</div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+                                    @onclick="() => BeginEdit(d)">Edit</button>
+                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+                                    @onclick="() => DeleteDriverAsync(d.Id)">Delete</button>
+                            </div>
+                        }
+                    </div>
                 }
-            }
-        </tbody>
-    </table>
+            </div>
 
-        </div>
+            <!-- Desktop/Tablet: Table -->
+            <div class="overflow-x-auto hidden md:block">
+                <table class="min-w-full border border-gray-200 rounded-xl overflow-hidden">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left p-2 border-b">Name</th>
+                            <th class="text-left p-2 border-b">License #</th>
+                            <th class="text-left p-2 border-b">Level</th>
+                            <th class="text-left p-2 border-b">Experience</th>
+                            <th class="text-left p-2 border-b">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in drivers)
+                        {
+                            var isEditing = editDriver?.Id == d.Id;
+                            <tr class="odd:bg-white even:bg-gray-50 align-top">
+                                <td class="p-2 border-b">
+                                    @if (isEditing)
+                                    {
+                                        <InputText class="w-full rounded border border-gray-300 p-1.5"
+                                            @bind-Value="editDriver!.Name" />
+                                    }
+                                    else
+                                    {
+
+                                        @d.Name
+                                    }
+                                </td>
+                                <td class="p-2 border-b">
+                                    @if (isEditing)
+                                    {
+                                        <InputText class="w-full rounded border border-gray-300 p-1.5"
+                                            @bind-Value="editDriver!.LicenseNumber" />
+                                    }
+                                    else
+                                    {
+
+                                        @d.LicenseNumber
+                                    }
+                                </td>
+                                <td class="p-2 border-b">
+                                    @if (isEditing)
+                                    {
+                                        <InputSelect class="w-full rounded border border-gray-300 p-1.5"
+                                            @bind-Value="editDriver!.LicenseLevel">
+                                            @foreach (LicenseLevel lvl in Enum.GetValues(typeof(LicenseLevel)))
+                                            {
+                                                <option value="@lvl">@lvl</option>
+                                            }
+                                        </InputSelect>
+                                    }
+                                    else
+                                    {
+
+                                        @d.LicenseLevel
+                                    }
+                                </td>
+                                <td class="p-2 border-b">
+                                    @if (isEditing)
+                                    {
+                                        <InputNumber class="w-24 rounded border border-gray-300 p-1.5"
+                                            @bind-Value="editDriver!.YearsOfExperience" />
+                                    }
+                                    else
+                                    {
+
+                                        @d.YearsOfExperience
+                                    }
+                                </td>
+                                <td class="p-2 border-b whitespace-nowrap">
+                                    @if (isEditing)
+                                    {
+                                        <button class="px-3 py-1 rounded bg-green-600 text-white mr-1"
+                                            @onclick="() => SaveEditAsync(d.Id)">Save</button>
+                                        <button class="px-3 py-1 rounded border" @onclick="CancelEdit">Cancel</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="px-3 py-1 rounded border mr-1" @onclick="() => BeginEdit(d)">Edit</button>
+                                        <button class="px-3 py-1 rounded border"
+                                            @onclick="() => DeleteDriverAsync(d.Id)">Delete</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
 </div>
 
 @code {
+    private bool IsFromDemo => new Uri(Nav.Uri).Query.Contains("from=demo", StringComparison.OrdinalIgnoreCase);
     private List<Driver>? drivers;
-    private Driver newDriver = new() { LicenseLevel = LicenseLevel.ClassC, YearsOfExperience = 0, Name = string.Empty, LicenseNumber = string.Empty };
+    private Driver newDriver = new()
+    {
+        LicenseLevel = LicenseLevel.ClassC,
+        YearsOfExperience = 0,
+        Name = string.Empty,
+        LicenseNumber = string.Empty
+    };
     private bool addSuccess;
     private Driver? lastAdded;
     private Driver? editDriver;

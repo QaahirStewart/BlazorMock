@@ -13,6 +13,7 @@ This checklist version allows you to track your progress through each step. Chec
 - [x] **Typography System** - Responsive, consistent typography across all pages
 - [x] **Mobile-First Design** - All components optimized for mobile through desktop
 - [x] **Accessibility** - Proper text wrapping, readable font sizes, responsive layouts
+- [x] **Trucking Schedule Demo** - End-to-end demo at `/demo/trucking-schedule`
 - [ ] **Step 00 Complete** - Prerequisites & VS Code setup
 - [ ] **Step 1 Complete** - New clean project with Tailwind v4 setup
 - [ ] **Step 2 Complete** - Razor syntax and dynamic content
@@ -216,16 +217,20 @@ This checklist version allows you to track your progress through each step. Chec
 ### Step 9: CRUD Pages
 
 - [ ] Create `Pages/Drivers/DriverList.razor`
-- [ ] Create `Pages/Drivers/AddDriver.razor`
-- [ ] Create `Pages/Drivers/EditDriver.razor`
+- [ ] Create `Pages/Trucks/TruckList.razor`
+- [ ] Create `Pages/Routes/RouteList.razor`
 - [ ] Implement async data loading with `@inject`
+- [ ] Add inline editing and delete operations
+- [ ] Implement responsive layouts (mobile cards + desktop tables)
+- [ ] Use `md:hidden` for mobile card view (< 768px)
+- [ ] Use `hidden md:block` for desktop table view (≥ 768px)
+- [ ] Test CRUD operations on all device sizes
 - [ ] Add error handling
-- [ ] Test CRUD operations
 
-**📄 Files:** `Pages/Drivers/DriverList.razor`, `Pages/Drivers/AddDriver.razor`, `Pages/Drivers/EditDriver.razor`  
-**🧠 Concepts:** `@inject`, async/await, CRUD operations, error handling  
-**🧪 Prompt:** "Create a `DriverList.razor` page that lists all drivers from the database and allows adding/editing/deleting."  
-**💡 Tip:** Reference the Tips page for DI, async/await, and OnInitializedAsync examples!
+**📄 Files:** `Pages/Drivers/DriverList.razor`, `Pages/Trucks/TruckList.razor`, `Pages/Routes/RouteList.razor`  
+**🧠 Concepts:** `@inject`, async/await, CRUD operations, responsive design, mobile-first layout, Tailwind breakpoints  
+**🧪 Prompt:** "Create a `DriverList.razor` page that lists all drivers from the database with responsive layout: mobile cards (md:hidden) and desktop table (hidden md:block). Allow adding/editing/deleting."  
+**💡 Tip:** Reference the Tips page for DI, async/await, and OnInitializedAsync examples! See `/drivers`, `/trucks`, `/routes` for working responsive CRUD examples.
 
 ---
 

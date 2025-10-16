@@ -1,0 +1,483 @@
+@page "/demo/trucking-schedule"
+@using BlazorMock.Data
+@using BlazorMock.Models
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<AppDbContext> DbFactory
+@inject NavigationManager Nav
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+<PageTitle>Trucking Schedule Demo</PageTitle>
+
+<div class="min-h-screen py-8">
+    <div class="w-full mx-auto px-4 max-w-6xl">
+        <div class="flex items-center justify-between gap-4 mb-6">
+            <div>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 break-words">🚚 Trucking Schedule</h1>
+                <p class="text-sm sm:text-base text-gray-600">End-to-end demo: routes, drivers, trucks, and live status</p>
+            </div>
+            <a href="/guide" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm">← Back to Guide</a>
+        </div>
+
+        @if (!string.IsNullOrEmpty(toastMessage))
+        {
+            <div class="mb-4 p-3 rounded-lg border text-sm @(toastIsError ? "bg-red-50 border-red-200 text-red-700" : "bg-green-50 border-green-200 text-green-700")">@toastMessage</div>
+        }
+
+    <!-- KPIs -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="rounded-2xl border border-gray-200 bg-white p-4">
+                <div class="text-xs text-gray-500 mb-1">Scheduled</div>
+                <div class="text-2xl font-bold text-gray-900">@kpiScheduled</div>
+                <div class="text-xs text-gray-500">Next 7 days</div>
+            </div>
+            <div class="rounded-2xl border border-gray-200 bg-white p-4">
+                <div class="text-xs text-gray-500 mb-1">In Progress</div>
+                <div class="text-2xl font-bold text-gray-900">@kpiInProgress</div>
+                <div class="text-xs text-gray-500">Live now</div>
+            </div>
+            <div class="rounded-2xl border border-gray-200 bg-white p-4">
+                <div class="text-xs text-gray-500 mb-1">Drivers Available</div>
+                <div class="text-2xl font-bold text-gray-900">@kpiDriversAvailable</div>
+                <div class="text-xs text-gray-500">of @kpiDriversTotal total</div>
+            </div>
+            <div class="rounded-2xl border border-gray-200 bg-white p-4">
+                <div class="text-xs text-gray-500 mb-1">Trucks Available</div>
+                <div class="text-2xl font-bold text-gray-900">@kpiTrucksAvailable</div>
+                <div class="text-xs text-gray-500">of @kpiTrucksTotal total</div>
+            </div>
+        </div>
+
+    <!-- Filters -->
+        <div class="rounded-2xl border border-gray-200 bg-white p-4 mb-6">
+            <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
+                <div class="flex-1 min-w-0">
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Search (Route #, Origin, Destination)</label>
+                    <input class="w-full rounded-lg border border-gray-300 p-2" @bind="search" placeholder="e.g., R-1001 or Los Angeles" />
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
+                    <select class="w-full rounded-lg border border-gray-300 p-2" @bind="statusFilterString">
+                        <option value="">All</option>
+                        @foreach (RouteStatus s in Enum.GetValues(typeof(RouteStatus)))
+                        {
+                            <option value="@s">@s</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Type</label>
+                    <select class="w-full rounded-lg border border-gray-300 p-2" @bind="typeFilterString">
+                        <option value="">All</option>
+                        @foreach (RouteType t in Enum.GetValues(typeof(RouteType)))
+                        {
+                            <option value="@t">@t</option>
+                        }
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button class="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm" @onclick="LoadAsync">Refresh</button>
+                    <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm" @onclick="ResetFilters">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dev tools -->
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 mb-6">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="text-sm text-amber-800">Development helper: Reset sample data to default (available only in Development environment).</div>
+                <button class="px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm" @onclick="ResetDemoDataAsync">Reset Demo Data</button>
+            </div>
+        </div>
+
+        <!-- Quick Actions: Link out to CRUD pages with back link there -->
+        <div class="rounded-2xl border border-gray-200 bg-white p-4 mb-6">
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Quick Actions</h3>
+            <p class="text-sm text-gray-700 mb-3">Create or manage records on their dedicated pages. Each page includes a Back to Demo link.</p>
+            <div class="flex flex-wrap gap-2">
+                <a href="/drivers?from=demo" class="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm">Add Driver →</a>
+                <a href="/trucks?from=demo" class="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm">Add Truck →</a>
+                <a href="/routes?from=demo" class="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm">Add Route →</a>
+            </div>
+        </div>
+
+        <!-- Grouped Schedule -->
+        @if (routes is null)
+        {
+            <div class="p-4 text-sm">Loading schedule…</div>
+        }
+        else if (!FilteredRoutes().Any())
+        {
+            <div class="p-4 text-sm">No routes match your filters.</div>
+        }
+        else
+        {
+            @foreach (var grp in FilteredRoutes().OrderBy(r => r.ScheduledStartDate).GroupBy(r => r.ScheduledStartDate.Date))
+            {
+                <div class="mb-6">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="text-sm sm:text-base font-semibold text-gray-800">@grp.Key.ToString("dddd, MMM d")</div>
+                        <div class="text-xs text-gray-500">(@grp.Count() routes)</div>
+                    </div>
+
+                    <!-- Mobile: Card list -->
+                    <div class="space-y-3 md:hidden">
+                        @foreach (var r in grp)
+                        {
+                            <div class="rounded-2xl border border-gray-200 bg-white p-4">
+                                <div class="flex items-start justify-between gap-3 mb-1">
+                                    <div class="min-w-0">
+                                        <div class="text-base font-semibold text-gray-900">@r.RouteNumber</div>
+                                        <div class="text-xs text-gray-500">@r.Type • @r.ScheduledStartDate.ToString("t")</div>
+                                    </div>
+                                    <div><span class="@GetStatusBadgeClass(r.Status)">@r.Status</span></div>
+                                </div>
+                                <div class="text-sm text-gray-800 break-words">@r.Origin → @r.Destination</div>
+                                <div class="text-xs text-gray-500 mb-2">@r.DistanceMiles mi • Revenue $@r.Revenue • Profit $@r.GetProfitMargin()</div>
+
+                                <div class="grid grid-cols-1 gap-2 mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs flex-shrink-0">👤</span>
+                                        <div class="min-w-0">
+                                            <div class="text-sm text-gray-900">@r.Driver?.Name</div>
+                                            <div class="text-xs text-gray-500">License @r.Driver?.LicenseLevel • @r.Driver?.YearsOfExperience yr</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs flex-shrink-0">🚛</span>
+                                        <div class="min-w-0">
+                                            <div class="text-sm text-gray-900">@r.Truck?.GetDisplayName()</div>
+                                            <div class="text-xs text-gray-500">Class @r.Truck?.Class • Cap @r.Truck?.CapacityLbs lbs</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-2">
+                                    @if (r.Status == RouteStatus.Scheduled)
+                                    {
+                                        <button class="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm" @onclick="() => StartRouteAsync(r.Id)">Start</button>
+                                        <button class="px-3 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-sm" @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
+                                    }
+                                    else if (r.Status == RouteStatus.InProgress)
+                                    {
+                                        <button class="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm" @onclick="() => CompleteRouteAsync(r.Id)">Complete</button>
+                                        <button class="px-3 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-sm" @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
+                                    }
+                                    <button class="px-3 py-2 rounded-lg border text-sm hover:bg-gray-50" @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
+                                    <a href="/routes" class="px-3 py-2 rounded-lg border text-sm hover:bg-gray-50">Manage</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Desktop/tablet: Table -->
+                    <div class="overflow-x-auto rounded-2xl border border-gray-200 bg-white hidden md:block">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="text-left p-2">Route</th>
+                                    <th class="text-left p-2">Details</th>
+                                    <th class="text-left p-2">Driver</th>
+                                    <th class="text-left p-2 hidden lg:table-cell">Truck</th>
+                                    <th class="text-left p-2">Status</th>
+                                    <th class="text-left p-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in grp)
+                                {
+                                    <tr class="odd:bg-white even:bg-gray-50 align-top">
+                                        <td class="p-2 align-top">
+                                            <div class="font-semibold">@r.RouteNumber</div>
+                                            <div class="text-xs text-gray-500">@r.Type</div>
+                                        </td>
+                                        <td class="p-2">
+                                            <div class="text-sm">@r.Origin → @r.Destination</div>
+                                            <div class="text-xs text-gray-500">@r.DistanceMiles mi • ETD @r.ScheduledStartDate.ToString("t")</div>
+                                            <div class="text-xs text-gray-500">Revenue $@r.Revenue • Profit $@r.GetProfitMargin()</div>
+                                        </td>
+                                        <td class="p-2">
+                                            <div class="text-sm">@r.Driver?.Name</div>
+                                            <div class="text-xs text-gray-500">License @r.Driver?.LicenseLevel • @r.Driver?.YearsOfExperience yr exp</div>
+                                        </td>
+                                        <td class="p-2 hidden lg:table-cell">
+                                            <div class="text-sm">@r.Truck?.GetDisplayName()</div>
+                                            <div class="text-xs text-gray-500">Class @r.Truck?.Class • Cap @r.Truck?.CapacityLbs lbs</div>
+                                        </td>
+                                        <td class="p-2"><span class="@GetStatusBadgeClass(r.Status)">@r.Status</span></td>
+                                        <td class="p-2">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                @if (r.Status == RouteStatus.Scheduled)
+                                                {
+                                                    <button class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-sm" @onclick="() => StartRouteAsync(r.Id)">Start</button>
+                                                    <button class="px-3 py-1.5 rounded bg-orange-600 hover:bg-orange-700 text-white text-sm" @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
+                                                }
+                                                else if (r.Status == RouteStatus.InProgress)
+                                                {
+                                                    <button class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm" @onclick="() => CompleteRouteAsync(r.Id)">Complete</button>
+                                                    <button class="px-3 py-1.5 rounded bg-orange-600 hover:bg-orange-700 text-white text-sm" @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
+                                                }
+                                                <button class="px-3 py-1.5 rounded border hover:bg-gray-50 text-sm" @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
+                                                <a href="/routes" class="px-3 py-1.5 rounded border hover:bg-gray-50 text-sm">Manage</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <div class="w-full mx-auto px-4 max-w-6xl mt-10">
+        <div class="rounded-2xl border border-gray-200 bg-white p-4">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">About this demo</h2>
+            <ul class="list-disc ml-5 text-sm text-gray-700 space-y-1">
+                <li>Data is stored in SQLite via Entity Framework Core</li>
+                <li>Starting a route marks its driver and truck as unavailable</li>
+                <li>Completing a route marks them available again and sets actual timestamps</li>
+                <li>Use the <a class="text-blue-600 underline" href="/routes">Routes</a> page to edit assignments</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Route> routes = new();
+    private List<Driver> drivers = new();
+    private List<Truck> trucks = new();
+    private string? search;
+    private string? statusFilterString;
+    private string? typeFilterString;
+    private int kpiScheduled;
+    private int kpiInProgress;
+    private int kpiDriversAvailable;
+    private int kpiDriversTotal;
+    private int kpiTrucksAvailable;
+    private int kpiTrucksTotal;
+    private string? toastMessage;
+    private bool toastIsError;
+    // Quick create removed: we now link out to dedicated pages
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        routes = await db.Routes
+            .Include(r => r.Driver)
+            .Include(r => r.Truck)
+            .OrderBy(r => r.ScheduledStartDate)
+            .ToListAsync();
+
+    drivers = await db.Drivers.OrderBy(d => d.Name).ToListAsync();
+    trucks = await db.Trucks.OrderBy(t => t.TruckNumber).ToListAsync();
+
+        var next7 = DateTime.Today.AddDays(7);
+        kpiScheduled = routes.Count(r => r.Status == RouteStatus.Scheduled && r.ScheduledStartDate <= next7);
+        kpiInProgress = routes.Count(r => r.Status == RouteStatus.InProgress);
+        kpiDriversAvailable = await db.Drivers.CountAsync(d => d.IsAvailable);
+        kpiDriversTotal = await db.Drivers.CountAsync();
+        kpiTrucksAvailable = await db.Trucks.CountAsync(t => t.IsAvailable && !t.InMaintenance);
+        kpiTrucksTotal = await db.Trucks.CountAsync();
+        StateHasChanged();
+    }
+
+    private async Task DeleteRouteAsync(int id)
+    {
+        try
+        {
+            if (!await Confirm("Delete this route?")) return;
+            using var db = await DbFactory.CreateDbContextAsync();
+            var entity = await db.Routes.Include(r => r.Driver).Include(r => r.Truck).FirstOrDefaultAsync(r => r.Id == id);
+            if (entity is null) { ShowToast("Route not found", true); return; }
+            // If route in progress, free resources before deletion
+            if (entity.Status == RouteStatus.InProgress)
+            {
+                if (entity.Driver is not null) entity.Driver.IsAvailable = true;
+                if (entity.Truck is not null) entity.Truck.IsAvailable = true;
+            }
+            db.Routes.Remove(entity);
+            await db.SaveChangesAsync();
+            ShowToast("Route deleted");
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            ShowToast($"Failed to delete route: {ex.Message}", true);
+        }
+    }
+
+    // No quick-create resets needed
+
+    private IEnumerable<Route> FilteredRoutes()
+    {
+        IEnumerable<Route> q = routes;
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim().ToLowerInvariant();
+            q = q.Where(r => (r.RouteNumber?.ToLower().Contains(s) ?? false)
+                          || (r.Origin?.ToLower().Contains(s) ?? false)
+                          || (r.Destination?.ToLower().Contains(s) ?? false));
+        }
+        if (!string.IsNullOrEmpty(statusFilterString) && Enum.TryParse<RouteStatus>(statusFilterString, out var st))
+        {
+            q = q.Where(r => r.Status == st);
+        }
+        if (!string.IsNullOrEmpty(typeFilterString) && Enum.TryParse<RouteType>(typeFilterString, out var tp))
+        {
+            q = q.Where(r => r.Type == tp);
+        }
+        return q;
+    }
+
+    private void ResetFilters()
+    {
+        search = null;
+        statusFilterString = null;
+        typeFilterString = null;
+    }
+
+    private string GetStatusBadgeClass(RouteStatus status) => status switch
+    {
+        RouteStatus.Scheduled   => "inline-flex px-2 py-1 rounded-full text-xs bg-yellow-50 text-yellow-700 border border-yellow-200",
+        RouteStatus.InProgress  => "inline-flex px-2 py-1 rounded-full text-xs bg-blue-50 text-blue-700 border border-blue-200",
+        RouteStatus.Completed   => "inline-flex px-2 py-1 rounded-full text-xs bg-green-50 text-green-700 border border-green-200",
+        RouteStatus.Cancelled   => "inline-flex px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700 border",
+        RouteStatus.Delayed     => "inline-flex px-2 py-1 rounded-full text-xs bg-orange-50 text-orange-700 border border-orange-200",
+        _                        => "inline-flex px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700 border"
+    };
+
+    private async Task StartRouteAsync(int routeId)
+    {
+        try
+        {
+            using var db = await DbFactory.CreateDbContextAsync();
+            var route = await db.Routes.Include(r => r.Driver).Include(r => r.Truck).FirstOrDefaultAsync(r => r.Id == routeId);
+            if (route is null) { ShowToast("Route not found", true); return; }
+            if (route.Status != RouteStatus.Scheduled) { ShowToast("Only scheduled routes can be started", true); return; }
+            if (route.Driver is null || route.Truck is null) { ShowToast("Route must have a driver and truck", true); return; }
+            if (!route.Truck.CanBeOperatedBy(route.Driver)) { ShowToast("Driver not licensed for this truck", true); return; }
+            if (!route.Driver.IsAvailable || !route.Truck.IsAvailable || route.Truck.InMaintenance) { ShowToast("Resources not available", true); return; }
+
+            route.Status = RouteStatus.InProgress;
+            route.ActualStartDate = DateTime.Now;
+            route.Driver.IsAvailable = false;
+            route.Truck.IsAvailable = false;
+            await db.SaveChangesAsync();
+            await LoadAsync();
+            ShowToast($"Started {route.RouteNumber}");
+        }
+        catch (Exception ex)
+        {
+            ShowToast($"Failed to start: {ex.Message}", true);
+        }
+    }
+
+    private async Task CompleteRouteAsync(int routeId)
+    {
+        try
+        {
+            using var db = await DbFactory.CreateDbContextAsync();
+            var route = await db.Routes.Include(r => r.Driver).Include(r => r.Truck).FirstOrDefaultAsync(r => r.Id == routeId);
+            if (route is null) { ShowToast("Route not found", true); return; }
+            if (route.Status != RouteStatus.InProgress) { ShowToast("Only in-progress routes can be completed", true); return; }
+
+            route.Status = RouteStatus.Completed;
+            route.ActualEndDate = DateTime.Now;
+            if (route.Driver is not null) route.Driver.IsAvailable = true;
+            if (route.Truck is not null) route.Truck.IsAvailable = true;
+            await db.SaveChangesAsync();
+            await LoadAsync();
+            ShowToast($"Completed {route.RouteNumber}");
+        }
+        catch (Exception ex)
+        {
+            ShowToast($"Failed to complete: {ex.Message}", true);
+        }
+    }
+
+    private async Task CancelRouteAsync(int routeId)
+    {
+        try
+        {
+            if (!await Confirm("Cancel this route?")) return;
+            using var db = await DbFactory.CreateDbContextAsync();
+            var route = await db.Routes.Include(r => r.Driver).Include(r => r.Truck).FirstOrDefaultAsync(r => r.Id == routeId);
+            if (route is null) { ShowToast("Route not found", true); return; }
+            if (route.Status != RouteStatus.Scheduled && route.Status != RouteStatus.InProgress) { ShowToast("Only scheduled or in-progress routes can be cancelled", true); return; }
+
+            if (route.Status == RouteStatus.InProgress)
+            {
+                route.ActualEndDate = DateTime.Now;
+                if (route.Driver is not null) route.Driver.IsAvailable = true;
+                if (route.Truck is not null) route.Truck.IsAvailable = true;
+            }
+
+            route.Status = RouteStatus.Cancelled;
+            await db.SaveChangesAsync();
+            await LoadAsync();
+            ShowToast($"Cancelled {route.RouteNumber}");
+        }
+        catch (Exception ex)
+        {
+            ShowToast($"Failed to cancel: {ex.Message}", true);
+        }
+    }
+
+    private async Task ResetDemoDataAsync()
+    {
+        try
+        {
+            if (!await Confirm("Reset sample data to defaults?")) return;
+            var client = HttpClientFactory.CreateClient();
+            // Use absolute URI to ensure correct host/port
+            var baseUri = new Uri(Nav.BaseUri);
+            var resp = await client.PostAsync(new Uri(baseUri, "/dev/reset-sample-data"), null);
+            if (resp.IsSuccessStatusCode)
+            {
+                ShowToast("Sample data reset");
+                await LoadAsync();
+            }
+            else
+            {
+                ShowToast($"Reset failed: {resp.StatusCode}", true);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowToast($"Reset failed: {ex.Message}", true);
+        }
+    }
+
+    private async Task<bool> Confirm(string message)
+    {
+        try
+        {
+            return await JS.InvokeAsync<bool>("confirm", message);
+        }
+        catch
+        {
+            return true; // If JS is unavailable, do not block the action
+        }
+    }
+
+    private void ShowToast(string message, bool isError = false)
+    {
+        toastMessage = message;
+        toastIsError = isError;
+        _ = DismissToastSoon();
+    }
+
+    private async Task DismissToastSoon()
+    {
+        await Task.Delay(3500);
+        toastMessage = null;
+        StateHasChanged();
+    }
+}

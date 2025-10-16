@@ -1,3 +1,86 @@
+## October 16, 2025
+
+### 📱 Responsive CRUD Pattern Implementation
+
+Implemented a comprehensive responsive design pattern across all CRUD list pages to provide optimal user experience on all device sizes.
+
+#### What Changed
+
+**CRUD Pages Updated:**
+
+- `Components/Pages/Drivers/DriverList.razor`
+- `Components/Pages/Trucks/TruckList.razor`
+- `Components/Pages/Routes/RouteList.razor`
+
+**Pattern:**
+
+- **Mobile (< 768px)**: Touch-friendly card layout using `md:hidden`
+  - Cards show item details vertically with proper spacing
+  - Large touch targets for Edit/Delete buttons
+  - Clear visual hierarchy with font sizing and color
+- **Desktop (≥ 768px)**: Efficient table layout using `hidden md:block`
+  - Scannable table with proper columns
+  - Compact action buttons
+  - Hover states for better UX
+
+**Key Features:**
+
+- Both layouts support inline editing for feature parity
+- Breakpoint at md (768px) follows Tailwind conventions
+- Mobile-first approach with progressive enhancement
+- Consistent pattern across all CRUD pages
+
+#### Documentation Updates
+
+**Updated Files:**
+
+- `Docs/Typography-System.md` — Added "Responsive CRUD Pattern" section with code examples
+- `Docs/STYLE-GUIDE.md` — Added "Responsive CRUD List Pattern" to Component Patterns with complete examples
+- `Docs/Steps/Step09.md` — Added responsive layout examples with collapsible code blocks
+- `Docs/BlazorLearningChecklist.md` — Updated Step 9 checklist with responsive design items
+
+**Code Example (Mobile):**
+
+```razor
+<div class="space-y-3 md:hidden">
+    @foreach (var item in items)
+    {
+        <div class="rounded-2xl border border-gray-200 bg-white p-4">
+            <!-- Item details -->
+            <div class="flex flex-wrap gap-2">
+                <button>Edit</button>
+                <button>Delete</button>
+            </div>
+        </div>
+    }
+</div>
+```
+
+**Code Example (Desktop):**
+
+```razor
+<div class="overflow-x-auto hidden md:block">
+    <table class="min-w-full border border-gray-200">
+        <!-- Table headers and rows -->
+    </table>
+</div>
+```
+
+#### Build Verification
+
+- Release build: Passed with no errors
+- All CRUD pages tested on mobile and desktop breakpoints
+- Inline editing works consistently across both layouts
+
+**Impact:**
+
+- Native mobile experience with touch-friendly cards
+- Efficient desktop experience with scannable tables
+- Consistent, learnable pattern across all CRUD operations
+- Complete documentation for learners to reference and replicate
+
+---
+
 ## 2025-10-15
 
 - Reworked the Guide experience into phase cards on `/guide`:
@@ -378,3 +461,29 @@ The typography system provides a solid foundation for future development and ens
 **Last Updated:** October 13, 2025  
 **Updated By:** AI Assistant  
 **Status:** ✅ Complete and Documented
+
+---
+
+## 2025-10-16
+
+### 🚚 New: Trucking Schedule Demo (Finished Experience)
+
+- Added `/demo/trucking-schedule`: a full end-to-end trucking schedule demo
+  - KPIs: Scheduled (next 7 days), In Progress, Drivers/Trucks available
+  - Filters: Text search, Status, Route Type
+  - Grouped schedule by date with detailed rows (route, driver, truck, costs)
+  - Actions: Start (sets In Progress, marks resources unavailable), Complete (sets Completed, marks resources available)
+  - Links to manage routes at `/routes`
+- Updated Guide quick links: card now points to the new demo
+- Docs updates:
+  - `BlazorLearningGuide.md`: Linked the demo under Step 13 section
+  - `BlazorLearningChecklist.md`: Marked demo as available
+  - `README.md`: Added demo to In-app routes
+
+Build: Release build passed. Dev seeding provides sample data to explore immediately.
+
+### 🔧 Fix: Demo reset dependencies
+
+- Registered `IHttpClientFactory` in DI (`Program.cs`) to support the demo's "Reset Demo Data" action
+- Adjusted reset call in `TruckingScheduleDemo.razor` to use the app's base URI for the POST to `/dev/reset-sample-data`
+- Result: Eliminates 500s due to missing service and ensures the request targets the correct host/port

@@ -10,12 +10,13 @@ In this step you will:
 - Use `IDbContextFactory<AppDbContext>` inside components
 - Load related data with `Include()`
 - Add Delete actions and refresh the list
+- Implement responsive layouts with mobile cards and desktop tables
 
 ## Reference pages in the app
 
-- Drivers: `/drivers` — add + list + delete
-- Trucks: `/trucks` — add + list + delete
-- Routes: `/routes` — add + list (with Driver/Truck) + delete
+- Drivers: `/drivers` — add + list + delete (responsive)
+- Trucks: `/trucks` — add + list + delete (responsive)
+- Routes: `/routes` — add + list (with Driver/Truck) + delete (responsive)
 
 ## Typical patterns
 
@@ -86,6 +87,87 @@ await LoadAsync();
 
 </details>
 
+## Responsive CRUD List Pattern
+
+All CRUD pages implement a responsive layout that shows mobile-friendly cards on small screens and efficient tables on desktop.
+
+### Mobile Layout (< 768px)
+
+<details>
+  <summary>Show code — Mobile card layout</summary>
+
+```razor
+<div class="space-y-3 md:hidden">
+    @foreach (var d in drivers)
+    {
+        <div class="rounded-2xl border border-gray-200 bg-white p-4">
+            <div class="mb-3">
+                <div class="text-base font-semibold text-gray-900">@d.Name</div>
+                <div class="text-sm text-gray-600">License: @d.LicenseNumber</div>
+                <div class="text-sm text-gray-600">Level: @d.LicenseLevel</div>
+                <div class="text-sm text-gray-600">Experience: @d.YearsOfExperience years</div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+                    @onclick="() => BeginEdit(d)">Edit</button>
+                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+                    @onclick="() => DeleteAsync(d.Id)">Delete</button>
+            </div>
+        </div>
+    }
+</div>
+```
+
+</details>
+
+### Desktop Layout (≥ 768px)
+
+<details>
+  <summary>Show code — Desktop table layout</summary>
+
+```razor
+<div class="overflow-x-auto hidden md:block">
+    <table class="min-w-full border border-gray-200 rounded-xl overflow-hidden">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="text-left p-2 border-b">Name</th>
+                <th class="text-left p-2 border-b">License #</th>
+                <th class="text-left p-2 border-b">Level</th>
+                <th class="text-left p-2 border-b">Experience</th>
+                <th class="text-left p-2 border-b">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var d in drivers)
+            {
+                <tr class="hover:bg-gray-50">
+                    <td class="p-2 border-b">@d.Name</td>
+                    <td class="p-2 border-b">@d.LicenseNumber</td>
+                    <td class="p-2 border-b">@d.LicenseLevel</td>
+                    <td class="p-2 border-b">@d.YearsOfExperience</td>
+                    <td class="p-2 border-b">
+                        <div class="flex gap-2">
+                            <button @onclick="() => BeginEdit(d)">Edit</button>
+                            <button @onclick="() => DeleteAsync(d.Id)">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+```
+
+</details>
+
+### Key Points
+
+- Use `md:hidden` to show cards on mobile (< 768px) and hide on desktop
+- Use `hidden md:block` to hide tables on mobile and show on desktop (≥ 768px)
+- Both layouts support inline editing for feature parity
+- Touch-friendly buttons on mobile, compact actions on desktop
+- See `/drivers`, `/trucks`, and `/routes` for complete working examples
+
 With these patterns, you can extend to Edit/Update flows next.
 
 Summary:
@@ -94,3 +176,4 @@ Summary:
 - Use `Include()` for related data and `OrderBy()` for stable lists
 - After writes, reset the form model and reload the list
 - For deletes, `FindAsync(id)` → `Remove` → `SaveChangesAsync()` → reload
+- Implement responsive layouts with mobile cards (`md:hidden`) and desktop tables (`hidden md:block`)

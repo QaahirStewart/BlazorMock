@@ -13,6 +13,9 @@ builder.Services.AddRazorComponents()
         options.DetailedErrors = builder.Environment.IsDevelopment();
     });
 
+// HTTP clients
+builder.Services.AddHttpClient();
+
 // Note: Using the new Razor Components model with Interactive Server render mode.
 // Do NOT register AddServerSideBlazor here to avoid conflicts with the Razor Components pipeline.
 

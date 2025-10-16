@@ -5,11 +5,19 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<AppDbContext> DbFactory
+@inject NavigationManager Nav
 @rendermode InteractiveServer
 
 <PageTitle>Routes</PageTitle>
 
 <div class="min-h-screen">
+    @if (IsFromDemo)
+    {
+        <div class="mb-4 p-3 rounded-lg border border-blue-200 bg-blue-50 text-sm text-blue-800 flex items-center justify-between">
+            <div>You're adding a route for the Trucking Schedule Demo.</div>
+            <a href="/demo/trucking-schedule" class="px-3 py-1 rounded border border-blue-300 hover:bg-blue-100">← Back to Demo</a>
+        </div>
+    }
     <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 break-words">🛣️ Routes</h1>
 
     <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 mb-6">
@@ -76,28 +84,105 @@
 
     <div class="bg-white rounded-2xl border border-gray-200 p-4">
         <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-3">📋 Current Routes</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full border border-gray-200 rounded-xl overflow-hidden">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="text-left p-2 border-b">Route #</th>
-                        <th class="text-left p-2 border-b">Summary</th>
-                        <th class="text-left p-2 border-b">Driver</th>
-                        <th class="text-left p-2 border-b">Truck</th>
-                        <th class="text-left p-2 border-b">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (routes is null)
-                    {
-                        <tr><td colspan="5" class="p-3">Loading...</td></tr>
-                    }
-                    else if (!routes.Any())
-                    {
-                        <tr><td colspan="5" class="p-3">No routes yet.</td></tr>
-                    }
-                    else
-                    {
+        
+        @if (routes is null)
+        {
+            <div class="p-3 text-sm">Loading...</div>
+        }
+        else if (!routes.Any())
+        {
+            <div class="p-3 text-sm">No routes yet.</div>
+        }
+        else
+        {
+            <!-- Mobile: Card list -->
+            <div class="space-y-3 md:hidden">
+                @foreach (var r in routes)
+                {
+                    var isEditing = editRoute?.Id == r.Id;
+                    <div class="rounded-2xl border border-gray-200 bg-white p-4">
+                        @if (isEditing)
+                        {
+                            <div class="space-y-2 mb-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Route #</label>
+                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.RouteNumber" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Type</label>
+                                    <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.Type">
+                                        @foreach (RouteType t in Enum.GetValues(typeof(RouteType)))
+                                        {
+                                            <option value="@t">@t</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Origin</label>
+                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.Origin" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Destination</label>
+                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.Destination" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Distance (mi)</label>
+                                    <InputNumber class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.DistanceMiles" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Driver</label>
+                                    <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.DriverId">
+                                        @foreach (var d in drivers)
+                                        {
+                                            <option value="@d.Id">@d.Name (@d.LicenseLevel)</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Truck</label>
+                                    <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.TruckId">
+                                        @foreach (var t in trucks)
+                                        {
+                                            <option value="@t.Id">@t.GetDisplayName()</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm" @onclick="() => SaveEditAsync(r.Id)">Save</button>
+                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm" @onclick="CancelEdit">Cancel</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mb-3">
+                                <div class="text-base font-semibold text-gray-900">@r.RouteNumber</div>
+                                <div class="text-sm text-gray-600">@r.GetRouteSummary()</div>
+                                <div class="text-sm text-gray-600">Driver: @r.Driver?.Name</div>
+                                <div class="text-sm text-gray-600">Truck: @r.Truck?.GetDisplayName()</div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm" @onclick="() => BeginEdit(r)">Edit</button>
+                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm" @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Desktop/Tablet: Table -->
+            <div class="overflow-x-auto hidden md:block">
+                <table class="min-w-full border border-gray-200 rounded-xl overflow-hidden">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left p-2 border-b">Route #</th>
+                            <th class="text-left p-2 border-b">Summary</th>
+                            <th class="text-left p-2 border-b">Driver</th>
+                            <th class="text-left p-2 border-b">Truck</th>
+                            <th class="text-left p-2 border-b">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         @foreach (var r in routes)
                         {
                             var isEditing = editRoute?.Id == r.Id;
@@ -175,14 +260,15 @@
                                 </td>
                             </tr>
                         }
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
 </div>
 
 @code {
+    private bool IsFromDemo => new Uri(Nav.Uri).Query.Contains("from=demo", StringComparison.OrdinalIgnoreCase);
     private List<Route> routes = new();
     private List<Driver> drivers = new();
     private List<Truck> trucks = new();
