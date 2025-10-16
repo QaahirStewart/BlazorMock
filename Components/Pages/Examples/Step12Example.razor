@@ -1,8 +1,7 @@
 @page "/examples/step12"
 @inject ILearningProgressService ProgressService
 @rendermode InteractiveServer
-@inject IJSRuntime JS
-@implements IAsyncDisposable
+@* JS copy removed; using global code enhancer per-block *@
 
 <PageTitle>Step 12: Pay & Expense Calculation - Example</PageTitle>
 
@@ -60,20 +59,10 @@
                 <li>Small methods make unit testing straightforward</li>
             </ul>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyServiceCode">Copy</button>
-                        <pre id="s12-code-service" data-code-title="C# (Services/ScheduleService.cs)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Services/ScheduleService.cs
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: ScheduleService</h3>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="C# (Services/ScheduleService.cs)">
+// Services/ScheduleService.cs
 namespace BlazorMock.Services;
 
 /// &lt;summary&gt;
@@ -162,9 +151,7 @@ public class ScheduleService
         return (profit / route.Revenue) * 100;
     }
 }
-</code></pre>
-                    </div>
-                </details>
+                </pre>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -188,20 +175,10 @@ public class ScheduleService
                 <li>Keep Program.cs focused on registrations and middleware</li>
             </ul>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyProgramCode">Copy</button>
-                        <pre id="s12-code-program" data-code-title="Program.cs registration"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Program.cs
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Program.cs registration</h3>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Program.cs registration">
+// Program.cs
 using BlazorMock.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -211,9 +188,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped&lt;ScheduleService&gt;();
 
 var app = builder.Build();
-</code></pre>
-                    </div>
-                </details>
+                </pre>
             </div>
         </div>
 
@@ -230,20 +205,10 @@ var app = builder.Build();
                 <li>Save the computed values alongside the route</li>
             </ul>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyPageCode">Copy</button>
-                        <pre id="s12-code-page" data-code-title="Razor + C# (Use Service in Page)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/routes/create"
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Use Service in Page</h3>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor + C# (Use Service in Page)">
+@@page "/routes/create"
 @@inject ScheduleService ScheduleService
 @@inject AppDbContext DbContext
 
@@ -353,9 +318,7 @@ var app = builder.Build();
         Navigation.NavigateTo("/routes");
     }
 }
-</code></pre>
-                    </div>
-                </details>
+                </pre>
             </div>
         </div>
 
@@ -547,38 +510,6 @@ var app = builder.Build();
         isComplete = true;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
-        }
-    }
-
-    private async Task CopyServiceCode()
-    {
-        if (_copyModule is not null)
-        {
-            await _copyModule.InvokeVoidAsync("copyById", "s12-code-service");
-        }
-    }
-
-    private async Task CopyProgramCode()
-    {
-        if (_copyModule is not null)
-        {
-            await _copyModule.InvokeVoidAsync("copyById", "s12-code-program");
-        }
-    }
-
-    private async Task CopyPageCode()
-    {
-        if (_copyModule is not null)
-        {
-            await _copyModule.InvokeVoidAsync("copyById", "s12-code-page");
-        }
-    }
-
     // --- Live Demo (Step 12) Logic ---
     private void InitializeS12Trips()
     {
@@ -661,11 +592,5 @@ OvertimeRatePerHour = s12OvertimeRatePerHour, FuelCost = 115m },
         public decimal Expenses { get; set; }
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        if (_copyModule is not null)
-        {
-            await _copyModule.DisposeAsync();
-        }
-    }
+    // No JS module to dispose; using global code enhancer per-block
 }

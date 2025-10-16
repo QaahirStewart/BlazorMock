@@ -1,7 +1,6 @@
 @page "/examples/step11"
 @inject ILearningProgressService ProgressService
-@inject IJSRuntime JS
-@implements IAsyncDisposable
+@* JS copy removed; using global code enhancer for Show code + Copy *@
 @rendermode InteractiveServer
 
 <PageTitle>Step 11: Assignment Logic & Business Rules - Example</PageTitle>
@@ -63,20 +62,10 @@
                 <li>Submit stays disabled until hard rules pass</li>
             </ul>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyFormCode">Copy</button>
-                        <pre id="s11-code-form" data-code-title="Razor + C# (Assignment Form)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/assignments/create"
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Assignment Form</h3>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor + C# (Assignment Form)">
+@@page "/assignments/create"
 @@inject AppDbContext DbContext
 @@inject NavigationManager Navigation
 @@using Microsoft.EntityFrameworkCore
@@ -151,9 +140,8 @@
 
     &lt;button type="submit" disabled="@@(!isValid)"&gt;Create Assignment&lt;/button&gt;
     &lt;a href="/routes"&gt;Cancel&lt;/a&gt;
-&lt;/EditForm&gt;</code></pre>
-                    </div>
-                </details>
+&lt;/EditForm&gt;
+                </pre>
             </div>
         </div>
 
@@ -173,20 +161,10 @@
                 <li>Aggregates friendly messages; toggles isValid accordingly</li>
             </ul>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyValidationCode">Copy</button>
-                        <pre id="s11-code-validation" data-code-title="C# (Validation Logic)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@code {
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Validation Logic</h3>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="C# (Validation Logic)">
+@@code {
     private Route newRoute = new();
     private List&lt;Driver&gt; availableDrivers = new();
     private List&lt;Truck&gt; availableTrucks = new();
@@ -311,9 +289,8 @@
             errorMessage = $"Error creating assignment: {ex.Message}";
         }
     }
-}</code></pre>
-                    </div>
-                </details>
+}
+                </pre>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -355,13 +332,16 @@
 
         <!-- Live Demo: Assignment Validator -->
         <div class="bg-black/3 rounded-2xl p-6 border border-gray-200 mb-6">
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">🎬 Live Demo: Assignment Validator</h2>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 break-words">🎬 Live Demo: Assignment Validator
+            </h2>
 
             <div class="bg-white rounded-xl p-4 border border-gray-200">
                 <div class="grid sm:grid-cols-3 gap-3 mb-4">
                     <div>
                         <label class="block text-xs text-gray-600 mb-1">Route Type</label>
-                        <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@(demoSelectedRouteType?.ToString() ?? string.Empty)" @onchange="OnDemoRouteTypeChanged">
+                        <select class="w-full rounded border border-gray-300 p-2 text-sm"
+                            value="@(demoSelectedRouteType?.ToString() ?? string.Empty)"
+                            @onchange="OnDemoRouteTypeChanged">
                             <option value="">-- Select Route Type --</option>
                             @foreach (var rt in demoRouteTypes)
                             {
@@ -371,16 +351,19 @@
                     </div>
                     <div>
                         <label class="block text-xs text-gray-600 mb-1">Truck</label>
-                        <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@demoSelectedTruckId" @onchange="OnDemoTruckChanged">
+                        <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@demoSelectedTruckId"
+                            @onchange="OnDemoTruckChanged">
                             <option value="">-- Select Truck --</option>
                             @foreach (var t in demoTrucks)
                             {
                                 <option value="@t.Id">@t.DisplayName (@t.Class)</option>
                             }
                         </select>
-                    </div>  <div>
+                    </div>
+                    <div>
                         <label class="block text-xs text-gray-600 mb-1">Driver</label>
-                        <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@demoSelectedDriverId" @onchange="OnDemoDriverChanged">
+                        <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@demoSelectedDriverId"
+                            @onchange="OnDemoDriverChanged">
                             <option value="">-- Select Driver --</option>
                             @foreach (var d in demoDrivers)
                             {
@@ -388,7 +371,7 @@
                             }
                         </select>
                     </div>
-                  
+
                 </div>
 
                 @if (demoWarnings.Any())
@@ -416,7 +399,8 @@
                             <span class="text-red-700">❌ Not valid</span>
                         }
                     </div>
-                    <button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm" @onclick="ResetDemo">Reset</button>
+                    <button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm"
+                        @onclick="ResetDemo">Reset</button>
                 </div>
             </div>
         </div>
@@ -475,11 +459,13 @@
 
         <!-- Navigation -->
         <div class="mt-8 flex items-center justify-between">
-            <a href="/examples/step10" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <a href="/examples/step10"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <span>←</span>
                 Previous: Step 10
             </a>
-            <a href="/examples/step12" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+            <a href="/examples/step12"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                 Next: Step 12
                 <span>→</span>
             </a>
@@ -489,7 +475,6 @@
 
 @code {
     private bool isComplete = false;
-    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
@@ -501,22 +486,9 @@
     {
         if (firstRender)
         {
-            _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
             // Initialize the inline demo data set for this page
             SeedDemoData();
         }
-    }
-
-    private async Task CopyFormCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s11-code-form");
-    }
-
-    private async Task CopyValidationCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s11-code-validation");
     }
 
     private async Task MarkComplete()
@@ -525,13 +497,7 @@
         isComplete = true;
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        if (_copyModule is not null)
-        {
-            await _copyModule.DisposeAsync();
-        }
-    }
+    // No JS module to dispose; using global code enhancer per-block
 
     // ---- Demo State (local to Step 11 page) ----
     private enum DemoLicenseLevel { ClassC = 1, ClassB = 2, ClassA = 3 }
@@ -572,20 +538,26 @@
         if (demoDrivers.Count == 0)
         {
             demoDrivers = new()
-            {
-                new DemoDriver { Id = 1, Name = "Alex",  LicenseLevel = DemoLicenseLevel.ClassA, YearsOfExperience = 5, IsAvailable = true },
-                new DemoDriver { Id = 2, Name = "Sam",   LicenseLevel = DemoLicenseLevel.ClassB, YearsOfExperience = 2, IsAvailable = true },
-                new DemoDriver { Id = 3, Name = "Riley", LicenseLevel = DemoLicenseLevel.ClassC, YearsOfExperience = 1, IsAvailable = true },
-            };
+{
+new DemoDriver { Id = 1, Name = "Alex", LicenseLevel = DemoLicenseLevel.ClassA, YearsOfExperience = 5, IsAvailable =
+true },
+new DemoDriver { Id = 2, Name = "Sam", LicenseLevel = DemoLicenseLevel.ClassB, YearsOfExperience = 2, IsAvailable = true
+},
+new DemoDriver { Id = 3, Name = "Riley", LicenseLevel = DemoLicenseLevel.ClassC, YearsOfExperience = 1, IsAvailable =
+true },
+};
         }
         if (demoTrucks.Count == 0)
         {
             demoTrucks = new()
-            {
-                new DemoTruck { Id = 1, DisplayName = "Freightliner FL-01", Class = DemoTruckClass.Heavy,  IsAvailable = true,  InMaintenance = false },
-                new DemoTruck { Id = 2, DisplayName = "Volvo VNL-22",     Class = DemoTruckClass.Medium, IsAvailable = true,  InMaintenance = false },
-                new DemoTruck { Id = 3, DisplayName = "Ford F-150",       Class = DemoTruckClass.Light,  IsAvailable = true,  InMaintenance = false },
-            };
+{
+new DemoTruck { Id = 1, DisplayName = "Freightliner FL-01", Class = DemoTruckClass.Heavy, IsAvailable = true,
+InMaintenance = false },
+new DemoTruck { Id = 2, DisplayName = "Volvo VNL-22", Class = DemoTruckClass.Medium, IsAvailable = true, InMaintenance =
+false },
+new DemoTruck { Id = 3, DisplayName = "Ford F-150", Class = DemoTruckClass.Light, IsAvailable = true, InMaintenance =
+false },
+};
         }
     }
 
@@ -635,7 +607,7 @@
         demoIsValid = true;
 
         var driver = demoSelectedDriverId.HasValue ? demoDrivers.FirstOrDefault(d => d.Id == demoSelectedDriverId.Value) : null;
-        var truck  = demoSelectedTruckId.HasValue  ? demoTrucks.FirstOrDefault(t => t.Id == demoSelectedTruckId.Value) : null;
+        var truck = demoSelectedTruckId.HasValue ? demoTrucks.FirstOrDefault(t => t.Id == demoSelectedTruckId.Value) : null;
 
         if (driver is null || truck is null)
         {
@@ -657,7 +629,7 @@
 
         bool licenseOk = truck.Class switch
         {
-            DemoTruckClass.Heavy  => driver.LicenseLevel == DemoLicenseLevel.ClassA,
+            DemoTruckClass.Heavy => driver.LicenseLevel == DemoLicenseLevel.ClassA,
             DemoTruckClass.Medium => driver.LicenseLevel >= DemoLicenseLevel.ClassB,
             _ => true
         };
@@ -677,9 +649,9 @@
         var routeType = demoSelectedRouteType.Value;
         bool hasExperience = routeType switch
         {
-            DemoRouteType.Hazmat    => driver.YearsOfExperience >= 2,
+            DemoRouteType.Hazmat => driver.YearsOfExperience >= 2,
             DemoRouteType.Oversized => driver.YearsOfExperience >= 3,
-            DemoRouteType.LongHaul  => driver.YearsOfExperience >= 1,
+            DemoRouteType.LongHaul => driver.YearsOfExperience >= 1,
             _ => true
         };
         if (!hasExperience)

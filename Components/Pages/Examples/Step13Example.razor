@@ -1,7 +1,5 @@
 @page "/examples/step13"
 @inject ILearningProgressService ProgressService
-@inject IJSRuntime JS
-@implements IAsyncDisposable
 @rendermode InteractiveServer
 
 <PageTitle>Step 13: Dashboard & Reports - Example</PageTitle>
@@ -59,19 +57,9 @@
                 <li>Keeps the view clean while business logic stays in the code-behind</li>
             </ul>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyCompCode">Copy</button>
-                        <pre id="code-comp-pre" class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/dashboard"
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor (Dashboard Component)">
+@@page "/dashboard"
 @@inject AppDbContext DbContext
 @@using Microsoft.EntityFrameworkCore
 @@rendermode InteractiveServer
@@ -196,9 +184,8 @@
             &lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-                    </div>
-                </details>
+&lt;/div&gt;
+                </pre>
             </div>
         </div>
 
@@ -214,19 +201,8 @@
                 <li>Applies LINQ for aggregation (Sum, Count, Where) and in-memory filtering</li>
             </ul>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyLogicCode">Copy</button>
-                        <pre id="code-logic-pre" class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@code {
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="C# (Dashboard Logic)">@@code {
     private List&lt;Route&gt; routes = new();
     private List&lt;Driver&gt; drivers = new();
     private DashboardStats stats = new();
@@ -342,9 +318,7 @@ public class DashboardStats
     public decimal NetProfit { get; set; }
     public decimal ProfitMargin { get; set; }
     public decimal RouteChangePercent { get; set; }
-}</code></pre>
-                    </div>
-                </details>
+}</pre>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -425,19 +399,8 @@ public class DashboardStats
                 <li>Class names group styles by component and purpose</li>
             </ul>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyStyleCode">Copy</button>
-                        <pre id="code-style-pre" class="text-xs sm:text-sm text-gray-800 font-mono"><code>/* Dashboard Styles */
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="CSS (Dashboard Styles)">/* Dashboard Styles */
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -494,9 +457,7 @@ public class DashboardStats
 .driver-card.unavailable {
     background: #fee2e2;
     border: 2px solid #ef4444;
-}</code></pre>
-                    </div>
-                </details>
+}</pre>
             </div>
         </div>
 
@@ -593,42 +554,7 @@ public class DashboardStats
         isComplete = true;
     }
 
-    // JS interop for copy buttons
-    private IJSObjectReference? _module;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
-        }
-    }
-
-    private async Task CopyCompCode()
-    {
-        if (_module is not null)
-            await _module.InvokeVoidAsync("copyById", "code-comp-pre");
-    }
-
-    private async Task CopyLogicCode()
-    {
-        if (_module is not null)
-            await _module.InvokeVoidAsync("copyById", "code-logic-pre");
-    }
-
-    private async Task CopyStyleCode()
-    {
-        if (_module is not null)
-            await _module.InvokeVoidAsync("copyById", "code-style-pre");
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_module is not null)
-        {
-            await _module.DisposeAsync();
-        }
-    }
+    // No per-page JS interop; using global code enhancer for Show code + Copy
 
     // --- Live Demo (Step 13) Logic ---
     private void InitializeS13Trips()
