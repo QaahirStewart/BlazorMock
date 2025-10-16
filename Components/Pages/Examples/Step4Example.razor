@@ -28,35 +28,7 @@
             <p class="text-gray-700 mb-6">Event binding allows your components to respond to user interactions. Blazor
                 automatically re-renders the UI when component state changes.</p>
 
-            <h3 class="text-lg font-semibold text-gray-700 mb-3">Code Example - Counter.razor:</h3>
-            <pre data-code-title="Razor + C# (Counter.razor)"
-                class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">&#64;page "/counter"
-
-&lt;h1&gt;Counter&lt;/h1&gt;
-&lt;p&gt;Current count: &#64;currentCount&lt;/p&gt;
-
-&lt;button &#64;onclick="Increment"&gt;+1&lt;/button&gt;
-&lt;button &#64;onclick="Decrement"&gt;-1&lt;/button&gt;
-&lt;button &#64;onclick="Reset"&gt;Reset&lt;/button&gt;
-
-&#64;code {
-  private int currentCount = 0;
-  
-  private void Increment()
-  {
-    currentCount++;
-  }
-  
-  private void Decrement()
-  {
-    currentCount--;
-  }
-  
-  private void Reset()
-  {
-    currentCount = 0;
-  }
-}</pre>
+            <!-- (moved code sample into a dedicated card below) -->
 
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <p class="text-sm text-blue-800 font-semibold mb-2">💡 Key Points:</p>
@@ -79,6 +51,53 @@
                         class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">private
                         methods</a>
                 </div>
+            </div>
+        </div>
+
+        <!-- Code Block & Summary (like Step 13) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3">🧩 Code Example: Counter Component</h2>
+            <p class="text-sm sm:text-base text-gray-700 mb-3">
+                This snippet shows a simple counter wiring button clicks to C# methods via
+                <code>&#64;onclick</code>. Updating the <code>currentCount</code> field triggers an automatic re-render.
+            </p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Binds click events with <code>&#64;onclick</code> to C# handlers</li>
+                <li>Updates component state and re-renders the UI automatically</li>
+                <li>Keeps logic in concise private methods; use <code>async Task</code> for async work</li>
+            </ul>
+
+            <!-- Grey container so Show code sits inside like Step 13 -->
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <!-- Place raw <pre>; JS enhancer will add Show code + Copy UI -->
+                <pre data-code-title="Razor + C# (Counter.razor)"
+                    class="text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&#64;page "/counter"
+
+&lt;h1&gt;Counter&lt;/h1&gt;
+&lt;p&gt;Current count: &#64;currentCount&lt;/p&gt;
+
+&lt;button &#64;onclick="Increment"&gt;+1&lt;/button&gt;
+&lt;button &#64;onclick="Decrement"&gt;-1&lt;/button&gt;
+&lt;button &#64;onclick="Reset"&gt;Reset&lt;/button&gt;
+
+&#64;code {
+    private int currentCount = 0;
+  
+    private void Increment()
+    {
+        currentCount++;
+    }
+  
+    private void Decrement()
+    {
+        currentCount--;
+    }
+  
+    private void Reset()
+    {
+        currentCount = 0;
+    }
+}</pre>
             </div>
         </div>
 

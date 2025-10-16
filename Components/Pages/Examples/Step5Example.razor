@@ -20,17 +20,20 @@
                 🎯 Step 5: Forms & Validation
             </h1>
             <p class="text-xl text-gray-600">
-                Create forms with validation using EditForm, DataAnnotationsValidator, and validation attributes to ensure data quality.
+                Create forms with validation using EditForm, DataAnnotationsValidator, and validation attributes to
+                ensure data quality.
             </p>
         </div>
 
         <!-- What You'll Learn -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">📘 What You'll Learn</h2>
-            <p class="text-gray-700 mb-6">Blazor provides powerful form handling with built-in validation. Use EditForm component with data annotations for robust form validation.</p>
-            
+            <p class="text-gray-700 mb-6">Blazor provides powerful form handling with built-in validation. Use EditForm
+                component with data annotations for robust form validation.</p>
+
             <h3 class="text-lg font-semibold text-gray-700 mb-3">Basic EditForm Structure:</h3>
-            <pre data-code-title="Razor + C# (EditForm)" class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">@("<EditForm Model=\"driver\" OnValidSubmit=\"HandleSubmit\">")
+            <pre data-code-title="Razor + C# (EditForm)"
+                class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">@("<EditForm Model=\"driver\" OnValidSubmit=\"HandleSubmit\">")
   @("<DataAnnotationsValidator />")
   @("<ValidationSummary />")
   
@@ -61,7 +64,7 @@ public class Driver
   [EmailAddress]
   public string Email { get; set; } = string.Empty;
 }</pre>
-            
+
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <p class="text-sm text-blue-800 font-semibold mb-2">💡 Key Components:</p>
                 <ul class="text-sm text-blue-700 list-disc ml-5 space-y-1">
@@ -70,16 +73,20 @@ public class Driver
                     <li><code>ValidationSummary</code> → Shows all validation errors in one place</li>
                     <li><code>ValidationMessage</code> → Displays errors for specific fields</li>
                     <li><code>OnValidSubmit</code> → Event fired only when form data is valid</li>
-                    <li><code>InputText</code>, <code>InputNumber</code>, <code>InputSelect</code> → Blazor input components</li>
+                    <li><code>InputText</code>, <code>InputNumber</code>, <code>InputSelect</code> → Blazor input
+                        components</li>
                 </ul>
             </div>
-            
+
             <div class="mt-6 pt-6 border-t border-gray-200">
-                <p class="text-sm text-gray-600 mb-3"><strong>💡 Key Concepts:</strong> EditForm, DataAnnotationsValidator, Input Components, Validation Attributes, Two-Way Binding</p>
+                <p class="text-sm text-gray-600 mb-3"><strong>💡 Key Concepts:</strong> EditForm,
+                    DataAnnotationsValidator, Input Components, Validation Attributes, Two-Way Binding</p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-sm text-gray-600">→ Related tips:</span>
-                    <a href="/tips#editform--validation" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">EditForm</a>
-                    <a href="/tips#validation-attributes" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">Validation</a>
+                    <a href="/tips#editform--validation"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">EditForm</a>
+                    <a href="/tips#validation-attributes"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">Validation</a>
                 </div>
             </div>
         </div>
@@ -87,15 +94,17 @@ public class Driver
         <!-- Interactive Demo -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">🚗 Interactive Demo: Driver Registration Form</h2>
-            <p class="text-gray-700 mb-6">Try submitting the form with invalid data to see validation in action. All fields have specific requirements.</p>
-            
+            <p class="text-gray-700 mb-6">Try submitting the form with invalid data to see validation in action. All
+                fields have specific requirements.</p>
+
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
                 <EditForm Model="driver" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator />
-                    
+
                     @* Show validation summary at the top *@
                     <div class="mb-4">
-                        <ValidationSummary class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3" />
+                        <ValidationSummary
+                            class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3" />
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -104,9 +113,8 @@ public class Driver
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 First Name <span class="text-red-500">*</span>
                             </label>
-                            <InputText 
-                                @bind-Value="driver.FirstName" 
-                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" 
+                            <InputText @bind-Value="driver.FirstName"
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                                 placeholder="Enter first name" />
                             <ValidationMessage For="() => driver.FirstName" class="text-xs text-red-600 mt-1 block" />
                         </div>
@@ -116,9 +124,8 @@ public class Driver
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Last Name <span class="text-red-500">*</span>
                             </label>
-                            <InputText 
-                                @bind-Value="driver.LastName" 
-                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" 
+                            <InputText @bind-Value="driver.LastName"
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                                 placeholder="Enter last name" />
                             <ValidationMessage For="() => driver.LastName" class="text-xs text-red-600 mt-1 block" />
                         </div>
@@ -128,10 +135,8 @@ public class Driver
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Email <span class="text-red-500">*</span>
                             </label>
-                            <InputText 
-                                type="email"
-                                @bind-Value="driver.Email" 
-                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" 
+                            <InputText type="email" @bind-Value="driver.Email"
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                                 placeholder="driver@example.com" />
                             <ValidationMessage For="() => driver.Email" class="text-xs text-red-600 mt-1 block" />
                         </div>
@@ -141,9 +146,8 @@ public class Driver
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 CDL Number <span class="text-red-500">*</span>
                             </label>
-                            <InputText 
-                                @bind-Value="driver.CdlNumber" 
-                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" 
+                            <InputText @bind-Value="driver.CdlNumber"
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                                 placeholder="e.g., CDL123456" />
                             <ValidationMessage For="() => driver.CdlNumber" class="text-xs text-red-600 mt-1 block" />
                             <p class="text-xs text-gray-500 mt-1">Must be 4-20 characters</p>
@@ -154,11 +158,11 @@ public class Driver
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Years of Experience <span class="text-red-500">*</span>
                             </label>
-                            <InputNumber 
-                                @bind-Value="driver.YearsExperience" 
-                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white" 
+                            <InputNumber @bind-Value="driver.YearsExperience"
+                                class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                                 placeholder="0" />
-                            <ValidationMessage For="() => driver.YearsExperience" class="text-xs text-red-600 mt-1 block" />
+                            <ValidationMessage For="() => driver.YearsExperience"
+                                class="text-xs text-red-600 mt-1 block" />
                             <p class="text-xs text-gray-500 mt-1">Must be between 0 and 60</p>
                         </div>
 
@@ -167,8 +171,7 @@ public class Driver
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 License Level <span class="text-red-500">*</span>
                             </label>
-                            <InputSelect 
-                                @bind-Value="driver.LicenseLevel" 
+                            <InputSelect @bind-Value="driver.LicenseLevel"
                                 class="w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white">
                                 <option value="">-- Select License Level --</option>
                                 @foreach (var level in Enum.GetValues<LicenseLevel>())
@@ -176,24 +179,28 @@ public class Driver
                                     <option value="@level">@GetLicenseDisplay(level)</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For="() => driver.LicenseLevel" class="text-xs text-red-600 mt-1 block" />
+                            <ValidationMessage For="() => driver.LicenseLevel"
+                                class="text-xs text-red-600 mt-1 block" />
                         </div>
                     </div>
 
                     <!-- Additional Certifications -->
                     <div class="mb-4">
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <InputCheckbox @bind-Value="driver.HasHazmatEndorsement" class="w-4 h-4 text-orange-600 rounded focus:ring-orange-500" />
+                            <InputCheckbox @bind-Value="driver.HasHazmatEndorsement"
+                                class="w-4 h-4 text-orange-600 rounded focus:ring-orange-500" />
                             <span class="text-sm text-gray-700">Hazmat Endorsement</span>
                         </label>
                     </div>
 
                     <!-- Buttons -->
                     <div class="flex flex-wrap gap-3">
-                        <button type="submit" class="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors">
+                        <button type="submit"
+                            class="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors">
                             🚗 Submit Driver Registration
                         </button>
-                        <button type="button" @onclick="ResetForm" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        <button type="button" @onclick="ResetForm"
+                            class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                             Reset Form
                         </button>
                     </div>
@@ -210,9 +217,11 @@ public class Driver
                                     <p><strong>Name:</strong> @driver.FirstName @driver.LastName</p>
                                     <p><strong>Email:</strong> @driver.Email</p>
                                     <p><strong>CDL Number:</strong> @driver.CdlNumber</p>
-                                    <p><strong>License Level:</strong> @(driver.LicenseLevel is null ? "" : GetLicenseDisplay(driver.LicenseLevel.Value))</p>
+                                    <p><strong>License Level:</strong> @(driver.LicenseLevel is null ? "" :
+                                                                            GetLicenseDisplay(driver.LicenseLevel.Value))</p>
                                     <p><strong>Years Experience:</strong> @driver.YearsExperience years</p>
-                                    <p><strong>Hazmat Certified:</strong> @(driver.HasHazmatEndorsement ? "Yes ☢️" : "No")</p>
+                                    <p><strong>Hazmat Certified:</strong> @(driver.HasHazmatEndorsement ? "Yes ☢️" : "No")
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -224,43 +233,50 @@ public class Driver
         <!-- Validation Attributes Reference -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">� Common Validation Attributes</h2>
-            <p class="text-gray-700 mb-4">Blazor supports all standard .NET data annotation attributes for validation:</p>
-            
+            <p class="text-gray-700 mb-4">Blazor supports all standard .NET data annotation attributes for validation:
+            </p>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[Required]</h3>
                     <p class="text-sm text-gray-600 mb-2">Ensures field has a value</p>
-                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Required(ErrorMessage = "Name required")]</pre>
+                    <pre data-code-title="Attribute"
+                        class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Required(ErrorMessage = "Name required")]</pre>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[StringLength]</h3>
                     <p class="text-sm text-gray-600 mb-2">Limits string length</p>
-                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[StringLength(50, MinimumLength = 2)]</pre>
+                    <pre data-code-title="Attribute"
+                        class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[StringLength(50, MinimumLength = 2)]</pre>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[EmailAddress]</h3>
                     <p class="text-sm text-gray-600 mb-2">Validates email format</p>
-                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[EmailAddress]</pre>
+                    <pre data-code-title="Attribute"
+                        class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[EmailAddress]</pre>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[Range]</h3>
                     <p class="text-sm text-gray-600 mb-2">Sets numeric range</p>
-                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Range(0, 60)]</pre>
+                    <pre data-code-title="Attribute"
+                        class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Range(0, 60)]</pre>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[RegularExpression]</h3>
                     <p class="text-sm text-gray-600 mb-2">Custom pattern matching</p>
-                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[RegularExpression(@@"^\d{{3}}-\d{{2}}-\d{{4}}$")]</pre>
+                    <pre data-code-title="Attribute"
+                        class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[RegularExpression(@@"^\d{{3}}-\d{{2}}-\d{{4}}$")]</pre>
                 </div>
 
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <h3 class="font-semibold text-gray-800 mb-2">[Compare]</h3>
                     <p class="text-sm text-gray-600 mb-2">Compares two properties</p>
-                    <pre data-code-title="Attribute" class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Compare(nameof(Password))]</pre>
+                    <pre data-code-title="Attribute"
+                        class="bg-gray-100 p-2 rounded text-xs font-mono text-gray-800">[Compare(nameof(Password))]</pre>
                 </div>
             </div>
         </div>
@@ -271,23 +287,32 @@ public class Driver
             <ul class="space-y-2 text-sm text-blue-700">
                 <li class="flex items-start gap-2">
                     <span class="text-blue-600 font-bold">•</span>
-                    <span><strong>OnValidSubmit vs OnSubmit:</strong> Use <code class="bg-blue-100 px-1 rounded">OnValidSubmit</code> to only handle valid forms, or <code class="bg-blue-100 px-1 rounded">OnSubmit</code> to handle all submissions.</span>
+                    <span><strong>OnValidSubmit vs OnSubmit:</strong> Use <code
+                            class="bg-blue-100 px-1 rounded">OnValidSubmit</code> to only handle valid forms, or <code
+                            class="bg-blue-100 px-1 rounded">OnSubmit</code> to handle all submissions.</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-blue-600 font-bold">•</span>
-                    <span><strong>ValidationSummary:</strong> Shows all validation errors in one place at the top of the form.</span>
+                    <span><strong>ValidationSummary:</strong> Shows all validation errors in one place at the top of the
+                        form.</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-blue-600 font-bold">•</span>
-                    <span><strong>ValidationMessage:</strong> Shows errors for specific fields. Use <code class="bg-blue-100 px-1 rounded">For="() => model.Property"</code> syntax.</span>
+                    <span><strong>ValidationMessage:</strong> Shows errors for specific fields. Use <code
+                            class="bg-blue-100 px-1 rounded">For="() => model.Property"</code> syntax.</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-blue-600 font-bold">•</span>
-                    <span><strong>Input Components:</strong> Use <code class="bg-blue-100 px-1 rounded">InputText</code>, <code class="bg-blue-100 px-1 rounded">InputNumber</code>, <code class="bg-blue-100 px-1 rounded">InputSelect</code>, <code class="bg-blue-100 px-1 rounded">InputCheckbox</code>, etc. for automatic validation.</span>
+                    <span><strong>Input Components:</strong> Use <code
+                            class="bg-blue-100 px-1 rounded">InputText</code>, <code
+                            class="bg-blue-100 px-1 rounded">InputNumber</code>, <code
+                            class="bg-blue-100 px-1 rounded">InputSelect</code>, <code
+                            class="bg-blue-100 px-1 rounded">InputCheckbox</code>, etc. for automatic validation.</span>
                 </li>
                 <li class="flex items-start gap-2">
                     <span class="text-blue-600 font-bold">•</span>
-                    <span><strong>Custom Validation:</strong> Create custom validation attributes by inheriting from <code class="bg-blue-100 px-1 rounded">ValidationAttribute</code>.</span>
+                    <span><strong>Custom Validation:</strong> Create custom validation attributes by inheriting from
+                        <code class="bg-blue-100 px-1 rounded">ValidationAttribute</code>.</span>
                 </li>
             </ul>
         </div>
@@ -303,12 +328,14 @@ public class Driver
                 {
                     <div class="flex items-center gap-3">
                         <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
-                        <button @onclick="ResetStep" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
                     </div>
                 }
                 else
                 {
-                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
                         Mark as Complete
                     </button>
                 }
@@ -317,11 +344,13 @@ public class Driver
 
         <!-- Navigation -->
         <div class="flex items-center justify-between">
-            <a href="/examples/step4" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <a href="/examples/step4"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <span>←</span>
                 Previous: Step 4
             </a>
-            <a href="/examples/step6" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+            <a href="/examples/step6"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                 Next: Step 6
                 <span>→</span>
             </a>

@@ -398,6 +398,42 @@ Body Text:
 - **Pages Responsive:** 100%
 - **Typography Classes:** 50+ responsive variants
 - **Min Screen Width:** 320px
+
+---
+
+## October 16, 2025 (Later)
+
+### 🧩 Standardized In‑App Code Samples (Show code + Copy) and Removed Page Toolbar
+
+What changed:
+
+- Established a standard pattern for in-app code samples that mirrors Step 13 and Step 4:
+  - White card with heading, short description, and bullet points
+  - Gray container wrapping a raw `<pre>` block
+  - `data-code-title` attribute supplies the visible title
+  - Site JS enhancer adds a per-block collapsible "Show code" summary and a Copy button automatically
+- Permanently removed the global page-level "Expand/Collapse all code" toolbar from the enhancer script.
+
+Rationale:
+
+- Per-block controls are clearer and avoid UI clutter
+- Keeps code samples contextual and scannable
+- Simplifies the JS enhancer and reduces surprise UI on pages with many blocks
+
+Docs updates:
+
+- `Docs/STYLE-GUIDE.md`: Added "In‑App Code Sample Pattern (Show code + Copy)" section with markup skeleton, Razor `@` escaping note, and policy to avoid global toolbars.
+
+Verification:
+
+- Step 4 example updated to match Step 13 visually and behaviorally
+- Build: Release build passes with no errors
+
+Impact:
+
+- Consistent learner experience across steps
+- No more page-level expand/collapse buttons; per-block control only
+- Clear guidance documented for adding future samples
 - **Breakpoints Used:** 4 (sm, md, lg, xl)
 - **Lines of CSS Added:** ~60
 - **Documentation Pages:** 2 new, 2 updated

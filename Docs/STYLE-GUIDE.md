@@ -391,7 +391,69 @@ See `Components/Pages/Drivers/DriverList.razor`, `TruckList.razor`, and `RouteLi
 
 ---
 
-## 📁 File Organization
+## � In‑App Code Sample Pattern (Show code + Copy)
+
+Use this pattern to present example code inside pages (e.g., example steps) with a consistent, learner-friendly UX that mirrors Step 13 and Step 4.
+
+Policy:
+
+- Per-block controls only. We do not show page-level "Expand/Collapse all" toolbars. This global toolbar was intentionally removed.
+- Each code block renders its own collapsible "Show code" control and a Copy button.
+
+How to use:
+
+1. Provide a white card context (optional but recommended) with a heading, 1–2 sentences, and bullets.
+2. Inside the card, place the code block within a gray container for visual grouping.
+3. Use a raw <pre> element; the site JS enhancer will add the collapsible header and Copy button automatically.
+4. Set a descriptive title with the `data-code-title` attribute.
+
+Markup skeleton:
+
+```html
+<div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200">
+  <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
+    🧩 Code Example: Title
+  </h3>
+  <p class="text-sm sm:text-base text-gray-600 mb-3">
+    Short description of what this code shows.
+  </p>
+  <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+    <li>Bullet point one</li>
+    <li>Bullet point two</li>
+  </ul>
+  <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all">
+    <pre data-code-title="Razor + C# (Component.razor)">
+@* Paste code here as plain text. See note on escaping @ below. *@
+    </pre>
+  </div>
+  <p class="text-xs text-gray-500 mt-3">
+    Tip: Use Show code to expand/collapse and Copy to clipboard.
+  </p>
+  <p class="text-xs text-gray-500">
+    No page-level toolbar is used; controls are per code block.
+  </p>
+  <p class="text-xs text-gray-500">
+    Examples: Step 13 and Step 4 follow this pattern.
+  </p>
+  <!-- Notes: The JS enhancer auto-initializes; no extra wiring needed here. -->
+  <!-- Policy: Page-level expand/collapse toolbars are intentionally not rendered globally. -->
+</div>
+```
+
+Notes for Razor escape sequences:
+
+- In Razor files, the `@` symbol starts code. When you want to display `@` literally inside static markup (including inside `<pre>`), escape it as `&#64;`.
+- Alternatively, duplicate the symbol (`@@`) to render a single `@`, but `&#64;` is preferred for clarity in static examples.
+
+Behavior details:
+
+- The site-wide JS module enhances any `<pre>` with `data-code-title` by adding a collapsible summary ("Show code") and a per-block Copy button.
+- The gray container (`bg-gray-100 rounded-lg p-4 overflow-x-auto break-all`) ensures readable, scrollable code on all screens.
+- If a page ever needs bulk expand/collapse behavior, implement it locally within that page; do not reintroduce global toolbars.
+
+---
+
+## �📁 File Organization
 
 ### Project Structure
 

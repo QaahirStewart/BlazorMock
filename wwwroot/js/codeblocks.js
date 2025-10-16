@@ -67,43 +67,11 @@ export function enhancePreBlocks() {
       createdContainers.push(container);
     }
 
-    // Add a simple per-page toolbar to expand/collapse all, once, if helpful
-    if (
-      createdContainers.length > 0 &&
-      !document.querySelector(".codeblocks-toolbar")
-    ) {
-      const firstContainer = document.querySelector(".codeblock-container");
-      if (firstContainer && firstContainer.parentElement) {
-        const toolbar = document.createElement("div");
-        toolbar.className = "codeblocks-toolbar mb-3 flex gap-2";
-
-        const expandBtn = document.createElement("button");
-        expandBtn.type = "button";
-        expandBtn.className =
-          "px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm";
-        expandBtn.textContent = "Expand all code";
-        expandBtn.addEventListener("click", () => {
-          document
-            .querySelectorAll(".codeblock-container details")
-            .forEach((d) => (d.open = true));
-        });
-
-        const collapseBtn = document.createElement("button");
-        collapseBtn.type = "button";
-        collapseBtn.className =
-          "px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm";
-        collapseBtn.textContent = "Collapse all code";
-        collapseBtn.addEventListener("click", () => {
-          document
-            .querySelectorAll(".codeblock-container details")
-            .forEach((d) => (d.open = false));
-        });
-
-        toolbar.appendChild(expandBtn);
-        toolbar.appendChild(collapseBtn);
-        firstContainer.parentElement.insertBefore(toolbar, firstContainer);
-      }
-    }
+    // Add a simple per-page toolbar to expand/collapse all, once, if opted-in.
+    // Opt-in by adding either:
+    //   <body data-code-toolbar="1">  OR  an element with [data-code-toolbar='true'] on the page
+    // Project decision: Do not render a page-level expand/collapse toolbar.
+    // If needed in the future, implement it locally in specific pages rather than globally here.
   } catch (e) {
     console.error("enhancePreBlocks error", e);
   }

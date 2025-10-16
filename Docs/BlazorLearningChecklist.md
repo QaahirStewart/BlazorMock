@@ -14,23 +14,23 @@ This checklist version allows you to track your progress through each step. Chec
 - [x] **Mobile-First Design** - All components optimized for mobile through desktop
 - [x] **Accessibility** - Proper text wrapping, readable font sizes, responsive layouts
 - [x] **Trucking Schedule Demo** - End-to-end demo at `/demo/trucking-schedule`
-- [ ] **Step 00 Complete** - Prerequisites & VS Code setup
-- [ ] **Step 1 Complete** - New clean project with Tailwind v4 setup
-- [ ] **Step 2 Complete** - Razor syntax and dynamic content
-- [ ] **Step 3 Complete** - Reusable components with parameters
-- [ ] **Step 4 Complete** - Event binding and state management
-- [ ] **Step 5 Complete** - Forms and validation
-- [ ] **Step 6 Complete** - Routing and navigation
-- [ ] **Step 7 Complete** - EF Core models
-- [ ] **Step 8 Complete** - DbContext setup
-- [ ] **Step 9 Complete** - CRUD operations
-- [ ] **Step 10 Complete** - State management
-- [ ] **Step 11 Complete** - Assignment logic and business rules
-- [ ] **Step 12 Complete** - Pay and expense calculation
-- [ ] **Step 13 Complete** - Dashboard and reports
-- [ ] **Phase 1 Complete** - Complete Steps 1-5 to unlock this achievement
-- [ ] **Phase 2 Complete** - Database integration (Steps 6-10)
-- [ ] **Phase 3 Complete** - Advanced features (Steps 11-13)
+- [x] **Step 00 Example Page** - Prerequisites & VS Code setup tutorial available at `/examples/step0`
+- [x] **Step 1 Example Page** - New clean project with Tailwind v4 tutorial available at `/examples/step1`
+- [x] **Step 2 Example Page** - Razor syntax and dynamic content tutorial available at `/examples/step2`
+- [x] **Step 3 Example Page** - Reusable components with parameters tutorial available at `/examples/step3`
+- [x] **Step 4 Example Page** - Event binding and state management tutorial available at `/examples/step4`
+- [x] **Step 5 Example Page** - Forms and validation tutorial available at `/examples/step5`
+- [x] **Step 6 Example Page** - Routing and navigation tutorial available at `/examples/step6`
+- [x] **Step 7 Example Page** - EF Core models tutorial available at `/examples/step7`
+- [x] **Step 8 Example Page** - DbContext setup tutorial available at `/examples/step8`
+- [x] **Step 9 Example Page** - CRUD operations tutorial available at `/examples/step9`
+- [x] **Step 10 Example Page** - State management tutorial available at `/examples/step10`
+- [x] **Step 11 Example Page** - Assignment logic and business rules tutorial available at `/examples/step11`
+- [x] **Step 12 Example Page** - Pay and expense calculation tutorial available at `/examples/step12`
+- [x] **Step 13 Example Page** - Dashboard and reports tutorial available at `/examples/step13`
+- [ ] **Phase 1 Learning Complete** - Complete your own implementation of Steps 0-6
+- [ ] **Phase 2 Learning Complete** - Complete your own implementation of Steps 7-9
+- [ ] **Phase 3 Learning Complete** - Complete your own implementation of Steps 10-13
 
 ---
 
