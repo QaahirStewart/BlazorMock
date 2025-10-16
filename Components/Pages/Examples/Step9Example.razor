@@ -1,7 +1,6 @@
 @page "/examples/step9"
 @inject ILearningProgressService ProgressService
-@inject IJSRuntime JS
-@implements IAsyncDisposable
+@* JS copy + manual details removed; using global code enhancer for per-block Show code + Copy *@
 @rendermode InteractiveServer
 
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
@@ -25,7 +24,7 @@
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 break-words">
                 🎯 Learning Objectives
             </h2>
-            <ul class="space-y-2 text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300">
+            <ul class="space-y-2 text-sm sm:text-base lg:text-lg text-gray-700 ">
                 <li class="flex items-start gap-2">
                     <span class="text-green-500 flex-shrink-0 mt-1">✓</span>
                     <span class="break-words min-w-0">Inject DbContext into Blazor components</span>
@@ -50,16 +49,19 @@
                 📖 READ: List All Drivers
             </h2>
             <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
-                Query the database with DbContext, load data asynchronously in <code class="bg-gray-200 px-1 rounded">OnInitializedAsync</code>,
+                Query the database with DbContext, load data asynchronously in <code
+                    class="bg-gray-200 px-1 rounded">OnInitializedAsync</code>,
                 and render a simple table with Edit/Delete actions.
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
-                    <div class="relative mt-3">
-                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm" @onclick="CopyListCode">Copy</button>
-                        <pre id="s9-code-list" data-code-title="Razor + C# (List Drivers)" class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/drivers"
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: List Drivers</h3>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Load data asynchronously with <code class="px-1 rounded bg-gray-100">OnInitializedAsync</code></li>
+                <li>Render a table with Edit/Delete actions</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor + C# (List Drivers)">
+@@page "/drivers"
 @@inject AppDbContext DbContext
 @@using Microsoft.EntityFrameworkCore
 
@@ -129,9 +131,8 @@ else
             drivers = await DbContext.Drivers.ToListAsync();
         }
     }
-}</code></pre>
-                    </div>
-                </details>
+}
+                </pre>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -152,12 +153,14 @@ else
                 After saving, navigate back to the list.
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
-                    <div class="relative mt-3">
-                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm" @onclick="CopyCreateCode">Copy</button>
-                        <pre id="s9-code-create" data-code-title="Razor + C# (Create Driver)" class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/drivers/add"
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Create Driver</h3>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Use EditForm with data annotations for validation</li>
+                <li>Save with <code class="px-1 rounded bg-gray-100">SaveChangesAsync()</code> then navigate</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor + C# (Create Driver)">
+@@page "/drivers/add"
 @@inject AppDbContext DbContext
 @@inject NavigationManager Navigation
 
@@ -217,9 +220,8 @@ else
         // Navigate back to list
         Navigation.NavigateTo("/drivers");
     }
-}</code></pre>
-                    </div>
-                </details>
+}
+                </pre>
             </div>
         </div>
 
@@ -232,12 +234,15 @@ else
                 with <code class="bg-gray-200 px-1 rounded">SaveChangesAsync()</code>.
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
-                    <div class="relative mt-3">
-                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm" @onclick="CopyEditCode">Copy</button>
-                        <pre id="s9-code-edit" data-code-title="Razor + C# (Edit Driver)" class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/drivers/edit/{DriverId:int}"
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Edit Driver</h3>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Load the entity by id and bind to the form</li>
+                <li>Call <code class="px-1 rounded bg-gray-100">Update()</code> then <code
+                        class="px-1 rounded bg-gray-100">SaveChangesAsync()</code></li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor + C# (Edit Driver)">
+@@page "/drivers/edit/{DriverId:int}"
 @@inject AppDbContext DbContext
 @@inject NavigationManager Navigation
 
@@ -281,9 +286,8 @@ else
         // Navigate back to list
         Navigation.NavigateTo("/drivers");
     }
-}</code></pre>
-                    </div>
-                </details>
+}
+                </pre>
             </div>
         </div>
 
@@ -296,12 +300,13 @@ else
                 properties (like Routes) are populated in a single query.
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
-                    <div class="relative mt-3">
-                        <button class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm" @onclick="CopyEagerLoadingCode">Copy</button>
-                        <pre id="s9-code-eager" data-code-title="C# (Eager Loading)" class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Load driver WITH their routes (eager loading)
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Eager Loading</h3>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Use <code class="px-1 rounded bg-gray-100">Include()</code> to load related data</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="C# (Eager Loading)">
+// Load driver WITH their routes (eager loading)
 protected override async Task OnInitializedAsync()
 {
     driver = await DbContext.Drivers
@@ -319,9 +324,8 @@ protected override async Task OnInitializedAsync()
             &lt;li&gt;@@route.RouteNumber: @@route.Origin → @@route.Destination&lt;/li&gt;
         }
     &lt;/ul&gt;
-}</code></pre>
-                    </div>
-                </details>
+}
+                </pre>
             </div>
 
             <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
@@ -387,11 +391,13 @@ protected override async Task OnInitializedAsync()
 
         <!-- Navigation -->
         <div class="mt-8 flex items-center justify-between">
-            <a href="/examples/step8" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <a href="/examples/step8"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <span>←</span>
                 Previous: Step 8
             </a>
-            <a href="/examples/step10" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+            <a href="/examples/step10"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                 Next: Step 10
                 <span>→</span>
             </a>
@@ -401,7 +407,6 @@ protected override async Task OnInitializedAsync()
 
 @code {
     private bool isComplete = false;
-    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
@@ -409,30 +414,9 @@ protected override async Task OnInitializedAsync()
         isComplete = step?.IsComplete ?? false;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
-        }
-    }
-
-    private async Task CopyListCode() { if (_copyModule is not null) await _copyModule.InvokeVoidAsync("copyById", "s9-code-list"); }
-    private async Task CopyCreateCode() { if (_copyModule is not null) await _copyModule.InvokeVoidAsync("copyById", "s9-code-create"); }
-    private async Task CopyEditCode() { if (_copyModule is not null) await _copyModule.InvokeVoidAsync("copyById", "s9-code-edit"); }
-    private async Task CopyEagerLoadingCode() { if (_copyModule is not null) await _copyModule.InvokeVoidAsync("copyById", "s9-code-eager"); }
-
     private async Task MarkComplete()
     {
         await ProgressService.MarkStepCompleteAsync(9);
         isComplete = true;
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_copyModule is not null)
-        {
-            await _copyModule.DisposeAsync();
-        }
     }
 }

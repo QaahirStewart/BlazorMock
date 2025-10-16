@@ -1,7 +1,7 @@
 @page "/examples/step10"
 @inject ILearningProgressService ProgressService
-@inject IJSRuntime JS
-@implements IAsyncDisposable
+@implements IDisposable
+@* JS-based copy removed; per-block Show code + Copy handled by global enhancer *@
 @rendermode InteractiveServer
 
 <PageTitle>Step 10: State Management - Example</PageTitle>
@@ -57,20 +57,13 @@
                 so components can refresh when state updates.
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyAppStateCode">Copy</button>
-                        <pre id="s10-code-appstate" data-code-title="C# (Services/AppState.cs)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Services/AppState.cs
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: AppState service</h3>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Centralize UI state and notify via an <code class="px-1 rounded bg-gray-100">Action</code> event</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="C# (Services/AppState.cs)">
+// Services/AppState.cs
 namespace BlazorMock.Services;
 
 public class AppState
@@ -106,9 +99,8 @@ public class AppState
 
     // Notify all subscribers that state has changed
     private void NotifyStateChanged() =&gt; OnChange?.Invoke();
-}</code></pre>
-                    </div>
-                </details>
+}
+                </pre>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -127,20 +119,13 @@ public class AppState
                 Register the state service with a Scoped lifetime so each user gets their own instance during a session.
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyProgramCode">Copy</button>
-                        <pre id="s10-code-program" data-code-title="Program.cs registration"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>// Program.cs
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Program.cs registration</h3>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Register AppState as Scoped so each circuit gets its own instance</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Program.cs registration">
+// Program.cs
 using BlazorMock.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -152,9 +137,8 @@ builder.Services.AddRazorComponents()
 // Scoped = one instance per user session
 builder.Services.AddScoped&lt;AppState&gt;();
 
-var app = builder.Build();</code></pre>
-                    </div>
-                </details>
+var app = builder.Build();
+                </pre>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
@@ -194,20 +178,13 @@ var app = builder.Build();</code></pre>
                     class="bg-gray-200 px-1 rounded">OnInitialized</code>, and update state via service methods.
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyDriverListCode">Copy</button>
-                        <pre id="s10-code-driverlist" data-code-title="Razor + C# (DriverList.razor)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>// DriverList.razor
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: DriverList.razor</h3>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Subscribe to state changes and update selection via the service</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor + C# (DriverList.razor)">
+// DriverList.razor
 @@page "/drivers"
 @@inject AppState AppState
 @@implements IDisposable
@@ -250,9 +227,8 @@ var app = builder.Build();</code></pre>
     {
         AppState.OnChange -= StateHasChanged;
     }
-}</code></pre>
-                    </div>
-                </details>
+}
+                </pre>
             </div>
 
             <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
@@ -288,21 +264,14 @@ var app = builder.Build();</code></pre>
             </p>
 
             <!-- DriverPicker.razor -->
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code (DriverPicker.razor)
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyDriverPickerCode">Copy</button>
-                        <pre id="s10-code-driverpicker"
-                            data-code-title="Razor (Components/Pages/Examples/Step10/DriverPicker.razor)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@using BlazorMock.Data
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: DriverPicker.razor</h3>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Populate options from the database using a DbContextFactory</li>
+                <li>Update shared state when the selection changes</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor (Components/Pages/Examples/Step10/DriverPicker.razor)">
+@@using BlazorMock.Data
 @@using Microsoft.EntityFrameworkCore
 @@inject Microsoft.EntityFrameworkCore.IDbContextFactory&lt;AppDbContext&gt; DbFactory
 @@inject AppState AppState
@@ -353,27 +322,17 @@ var app = builder.Build();</code></pre>
         }
     }
 }
-</code></pre>
-                    </div>
-                </details>
+                </pre>
             </div>
 
             <!-- SelectedDriverCard.razor -->
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code (SelectedDriverCard.razor)
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopySelectedDriverCardCode">Copy</button>
-                        <pre id="s10-code-selecteddriver"
-                            data-code-title="Razor (Components/Pages/Examples/Step10/SelectedDriverCard.razor)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@inject AppState AppState
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: SelectedDriverCard.razor</h3>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Display the current selection and provide a Clear action</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all">
+                <pre data-code-title="Razor (Components/Pages/Examples/Step10/SelectedDriverCard.razor)">
+@@inject AppState AppState
 @@implements IDisposable
 
 &lt;div class=&quot;bg-white rounded-lg border border-gray-200 p-3&quot;&gt;
@@ -410,9 +369,7 @@ var app = builder.Build();</code></pre>
         AppState.OnChange -= OnStateChanged;
     }
 }
-</code></pre>
-                    </div>
-                </details>
+                </pre>
             </div>
         </div>
 
@@ -425,20 +382,13 @@ var app = builder.Build();</code></pre>
                     class="bg-gray-200 px-1 rounded">Dispose</code>.
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code
-                        <span class="text-gray-500 group-open:hidden">(click to expand)</span>
-                        <span class="text-gray-500 hidden group-open:inline">(click to collapse)</span>
-                    </summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyDriverDetailsCode">Copy</button>
-                        <pre id="s10-code-driverdetails" data-code-title="Razor + C# (DriverDetails.razor)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>// DriverDetails.razor
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: DriverDetails.razor</h3>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Read state from the service and unsubscribe on dispose</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor + C# (DriverDetails.razor)">
+// DriverDetails.razor
 @@inject AppState AppState
 @@implements IDisposable
 
@@ -474,9 +424,8 @@ var app = builder.Build();</code></pre>
     {
         AppState.OnChange -= StateHasChanged;
     }
-}</code></pre>
-                    </div>
-                </details>
+}
+                </pre>
             </div>
         </div>
 
@@ -550,9 +499,7 @@ var app = builder.Build();</code></pre>
 
 @code {
     private bool isComplete = false;
-    private IJSObjectReference? _copyModule;
     [Inject] private AppState AppState { get; set; } = default!;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -560,49 +507,13 @@ var app = builder.Build();</code></pre>
         isComplete = step?.IsComplete ?? false;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
             AppState.OnChange += OnAppStateChanged;
         }
-    }
-
-    private async Task CopyAppStateCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s10-code-appstate");
-    }
-
-    private async Task CopyProgramCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s10-code-program");
-    }
-
-    private async Task CopyDriverListCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s10-code-driverlist");
-    }
-
-    private async Task CopyDriverDetailsCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s10-code-driverdetails");
-    }
-
-    private async Task CopyDriverPickerCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s10-code-driverpicker");
-    }
-
-    private async Task CopySelectedDriverCardCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s10-code-selecteddriver");
+        return Task.CompletedTask;
     }
 
     private async Task MarkComplete()
@@ -611,12 +522,8 @@ var app = builder.Build();</code></pre>
         isComplete = true;
     }
 
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
-        if (_copyModule is not null)
-        {
-            await _copyModule.DisposeAsync();
-        }
         AppState.OnChange -= OnAppStateChanged;
     }
 

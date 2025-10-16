@@ -1,9 +1,7 @@
 @page "/examples/step6"
 @inject NavigationManager Navigation
 @inject ILearningProgressService ProgressService
-@inject IJSRuntime JS
 @implements IDisposable
-@implements IAsyncDisposable
 @rendermode InteractiveServer
 
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
@@ -58,27 +56,27 @@
                 @@page directives for the same component!
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span
-                            class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyPageDirective">Copy</button>
-                        <pre id="s6-code-page" data-code-title="Razor (page directive)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/home"
-@@page "/"
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: page directive</h3>
+            <p class="text-sm sm:text-base text-gray-600 mb-2">
+                Map one or more routes to a component using the &#64;page directive.
+            </p>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Use <code class="px-1 rounded bg-gray-100">&#64;page "..."</code> to define a route</li>
+                <li>Multiple <code class="px-1 rounded bg-gray-100">&#64;page</code> directives are allowed</li>
+                <li>Apply constraints like <code class="px-1 rounded bg-gray-100">{driverId:int}</code> as needed</li>
+            </ul>
+
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor (page directive)">
+&#64;page "/home"
+&#64;page "/"
 
 &lt;h1&gt;Welcome Home!&lt;/h1&gt;
 
-@@code {
+&#64;code {
     // This component can be accessed via "/" or "/home"
-}</code></pre>
-                    </div>
-                </details>
+}
+                </pre>
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
@@ -99,18 +97,19 @@
                 perfect for navigation menus!
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span
-                            class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyNavLinkCode">Copy</button>
-                        <pre id="s6-code-navlink" data-code-title="Razor (NavLink)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>&lt;!-- NavLink automatically adds "active" class when the route matches --&gt;
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: NavLink</h3>
+            <p class="text-sm sm:text-base text-gray-600 mb-2">
+                Use NavLink to get automatic active styling based on the current URL.
+            </p>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li><code class="px-1 rounded bg-gray-100">Match</code> controls prefix vs exact matching</li>
+                <li>Set <code class="px-1 rounded bg-gray-100">ActiveClass</code> for custom active styles</li>
+                <li>Prefer NavLink over plain anchors for menus</li>
+            </ul>
+
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor (NavLink)">
+&lt;!-- NavLink automatically adds "active" class when the route matches --&gt;
 &lt;NavLink href="/" class="nav-item" Match="NavLinkMatch.All"&gt;
     Home
 &lt;/NavLink&gt;
@@ -121,9 +120,8 @@
 
 &lt;NavLink href="/trucks" class="nav-item"&gt;
     Trucks
-&lt;/NavLink&gt;</code></pre>
-                    </div>
-                </details>
+&lt;/NavLink&gt;
+                </pre>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -158,18 +156,20 @@
                 Here's a complete example of a responsive navigation menu you can add to MainLayout.razor:
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span
-                            class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyLayoutNavCode">Copy</button>
-                        <pre id="s6-code-layoutnav" data-code-title="Razor (MainLayout nav)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>&lt;!-- MainLayout.razor --&gt;
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: MainLayout navigation bar
+            </h3>
+            <p class="text-sm sm:text-base text-gray-600 mb-2">
+                A simple responsive navbar using NavLink with active state.
+            </p>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Use <code class="px-1 rounded bg-gray-100">ActiveClass</code> to style the active link</li>
+                <li>Wrap links in a semantic <code class="px-1 rounded bg-gray-100">&lt;nav&gt;</code> element</li>
+                <li>Use <code class="px-1 rounded bg-gray-100">Match="NavLinkMatch.All"</code> for the home route</li>
+            </ul>
+
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor (MainLayout nav)">
+&lt;!-- MainLayout.razor --&gt;
 &lt;div class="min-h-screen bg-gray-50"&gt;
     &lt;!-- Navigation Bar --&gt;
     &lt;nav class="bg-blue-600 text-white shadow-lg"&gt;
@@ -214,9 +214,8 @@
     &lt;main class="max-w-7xl mx-auto px-4 py-8"&gt;
         @@Body
     &lt;/main&gt;
-&lt;/div&gt;</code></pre>
-                    </div>
-                </details>
+&lt;/div&gt;
+                </pre>
             </div>
         </div>
 
@@ -229,26 +228,29 @@
                 Sometimes you need to navigate from code (like after saving a form). Use NavigationManager for this!
             </p>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <details class="group">
-                    <summary
-                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-gray-300 bg-white text-xs sm:text-sm cursor-pointer select-none">
-                        Show code <span class="text-gray-500 group-open:hidden">(click to expand)</span><span
-                            class="text-gray-500 hidden group-open:inline">(click to collapse)</span></summary>
-                    <div class="relative mt-3">
-                        <button
-                            class="absolute top-2 right-2 px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 text-xs sm:text-sm"
-                            @onclick="CopyProgrammaticNavCode">Copy</button>
-                        <pre id="s6-code-prognav" data-code-title="Razor + C# (Programmatic navigation)"
-                            class="text-xs sm:text-sm text-gray-800 font-mono"><code>@@page "/driver/add"
-@@inject NavigationManager Navigation
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Programmatic navigation
+            </h3>
+            <p class="text-sm sm:text-base text-gray-600 mb-2">
+                Navigate after actions (e.g., on valid form submission) using NavigationManager.
+            </p>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Inject <code class="px-1 rounded bg-gray-100">NavigationManager</code> into the component</li>
+                <li>Call <code class="px-1 rounded bg-gray-100">NavigateTo(url, forceLoad: false)</code> to navigate
+                </li>
+                <li>Optionally set <code class="px-1 rounded bg-gray-100">forceLoad: true</code> to reload the page</li>
+            </ul>
+
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor + C# (Programmatic navigation)">
+&#64;page "/driver/add"
+&#64;inject NavigationManager Navigation
 
 &lt;EditForm Model="newDriver" OnValidSubmit="HandleValidSubmit"&gt;
     &lt;!-- Form fields here --&gt;
     &lt;button type="submit"&gt;Save Driver&lt;/button&gt;
 &lt;/EditForm&gt;
 
-@@code {
+&#64;code {
     private Driver newDriver = new();
     
     // Navigate to drivers list after successful save
@@ -266,9 +268,8 @@
     {
         Navigation.NavigateTo("/drivers", forceLoad: true);
     }
-}</code></pre>
-                    </div>
-                </details>
+}
+                </pre>
             </div>
 
             <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
@@ -392,7 +393,6 @@
 @code {
     private bool isComplete = false;
     private string currentUri = "";
-    private IJSObjectReference? _copyModule;
 
     protected override void OnInitialized()
     {
@@ -432,40 +432,4 @@
         Navigation.LocationChanged -= OnLocationChanged;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Examples/Step13Example.razor.js");
-        }
-    }
-
-    private async Task CopyPageDirective()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s6-code-page");
-    }
-    private async Task CopyNavLinkCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s6-code-navlink");
-    }
-    private async Task CopyLayoutNavCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s6-code-layoutnav");
-    }
-    private async Task CopyProgrammaticNavCode()
-    {
-        if (_copyModule is not null)
-            await _copyModule.InvokeVoidAsync("copyById", "s6-code-prognav");
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_copyModule is not null)
-        {
-            await _copyModule.DisposeAsync();
-        }
-    }
 }

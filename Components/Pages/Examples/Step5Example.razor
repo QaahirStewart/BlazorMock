@@ -31,39 +31,63 @@
             <p class="text-gray-700 mb-6">Blazor provides powerful form handling with built-in validation. Use EditForm
                 component with data annotations for robust form validation.</p>
 
-            <h3 class="text-lg font-semibold text-gray-700 mb-3">Basic EditForm Structure:</h3>
-            <pre data-code-title="Razor + C# (EditForm)"
-                class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">@("<EditForm Model=\"driver\" OnValidSubmit=\"HandleSubmit\">")
-  @("<DataAnnotationsValidator />")
-  @("<ValidationSummary />")
-  
-  @("<div>")
-    @("<label>Name:</label>")
-    @("<InputText @bind-Value=\"driver.Name\" />")
-    @("<ValidationMessage For=\"() => driver.Name\" />")
-  @("</div>")
-  
-  @("<button type=\"submit\">Submit</button>")
-@("</EditForm>")
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">🧩 Code Example: EditForm with Validation</h3>
+            <p class="text-sm sm:text-base text-gray-600 mb-2">
+                A minimal form with validation using data annotations and Blazor input components.
+            </p>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>
+                    <code class="px-1 rounded bg-gray-100">EditForm</code> binds a model and handles
+                    <code class="px-1 rounded bg-gray-100">OnValidSubmit</code>
+                </li>
+                <li>
+                    <code class="px-1 rounded bg-gray-100">DataAnnotationsValidator</code> +
+                    <code class="px-1 rounded bg-gray-100">ValidationSummary</code> enable built-in messages
+                </li>
+                <li>
+                    Field components use two-way binding via <code
+                        class="px-1 rounded bg-gray-100">&#64;bind-Value</code>
+                </li>
+                <li>
+                    Per-field errors shown with <code class="px-1 rounded bg-gray-100">ValidationMessage</code>
+                </li>
+            </ul>
 
-@("@code {")
-  private Driver driver = new();
-  
-  private void HandleSubmit()
-  {
-    // Process valid form data
-  }
-@("}")
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor + C# (EditForm)">
+&lt;EditForm Model="driver" OnValidSubmit="HandleValidSubmit"&gt;
+    &lt;DataAnnotationsValidator /&gt;
+    &lt;ValidationSummary /&gt;
+
+    &lt;div&gt;
+        &lt;label&gt;Name:&lt;/label&gt;
+        &lt;InputText &#64;bind-Value="driver.Name" /&gt;
+        &lt;ValidationMessage For="() =&gt; driver.Name" /&gt;
+    &lt;/div&gt;
+
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/EditForm&gt;
+
+&#64;code {
+    private Driver driver = new();
+
+    private void HandleValidSubmit()
+    {
+        // Process valid form data
+    }
+}
 
 public class Driver
 {
-  [Required(ErrorMessage = "Name is required")]
-  [StringLength(50)]
-  public string Name { get; set; } = string.Empty;
-  
-  [EmailAddress]
-  public string Email { get; set; } = string.Empty;
-}</pre>
+    [Required(ErrorMessage = "Name is required")]
+    [StringLength(50)]
+    public string Name { get; set; } = string.Empty;
+
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+}
+                                </pre>
+            </div>
 
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <p class="text-sm text-blue-800 font-semibold mb-2">💡 Key Components:</p>
@@ -232,7 +256,7 @@ public class Driver
 
         <!-- Validation Attributes Reference -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">� Common Validation Attributes</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🔧 Common Validation Attributes</h2>
             <p class="text-gray-700 mb-4">Blazor supports all standard .NET data annotation attributes for validation:
             </p>
 
