@@ -70,16 +70,29 @@
                 &lt;/div&gt;
 
                 &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 gap-4 mb-4&quot;&gt;
+                    &lt;!-- First Name --&gt;
                     &lt;div&gt;
                         &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;
-                            Name &lt;span class=&quot;text-red-500&quot;&gt;*&lt;/span&gt;
+                            First Name &lt;span class=&quot;text-red-500&quot;&gt;*&lt;/span&gt;
                         &lt;/label&gt;
-                        &lt;InputText &#64;bind-Value=&quot;driver.Name&quot;
+                        &lt;InputText &#64;bind-Value=&quot;driver.FirstName&quot;
                                    class=&quot;w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white&quot;
-                                   placeholder=&quot;Enter driver name&quot; /&gt;
-                        &lt;ValidationMessage For=&quot;() =&gt; driver.Name&quot; class=&quot;text-xs text-red-600 mt-1 block&quot; /&gt;
+                                   placeholder=&quot;Enter first name&quot; /&gt;
+                        &lt;ValidationMessage For=&quot;() =&gt; driver.FirstName&quot; class=&quot;text-xs text-red-600 mt-1 block&quot; /&gt;
                     &lt;/div&gt;
 
+                    &lt;!-- Last Name --&gt;
+                    &lt;div&gt;
+                        &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;
+                            Last Name &lt;span class=&quot;text-red-500&quot;&gt;*&lt;/span&gt;
+                        &lt;/label&gt;
+                        &lt;InputText &#64;bind-Value=&quot;driver.LastName&quot;
+                                   class=&quot;w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white&quot;
+                                   placeholder=&quot;Enter last name&quot; /&gt;
+                        &lt;ValidationMessage For=&quot;() =&gt; driver.LastName&quot; class=&quot;text-xs text-red-600 mt-1 block&quot; /&gt;
+                    &lt;/div&gt;
+
+                    &lt;!-- Email --&gt;
                     &lt;div&gt;
                         &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;
                             Email &lt;span class=&quot;text-red-500&quot;&gt;*&lt;/span&gt;
@@ -89,12 +102,62 @@
                                    placeholder=&quot;driver@example.com&quot; /&gt;
                         &lt;ValidationMessage For=&quot;() =&gt; driver.Email&quot; class=&quot;text-xs text-red-600 mt-1 block&quot; /&gt;
                     &lt;/div&gt;
+
+                    &lt;!-- CDL Number --&gt;
+                    &lt;div&gt;
+                        &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;
+                            CDL Number &lt;span class=&quot;text-red-500&quot;&gt;*&lt;/span&gt;
+                        &lt;/label&gt;
+                        &lt;InputText &#64;bind-Value=&quot;driver.CdlNumber&quot;
+                                   class=&quot;w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white&quot;
+                                   placeholder=&quot;e.g., CDL123456&quot; /&gt;
+                        &lt;ValidationMessage For=&quot;() =&gt; driver.CdlNumber&quot; class=&quot;text-xs text-red-600 mt-1 block&quot; /&gt;
+                        &lt;p class=&quot;text-xs text-gray-500 mt-1&quot;&gt;Must be 4-20 characters&lt;/p&gt;
+                    &lt;/div&gt;
+
+                    &lt;!-- Years Experience --&gt;
+                    &lt;div&gt;
+                        &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;
+                            Years of Experience &lt;span class=&quot;text-red-500&quot;&gt;*&lt;/span&gt;
+                        &lt;/label&gt;
+                        &lt;InputNumber &#64;bind-Value=&quot;driver.YearsExperience&quot;
+                                     class=&quot;w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white&quot;
+                                     placeholder=&quot;0&quot; /&gt;
+                        &lt;ValidationMessage For=&quot;() =&gt; driver.YearsExperience&quot; class=&quot;text-xs text-red-600 mt-1 block&quot; /&gt;
+                        &lt;p class=&quot;text-xs text-gray-500 mt-1&quot;&gt;Must be between 0 and 60&lt;/p&gt;
+                    &lt;/div&gt;
+
+                    &lt;!-- License Level (Enum) --&gt;
+                    &lt;div&gt;
+                        &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;
+                            License Level &lt;span class=&quot;text-red-500&quot;&gt;*&lt;/span&gt;
+                        &lt;/label&gt;
+                        &lt;InputSelect &#64;bind-Value=&quot;driver.LicenseLevel&quot;
+                                     class=&quot;w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white&quot;&gt;
+                            &lt;option value=&quot;&quot;&gt;-- Select License Level --&lt;/option&gt;
+                            &#64;foreach (var level in Enum.GetValues&lt;LicenseLevel&gt;())
+                            {
+                                &lt;option value=&quot;&#64;level&quot;&gt;&#64;GetLicenseDisplay(level)&lt;/option&gt;
+                            }
+                        &lt;/InputSelect&gt;
+                        &lt;ValidationMessage For=&quot;() =&gt; driver.LicenseLevel&quot; class=&quot;text-xs text-red-600 mt-1 block&quot; /&gt;
+                    &lt;/div&gt;
                 &lt;/div&gt;
 
-                &lt;div class=&quot;flex gap-3&quot;&gt;
+                &lt;!-- Additional Certifications --&gt;
+                &lt;div class=&quot;mb-4&quot;&gt;
+                    &lt;label class=&quot;flex items-center gap-2 cursor-pointer&quot;&gt;
+                        &lt;InputCheckbox &#64;bind-Value=&quot;driver.HasHazmatEndorsement&quot;
+                                       class=&quot;w-4 h-4 text-orange-600 rounded focus:ring-orange-500&quot; /&gt;
+                        &lt;span class=&quot;text-sm text-gray-700&quot;&gt;Hazmat Endorsement&lt;/span&gt;
+                    &lt;/label&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Buttons --&gt;
+                &lt;div class=&quot;flex flex-wrap gap-3&quot;&gt;
                     &lt;button type=&quot;submit&quot;
                             class=&quot;px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors&quot;&gt;
-                        Submit Driver
+                        🚗 Submit Driver Registration
                     &lt;/button&gt;
                     &lt;button type=&quot;button&quot; &#64;onclick=&quot;ResetForm&quot;
                             class=&quot;px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors&quot;&gt;
@@ -107,28 +170,63 @@
 &lt;/div&gt;
 
 &#64;code {
-    private Driver driver = new();
+    private DriverRegistrationModel driver = new();
+    private bool submitted;
 
     private void HandleValidSubmit()
     {
-        // Process valid form data
-        // e.g., save to database, show success message
+        submitted = true;
+        // Process valid data, e.g. save, show message, etc.
     }
     
     private void ResetForm()
     {
-        driver = new Driver();
+        driver = new DriverRegistrationModel();
+        submitted = false;
+    }
+
+    private static string GetLicenseDisplay(LicenseLevel level)
+    {
+        var member = typeof(LicenseLevel).GetMember(level.ToString()).FirstOrDefault();
+        if (member is not null)
+        {
+            var displayAttr = (System.ComponentModel.DataAnnotations.DisplayAttribute?)
+                Attribute.GetCustomAttribute(member, typeof(System.ComponentModel.DataAnnotations.DisplayAttribute));
+            if (!string.IsNullOrWhiteSpace(displayAttr?.Name))
+            {
+                return displayAttr!.Name!;
+            }
+        }
+        return level.ToString();
     }
 }
 
-public class Driver
+public class DriverRegistrationModel
 {
-    [Required(ErrorMessage = "Name is required")]
-    [StringLength(50)]
-    public string Name { get; set; } = string.Empty;
+    [Required(ErrorMessage = "First name is required")]
+    [StringLength(50, ErrorMessage = "First name must be less than 50 characters")]
+    public string FirstName { get; set; } = string.Empty;
 
-    [EmailAddress]
+    [Required(ErrorMessage = "Last name is required")]
+    [StringLength(50, ErrorMessage = "Last name must be less than 50 characters")]
+    public string LastName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Please enter a valid email address")]
     public string Email { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "CDL number is required")]
+    [StringLength(20, MinimumLength = 4, ErrorMessage = "CDL number must be between 4 and 20 characters")]
+    public string CdlNumber { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Years of experience is required")]
+    [Range(0, 60, ErrorMessage = "Years of experience must be between 0 and 60")]
+    public int? YearsExperience { get; set; }
+
+    [Required(ErrorMessage = "License level is required")]
+    public LicenseLevel? LicenseLevel { get; set; }
+
+    public bool HasHazmatEndorsement { get; set; }
 }
                                 </pre>
             </div>
@@ -303,12 +401,111 @@ public class Driver
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700">
                 <li>Create or open a page (e.g., <code>Components/Pages/Examples/Step5Playground.razor</code>).</li>
-                <li>Add the <code>&lt;EditForm&gt;</code> markup from the “Razor + C# (EditForm)” block and the C# code under <code>&#64;code</code>.</li>
-                <li>Ensure your model class (e.g., <code>Driver</code>) includes data annotation attributes like <code>[Required]</code> and <code>[EmailAddress]</code>.</li>
+                <li>Add the LicenseLevel enum and a form model to your project if you don't already have them
+                    (see “Model and Enum for this example” below). Prefer putting them under <code>Models/</code> and
+                    adding <code>&#64;using YourApp.Models</code> to <code>_Imports.razor</code> (replace <em>YourApp</em> with your project's root namespace).</li>
+                <li>Add the <code>&lt;EditForm&gt;</code> markup from the “Razor + C# (EditForm)” block and the C# code
+                    under <code>&#64;code</code>.</li>
+                <li>Ensure your form model includes data annotation attributes like
+                    <code>[Required]</code>, <code>[EmailAddress]</code>, and <code>[Range]</code>.
+                </li>
                 <li>Build and run, then navigate to the page to test validation behavior.</li>
             </ol>
             <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
-                Tip: Show a <code>&lt;ValidationSummary /&gt;</code> for page-level errors and <code>&lt;ValidationMessage /&gt;</code> for field-level messages.
+                Tip: Show a <code>&lt;ValidationSummary /&gt;</code> for page-level errors and
+                <code>&lt;ValidationMessage /&gt;</code> for field-level messages.
+            </div>
+
+            <!-- New Blazor app checklist -->
+            <div class="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <h3 class="text-base font-semibold text-amber-800 mb-2">🆕 New Blazor app checklist</h3>
+                <ul class="list-disc ml-5 text-sm text-amber-900 space-y-1">
+                    <li>Create a <code>Models/</code> folder in your project.</li>
+                    <li>Add <code>LicenseLevel.cs</code> and <code>DriverRegistrationModel.cs</code> from the blocks below.</li>
+                    <li>Edit <code>_Imports.razor</code> and add <code>&#64;using YourApp.Models</code>.</li>
+                    <li>Create a page (e.g., <code>Pages/Step5Playground.razor</code>) and paste the EditForm markup.</li>
+                    <li>Build and run the app, then navigate to the new page.</li>
+                </ul>
+            </div>
+
+            <!-- Model and Enum for this example -->
+            <div class="mt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">📦 Model and Enum for this example</h3>
+                <p class="text-sm text-gray-600 mb-4">If your project doesn't already define them, copy these into your
+                    app:
+                    the LicenseLevel enum (used by the select list) and a simple form model. Save them to
+                    <code>Models/</code>.
+                    If you use the form model class below, change the page's field type to
+                    <code>private DriverRegistrationModel driver = new();</code> and set <code>Model="driver"</code>
+                    accordingly.
+                </p>
+
+                <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                    <pre data-code-title="C# Enum: LicenseLevel (Models/LicenseLevel.cs)">
+using System.ComponentModel.DataAnnotations;
+namespace YourApp.Models
+{
+    /// &lt;summary&gt;
+    /// Represents the different classes of commercial driver's licenses.
+    /// Ordered from highest (Class A) to lowest (Class C) capability.
+    /// &lt;/summary&gt;
+    public enum LicenseLevel
+    {
+        [Display(Name = "Class C (Light Vehicles)")]
+        ClassC = 1,
+
+        [Display(Name = "Class B (Medium Vehicles)")]
+        ClassB = 2,
+
+        [Display(Name = "Class A (Heavy Vehicles)")]
+        ClassA = 3
+    }
+}
+                    </pre>
+                </div>
+
+                <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all">
+                    <pre data-code-title="C# Model: DriverRegistrationModel (Models/DriverRegistrationModel.cs)">
+using System.ComponentModel.DataAnnotations;
+namespace YourApp.Models
+{
+    public class DriverRegistrationModel
+    {
+        [Required(ErrorMessage = "First name is required")]
+        [StringLength(50, ErrorMessage = "First name must be less than 50 characters")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Last name is required")]
+        [StringLength(50, ErrorMessage = "Last name must be less than 50 characters")]
+        public string LastName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "CDL number is required")]
+        [StringLength(20, MinimumLength = 4, ErrorMessage = "CDL number must be between 4 and 20 characters")]
+        public string CdlNumber { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Years of experience is required")]
+        [Range(0, 60, ErrorMessage = "Years of experience must be between 0 and 60")]
+        public int? YearsExperience { get; set; }
+
+        [Required(ErrorMessage = "License level is required")]
+        public LicenseLevel? LicenseLevel { get; set; }
+
+        public bool HasHazmatEndorsement { get; set; }
+    }
+}
+                    </pre>
+                </div>
+                <div class="mt-3 text-xs text-gray-500">
+                    Note: Your project already includes a domain <code>Driver</code> entity; this example's
+                    <code>DriverRegistrationModel</code> is a lightweight view model just for the form. Keep the names
+                    distinct to avoid conflicts.
+                    If your project already defines <code>LicenseLevel</code> (e.g., inside
+                    <code>Models/Driver.cs</code>), reuse it instead of creating a new file.
+                </div>
             </div>
         </div>
 

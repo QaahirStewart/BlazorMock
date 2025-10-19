@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BlazorMock")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+62379695a6f25e15ef32ec0a3b95188f88b045f3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+92c018610c99b61fb7eabe1bc93462100f29d058")]
 [assembly: System.Reflection.AssemblyProductAttribute("BlazorMock")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BlazorMock")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

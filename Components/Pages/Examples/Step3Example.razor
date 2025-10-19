@@ -72,7 +72,11 @@
                 <pre data-code-title="Razor (Components/GreetingCard.razor)"
                     class="text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@* GreetingCard.razor - Reusable component with parameters *@@
 
-&lt;div class=&quot;bg-white rounded-2xl duration-300 p-5 sm:p-6 m-4 border border-gray-200&quot;&gt;
+&lt;div class=&quot;bg-black/3 rounded-2xl p-6 mb-6&quot;&gt;
+
+&lt;h2 class=&quot;text-2xl font-semibold text-gray-800 mb-4&quot;&gt;💌 Greeting Cards&lt;/h2&gt;
+
+&lt;div class=&quot;bg-white rounded-2xl duration-300 p-5 sm:p-6  border border-gray-200&quot;&gt;
     &lt;div class=&quot;flex items-center mb-4 gap-3&quot;&gt;
         &lt;div class=&quot;bg-orange-500 text-white rounded-full p-2 flex-shrink-0&quot;&gt;
             &lt;svg class=&quot;w-5 h-5 sm:w-6 sm:h-6&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;
@@ -96,6 +100,8 @@
     &lt;/div&gt;
 &lt;/div&gt;
 
+&lt;/div&gt;
+
 @@code {
     /// &lt;summary&gt;
     /// The name to display in the greeting card
@@ -113,15 +119,14 @@
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-2">
                 <pre data-code-title="Usage in Home.razor or any page"
-                    class="text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page &quot;/&quot;
-
-&lt;PageTitle&gt;Home&lt;/PageTitle&gt;
-
-&lt;h1&gt;Welcome to our App&lt;/h1&gt;
+                    class="text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">
+&lt;div class=&quot;bg-white rounded-2xl duration-300 p-5 sm:p-6&quot;&gt;
 
 &lt;div class=&quot;grid md:grid-cols-2 gap-4 mt-6&quot;&gt;
     &lt;GreetingCard Name=&quot;John Doe&quot; Message=&quot;Welcome to your dashboard!&quot; /&gt;
     &lt;GreetingCard Name=&quot;Sarah Smith&quot; Message=&quot;Great job on your delivery!&quot; /&gt;
+&lt;/div&gt;
+
 &lt;/div&gt;</pre>
             </div>
         </div>
@@ -139,23 +144,31 @@
                 </li>
                 <li>
                     <strong>Add the component code:</strong><br>
-                    Copy and paste the complete code from the "Components/GreetingCard.razor" block above into your new file.
+                    Copy and paste the complete code from the "Components/GreetingCard.razor" block above into your new
+                    file.
                 </li>
                 <li>
                     <strong>Use the component:</strong><br>
-                    Open <code>Components/Pages/Home.razor</code> and replace its content with the "Usage in Home.razor" code above.
+                    Open <code>Components/Pages/Home.razor</code> and input its content below the Previous "Usage of
+                    code in Home.razor".
+
                 </li>
                 <li>
                     <strong>Run and test:</strong><br>
-                    Run your app with <code>dotnet run</code> and navigate to the home page to see your reusable components!
+                    Run your app with <code>dotnet run</code> and navigate to the home page to see your reusable
+                    components!
                 </li>
             </ol>
             <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
-                <strong>💡 Tip:</strong> The <code>@@using Microsoft.AspNetCore.Components</code> directive gives you access to the <code>[Parameter]</code> attribute. You can also add this to <code>_Imports.razor</code> globally.
+                <strong>💡 Tip:</strong> The <code>@@using Microsoft.AspNetCore.Components</code> directive gives you
+                access to the <code>[Parameter]</code> attribute. You can also add this to <code>_Imports.razor</code>
+                globally.
             </div>
-            
+
             <div class="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800">
-                <strong>⚠️ Troubleshooting:</strong> If you get compilation errors about <code>[Parameter]</code>, add <code>@@using Microsoft.AspNetCore.Components</code> at the very top of your component file (above the comment line).
+                <strong>⚠️ Troubleshooting:</strong> If you get compilation errors about <code>[Parameter]</code>, add
+                <code>@@using Microsoft.AspNetCore.Components</code> at the very top of your component file (above the
+                comment line).
             </div>
         </div>
 
