@@ -178,6 +178,20 @@ public class FormsTipsContributor : ITipsContributor
             LongELI5 = "\n\nLike a paper form where you can pick only one bubble. The bound property updates as you pick.",
             ELI5Example = "public enum DriverStatus { Active, Inactive }\n@code { private DriverStatus Status { get; set; } }"
         };
+
+        // New: Form model (View model)
+        yield return new TipTopic(
+            Title: "Form model (View model)",
+            Category: "Blazor — Forms",
+            Type: "Model",
+            ELI5: "A small class that represents the fields of your form with validation attributes. Keeps UI concerns separate from your domain/EF entity.",
+            Example: "public class DriverRegistrationModel {\n  [Required] public string FirstName { get; set; } = string.Empty;\n  [Required] public string LastName { get; set; } = string.Empty;\n}\n<EditForm Model=\"m\"><DataAnnotationsValidator /><InputText @bind-Value=\"m.FirstName\" /></EditForm>",
+            Tips: new[] { "Keep the form model lean and UI-focused.", "Use DataAnnotations like [Required], [EmailAddress], [Range].", "Map the form model to your entity on submit instead of binding the entity directly." }
+        )
+        {
+            LongELI5 = "\n\nThink of a form model like a worksheet you fill out before typing it into the official record. It has just what the form needs, uses attributes to validate, and you copy the approved data to your real entity (which may have more rules/relations) after submit.",
+            ELI5Example = "// Map to domain entity on submit\nvar entity = new Driver {\n  Name = $\"{m.FirstName} {m.LastName}\"\n};"
+        };
     }
 }
 
@@ -636,6 +650,20 @@ public class CSharpLanguageTipsContributor : ITipsContributor
         {
             LongELI5 = "\n\nLocal functions are like sticky notes inside a recipe: they're helper steps only that recipe needs, not shared with other recipes. Keeps your kitchen organized.",
             ELI5Example = "int Fibonacci(int n) {\n  int Fib(int i) => i <= 1 ? i : Fib(i-1) + Fib(i-2);\n  return Fib(n);\n}"
+        };
+
+        // New: Enums
+        yield return new TipTopic(
+            Title: "Enums",
+            Category: "C# — Types",
+            Type: "Type",
+            ELI5: "A named list of fixed choices. Safer and clearer than magic strings for options like statuses or license levels.",
+            Example: "public enum LicenseLevel { ClassC = 1, ClassB = 2, ClassA = 3 }",
+            Tips: new[] { "Use enums for finite sets of options.", "Apply [Display] to show friendly names in the UI.", "Bind to <InputSelect> with Enum.GetValues<T>()." }
+        )
+        {
+            LongELI5 = "\n\nAn enum is like a labeled box of crayons with a fixed set of colors. You pick one by name (ClassA), not by remembering a number. Less typos, more intent.",
+            ELI5Example = "public enum LicenseLevel {\n  [Display(Name = \"Class C (Light)\")] ClassC = 1,\n  [Display(Name = \"Class B (Medium)\")] ClassB = 2,\n  [Display(Name = \"Class A (Heavy)\")] ClassA = 3\n}\n\n// Helper to read DisplayAttribute name\nstatic string GetDisplay(LicenseLevel level){\n  var m = typeof(LicenseLevel).GetMember(level.ToString())[0];\n  var d = (System.ComponentModel.DataAnnotations.DisplayAttribute?)\n           Attribute.GetCustomAttribute(m, typeof(System.ComponentModel.DataAnnotations.DisplayAttribute));\n  return string.IsNullOrWhiteSpace(d?.Name) ? level.ToString() : d!.Name!;\n}"
         };
 
         yield return new TipTopic(
