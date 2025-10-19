@@ -1,5 +1,7 @@
 @page "/examples/step9"
 @inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
+@implements IDisposable
 @* JS copy + manual details removed; using global code enhancer for per-block Show code + Copy *@
 @rendermode InteractiveServer
 
@@ -407,6 +409,7 @@ protected override async Task OnInitializedAsync()
 
 @code {
     private bool isComplete = false;
+    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
@@ -414,9 +417,30 @@ protected override async Task OnInitializedAsync()
         isComplete = step?.IsComplete ?? false;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
+    }
+
     private async Task MarkComplete()
     {
         await ProgressService.MarkStepCompleteAsync(9);
         isComplete = true;
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
     }
 }

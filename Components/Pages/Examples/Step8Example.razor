@@ -1,5 +1,7 @@
 @page "/examples/step8"
 @inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
+@implements IDisposable
 @* JS-based copy removed: using global code enhancer for Show code + Copy *@
 @rendermode InteractiveServer
 
@@ -16,6 +18,20 @@
             <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">
                 Configure Entity Framework Core with a SQLite database.
             </p>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
+                <li>Install the EF Core packages listed above using the dotnet CLI.</li>
+                <li>Create <code>Data/AppDbContext.cs</code> and add <code>DbSet&lt;&gt;</code> properties for your models.</li>
+                <li>Add the connection string to <code>appsettings.json</code> and register the context in <code>Program.cs</code> with <code>UseSqlite()</code>.</li>
+                <li>Create and apply a migration: <code>dotnet ef migrations add InitialCreate</code> then <code>dotnet ef database update</code>.</li>
+            </ol>
+            <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                Tip: When your model changes, add a new migration and run <code>database update</code> to keep the schema in sync.
+            </div>
         </div>
 
         <!-- Learning Objectives -->
@@ -374,6 +390,7 @@ dotnet ef migrations list
 
 @code {
     private bool isComplete = false;
+    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
@@ -381,9 +398,30 @@ dotnet ef migrations list
         isComplete = step?.IsComplete ?? false;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
+    }
+
     private async Task MarkComplete()
     {
         await ProgressService.MarkStepCompleteAsync(8);
         isComplete = true;
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
     }
 }

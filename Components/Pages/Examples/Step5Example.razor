@@ -1,6 +1,8 @@
 @page "/examples/step5"
 @inject ILearningProgressService ProgressService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IDisposable
 @rendermode InteractiveServer
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Forms
@@ -55,18 +57,54 @@
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
                 <pre data-code-title="Razor + C# (EditForm)">
-&lt;EditForm Model="driver" OnValidSubmit="HandleValidSubmit"&gt;
-    &lt;DataAnnotationsValidator /&gt;
-    &lt;ValidationSummary /&gt;
+&lt;div class=&quot;min-h-screen py-8 bg-gray-50&quot;&gt;
+    &lt;div class=&quot;max-w-5xl mx-auto px-4&quot;&gt;
+        &lt;h1 class=&quot;text-3xl font-bold text-gray-900 mb-6&quot;&gt;Driver Registration&lt;/h1&gt;
+        
+        &lt;div class=&quot;bg-white rounded-xl p-6 border border-gray-200&quot;&gt;
+            &lt;EditForm Model=&quot;driver&quot; OnValidSubmit=&quot;HandleValidSubmit&quot;&gt;
+                &lt;DataAnnotationsValidator /&gt;
+                
+                &lt;div class=&quot;mb-4&quot;&gt;
+                    &lt;ValidationSummary class=&quot;text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3&quot; /&gt;
+                &lt;/div&gt;
 
-    &lt;div&gt;
-        &lt;label&gt;Name:&lt;/label&gt;
-        &lt;InputText &#64;bind-Value="driver.Name" /&gt;
-        &lt;ValidationMessage For="() =&gt; driver.Name" /&gt;
+                &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 gap-4 mb-4&quot;&gt;
+                    &lt;div&gt;
+                        &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;
+                            Name &lt;span class=&quot;text-red-500&quot;&gt;*&lt;/span&gt;
+                        &lt;/label&gt;
+                        &lt;InputText &#64;bind-Value=&quot;driver.Name&quot;
+                                   class=&quot;w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white&quot;
+                                   placeholder=&quot;Enter driver name&quot; /&gt;
+                        &lt;ValidationMessage For=&quot;() =&gt; driver.Name&quot; class=&quot;text-xs text-red-600 mt-1 block&quot; /&gt;
+                    &lt;/div&gt;
+
+                    &lt;div&gt;
+                        &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;
+                            Email &lt;span class=&quot;text-red-500&quot;&gt;*&lt;/span&gt;
+                        &lt;/label&gt;
+                        &lt;InputText type=&quot;email&quot; &#64;bind-Value=&quot;driver.Email&quot;
+                                   class=&quot;w-full rounded-lg border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white&quot;
+                                   placeholder=&quot;driver@example.com&quot; /&gt;
+                        &lt;ValidationMessage For=&quot;() =&gt; driver.Email&quot; class=&quot;text-xs text-red-600 mt-1 block&quot; /&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div class=&quot;flex gap-3&quot;&gt;
+                    &lt;button type=&quot;submit&quot;
+                            class=&quot;px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors&quot;&gt;
+                        Submit Driver
+                    &lt;/button&gt;
+                    &lt;button type=&quot;button&quot; &#64;onclick=&quot;ResetForm&quot;
+                            class=&quot;px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors&quot;&gt;
+                        Reset Form
+                    &lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/EditForm&gt;
+        &lt;/div&gt;
     &lt;/div&gt;
-
-    &lt;button type="submit"&gt;Submit&lt;/button&gt;
-&lt;/EditForm&gt;
+&lt;/div&gt;
 
 &#64;code {
     private Driver driver = new();
@@ -74,6 +112,12 @@
     private void HandleValidSubmit()
     {
         // Process valid form data
+        // e.g., save to database, show success message
+    }
+    
+    private void ResetForm()
+    {
+        driver = new Driver();
     }
 }
 
@@ -254,6 +298,20 @@ public class Driver
             </div>
         </div>
 
+        <!-- How to do it -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
+                <li>Create or open a page (e.g., <code>Components/Pages/Examples/Step5Playground.razor</code>).</li>
+                <li>Add the <code>&lt;EditForm&gt;</code> markup from the “Razor + C# (EditForm)” block and the C# code under <code>&#64;code</code>.</li>
+                <li>Ensure your model class (e.g., <code>Driver</code>) includes data annotation attributes like <code>[Required]</code> and <code>[EmailAddress]</code>.</li>
+                <li>Build and run, then navigate to the page to test validation behavior.</li>
+            </ol>
+            <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                Tip: Show a <code>&lt;ValidationSummary /&gt;</code> for page-level errors and <code>&lt;ValidationMessage /&gt;</code> for field-level messages.
+            </div>
+        </div>
+
         <!-- Validation Attributes Reference -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">🔧 Common Validation Attributes</h2>
@@ -386,11 +444,28 @@ public class Driver
     private bool isComplete;
     private bool submitted = false;
     private Driver driver = new();
+    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
         var step = await ProgressService.GetStepAsync(5);
         isComplete = step?.IsComplete ?? false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
     }
 
     private async Task MarkComplete()
@@ -414,6 +489,11 @@ public class Driver
     {
         driver = new();
         submitted = false;
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
     }
 
     public class Driver

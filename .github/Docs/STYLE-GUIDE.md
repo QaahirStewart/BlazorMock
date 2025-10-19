@@ -50,6 +50,13 @@ This guide ensures consistency across documentation, code, and UI components in 
 
 ````
 
+**Example Code Formatting Preference:**
+- Always include Tailwind CSS classes in Razor code examples
+- Show realistic, styled markup rather than minimal HTML
+- Use semantic class names that demonstrate responsive design patterns
+- Include container layouts (`min-h-screen`, `max-w-5xl mx-auto px-4`)
+- Show component structure with proper spacing and visual hierarchy
+
 **Links:**
 - Use relative paths for internal docs: `[Step 02](./Step02.md)`
 - Use absolute URLs for external resources: `[Blazor Docs](https://learn.microsoft.com/en-us/aspnet/core/blazor/)`

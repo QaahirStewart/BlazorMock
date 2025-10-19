@@ -1,6 +1,8 @@
 @page "/examples/step0"
 @inject ILearningProgressService ProgressService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IDisposable
 @rendermode InteractiveServer
 
 <PageTitle>Step 0: Prerequisites & VS Code Setup - Example</PageTitle>
@@ -76,11 +78,28 @@ npm --version</pre>
 
 @code {
     private bool isComplete;
+    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
         var step = await ProgressService.GetStepAsync(0);
         isComplete = step?.IsComplete ?? false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
     }
 
     private async Task MarkComplete()
@@ -93,5 +112,10 @@ npm --version</pre>
     {
         await ProgressService.MarkStepIncompleteAsync(0);
         isComplete = false;
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
     }
 }

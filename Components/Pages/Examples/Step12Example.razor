@@ -1,5 +1,7 @@
 @page "/examples/step12"
 @inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
+@implements IDisposable
 @rendermode InteractiveServer
 @* JS copy removed; using global code enhancer per-block *@
 
@@ -510,6 +512,22 @@ var app = builder.Build();
         isComplete = true;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
+    }
+
     // --- Live Demo (Step 12) Logic ---
     private void InitializeS12Trips()
     {
@@ -592,5 +610,8 @@ OvertimeRatePerHour = s12OvertimeRatePerHour, FuelCost = 115m },
         public decimal Expenses { get; set; }
     }
 
-    // No JS module to dispose; using global code enhancer per-block
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
+    }
 }

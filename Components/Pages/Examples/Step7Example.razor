@@ -1,5 +1,7 @@
 @page "/examples/step7"
 @inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
+@implements IDisposable
 @using BlazorMock.Models
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations
@@ -19,6 +21,20 @@
             <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">
                 Learn to create domain models for Entity Framework Core.
             </p>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
+                <li>Create model files in <code>Models/</code> (e.g., <code>Driver.cs</code>, <code>Route.cs</code>, <code>Truck.cs</code>).</li>
+                <li>Add data annotations like <code>[Required]</code>, <code>[StringLength]</code>, <code>[Range]</code> to validate fields.</li>
+                <li>Define enums (e.g., <code>LicenseLevel</code>) for constrained values and use <code>[Display(Name = "...")]</code> for friendly labels.</li>
+                <li>Establish relationships via navigation properties (e.g., one Driver has many Routes).</li>
+            </ol>
+            <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                Tip: Keep models lean; push formatting and UI concerns into components and services.
+            </div>
         </div>
 
         <!-- Learning Objectives -->
@@ -457,6 +473,7 @@ public class Driver
 
 @code {
     private bool isComplete = false;
+    private IJSObjectReference? _copyModule;
 
     // Sample driver for interactive demo
     private class SampleDriver
@@ -477,12 +494,32 @@ public class Driver
         isComplete = step?.IsComplete ?? false;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
+    }
+
     private async Task MarkComplete()
     {
         await ProgressService.MarkStepCompleteAsync(7);
         isComplete = true;
     }
 
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
+    }
 
     private static string GetLicenseDisplay(LicenseLevel level)
     {

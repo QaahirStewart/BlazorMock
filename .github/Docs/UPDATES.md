@@ -1,3 +1,30 @@
+## October 19, 2025
+
+### 🎨 Code Example Styling Standardization
+
+Updated all step examples to consistently show Tailwind-styled Razor markup instead of minimal HTML, providing more realistic and educational code samples.
+
+#### What Changed
+
+**Updated Step Examples:**
+
+- Step 2: Added Tailwind container layout and card styling to Home.razor example
+- Step 3: Already included styled GreetingCard component with Tailwind classes
+- Step 4: **Updated Counter.razor code block** to include full Tailwind styling matching the Live Demo (container, cards, styled buttons)
+- Step 6: Added Tailwind navigation bar styling and responsive layout examples
+
+**Documentation Updates:**
+
+- `Docs/STYLE-GUIDE.md` — Added "Example Code Formatting Preference" section requiring Tailwind classes in Razor examples
+- `Docs/README.md` — Updated Style Guide reference to mention Tailwind preference
+- `Docs/AI-PROMPT-GUIDE.md` — Added Tailwind preference note in UI component template
+
+#### Rationale
+
+Code examples should demonstrate production-ready patterns with proper styling, responsive design, and visual hierarchy rather than basic HTML elements. This helps learners understand how to build polished Blazor applications.
+
+---
+
 ## October 16, 2025
 
 ### 📱 Responsive CRUD Pattern Implementation

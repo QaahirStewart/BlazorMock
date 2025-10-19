@@ -1,6 +1,8 @@
 @page "/examples/step1"
 @inject ILearningProgressService ProgressService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IDisposable
 @rendermode InteractiveServer
 
 <PageTitle>Step 1: New Clean Project - Example</PageTitle>
@@ -135,11 +137,28 @@
 
 @code {
     private bool isComplete;
+    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
         var step = await ProgressService.GetStepAsync(1);
         isComplete = step?.IsComplete ?? false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
     }
 
     private async Task MarkComplete()
@@ -152,5 +171,10 @@
     {
         await ProgressService.MarkStepIncompleteAsync(1);
         isComplete = false;
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
     }
 }

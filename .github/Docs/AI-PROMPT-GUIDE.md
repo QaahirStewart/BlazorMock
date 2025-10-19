@@ -109,12 +109,13 @@ I want to add a new UI component: [ComponentName].
 
 Before creating:
 1. Read Docs/Typography-System.md
-2. Read Docs/STYLE-GUIDE.md (UI & Styling section)
+2. Read Docs/STYLE-GUIDE.md (UI & Styling section) - Note Tailwind preference for examples
 3. Check existing components for patterns
 4. Review Docs/Steps/ to see where it fits
 
 Then:
 - Create the component following style guide
+- Use Tailwind classes in all Razor examples (not minimal HTML)
 - Update Docs/BlazorLearningGuide.md if it's part of a step
 - Add component pattern to Docs/STYLE-GUIDE.md if reusable
 - Update relevant step documentation

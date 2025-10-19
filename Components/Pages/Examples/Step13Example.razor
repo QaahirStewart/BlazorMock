@@ -1,5 +1,7 @@
 @page "/examples/step13"
 @inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
+@implements IDisposable
 @rendermode InteractiveServer
 
 <PageTitle>Step 13: Dashboard & Reports - Example</PageTitle>
@@ -531,6 +533,7 @@ public class DashboardStats
 
 @code {
     private bool isComplete = false;
+    private IJSObjectReference? _copyModule;
 
     // --- Live Demo (Step 13) State ---
     private decimal s13CustomerRatePerMile = 2.10m;
@@ -554,7 +557,21 @@ public class DashboardStats
         isComplete = true;
     }
 
-    // No per-page JS interop; using global code enhancer for Show code + Copy
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
+    }
 
     // --- Live Demo (Step 13) Logic ---
     private void InitializeS13Trips()
@@ -640,5 +657,10 @@ OvertimeRatePerHour = overtimeRatePerHour, FuelCost = 115m },
         public decimal Revenue { get; set; }
         public decimal Cost { get; set; }
         public decimal Profit { get; set; }
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
     }
 }

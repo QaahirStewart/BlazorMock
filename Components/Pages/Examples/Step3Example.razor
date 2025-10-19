@@ -1,6 +1,8 @@
 @page "/examples/step3"
 @inject ILearningProgressService ProgressService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IDisposable
 @rendermode InteractiveServer
 
 <PageTitle>Step 3: Reusable Components - Example</PageTitle>
@@ -28,20 +30,7 @@
             <p class="text-gray-700 mb-6">Components are the building blocks of Blazor apps. You can create reusable
                 components that accept parameters, making your code modular and maintainable.</p>
 
-            <h3 class="text-lg font-semibold text-gray-700 mb-3">Code Example - GreetingCard.razor:</h3>
-            <pre data-code-title="Razor Code (GreetingCard.razor)" class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">&lt;div class="card"&gt;
-  &lt;h3&gt;&#64;Name&lt;/h3&gt;
-  &lt;p&gt;&#64;Message&lt;/p&gt;
-&lt;/div&gt;
-
-&#64;code {
-  [Parameter] public string Name { get; set; } = "Guest";
-  [Parameter] public string Message { get; set; } = "Welcome!";
-}</pre>
-
-            <h3 class="text-lg font-semibold text-gray-700 mb-3">Usage in Parent Component:</h3>
-            <pre data-code-title="Usage in Parent" class="bg-gray-100 p-4 rounded text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4">&lt;GreetingCard Name="John" Message="Hello from parent!" /&gt;
-&lt;GreetingCard Name="Sarah" Message="Welcome to the app!" /&gt;</pre>
+            <!-- (moved code sample into a dedicated card below, like Step 4) -->
 
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <p class="text-sm text-blue-800 font-semibold mb-2">💡 Key Points:</p>
@@ -61,6 +50,88 @@
                     <a href="/tips#parameter"
                         class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors">[Parameter]</a>
                 </div>
+            </div>
+        </div>
+
+        <!-- Code Block & Summary (like Step 4) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3">🧩 Code Example: GreetingCard Component</h2>
+            <p class="text-sm sm:text-base text-gray-700 mb-3">
+                This snippet shows a reusable component that accepts parameters via the <code>[Parameter]</code>
+                attribute. You can use it across pages by passing different values for <code>Name</code> and
+                <code>Message</code>.
+            </p>
+            <ul class="list-disc ml-5 text-xs sm:text-sm text-gray-700 mb-4 space-y-1">
+                <li>Define public properties marked with <code>[Parameter]</code> to receive values from the parent</li>
+                <li>Keep presentation inside the component; pass data from parents to reuse it anywhere</li>
+                <li>Use Tailwind classes for consistent, reusable styling</li>
+            </ul>
+
+            <!-- Grey container so Show code sits inside like Step 4 -->
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre data-code-title="Razor (GreetingCard.razor)"
+                    class="text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;bg-white rounded-2xl duration-300 p-5 sm:p-6 m-4 border border-gray-200&quot;&gt;
+    &lt;div class=&quot;flex items-center mb-4 gap-3&quot;&gt;
+        &lt;div class=&quot;bg-orange-500 text-white rounded-full p-2 flex-shrink-0&quot;&gt;
+            &lt;svg class=&quot;w-5 h-5 sm:w-6 sm:h-6&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;
+                &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot;
+                    d=&quot;M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z&quot;&gt;&lt;/path&gt;
+            &lt;/svg&gt;
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-lg sm:text-xl font-semibold text-gray-900 break-words min-w-0&quot;&gt;Hello, &#64;Name!&lt;/h3&gt;
+    &lt;/div&gt;
+
+    &lt;p class=&quot;text-sm sm:text-base text-gray-600 leading-relaxed mb-4 break-words&quot;&gt;
+        &#64;Message
+    &lt;/p&gt;
+
+    &lt;div class=&quot;flex items-center text-xs sm:text-sm text-gray-500&quot;&gt;
+        &lt;svg class=&quot;w-4 h-4 mr-1 flex-shrink-0&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;
+            &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot;
+                d=&quot;M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z&quot;&gt;&lt;/path&gt;
+        &lt;/svg&gt;
+        &lt;span class=&quot;break-words&quot;&gt;Created on &#64;DateTime.Now.ToString(&quot;MMM dd, yyyy&quot;)&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&#64;code {
+    /// &lt;summary&gt;
+    /// The name to display in the greeting card
+    /// &lt;/summary&gt;
+    [Parameter]
+    public string Name { get; set; } = &quot;Guest&quot;;
+
+    /// &lt;summary&gt;
+    /// The message content to display in the card
+    /// &lt;/summary&gt;
+    [Parameter]
+    public string Message { get; set; } = &quot;Welcome to our application!&quot;;
+}</pre>
+            </div>
+
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-2">
+                <pre data-code-title="Usage in Parent"
+                    class="text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;grid md:grid-cols-2 gap-4&quot;&gt;
+    &lt;GreetingCard Name=&quot;John Doe&quot; Message=&quot;Welcome to your trucking dashboard!&quot; /&gt;
+    &lt;GreetingCard Name=&quot;Sarah Smith&quot; Message=&quot;Great job on your delivery!&quot; /&gt;
+&lt;/div&gt;</pre>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
+                <li>Create a new component file at <code>Components/GreetingCard.razor</code>.</li>
+                <li>Paste the code from the “Razor Code (GreetingCard.razor)” block above into that file.</li>
+                <li>Open your parent page (e.g., <code>Components/Pages/Examples/Step3Example.razor</code> or
+                    <code>Components/Pages/Home.razor</code>) and add the usage snippet.
+                </li>
+                <li>Build and run the app, then navigate to <code>/examples/step3</code> to see the result.</li>
+            </ol>
+            <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                Tip: Reuse <code>&lt;GreetingCard /&gt;</code> anywhere by passing different <code>Name</code> and
+                <code>Message</code> parameters.
             </div>
         </div>
 
@@ -117,11 +188,28 @@
 
 @code {
     private bool isComplete;
+    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
         var step = await ProgressService.GetStepAsync(3);
         isComplete = step?.IsComplete ?? false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
     }
 
     private async Task MarkComplete()
@@ -134,5 +222,10 @@
     {
         await ProgressService.MarkStepIncompleteAsync(3);
         isComplete = false;
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
     }
 }

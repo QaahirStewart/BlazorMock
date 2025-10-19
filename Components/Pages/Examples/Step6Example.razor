@@ -1,6 +1,7 @@
 @page "/examples/step6"
 @inject NavigationManager Navigation
 @inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
 @implements IDisposable
 @rendermode InteractiveServer
 
@@ -46,6 +47,173 @@
             </ul>
         </div>
 
+        <!-- Concept 0: MainLayout Setup for Fresh Apps -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 break-words">
+                🔧 Setting Up Navigation (Fresh Apps)
+            </h2>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 break-words">
+                New Blazor apps start with a minimal MainLayout. Here's how to transform it into a navigable app:
+            </p>
+
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Default → Navigation Ready</h3>
+            <p class="text-sm sm:text-base text-gray-600 mb-2">
+                Transform the default template into a working navigation structure.
+            </p>
+            <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                <li>Default template only has <code class="px-1 rounded bg-gray-100">@@Body</code> and error handling</li>
+                <li>Add basic navigation with <code class="px-1 rounded bg-gray-100">NavLink</code> components</li>
+                <li>Include <code class="px-1 rounded bg-gray-100">Match="NavLinkMatch.All"</code> for home route</li>
+            </ul>
+
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
+                <pre data-code-title="Razor (MainLayout transformation)">
+
+
+&lt;!-- AFTER: Full responsive navigation with logo and mobile menu --&gt;
+@@inherits LayoutComponentBase
+@@inject IJSRuntime JS
+
+&lt;div class="min-h-screen"&gt;
+    &lt;header class="py-6"&gt;
+        &lt;div class="max-w-6xl mx-auto px-4"&gt;
+            &lt;nav class="bg-black/85 text-white rounded-2xl px-4 md:py-6 py-4 shadow-md"&gt;
+                &lt;div class="flex items-center justify-between md:justify-start md:gap-8"&gt;
+                    &lt;!-- Brand with logo --&gt;
+                    &lt;a href="/" class="flex items-center gap-2"&gt;
+                        &lt;img src="https://cdn.simpleicons.org/blazor/512BD4" alt="Blazor"
+                            class="h-8 w-8 sm:h-8 sm:w-8 flex-shrink-0" /&gt;
+                        &lt;span class="text-sm sm:text-base font-semibold tracking-wide"&gt;Trucking Schedule&lt;/span&gt;
+                    &lt;/a&gt;
+
+                    &lt;!-- Desktop navigation links - centered --&gt;
+                    &lt;ul class="hidden md:flex items-center justify-center gap-4 lg:gap-6 text-sm text-gray-200 flex-1"&gt;
+                        &lt;li&gt;
+                            &lt;NavLink href="/drivers" class="hover:text-white transition-colors"
+                                ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Drivers&lt;/NavLink&gt;
+                        &lt;/li&gt;
+                        &lt;li&gt;
+                            &lt;NavLink href="/trucks" class="hover:text-white transition-colors"
+                                ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Trucks&lt;/NavLink&gt;
+                        &lt;/li&gt;
+                        &lt;li&gt;
+                            &lt;NavLink href="/routes" class="hover:text-white transition-colors"
+                                ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Routes&lt;/NavLink&gt;
+                        &lt;/li&gt;
+                        &lt;li class="ml-4 pl-4 border-l border-white/20"&gt;
+                            &lt;NavLink href="/demo/trucking-schedule"
+                                class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors"
+                                ActiveClass="bg-blue-700 text-white"&gt;Demo&lt;/NavLink&gt;
+                        &lt;/li&gt;
+                    &lt;/ul&gt;
+
+                    &lt;!-- Mobile hamburger button with animation --&gt;
+                    &lt;button type="button" @@onclick="ToggleMobileMenu"
+                        class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg hover:bg-white/10 transition-transform duration-200 @@(isMobileMenuOpen ? "rotate-90" : "")"
+                        aria-label="Toggle navigation"&gt;
+                        &lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            class="h-6 w-6 transition-all duration-300"&gt;
+                            @@if (isMobileMenuOpen)
+                            {
+                                &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" /&gt;
+                            }
+                            else
+                            {
+                                &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" /&gt;
+                            }
+                        &lt;/svg&gt;
+                    &lt;/button&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Mobile menu with smooth animation --&gt;
+                &lt;div
+                    class="md:hidden overflow-hidden transition-all duration-300 ease-in-out @@(isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0")"&gt;
+                    &lt;div class="mt-3 border-t border-white/10 pt-3"&gt;
+                        &lt;nav class="flex flex-col gap-1"&gt;
+                            &lt;NavLink href="/"
+                                class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
+                                ActiveClass="bg-white/10 text-white font-semibold" @@onclick="CloseMobileMenu"&gt;Dashboard
+                            &lt;/NavLink&gt;
+                            &lt;NavLink href="/drivers"
+                                class="px-3 py-2 text-sm rounded-lg hover:bg-white/10 transition-colors"
+                                ActiveClass="bg-white/10 text-white font-semibold" @@onclick="CloseMobileMenu"&gt;Drivers
+                            &lt;/NavLink&gt;
+                            &lt;NavLink href="/trucks"
+                                class="px-3 py-2 text-sm rounded-lg hover:bg-white/10 transition-colors"
+                                ActiveClass="bg-white/10 text-white font-semibold" @@onclick="CloseMobileMenu"&gt;Trucks
+                            &lt;/NavLink&gt;
+                            &lt;NavLink href="/routes"
+                                class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
+                                ActiveClass="bg-white/10 text-white font-semibold" @@onclick="CloseMobileMenu"&gt;Routes
+                            &lt;/NavLink&gt;
+                            &lt;div class="border-t border-white/10 my-2"&gt;&lt;/div&gt;
+                            &lt;NavLink href="/demo/trucking-schedule"
+                                class="px-3 py-2 text-sm rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+                                ActiveClass="bg-blue-700 text-white" @@onclick="CloseMobileMenu"&gt;🎮 Demo&lt;/NavLink&gt;
+                        &lt;/nav&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/nav&gt;
+        &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;main class="max-w-6xl mx-auto px-4 pb-12"&gt;
+        &lt;div class="bg-white rounded-4xl p-6"&gt;
+            @@Body
+        &lt;/div&gt;
+    &lt;/main&gt;
+&lt;/div&gt;
+
+&lt;div id="blazor-error-ui" data-nosnippet&gt;
+    An unhandled error has occurred.
+    &lt;a href="." class="reload"&gt;Reload&lt;/a&gt;
+    &lt;span class="dismiss"&gt;🗙&lt;/span&gt;
+&lt;/div&gt;
+
+@@code {
+    private bool isMobileMenuOpen;
+
+    private void ToggleMobileMenu()
+    {
+        isMobileMenuOpen = !isMobileMenuOpen;
+    }
+
+    private void CloseMobileMenu()
+    {
+        isMobileMenuOpen = false;
+    }
+}
+                </pre>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base break-words">
+                        Key Features
+                    </h3>
+                    <ul class="text-xs sm:text-sm text-gray-700 space-y-1">
+                        <li class="break-words">🖼️ Blazor logo with brand name</li>
+                        <li class="break-words">📱 Responsive mobile hamburger menu</li>
+                        <li class="break-words">🎨 Smooth animations and transitions</li>
+                        <li class="break-words">⚡ Interactive state management</li>
+                    </ul>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-2 text-sm sm:text-base break-words">
+                        Advanced Techniques
+                    </h3>
+                    <ul class="text-xs sm:text-sm text-gray-700 space-y-1">
+                        <li class="break-words">🔄 Conditional SVG rendering</li>
+                        <li class="break-words">� Flexbox responsive layouts</li>
+                        <li class="break-words">🎯 CSS transitions and transforms</li>
+                        <li class="break-words">🚀 Clean mobile UX patterns</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Concept 1: page Directive -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 break-words">
@@ -68,14 +236,46 @@
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
                 <pre data-code-title="Razor (page directive)">
-&#64;page "/home"
+&lt;!-- Components/Pages/Drivers.razor --&gt;
+&#64;page "/drivers"
+
+&lt;div class=&quot;min-h-screen py-8 bg-gray-50&quot;&gt;
+    &lt;div class=&quot;max-w-5xl mx-auto px-4&quot;&gt;
+        &lt;h1 class=&quot;text-3xl font-bold text-gray-900 mb-6&quot;&gt;🚗 Drivers&lt;/h1&gt;
+        &lt;p class=&quot;text-gray-600&quot;&gt;Manage your truck drivers here.&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Components/Pages/Trucks.razor --&gt;
+&#64;page "/trucks"
+
+&lt;div class=&quot;min-h-screen py-8 bg-gray-50&quot;&gt;
+    &lt;div class=&quot;max-w-5xl mx-auto px-4&quot;&gt;
+        &lt;h1 class=&quot;text-3xl font-bold text-gray-900 mb-6&quot;&gt;🚚 Trucks&lt;/h1&gt;
+        &lt;p class=&quot;text-gray-600&quot;&gt;Manage your fleet of trucks here.&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Components/Pages/Routes.razor --&gt;
+&#64;page "/routes"
+
+&lt;div class=&quot;min-h-screen py-8 bg-gray-50&quot;&gt;
+    &lt;div class=&quot;max-w-5xl mx-auto px-4&quot;&gt;
+        &lt;h1 class=&quot;text-3xl font-bold text-gray-900 mb-6&quot;&gt;🛣️ Routes&lt;/h1&gt;
+        &lt;p class=&quot;text-gray-600&quot;&gt;Manage shipping routes and schedules.&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Home page with multiple routes --&gt;
 &#64;page "/"
+&#64;page "/home"
 
-&lt;h1&gt;Welcome Home!&lt;/h1&gt;
-
-&#64;code {
-    // This component can be accessed via "/" or "/home"
-}
+&lt;div class=&quot;min-h-screen py-8 bg-gray-50&quot;&gt;
+    &lt;div class=&quot;max-w-5xl mx-auto px-4&quot;&gt;
+        &lt;h1 class=&quot;text-3xl font-bold text-gray-900 mb-6&quot;&gt;🏠 Trucking Schedule Dashboard&lt;/h1&gt;
+        &lt;p class=&quot;text-gray-600&quot;&gt;Welcome to your trucking management system. This page can be accessed via both / and /home routes.&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
                 </pre>
             </div>
 
@@ -84,6 +284,16 @@
                     <strong>💡 Pro Tip:</strong> Use route parameters like @@page "/driver/{driverId:int}" to pass data
                     through URLs!
                 </p>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4 mt-4">
+                <h4 class="font-semibold text-gray-900 mb-2">🛠️ How to implement this:</h4>
+                <ol class="list-decimal ml-5 space-y-1 text-sm text-gray-700">
+                    <li>Create your page files: <code>Components/Pages/Drivers.razor</code>, <code>Trucks.razor</code>, <code>Routes.razor</code></li>
+                    <li>Add the <code>@@page</code> directive at the very top of each file</li>
+                    <li>Add your page content below the directive</li>
+                    <li>Test by navigating to <code>/drivers</code>, <code>/trucks</code>, <code>/routes</code> in your browser</li>
+                </ol>
             </div>
         </div>
 
@@ -109,18 +319,39 @@
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
                 <pre data-code-title="Razor (NavLink)">
-&lt;!-- NavLink automatically adds "active" class when the route matches --&gt;
-&lt;NavLink href="/" class="nav-item" Match="NavLinkMatch.All"&gt;
-    Home
-&lt;/NavLink&gt;
-
-&lt;NavLink href="/drivers" class="nav-item"&gt;
-    Drivers
-&lt;/NavLink&gt;
-
-&lt;NavLink href="/trucks" class="nav-item"&gt;
-    Trucks
-&lt;/NavLink&gt;
+&lt;nav class=&quot;bg-blue-600 text-white shadow-lg&quot;&gt;
+    &lt;div class=&quot;max-w-7xl mx-auto px-4&quot;&gt;
+        &lt;div class=&quot;flex items-center justify-between h-16&quot;&gt;
+            &lt;div class=&quot;text-xl font-bold&quot;&gt;Trucking Schedule&lt;/div&gt;
+            
+            &lt;div class=&quot;flex gap-4&quot;&gt;
+                &lt;NavLink href=&quot;/&quot; Match=&quot;NavLinkMatch.All&quot;
+                         class=&quot;px-3 py-2 rounded hover:bg-blue-700&quot;
+                         ActiveClass=&quot;bg-blue-800&quot;&gt;
+                    Home
+                &lt;/NavLink&gt;
+                
+                &lt;NavLink href=&quot;/drivers&quot;
+                         class=&quot;px-3 py-2 rounded hover:bg-blue-700&quot;
+                         ActiveClass=&quot;bg-blue-800&quot;&gt;
+                    Drivers
+                &lt;/NavLink&gt;
+                
+                &lt;NavLink href=&quot;/trucks&quot;
+                         class=&quot;px-3 py-2 rounded hover:bg-blue-700&quot;
+                         ActiveClass=&quot;bg-blue-800&quot;&gt;
+                    Trucks
+                &lt;/NavLink&gt;
+                
+                &lt;NavLink href=&quot;/routes&quot;
+                         class=&quot;px-3 py-2 rounded hover:bg-blue-700&quot;
+                         ActiveClass=&quot;bg-blue-800&quot;&gt;
+                    Routes
+                &lt;/NavLink&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/nav&gt;
                 </pre>
             </div>
 
@@ -145,6 +376,16 @@
                     </ul>
                 </div>
             </div>
+
+            <div class="bg-gray-50 rounded-lg p-4 mt-4">
+                <h4 class="font-semibold text-gray-900 mb-2">🛠️ How to implement this:</h4>
+                <ol class="list-decimal ml-5 space-y-1 text-sm text-gray-700">
+                    <li>Replace regular <code>&lt;a&gt;</code> tags with <code>&lt;NavLink&gt;</code> components</li>
+                    <li>Add <code>ActiveClass</code> to style the current page link</li>
+                    <li>Use <code>Match="NavLinkMatch.All"</code> for home page to avoid partial matches</li>
+                    <li>Test by clicking links and seeing active state highlight current page</li>
+                </ol>
+            </div>
         </div>
 
         <!-- Concept 3: Navigation Menu Example -->
@@ -156,66 +397,140 @@
                 Here's a complete example of a responsive navigation menu you can add to MainLayout.razor:
             </p>
 
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: MainLayout navigation bar
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Responsive navigation with mobile menu
             </h3>
             <p class="text-sm sm:text-base text-gray-600 mb-2">
-                A simple responsive navbar using NavLink with active state.
+                A fully responsive navbar with logo, mobile hamburger menu, and smooth animations.
             </p>
             <ul class="list-disc pl-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
-                <li>Use <code class="px-1 rounded bg-gray-100">ActiveClass</code> to style the active link</li>
-                <li>Wrap links in a semantic <code class="px-1 rounded bg-gray-100">&lt;nav&gt;</code> element</li>
-                <li>Use <code class="px-1 rounded bg-gray-100">Match="NavLinkMatch.All"</code> for the home route</li>
+                <li>Includes Blazor logo and brand name</li>
+                <li>Animated hamburger menu for mobile devices</li>
+                <li>Smooth mobile menu transitions</li>
+                <li>Flexible responsive layout with Tailwind CSS</li>
             </ul>
 
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto break-all mb-4">
-                <pre data-code-title="Razor (MainLayout nav)">
-&lt;!-- MainLayout.razor --&gt;
-&lt;div class="min-h-screen bg-gray-50"&gt;
-    &lt;!-- Navigation Bar --&gt;
-    &lt;nav class="bg-blue-600 text-white shadow-lg"&gt;
-        &lt;div class="max-w-7xl mx-auto px-4"&gt;
-            &lt;div class="flex items-center justify-between h-16"&gt;
-                &lt;!-- Logo/Brand --&gt;
-                &lt;div class="text-xl font-bold"&gt;
-                    TruckingApp
+                <pre data-code-title="Razor (Full responsive MainLayout nav)">
+&lt;!-- MainLayout.razor - Complete responsive navigation --&gt;
+@@inherits LayoutComponentBase
+@@inject IJSRuntime JS
+
+&lt;div class="min-h-screen"&gt;
+    &lt;header class="py-6"&gt;
+        &lt;div class="max-w-6xl mx-auto px-4"&gt;
+            &lt;nav class="bg-black/85 text-white rounded-2xl px-4 md:py-6 py-4 shadow-md"&gt;
+                &lt;div class="flex items-center justify-between md:justify-start md:gap-8"&gt;
+                    &lt;!-- Brand with logo --&gt;
+                    &lt;a href="/" class="flex items-center gap-2"&gt;
+                        &lt;img src="https://cdn.simpleicons.org/blazor/512BD4" alt="Blazor"
+                            class="h-8 w-8 sm:h-8 sm:w-8 flex-shrink-0" /&gt;
+                        &lt;span class="text-sm sm:text-base font-semibold tracking-wide"&gt;Trucking Schedule&lt;/span&gt;
+                    &lt;/a&gt;
+
+                    &lt;!-- Desktop navigation links - centered --&gt;
+                    &lt;ul class="hidden md:flex items-center justify-center gap-4 lg:gap-6 text-sm text-gray-200 flex-1"&gt;
+                        &lt;li&gt;
+                            &lt;NavLink href="/drivers" class="hover:text-white transition-colors"
+                                ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Drivers&lt;/NavLink&gt;
+                        &lt;/li&gt;
+                        &lt;li&gt;
+                            &lt;NavLink href="/trucks" class="hover:text-white transition-colors"
+                                ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Trucks&lt;/NavLink&gt;
+                        &lt;/li&gt;
+                        &lt;li&gt;
+                            &lt;NavLink href="/routes" class="hover:text-white transition-colors"
+                                ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Routes&lt;/NavLink&gt;
+                        &lt;/li&gt;
+                        &lt;li class="ml-4 pl-4 border-l border-white/20"&gt;
+                            &lt;NavLink href="/demo/trucking-schedule"
+                                class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors"
+                                ActiveClass="bg-blue-700 text-white"&gt;Demo&lt;/NavLink&gt;
+                        &lt;/li&gt;
+                    &lt;/ul&gt;
+
+                    &lt;!-- Mobile hamburger button with animation --&gt;
+                    &lt;button type="button" @@onclick="ToggleMobileMenu"
+                        class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg hover:bg-white/10 transition-transform duration-200 @@(isMobileMenuOpen ? "rotate-90" : "")"
+                        aria-label="Toggle navigation"&gt;
+                        &lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            class="h-6 w-6 transition-all duration-300"&gt;
+                            @@if (isMobileMenuOpen)
+                            {
+                                &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" /&gt;
+                            }
+                            else
+                            {
+                                &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16" /&gt;
+                            }
+                        &lt;/svg&gt;
+                    &lt;/button&gt;
                 &lt;/div&gt;
-                
-                &lt;!-- Navigation Links --&gt;
-                &lt;div class="flex gap-4"&gt;
-                    &lt;NavLink href="/" Match="NavLinkMatch.All"
-                             class="px-3 py-2 rounded hover:bg-blue-700"
-                             ActiveClass="bg-blue-800"&gt;
-                        Home
-                    &lt;/NavLink&gt;
-                    
-                    &lt;NavLink href="/drivers"
-                             class="px-3 py-2 rounded hover:bg-blue-700"
-                             ActiveClass="bg-blue-800"&gt;
-                        Drivers
-                    &lt;/NavLink&gt;
-                    
-                    &lt;NavLink href="/trucks"
-                             class="px-3 py-2 rounded hover:bg-blue-700"
-                             ActiveClass="bg-blue-800"&gt;
-                        Trucks
-                    &lt;/NavLink&gt;
-                    
-                    &lt;NavLink href="/routes"
-                             class="px-3 py-2 rounded hover:bg-blue-700"
-                             ActiveClass="bg-blue-800"&gt;
-                        Routes
-                    &lt;/NavLink&gt;
+
+                &lt;!-- Mobile menu with smooth animation --&gt;
+                &lt;div
+                    class="md:hidden overflow-hidden transition-all duration-300 ease-in-out @@(isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0")"&gt;
+                    &lt;div class="mt-3 border-t border-white/10 pt-3"&gt;
+                        &lt;nav class="flex flex-col gap-1"&gt;
+                            &lt;NavLink href="/"
+                                class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
+                                ActiveClass="bg-white/10 text-white font-semibold" @@onclick="CloseMobileMenu"&gt;Dashboard
+                            &lt;/NavLink&gt;
+                            &lt;NavLink href="/drivers"
+                                class="px-3 py-2 text-sm rounded-lg hover:bg-white/10 transition-colors"
+                                ActiveClass="bg-white/10 text-white font-semibold" @@onclick="CloseMobileMenu"&gt;Drivers
+                            &lt;/NavLink&gt;
+                            &lt;NavLink href="/trucks"
+                                class="px-3 py-2 text-sm rounded-lg hover:bg-white/10 transition-colors"
+                                ActiveClass="bg-white/10 text-white font-semibold" @@onclick="CloseMobileMenu"&gt;Trucks
+                            &lt;/NavLink&gt;
+                            &lt;NavLink href="/routes"
+                                class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
+                                ActiveClass="bg-white/10 text-white font-semibold" @@onclick="CloseMobileMenu"&gt;Routes
+                            &lt;/NavLink&gt;
+                            &lt;div class="border-t border-white/10 my-2"&gt;&lt;/div&gt;
+                            &lt;NavLink href="/demo/trucking-schedule"
+                                class="px-3 py-2 text-sm rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+                                ActiveClass="bg-blue-700 text-white" @@onclick="CloseMobileMenu"&gt;🎮 Demo&lt;/NavLink&gt;
+                        &lt;/nav&gt;
+                    &lt;/div&gt;
                 &lt;/div&gt;
-            &lt;/div&gt;
+            &lt;/nav&gt;
         &lt;/div&gt;
-    &lt;/nav&gt;
-    
-    &lt;!-- Page Content --&gt;
-    &lt;main class="max-w-7xl mx-auto px-4 py-8"&gt;
-        @@Body
+    &lt;/header&gt;
+
+    &lt;main class="max-w-6xl mx-auto px-4 pb-12"&gt;
+        &lt;div class="bg-white rounded-4xl p-6"&gt;
+            @@Body
+        &lt;/div&gt;
     &lt;/main&gt;
 &lt;/div&gt;
+
+@@code {
+    private bool isMobileMenuOpen;
+
+    private void ToggleMobileMenu()
+    {
+        isMobileMenuOpen = !isMobileMenuOpen;
+    }
+
+    private void CloseMobileMenu()
+    {
+        isMobileMenuOpen = false;
+    }
+}
                 </pre>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4 mt-4">
+                <h4 class="font-semibold text-gray-900 mb-2">🛠️ How to implement this:</h4>
+                <ol class="list-decimal ml-5 space-y-1 text-sm text-gray-700">
+                    <li>Open <code>Components/Layout/MainLayout.razor</code></li>
+                    <li>Replace the entire content with the responsive navigation code above</li>
+                    <li>Add <code>@@inject IJSRuntime JS</code> at the top if needed for JavaScript interactions</li>
+                    <li>Test the mobile menu by resizing your browser window</li>
+                </ol>
             </div>
         </div>
 
@@ -278,6 +593,16 @@
                     @@inject NavigationManager Navigation
                 </p>
             </div>
+
+            <div class="bg-gray-50 rounded-lg p-4 mt-4">
+                <h4 class="font-semibold text-gray-900 mb-2">🛠️ How to implement this:</h4>
+                <ol class="list-decimal ml-5 space-y-1 text-sm text-gray-700">
+                    <li>Add <code>@@inject NavigationManager Navigation</code> at the top of your component</li>
+                    <li>Call <code>Navigation.NavigateTo("/your-route")</code> in event handlers</li>
+                    <li>Use after form submissions, button clicks, or conditional logic</li>
+                    <li>Test by triggering the action and verifying navigation works</li>
+                </ol>
+            </div>
         </div>
 
         <!-- Interactive Demo -->
@@ -295,19 +620,19 @@
                     Navigate to Home
                 </button>
 
-                <button @onclick='() => Navigation.NavigateTo("/guide")'
+                <button @onclick='() => Navigation.NavigateTo("/drivers")'
                     class="px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm sm:text-base break-words">
-                    Navigate to Guide
+                    Navigate to Drivers
                 </button>
 
-                <button @onclick='() => Navigation.NavigateTo("/tips")'
+                <button @onclick='() => Navigation.NavigateTo("/trucks")'
                     class="px-4 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm sm:text-base break-words">
-                    Navigate to Tips
+                    Navigate to Trucks
                 </button>
 
-                <button @onclick="GoBack"
-                    class="px-4 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm sm:text-base break-words">
-                    Go Back (History)
+                <button @onclick='() => Navigation.NavigateTo("/routes")'
+                    class="px-4 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm sm:text-base break-words">
+                    Navigate to Routes
                 </button>
             </div>
 
@@ -392,7 +717,8 @@
 
 @code {
     private bool isComplete = false;
-    private string currentUri = "";
+    private string currentUri = string.Empty;
+    private IJSObjectReference? _copyModule;
 
     protected override void OnInitialized()
     {
@@ -406,6 +732,22 @@
         var step = await ProgressService.GetStepAsync(6);
         isComplete = step?.IsComplete ?? false;
         currentUri = Navigation.Uri;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
     }
 
     private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
@@ -430,6 +772,7 @@
     public void Dispose()
     {
         Navigation.LocationChanged -= OnLocationChanged;
+        _copyModule?.DisposeAsync();
     }
 
 }

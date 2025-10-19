@@ -1,6 +1,8 @@
 @page "/examples/step4"
 @inject ILearningProgressService ProgressService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IDisposable
 @rendermode InteractiveServer
 
 <PageTitle>Step 4: Event Binding - Example</PageTitle>
@@ -73,12 +75,27 @@
                 <pre data-code-title="Razor + C# (Counter.razor)"
                     class="text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&#64;page "/counter"
 
-&lt;h1&gt;Counter&lt;/h1&gt;
-&lt;p&gt;Current count: &#64;currentCount&lt;/p&gt;
+&lt;div class=&quot;min-h-screen py-8 bg-gray-50&quot;&gt;
+    &lt;div class=&quot;max-w-5xl mx-auto px-4&quot;&gt;
+        &lt;h1 class=&quot;text-3xl font-bold text-gray-900 mb-6&quot;&gt;Counter&lt;/h1&gt;
+        
+        &lt;div class=&quot;bg-white rounded-2xl border border-gray-200 p-6&quot;&gt;
+            &lt;div class=&quot;text-center mb-6&quot;&gt;
+                &lt;p class=&quot;text-sm text-gray-500&quot;&gt;Current count&lt;/p&gt;
+                &lt;p class=&quot;text-4xl font-bold text-gray-900&quot;&gt;&#64;currentCount&lt;/p&gt;
+            &lt;/div&gt;
 
-&lt;button &#64;onclick="Increment"&gt;+1&lt;/button&gt;
-&lt;button &#64;onclick="Decrement"&gt;-1&lt;/button&gt;
-&lt;button &#64;onclick="Reset"&gt;Reset&lt;/button&gt;
+            &lt;div class=&quot;flex items-center justify-center gap-3&quot;&gt;
+                &lt;button class=&quot;px-4 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50&quot;
+                        &#64;onclick=&quot;Decrement&quot;&gt;-1&lt;/button&gt;
+                &lt;button class=&quot;px-4 py-2 rounded-full text-white bg-gray-900 hover:opacity-90&quot;
+                        &#64;onclick=&quot;Increment&quot;&gt;+1&lt;/button&gt;
+                &lt;button class=&quot;px-4 py-2 rounded-full border border-gray-200 bg-white hover:bg-gray-50&quot;
+                        &#64;onclick=&quot;Reset&quot;&gt;Reset&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
 
 &#64;code {
     private int currentCount = 0;
@@ -122,6 +139,19 @@
             </div>
 
             <p class="text-xs text-gray-600 mt-4 text-center">💡 Click buttons to see state changes in real-time!</p>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
+                <li>Create a new page <code>Components/Pages/Counter.razor</code>.</li>
+                <li>Paste the code from the “Razor + C# (Counter.razor)” block into that file.</li>
+                <li>Build and run the app, then navigate to <code>/counter</code> to try the buttons.</li>
+            </ol>
+            <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                Tip: Event handlers can be <code>private void</code> or <code>private async Task</code> depending on whether they await work.
+            </div>
         </div>
 
         <!-- Mark Complete Section -->
@@ -168,11 +198,28 @@
 @code {
     private int currentCount = 0;
     private bool isComplete;
+    private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
     {
         var step = await ProgressService.GetStepAsync(4);
         isComplete = step?.IsComplete ?? false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
     }
 
     private void Increment()
@@ -200,5 +247,10 @@
     {
         await ProgressService.MarkStepIncompleteAsync(4);
         isComplete = false;
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
     }
 }

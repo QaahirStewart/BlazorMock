@@ -35,7 +35,7 @@ Welcome to the documentation hub. This repo includes a guided learning path to b
 
 ### For Contributors/Developers
 
-- [Style Guide](./STYLE-GUIDE.md) ⭐ - Code and documentation standards
+- [Style Guide](./STYLE-GUIDE.md) ⭐ - Code and documentation standards (includes Tailwind preference for examples)
 - [AI Prompt Guide](./AI-PROMPT-GUIDE.md) 🤖 - How to work with AI assistants
 - [Typography System](./Typography-System.md) - UI design system
 - [Documentation Structure](./DOCUMENTATION-STRUCTURE.md) - How docs are organized
