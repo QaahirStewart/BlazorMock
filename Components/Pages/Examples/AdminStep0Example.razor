@@ -1,0 +1,130 @@
+@page "/admin-examples/step0"
+@inject ILearningProgressService ProgressService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IDisposable
+@rendermode InteractiveServer
+
+<PageTitle>Admin Step 0: Prerequisites &amp; VS Code Setup - Example</PageTitle>
+
+<div class="min-h-screen py-8">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <a href="/admin-guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Admin guide
+        </a>
+
+        <div class="rounded-2xl overflow-hidden border border-gray-200 bg-white mb-6">
+            <div class="h-2 w-full bg-gradient-to-r from-indigo-200 via-purple-200 to-rose-300"></div>
+            <div class="p-5 sm:p-6">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">🧰 Admin Step 0: Prerequisites &amp; VS
+                    Code Setup</h1>
+                <p class="text-gray-600">Install the toolchain and verify your environment works before building the
+                    Admin Panel.</p>
+            </div>
+        </div>
+
+        <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Checklist</h2>
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-1">
+                <li>.NET SDK 10.0+ installed</li>
+                <li>Node.js LTS + npm installed</li>
+                <li>VS Code installed with: C#, Razor, Tailwind CSS IntelliSense</li>
+                <li>Verification commands run without error</li>
+            </ul>
+            <div class="mt-4 grid sm:grid-cols-2 gap-3">
+                <div class="bg-white border border-gray-200 rounded-xl p-4">
+                    <div class="text-xs text-gray-500 mb-1">Verify .NET</div>
+                    <pre
+                        class="bg-gray-100 p-3 rounded text-xs sm:text-sm font-mono overflow-x-auto">dotnet --info</pre>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-xl p-4">
+                    <div class="text-xs text-gray-500 mb-1">Verify Node &amp; npm</div>
+                    <pre class="bg-gray-100 p-3 rounded text-xs sm:text-sm font-mono overflow-x-auto">node --version
+npm --version</pre>
+                </div>
+            </div>
+            <p class="text-xs sm:text-sm text-gray-600 mt-4">See <span class="font-mono">Docs/Steps/Step00.md</span> for
+                full instructions.</p>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Admin Step 0?</h3>
+                    <p class="text-sm text-gray-600">Mark it complete to track your Admin progress.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark
+                        as Complete</button>
+                }
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <a href="/admin-guide"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Back to Admin guide
+            </a>
+            <a href="/admin-examples/step1"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 1
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isComplete;
+    private IJSObjectReference? _copyModule;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync("admin", 0);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task MarkComplete()
+    {
+        await ProgressService.MarkStepCompleteAsync("admin", 0);
+        isComplete = true;
+    }
+
+    private async Task ResetStep()
+    {
+        await ProgressService.MarkStepIncompleteAsync("admin", 0);
+        isComplete = false;
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
+    }
+}

@@ -59,7 +59,20 @@ public class LearningProgressService : ILearningProgressService
             new() { StepNumber = 10, StepId = "step10", Title = "State Management", ProjectKey = "trucking", IsComplete = false },
             new() { StepNumber = 11, StepId = "step11", Title = "Assignment Logic", ProjectKey = "trucking", IsComplete = false },
             new() { StepNumber = 12, StepId = "step12", Title = "Pay Calculation", ProjectKey = "trucking", IsComplete = false },
-            new() { StepNumber = 13, StepId = "step13", Title = "Dashboard & Reports", ProjectKey = "trucking", IsComplete = false }
+            new() { StepNumber = 13, StepId = "step13", Title = "Dashboard & Reports", ProjectKey = "trucking", IsComplete = false },
+
+            // Pokemon Collector steps (projectKey = "pokemon")
+            new() { StepNumber = 0, StepId = "pokemon-step0", Title = "Prerequisites & VS Code Setup", ProjectKey = "pokemon", IsComplete = false },
+            new() { StepNumber = 1, StepId = "pokemon-step1", Title = "New Clean Project", ProjectKey = "pokemon", IsComplete = false },
+            new() { StepNumber = 2, StepId = "pokemon-step2", Title = "Configure HttpClient for PokéAPI", ProjectKey = "pokemon", IsComplete = false },
+            new() { StepNumber = 3, StepId = "pokemon-step3", Title = "Call PokéAPI and render a list", ProjectKey = "pokemon", IsComplete = false },
+            new() { StepNumber = 4, StepId = "pokemon-step4", Title = "Add paging to the Pokémon list", ProjectKey = "pokemon", IsComplete = false },
+            new() { StepNumber = 5, StepId = "pokemon-step5", Title = "Show loading and error states", ProjectKey = "pokemon", IsComplete = false },
+            new() { StepNumber = 6, StepId = "pokemon-step6", Title = "Add search, filtering, and a details view", ProjectKey = "pokemon", IsComplete = false },
+
+            // Admin Panel steps (projectKey = "admin")
+            new() { StepNumber = 0, StepId = "admin-step0", Title = "Prerequisites & VS Code Setup", ProjectKey = "admin", IsComplete = false },
+            new() { StepNumber = 1, StepId = "admin-step1", Title = "New Clean Project", ProjectKey = "admin", IsComplete = false }
         };
     }
 

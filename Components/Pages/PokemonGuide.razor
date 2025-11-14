@@ -8,13 +8,19 @@
 <div class="min-h-screen py-8">
     <div class="w-full mx-auto px-4 max-w-5xl">
         <!-- Header Section -->
-        <div class="text-center mb-10">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 break-words">
-                🟡 Pokemon Collector Guide
-            </h1>
+        <div class="text-center mb-12">
+            <div class="flex flex-col items-center justify-center gap-3 mb-4">
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+                    alt="Pikachu" class="w-20 h-20 sm:w-24 sm:h-24" />
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 break-words">
+                    Pokemon Collector Guide
+                </h1>
+            </div>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed break-words">
+                Learn data fetching, search, and client-side state by building a Pokemon Collector.
+            </p>
         </div>
-
-        <!-- Learning Phases banner -->
+        <!-- Learning Phases banner (neutral for entire project) -->
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 mt-12">
             <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">🔰 Learning Phases</h2>
             <p class="text-sm sm:text-base text-gray-700 break-words">Pick a phase to focus. Each card links to steps
@@ -30,12 +36,12 @@
                 {
                     var count = _steps.Count(s => s.IsComplete && ph.StepNumbers.Contains(s.StepNumber));
                     <a href="@($"/pokemon-guide/phase/{ph.Id}")"
-                        class="rounded-2xl p-0 bg-white border-2 border-gray-200 hover:shadow-lg transition-all text-left block">
+                        class="@($"rounded-2xl p-0 bg-white border-2 border-gray-200 hover:shadow-lg transition-all text-left block {PhaseHoverBorder(ph.Id)}")">
                         <div class="p-8">
                             <div class="flex items-start justify-between gap-4 mb-3">
                                 <div class="min-w-0">
                                     <div
-                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 mb-2">
+                                        class="@($"inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mb-2 {PhasePillColors(ph.Id)}")">
                                         @ph.Subtitle
                                     </div>
                                     <h3 class="text-2xl font-bold text-gray-900 mb-1 break-words">@ph.Title</h3>
@@ -58,12 +64,14 @@
                 </p>
 
                 <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                    <a href="/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                    <a href="/demo/pokemon-collector"
+                        class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
                         <div class="flex items-center gap-3">
-                            <span class="text-2xl flex-shrink-0">📊</span>
+                            <span class="text-2xl flex-shrink-0">📖</span>
                             <div class="min-w-0">
-                                <div class="text-sm sm:text-base font-semibold break-words">Project Progress</div>
-                                <div class="text-xs sm:text-sm text-gray-300 break-words">View all steps & completion
+                                <div class="text-sm sm:text-base font-semibold break-words">Pokemon Collector Demo</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">Finished product: browse,
+                                    search, details
                                 </div>
                             </div>
                         </div>
@@ -78,12 +86,12 @@
                             </div>
                         </div>
                     </a>
-                    <a href="/guide" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                    <a href="/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
                         <div class="flex items-center gap-3">
-                            <span class="text-2xl flex-shrink-0">🏠</span>
+                            <span class="text-2xl flex-shrink-0">📊</span>
                             <div class="min-w-0">
-                                <div class="text-sm sm:text-base font-semibold break-words">All Learning Projects</div>
-                                <div class="text-xs sm:text-sm text-gray-300 break-words">Back to the project hub
+                                <div class="text-sm sm:text-base font-semibold break-words">Project Progress</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">View all steps & completion
                                 </div>
                             </div>
                         </div>
@@ -109,6 +117,31 @@
         _completedCount = await ProgressService.GetCompletedCountAsync("pokemon");
         _phases = GuideService.GetPhases("pokemon");
     }
+
+    private static string PhaseHoverBorder(string id) => id switch
+    {
+        "pokemon-phase-1" => "hover:border-yellow-400",
+        "pokemon-phase-2" => "hover:border-blue-400",
+        "pokemon-phase-3" => "hover:border-emerald-400",
+        _ => "hover:border-gray-300"
+    };
+
+    private static string PhasePillColors(string id) => id switch
+    {
+        "pokemon-phase-1" => "bg-yellow-50 text-yellow-700 border border-yellow-200",
+        "pokemon-phase-2" => "bg-blue-50 text-blue-700 border border-blue-200",
+        "pokemon-phase-3" => "bg-emerald-50 text-emerald-700 border border-emerald-200",
+        _ => "bg-gray-50 text-gray-700 border border-gray-200"
+    };
+
+    // Per-phase gradients for detail headers to match card palettes
+    public static string PhaseGradient(string id) => id switch
+    {
+        "pokemon-phase-1" => "bg-gradient-to-r from-yellow-100 to-yellow-300",
+        "pokemon-phase-2" => "bg-gradient-to-r from-blue-100 to-blue-300",
+        "pokemon-phase-3" => "bg-gradient-to-r from-emerald-100 to-emerald-300",
+        _ => "bg-gradient-to-r from-gray-100 to-gray-300"
+    };
 
     private async Task ToggleStep(int stepNumber)
     {

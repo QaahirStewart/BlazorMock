@@ -1,136 +1,131 @@
 @page "/pokemon-guide/phase/{Id}"
-@inject ILearningProgressService ProgressService
-@inject ILearningGuideService GuideService
 @rendermode InteractiveServer
+@inject ILearningGuideService GuideService
+@inject ILearningProgressService ProgressService
 
-<PageTitle>Pokemon Phase</PageTitle>
+@code {
+    [Parameter] public string Id { get; set; } = string.Empty;
+    private Phase? phase;
+    private List<StepProgress> steps = new();
+    private int completedInPhase;
 
-@if (phase is null || stepsInPhase is null)
+    protected override async Task OnInitializedAsync()
+    {
+        phase = GuideService.GetPhaseById("pokemon", Id);
+        steps = await ProgressService.GetAllStepsAsync("pokemon");
+        completedInPhase = phase is null ? 0 : steps.Count(s => s.IsComplete && phase.StepNumbers.Contains(s.StepNumber));
+    }
+
+    private string StepHref(int n) => n == 0 ? "/pokemon-examples/step0" : $"/pokemon-examples/step{n}";
+
+    // Styling helpers to match Pokemon Guide page accents
+    private static string PhasePillColors(string id) => id switch
+    {
+        "pokemon-phase-1" => "bg-yellow-50 text-yellow-700 border border-yellow-200",
+        "pokemon-phase-2" => "bg-blue-50 text-blue-700 border border-blue-200",
+        "pokemon-phase-3" => "bg-emerald-50 text-emerald-700 border border-emerald-200",
+        _ => "bg-gray-50 text-gray-700 border border-gray-200"
+    };
+
+    private static string PhaseHeaderGradient(string id) => id switch
+    {
+        "pokemon-phase-1" => "bg-gradient-to-r from-yellow-100 via-yellow-100 to-yellow-200",
+        "pokemon-phase-2" => "bg-gradient-to-r from-blue-100 via-sky-100 to-sky-200",
+        "pokemon-phase-3" => "bg-gradient-to-r from-emerald-100 via-teal-100 to-teal-200",
+        _ => "bg-gradient-to-r from-gray-100 to-blue-100"
+    };
+}
+
+@if (phase is null)
 {
-    <div class="min-h-screen flex items-center justify-center">
-        <p class="text-gray-600 text-sm sm:text-base">Loading phase6hellip;</p>
+    <div class="max-w-5xl mx-auto px-4 py-10">
+        <a href="/pokemon-guide" class="text-blue-600 hover:underline">← Back to Pokemon Guide</a>
+        <h1 class="text-2xl font-bold mt-4">Phase not found</h1>
+        <p class="text-gray-600">The phase you requested does not exist.</p>
     </div>
 }
 else
 {
     <div class="min-h-screen py-8">
-        <div class="w-full mx-auto px-4 max-w-4xl">
-            <div class="mb-6">
-                <a href="/pokemon-guide" class="text-sm text-blue-600 hover:text-blue-700 font-medium">6larr; Back to
-                    Pokemon phases</a>
+        <div class="w-full mx-auto px-4 max-w-5xl">
+            <a href="/pokemon-guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Pokemon Guide
+            </a>
+
+            <!-- Phase Header styled like Guide's Phases Hub, with per-phase colors -->
+            <div class="rounded-2xl p-5 sm:p-6 mb-8 @(PhaseHeaderGradient(phase.Id))">
+                <div class="mb-2">
+                    <span
+                        class="@("inline-flex items-center px-2 py-1 rounded-full text-xs font-medium " + PhasePillColors(phase.Id))">@phase.Subtitle</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">@phase.Title</h1>
+                <p class="text-sm sm:text-base text-gray-700 mb-3">@phase.Description</p>
+                <div class="text-xs sm:text-sm text-gray-700"><strong>Progress:</strong>
+                    @completedInPhase/@phase.StepNumbers.Length</div>
             </div>
 
-            <div class="mb-8">
-                <p class="text-xs sm:text-sm uppercase tracking-wide text-gray-500 mb-1 break-words">Pokemon Collector</p>
-                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 break-words">@phase.Title</h1>
-                <p class="text-sm sm:text-base text-gray-600 mb-1 break-words">@phase.Subtitle</p>
-                <p class="text-sm sm:text-base text-gray-700 break-words">@phase.Description</p>
-            </div>
+            @* Special Step 0 callout (keeps original style) *@
+            @if (phase.StepNumbers.Contains(0))
+            {
+                <div class="bg-black/3 rounded-2xl p-6 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                            <span
+                                class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">0</span>
+                            🧰 Step 0: Prerequisites & VS Code Setup
+                        </h3>
+                        <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">Setup</span>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 border border-gray-200">
+                        <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">
+                            Get your machine ready: install the .NET SDK, Node.js (for Tailwind build), and VS Code with the C#,
+                            Razor, and Tailwind CSS IntelliSense extensions.
+                        </p>
+                        <ul class="list-disc ml-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                            <li>Install .NET SDK (10.0+)</li>
+                            <li>Install Node.js LTS and npm</li>
+                            <li>Install VS Code + extensions: C#, Razor, Tailwind CSS IntelliSense</li>
+                            <li>Verify tools: <span class="font-mono">dotnet --info</span>, <span class="font-mono">node
+                                    -v</span>, <span class="font-mono">npm -v</span></li>
+                        </ul>
+                        <div class="flex flex-wrap gap-2">
+                            <a href="https://dotnet.microsoft.com/download" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-black/85 hover:bg-black text-white text-sm sm:text-base rounded-lg transition-colors">.NET
+                                Download →</a>
+                            <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">Node.js
+                                (LTS) →</a>
+                            <a href="https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit"
+                                target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">VS
+                                Code C# →</a>
+                        </div>
+                        <p class="text-xs sm:text-sm text-gray-600 mt-3">See <span class="font-mono">Docs/Steps/Step00.md</span>
+                            for the full checklist.</p>
+                    </div>
+                </div>
+            }
 
-            <div class="rounded-2xl border border-blue-200 bg-blue-50 p-6 mb-8">
-                <h2 class="text-lg sm:text-xl font-semibold text-blue-900 mb-3 break-words">Steps in this phase</h2>
-
-                <ul class="space-y-3">
-                    @foreach (var step in stepsInPhase)
-                    {
-                        <li
-                            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white border border-blue-100 rounded-xl px-3 py-2">
-                            <div class="min-w-0">
-                                <p class="text-sm sm:text-base font-medium text-blue-900 break-words">
-                                    Step @step.StepNumber: @step.Title
-                                </p>
-                                @if (step.CompletedDate is not null)
-                                {
-                                    <p class="text-xs text-gray-500 break-words">Completed
-                                        @step.CompletedDate.Value.ToLocalTime().ToString("g")</p>
-                                }
+            <div class="grid sm:grid-cols-2 gap-4">
+                @foreach (var n in phase.StepNumbers.Where(x => x != 0))
+                {
+                    var step = steps.FirstOrDefault(s => s.StepNumber == n);
+                    bool done = step?.IsComplete == true;
+                    <a href="@StepHref(n)"
+                        class="group block rounded-2xl border border-gray-200 bg-white p-5 hover:shadow-sm transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-full @(done ? "bg-green-500 text-white" : "bg-gray-200 text-gray-700")">@(done
+                                                                ? "✓" : n.ToString())</span>
+                                <h3 class="text-lg font-semibold text-gray-900">Step @n</h3>
                             </div>
-                            <div class="flex items-center gap-2 flex-shrink-0">
-                                @if (step.IsComplete)
-                                {
-                                    <span
-                                        class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs sm:text-sm font-medium">Done</span>
-                                    <button class="px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
-                                        @onclick="() => ToggleStep(step.StepNumber)">
-                                        Mark incomplete
-                                    </button>
-                                }
-                                else
-                                {
-                                    <span
-                                        class="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs sm:text-sm font-medium">Not
-                                        started</span>
-                                    <button class="px-2 py-1 text-xs sm:text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                        @onclick="() => ToggleStep(step.StepNumber)">
-                                        Mark complete
-                                    </button>
-                                }
-                            </div>
-                        </li>
-                    }
-                </ul>
+                            <span class="text-gray-400 group-hover:text-gray-600">→</span>
+                        </div>
+                        <p class="text-sm text-gray-700">@step?.Title</p>
+                    </a>
+                }
             </div>
         </div>
     </div>
-}
-
-@code {
-    [Parameter]
-    public string? Id { get; set; }
-
-    private Phase? phase;
-    private List<StepProgress>? allSteps;
-    private List<StepProgress>? stepsInPhase;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (string.IsNullOrWhiteSpace(Id))
-        {
-            return;
-        }
-
-        phase = GuideService.GetPhaseById("pokemon", Id);
-        allSteps = await ProgressService.GetAllStepsAsync("pokemon");
-
-        if (phase is not null && allSteps is not null)
-        {
-            stepsInPhase = allSteps
-            .Where(s => phase.StepNumbers.Contains(s.StepNumber))
-            .OrderBy(s => s.StepNumber)
-            .ToList();
-        }
-    }
-
-    private async Task ToggleStep(int stepNumber)
-    {
-        if (allSteps is null)
-        {
-            return;
-        }
-
-        var step = allSteps.FirstOrDefault(s => s.StepNumber == stepNumber);
-        if (step is null)
-        {
-            return;
-        }
-
-        if (step.IsComplete)
-        {
-            await ProgressService.MarkStepIncompleteAsync("pokemon", stepNumber);
-        }
-        else
-        {
-            await ProgressService.MarkStepCompleteAsync("pokemon", stepNumber);
-        }
-
-        allSteps = await ProgressService.GetAllStepsAsync("pokemon");
-
-        if (phase is not null && allSteps is not null)
-        {
-            stepsInPhase = allSteps
-            .Where(s => phase.StepNumbers.Contains(s.StepNumber))
-            .OrderBy(s => s.StepNumber)
-            .ToList();
-        }
-    }
 }

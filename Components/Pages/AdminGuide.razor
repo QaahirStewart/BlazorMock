@@ -7,23 +7,14 @@
 
 <div class="min-h-screen py-8">
     <div class="w-full mx-auto px-4 max-w-5xl">
-        <div class="text-center mb-10">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 break-words">
                 🛡️ Admin Panel & Authentication Guide
             </h1>
-        </div>
-
-        <!-- Progress summary -->
-        <div class="rounded-2xl border border-green-200 bg-green-50 p-6 mb-8" hidden="@(_steps is null)">
-            <h2 class="text-xl sm:text-2xl font-semibold text-green-900 mb-2 break-words">Your Admin Project Progress
-            </h2>
-            <p class="text-sm sm:text-base text-green-900 mb-2 break-words">
-                Progress: @_completedCount / @(_steps?.Count ?? 0) steps complete
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed break-words">
+                Learn layouts, identity, and admin workflows by building a simple admin panel.
             </p>
-        </div>
-
-        <div class="text-sm text-gray-600 text-center">
-            <a href="/guide" class="text-blue-600 hover:text-blue-700 font-medium">← Back to all learning projects</a>
         </div>
         <!-- Learning Phases banner -->
         <div class="bg-gradient-to-r from-gray-100 to-purple-100 rounded-2xl p-5 mt-12">
@@ -41,12 +32,12 @@
                 {
                     var count = _steps.Count(s => s.IsComplete && ph.StepNumbers.Contains(s.StepNumber));
                     <a href="@($"/admin-guide/phase/{ph.Id}")"
-                        class="rounded-2xl p-0 bg-white border-2 border-gray-200 hover:shadow-lg transition-all text-left block">
+                        class="@($"rounded-2xl p-0 bg-white border-2 border-gray-200 hover:shadow-lg transition-all text-left block {PhaseHoverBorder(ph.Id)}")">
                         <div class="p-8">
                             <div class="flex items-start justify-between gap-4 mb-3">
                                 <div class="min-w-0">
                                     <div
-                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200 mb-2">
+                                        class="@($"inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mb-2 {PhasePillColors(ph.Id)}")">
                                         @ph.Subtitle
                                     </div>
                                     <h3 class="text-2xl font-bold text-gray-900 mb-1 break-words">@ph.Title</h3>
@@ -69,12 +60,12 @@
                 </p>
 
                 <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                    <a href="/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                    <a href="#" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
                         <div class="flex items-center gap-3">
-                            <span class="text-2xl flex-shrink-0">📊</span>
+                            <span class="text-2xl flex-shrink-0">📖</span>
                             <div class="min-w-0">
-                                <div class="text-sm sm:text-base font-semibold break-words">Project Progress</div>
-                                <div class="text-xs sm:text-sm text-gray-300 break-words">View all steps & completion
+                                <div class="text-sm sm:text-base font-semibold break-words">Admin Panel Demo</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">Finished product: auth, dashboard, admin routes
                                 </div>
                             </div>
                         </div>
@@ -89,12 +80,12 @@
                             </div>
                         </div>
                     </a>
-                    <a href="/guide" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                    <a href="/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
                         <div class="flex items-center gap-3">
-                            <span class="text-2xl flex-shrink-0">🏠</span>
+                            <span class="text-2xl flex-shrink-0">📊</span>
                             <div class="min-w-0">
-                                <div class="text-sm sm:text-base font-semibold break-words">All Learning Projects</div>
-                                <div class="text-xs sm:text-sm text-gray-300 break-words">Back to the project hub
+                                <div class="text-sm sm:text-base font-semibold break-words">Project Progress</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">View all steps & completion
                                 </div>
                             </div>
                         </div>
@@ -121,5 +112,29 @@
         _phases = GuideService.GetPhases("admin");
     }
 
-    // Removed ToggleStep method as part of the refactor
+    // Admin-specific phase color palette to mirror trucking structure
+    private static string PhaseHoverBorder(string id) => id switch
+    {
+        "admin-phase-1" => "hover:border-purple-400",
+        "admin-phase-2" => "hover:border-indigo-400",
+        "admin-phase-3" => "hover:border-rose-400",
+        _ => "hover:border-gray-300"
+    };
+
+    private static string PhasePillColors(string id) => id switch
+    {
+        "admin-phase-1" => "bg-purple-50 text-purple-700 border border-purple-200",
+        "admin-phase-2" => "bg-indigo-50 text-indigo-700 border border-indigo-200",
+        "admin-phase-3" => "bg-rose-50 text-rose-700 border border-rose-200",
+        _ => "bg-gray-50 text-gray-700 border border-gray-200"
+    };
+
+    // Per-phase gradients for detail headers to match card palettes
+    public static string PhaseGradient(string id) => id switch
+    {
+        "admin-phase-1" => "bg-gradient-to-r from-purple-100 to-purple-300",
+        "admin-phase-2" => "bg-gradient-to-r from-indigo-100 to-indigo-300",
+        "admin-phase-3" => "bg-gradient-to-r from-rose-100 to-rose-300",
+        _ => "bg-gradient-to-r from-gray-100 to-gray-300"
+    };
 }

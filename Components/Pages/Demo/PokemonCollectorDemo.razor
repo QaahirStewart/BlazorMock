@@ -1,0 +1,654 @@
+@page "/demo/pokemon-collector"
+@rendermode InteractiveServer
+@inject HttpClient Http
+
+<PageTitle>Pokemon Collector Demo</PageTitle>
+
+<style>
+    @@keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .animate-fade-in {
+        animation: fade-in 0.4s ease-out;
+    }
+</style>
+
+<div class="min-h-screen py-8">
+    <div class="w-full mx-auto px-4 max-w-7xl">
+        <!-- Header matching guide style -->
+        <div class="text-center mb-12">
+            <div class="flex flex-col items-center justify-center gap-3 mb-4">
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+                    alt="Pikachu" class="w-20 h-20 sm:w-24 sm:h-24" />
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
+                    Pokemon Collector Demo
+                </h1>
+            </div>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed">
+                The finished product: browse, search, and explore Pokemon
+            </p>
+        </div>
+
+        <!-- Search Bar with guide styling -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 mb-8">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="flex-1">
+                    <input type="text" @bind="searchTerm" @bind:event="oninput" @bind:after="ApplyFilters"
+                        placeholder="Search Pokemon..."
+                        class="w-full px-4 py-2.5 text-gray-900 placeholder-gray-400 bg-white border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all" />
+                </div>
+                <div class="sm:w-48">
+                    <select @bind="selectedType" @bind:after="ApplyFilters"
+                        class="w-full px-4 py-2.5 text-gray-900 bg-white border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
+                        <option value="">All Types</option>
+                        <option value="normal">Normal</option>
+                        <option value="fire">Fire</option>
+                        <option value="water">Water</option>
+                        <option value="electric">Electric</option>
+                        <option value="grass">Grass</option>
+                        <option value="ice">Ice</option>
+                        <option value="fighting">Fighting</option>
+                        <option value="poison">Poison</option>
+                        <option value="ground">Ground</option>
+                        <option value="flying">Flying</option>
+                        <option value="psychic">Psychic</option>
+                        <option value="bug">Bug</option>
+                        <option value="rock">Rock</option>
+                        <option value="ghost">Ghost</option>
+                        <option value="dragon">Dragon</option>
+                        <option value="dark">Dark</option>
+                        <option value="steel">Steel</option>
+                        <option value="fairy">Fairy</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        @if (isLoading)
+        {
+            <div class="text-center py-32">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-600">
+                </div>
+                <p class="mt-4 text-gray-600">Loading Pokemon...</p>
+            </div>
+        }
+
+        <!-- Error State -->
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="max-w-2xl mx-auto bg-white border-2 border-red-200 rounded-2xl p-6">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl">⚠️</span>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-1">Error Loading Pokemon</h3>
+                        <p class="text-gray-600 text-sm mb-3">@errorMessage</p>
+                        <button @onclick="LoadPokemonList"
+                            class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Pokemon Grid -->
+        @if (!isLoading && string.IsNullOrEmpty(errorMessage) && filteredPokemon != null)
+        {
+            @if (filteredPokemon.Count == 0)
+            {
+                <div class="text-center py-32">
+                    <span class="text-5xl mb-3 block opacity-50">🔍</span>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No Pokemon Found</h3>
+                    <p class="text-gray-500">Try adjusting your search or filter</p>
+                </div>
+            }
+            else
+            {
+                <!-- Results Count -->
+                <div class="max-w-4xl mx-auto mb-4 px-2">
+                    <p class="text-sm text-gray-500">
+                        Showing @GetPagedPokemon().Count of @filteredPokemon.Count Pokemon
+                    </p>
+                </div>
+
+                <!-- Card Grid with guide styling -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 mb-8 animate-fade-in">
+                    @foreach (var pokemon in GetPagedPokemon())
+                    {
+                        <div class="bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-lg transition-all duration-200 cursor-pointer p-0"
+                            @onclick="() => SelectPokemon(pokemon)">
+                            <div class="p-4 sm:p-6">
+                                <div class="text-xs font-medium text-gray-400 mb-2">#@pokemon.Id.ToString("D3")</div>
+                                <div class="aspect-square mb-3 flex items-center justify-center">
+                                    <img src="@pokemon.SpriteUrl" alt="@pokemon.Name"
+                                        class="w-full h-full object-contain hover:scale-110 transition-transform duration-200" />
+                                </div>
+                                <h3 class="font-bold text-gray-900 capitalize text-sm sm:text-base mb-2 truncate">
+                                    @pokemon.Name
+                                </h3>
+                                @if (!string.IsNullOrEmpty(pokemon.PrimaryType))
+                                {
+                                    <span class="@GetTypeBadgeClass(pokemon.PrimaryType)">
+                                        @pokemon.PrimaryType
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Pagination with guide styling -->
+                <div class="flex items-center justify-between px-2 py-4">
+                    <button @onclick="PreviousPage" disabled="@(currentPage == 1)"
+                        class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border-2 border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                        ← Previous
+                    </button>
+                    <span class="text-sm text-gray-700 font-semibold">
+                        Page @currentPage of @totalPages
+                    </span>
+                    <button @onclick="NextPage" disabled="@(currentPage >= totalPages)"
+                        class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 border-2 border-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                        Next →
+                    </button>
+                </div>
+            }
+        }
+
+        <!-- Modal -->
+        @if (selectedPokemon != null)
+        {
+            var primaryType = selectedPokemon.Types?.FirstOrDefault() ?? "normal";
+            var bgColor = GetTypeBackgroundColor(primaryType);
+
+            <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+                @onclick="CloseDetail">
+                <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden"
+                    @onclick:stopPropagation="true">
+
+                    <!-- Colored Background Section with Image -->
+                    <div class="@bgColor relative px-6 pt-8 pb-32">
+                        <button @onclick="CloseDetail"
+                            class="absolute top-4 left-4 w-10 h-10 bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur rounded-full flex items-center justify-center text-white transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+
+                        <div class="flex items-center justify-center">
+                            <img src="@selectedPokemon.SpriteUrl" alt="@selectedPokemon.Name"
+                                class="w-64 h-64 object-contain drop-shadow-2xl" />
+                        </div>
+                    </div>
+
+                    <!-- White Content Card Overlapping -->
+                    <div
+                        class="bg-white rounded-t-3xl -mt-24 relative z-10 px-6 pt-6 pb-8 overflow-y-auto max-h-[calc(90vh-250px)]">
+
+                        <!-- Pokemon Name & Types -->
+                        <div class="mb-4">
+                            <h2 class="text-3xl font-bold text-gray-900 capitalize mb-2">@selectedPokemon.Name</h2>
+                            <div class="flex gap-2 mb-4">
+                                @if (selectedPokemon.Types != null)
+                                {
+                                    @foreach (var type in selectedPokemon.Types)
+                                    {
+                                        <span class="@GetTypeChipClass(type)">@type</span>
+                                    }
+                                }
+                            </div>
+
+                            <!-- Description (placeholder since API doesn't provide it) -->
+                            <p class="text-gray-600 text-sm leading-relaxed mb-6">
+                                This Pokemon has @selectedPokemon.Hp HP and @selectedPokemon.Attack attack power.
+                                It can be found in various regions and has unique abilities that make it special.
+                            </p>
+                        </div>
+
+                        <!-- Stats Grid -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <div class="text-xs text-gray-500 mb-1">Height</div>
+                                <div class="text-lg font-bold text-gray-900">@selectedPokemon.Height <span
+                                        class="text-sm font-normal text-gray-500">dm</span></div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <div class="text-xs text-gray-500 mb-1">Weight</div>
+                                <div class="text-lg font-bold text-gray-900">@selectedPokemon.Weight <span
+                                        class="text-sm font-normal text-gray-500">hg</span></div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <div class="text-xs text-gray-500 mb-1">Base XP</div>
+                                <div class="text-lg font-bold text-gray-900">@selectedPokemon.BaseExperience</div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <div class="text-xs text-gray-500 mb-1">Abilities</div>
+                                <div class="text-lg font-bold text-gray-900">@(selectedPokemon.Abilities?.Count ?? 0)</div>
+                            </div>
+                        </div>
+
+                        <!-- Weakness Section -->
+                        <div class="mb-6">
+                            <h3 class="text-base font-bold text-gray-900 mb-3">Weakness</h3>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach (var weakness in GetTypeWeaknesses(primaryType))
+                                {
+                                    <span class="@GetWeaknessChipClass(weakness)">@weakness</span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Evolutions Section -->
+                        <div class="mb-2">
+                            <h3 class="text-base font-bold text-gray-900 mb-4">Evolutions</h3>
+                            <div class="flex items-center justify-center gap-4">
+                                @{
+                                    var evolutionIds = GetEvolutionChain(selectedPokemon.Id);
+                                    for (int i = 0; i < evolutionIds.Count; i++)
+                                    {
+                                        var evoId = evolutionIds[i];
+                                        <div class="flex flex-col items-center">
+                                            <div
+                                                class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                                                <img src="@GetPokemonSpriteUrl(evoId)" alt="Evolution @(i + 1)"
+                                                    class="w-full h-full object-contain" />
+                                            </div>
+                                        </div>
+
+                                        @if (i < evolutionIds.Count - 1)
+                                        {
+                                            <div class="text-gray-400 text-xl">→</div>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Back Link with guide styling -->
+        <div class="mt-12">
+            <div class="bg-black/90 rounded-2xl p-5 sm:p-6 text-white text-center">
+                <p class="text-base sm:text-lg font-semibold mb-3">Continue Learning</p>
+                <a href="/pokemon-guide"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                    <span class="text-lg">←</span>
+                    <span class="text-sm sm:text-base font-semibold">Back to Pokemon Guide</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<PokemonListItem> allPokemon = new();
+    private List<PokemonListItem> filteredPokemon = new();
+    private PokemonDetail? selectedPokemon;
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+    private string searchTerm = string.Empty;
+    private string selectedType = string.Empty;
+    private int currentPage = 1;
+    private int pageSize = 20;
+    private int totalPages => (int)Math.Ceiling(filteredPokemon.Count / (double)pageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPokemonList();
+    }
+
+    private async Task LoadPokemonList()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var response = await Http.GetFromJsonAsync<PokemonListResponse>("https://pokeapi.co/api/v2/pokemon?limit=151");
+            if (response?.Results != null)
+            {
+                allPokemon.Clear();
+                foreach (var result in response.Results)
+                {
+                    var id = int.Parse(result.Url.TrimEnd('/').Split('/').Last());
+                    allPokemon.Add(new PokemonListItem
+                    {
+                        Id = id,
+                        Name = result.Name,
+                        Url = result.Url,
+                        SpriteUrl = $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png"
+                    });
+                }
+
+                // Load types for filtering (load first 20 for demo purposes)
+                var tasks = allPokemon.Take(20).Select(async p =>
+                {
+                    try
+                    {
+                        var details = await Http.GetFromJsonAsync<PokemonDetailResponse>(p.Url);
+                        if (details?.Types != null)
+                        {
+                            p.Types = details.Types.Select(t => t.Type.Name).ToList();
+                            p.PrimaryType = p.Types.FirstOrDefault() ?? string.Empty;
+                        }
+                    }
+                    catch { }
+                });
+                await Task.WhenAll(tasks);
+
+                ApplyFilters();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load Pokemon: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ApplyFilters()
+    {
+        filteredPokemon = allPokemon.Where(p =>
+        {
+            var matchesSearch = string.IsNullOrWhiteSpace(searchTerm) ||
+    p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
+            var matchesType = string.IsNullOrWhiteSpace(selectedType) ||
+    (p.Types?.Contains(selectedType) ?? false);
+            return matchesSearch && matchesType;
+        }).ToList();
+
+        currentPage = 1;
+        StateHasChanged();
+    }
+
+    private List<PokemonListItem> GetPagedPokemon()
+    {
+        return filteredPokemon
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
+    }
+
+    private async Task SelectPokemon(PokemonListItem pokemon)
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var details = await Http.GetFromJsonAsync<PokemonDetailResponse>(pokemon.Url);
+            if (details != null)
+            {
+                selectedPokemon = new PokemonDetail
+                {
+                    Id = details.Id,
+                    Name = details.Name,
+                    SpriteUrl = pokemon.SpriteUrl,
+                    Height = details.Height,
+                    Weight = details.Weight,
+                    BaseExperience = details.BaseExperience,
+                    Types = details.Types?.Select(t => t.Type.Name).ToList() ?? new(),
+                    Abilities = details.Abilities?.Select(a => a.Ability.Name).ToList() ?? new(),
+                    Hp = details.Stats?.FirstOrDefault(s => s.Stat.Name == "hp")?.BaseStat ?? 0,
+                    Attack = details.Stats?.FirstOrDefault(s => s.Stat.Name == "attack")?.BaseStat ?? 0,
+                    Defense = details.Stats?.FirstOrDefault(s => s.Stat.Name == "defense")?.BaseStat ?? 0,
+                    Speed = details.Stats?.FirstOrDefault(s => s.Stat.Name == "speed")?.BaseStat ?? 0
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load Pokemon details: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void CloseDetail()
+    {
+        selectedPokemon = null;
+    }
+
+    private string GetTypeBadgeClass(string type) => type.ToLower() switch
+    {
+        "normal" => "px-2.5 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-md text-xs font-medium capitalize",
+        "fire" => "px-2.5 py-1 bg-red-50 text-red-700 border border-red-200 rounded-md text-xs font-medium capitalize",
+        "water" => "px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-xs font-medium capitalize",
+        "electric" => "px-2.5 py-1 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-md text-xs font-medium capitalize",
+        "grass" => "px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-md text-xs font-medium capitalize",
+        "ice" => "px-2.5 py-1 bg-cyan-50 text-cyan-700 border border-cyan-200 rounded-md text-xs font-medium capitalize",
+        "fighting" => "px-2.5 py-1 bg-orange-50 text-orange-700 border border-orange-200 rounded-md text-xs font-medium capitalize",
+        "poison" => "px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-md text-xs font-medium capitalize",
+        "ground" => "px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-md text-xs font-medium capitalize",
+        "flying" => "px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md text-xs font-medium capitalize",
+        "psychic" => "px-2.5 py-1 bg-pink-50 text-pink-700 border border-pink-200 rounded-md text-xs font-medium capitalize",
+        "bug" => "px-2.5 py-1 bg-lime-50 text-lime-700 border border-lime-200 rounded-md text-xs font-medium capitalize",
+        "rock" => "px-2.5 py-1 bg-stone-50 text-stone-700 border border-stone-200 rounded-md text-xs font-medium capitalize",
+        "ghost" => "px-2.5 py-1 bg-violet-50 text-violet-700 border border-violet-200 rounded-md text-xs font-medium capitalize",
+        "dragon" => "px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-300 rounded-md text-xs font-medium capitalize",
+        "dark" => "px-2.5 py-1 bg-gray-800 text-gray-100 border border-gray-700 rounded-md text-xs font-medium capitalize",
+        "steel" => "px-2.5 py-1 bg-slate-50 text-slate-700 border border-slate-200 rounded-md text-xs font-medium capitalize",
+        "fairy" => "px-2.5 py-1 bg-pink-50 text-pink-700 border border-pink-300 rounded-md text-xs font-medium capitalize",
+        _ => "px-2.5 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-md text-xs font-medium capitalize"
+    };
+
+    private string GetTypeBackgroundColor(string type) => type.ToLower() switch
+    {
+        "grass" => "bg-gradient-to-br from-green-300 to-green-200",
+        "poison" => "bg-gradient-to-br from-purple-300 to-purple-200",
+        "fire" => "bg-gradient-to-br from-red-300 to-orange-200",
+        "water" => "bg-gradient-to-br from-blue-300 to-blue-200",
+        "electric" => "bg-gradient-to-br from-yellow-300 to-yellow-200",
+        "ice" => "bg-gradient-to-br from-cyan-300 to-cyan-200",
+        "fighting" => "bg-gradient-to-br from-orange-400 to-orange-300",
+        "ground" => "bg-gradient-to-br from-amber-400 to-amber-300",
+        "flying" => "bg-gradient-to-br from-indigo-300 to-indigo-200",
+        "psychic" => "bg-gradient-to-br from-pink-300 to-pink-200",
+        "bug" => "bg-gradient-to-br from-lime-300 to-lime-200",
+        "rock" => "bg-gradient-to-br from-stone-400 to-stone-300",
+        "ghost" => "bg-gradient-to-br from-violet-400 to-violet-300",
+        "dragon" => "bg-gradient-to-br from-indigo-400 to-purple-300",
+        "dark" => "bg-gradient-to-br from-gray-700 to-gray-600",
+        "steel" => "bg-gradient-to-br from-slate-400 to-slate-300",
+        "fairy" => "bg-gradient-to-br from-pink-300 to-pink-200",
+        "normal" => "bg-gradient-to-br from-gray-300 to-gray-200",
+        _ => "bg-gradient-to-br from-gray-300 to-gray-200"
+    };
+
+    private string GetTypeChipClass(string type) => type.ToLower() switch
+    {
+        "grass" => "px-4 py-1.5 bg-green-500 text-white rounded-full text-sm font-semibold capitalize",
+        "poison" => "px-4 py-1.5 bg-purple-500 text-white rounded-full text-sm font-semibold capitalize",
+        "fire" => "px-4 py-1.5 bg-red-500 text-white rounded-full text-sm font-semibold capitalize",
+        "water" => "px-4 py-1.5 bg-blue-500 text-white rounded-full text-sm font-semibold capitalize",
+        "electric" => "px-4 py-1.5 bg-yellow-500 text-white rounded-full text-sm font-semibold capitalize",
+        "ice" => "px-4 py-1.5 bg-cyan-500 text-white rounded-full text-sm font-semibold capitalize",
+        "fighting" => "px-4 py-1.5 bg-orange-600 text-white rounded-full text-sm font-semibold capitalize",
+        "ground" => "px-4 py-1.5 bg-amber-600 text-white rounded-full text-sm font-semibold capitalize",
+        "flying" => "px-4 py-1.5 bg-indigo-500 text-white rounded-full text-sm font-semibold capitalize",
+        "psychic" => "px-4 py-1.5 bg-pink-500 text-white rounded-full text-sm font-semibold capitalize",
+        "bug" => "px-4 py-1.5 bg-lime-600 text-white rounded-full text-sm font-semibold capitalize",
+        "rock" => "px-4 py-1.5 bg-stone-600 text-white rounded-full text-sm font-semibold capitalize",
+        "ghost" => "px-4 py-1.5 bg-violet-600 text-white rounded-full text-sm font-semibold capitalize",
+        "dragon" => "px-4 py-1.5 bg-indigo-600 text-white rounded-full text-sm font-semibold capitalize",
+        "dark" => "px-4 py-1.5 bg-gray-800 text-white rounded-full text-sm font-semibold capitalize",
+        "steel" => "px-4 py-1.5 bg-slate-600 text-white rounded-full text-sm font-semibold capitalize",
+        "fairy" => "px-4 py-1.5 bg-pink-500 text-white rounded-full text-sm font-semibold capitalize",
+        "normal" => "px-4 py-1.5 bg-gray-500 text-white rounded-full text-sm font-semibold capitalize",
+        _ => "px-4 py-1.5 bg-gray-500 text-white rounded-full text-sm font-semibold capitalize"
+    };
+
+    private string GetWeaknessChipClass(string type) => type.ToLower() switch
+    {
+        "fire" => "px-3 py-1.5 bg-orange-500 text-white rounded-lg text-sm font-medium capitalize",
+        "ice" => "px-3 py-1.5 bg-cyan-400 text-white rounded-lg text-sm font-medium capitalize",
+        "psychic" => "px-3 py-1.5 bg-pink-500 text-white rounded-lg text-sm font-medium capitalize",
+        "flying" => "px-3 py-1.5 bg-indigo-400 text-white rounded-lg text-sm font-medium capitalize",
+        "water" => "px-3 py-1.5 bg-blue-500 text-white rounded-lg text-sm font-medium capitalize",
+        "grass" => "px-3 py-1.5 bg-green-500 text-white rounded-lg text-sm font-medium capitalize",
+        "electric" => "px-3 py-1.5 bg-yellow-500 text-white rounded-lg text-sm font-medium capitalize",
+        "ground" => "px-3 py-1.5 bg-amber-600 text-white rounded-lg text-sm font-medium capitalize",
+        "rock" => "px-3 py-1.5 bg-stone-600 text-white rounded-lg text-sm font-medium capitalize",
+        "fighting" => "px-3 py-1.5 bg-orange-600 text-white rounded-lg text-sm font-medium capitalize",
+        _ => "px-3 py-1.5 bg-gray-500 text-white rounded-lg text-sm font-medium capitalize"
+    };
+
+    private List<string> GetTypeWeaknesses(string type) => type.ToLower() switch
+    {
+        "grass" => new List<string> { "Fire", "Ice", "Psychic", "Flying" },
+        "poison" => new List<string> { "Ground", "Psychic" },
+        "fire" => new List<string> { "Water", "Ground", "Rock" },
+        "water" => new List<string> { "Electric", "Grass" },
+        "electric" => new List<string> { "Ground" },
+        "ice" => new List<string> { "Fire", "Fighting", "Rock", "Steel" },
+        "fighting" => new List<string> { "Flying", "Psychic", "Fairy" },
+        "ground" => new List<string> { "Water", "Grass", "Ice" },
+        "flying" => new List<string> { "Electric", "Ice", "Rock" },
+        "psychic" => new List<string> { "Bug", "Ghost", "Dark" },
+        "bug" => new List<string> { "Fire", "Flying", "Rock" },
+        "rock" => new List<string> { "Water", "Grass", "Fighting", "Ground", "Steel" },
+        "ghost" => new List<string> { "Ghost", "Dark" },
+        "dragon" => new List<string> { "Ice", "Dragon", "Fairy" },
+        "dark" => new List<string> { "Fighting", "Bug", "Fairy" },
+        "steel" => new List<string> { "Fire", "Fighting", "Ground" },
+        "fairy" => new List<string> { "Poison", "Steel" },
+        "normal" => new List<string> { "Fighting" },
+        _ => new List<string> { "Fighting" }
+    };
+
+    private List<int> GetEvolutionChain(int pokemonId)
+    {
+        // Simple evolution chains for common Pokemon (in real app, would fetch from API)
+        return pokemonId switch
+        {
+            1 => new List<int> { 1, 2, 3 }, // Bulbasaur -> Ivysaur -> Venusaur
+            2 => new List<int> { 1, 2, 3 },
+            3 => new List<int> { 1, 2, 3 },
+            4 => new List<int> { 4, 5, 6 }, // Charmander -> Charmeleon -> Charizard
+            5 => new List<int> { 4, 5, 6 },
+            6 => new List<int> { 4, 5, 6 },
+            7 => new List<int> { 7, 8, 9 }, // Squirtle -> Wartortle -> Blastoise
+            8 => new List<int> { 7, 8, 9 },
+            9 => new List<int> { 7, 8, 9 },
+            25 => new List<int> { 25, 26 }, // Pikachu -> Raichu
+            26 => new List<int> { 25, 26 },
+            _ => new List<int> { pokemonId } // Default: no evolution
+        };
+    }
+
+    private string GetPokemonSpriteUrl(int id)
+    {
+        return $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png";
+    }
+
+    // API Response Models
+    private class PokemonListResponse
+    {
+        public List<PokemonListResult> Results { get; set; } = new();
+    }
+
+    private class PokemonListResult
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+    }
+
+    private class PokemonListItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+        public string SpriteUrl { get; set; } = string.Empty;
+        public List<string>? Types { get; set; }
+        public string PrimaryType { get; set; } = string.Empty;
+    }
+
+    private class PokemonDetailResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public int Height { get; set; }
+        public int Weight { get; set; }
+        public int BaseExperience { get; set; }
+        public List<PokemonTypeSlot>? Types { get; set; }
+        public List<PokemonAbilitySlot>? Abilities { get; set; }
+        public List<PokemonStatSlot>? Stats { get; set; }
+    }
+
+    private class PokemonTypeSlot
+    {
+        public PokemonType Type { get; set; } = new();
+    }
+
+    private class PokemonType
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+
+    private class PokemonAbilitySlot
+    {
+        public PokemonAbility Ability { get; set; } = new();
+    }
+
+    private class PokemonAbility
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+
+    private class PokemonStatSlot
+    {
+        public int BaseStat { get; set; }
+        public PokemonStat Stat { get; set; } = new();
+    }
+
+    private class PokemonStat
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+
+    private class PokemonDetail
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string SpriteUrl { get; set; } = string.Empty;
+        public int Height { get; set; }
+        public int Weight { get; set; }
+        public int BaseExperience { get; set; }
+        public List<string> Types { get; set; } = new();
+        public List<string> Abilities { get; set; } = new();
+        public int Hp { get; set; }
+        public int Attack { get; set; }
+        public int Defense { get; set; }
+        public int Speed { get; set; }
+    }
+}

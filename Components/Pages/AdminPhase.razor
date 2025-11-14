@@ -14,62 +14,59 @@
 else
 {
     <div class="min-h-screen py-8">
-        <div class="w-full mx-auto px-4 max-w-4xl">
-            <div class="mb-6">
-                <a href="/admin-guide" class="text-sm text-blue-600 hover:text-blue-700 font-medium">&larr; Back to Admin
-                    phases</a>
-            </div>
+        <div class="w-full mx-auto px-4 max-w-5xl">
+            <a href="/admin-guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 text-sm sm:text-base">
+                <span>←</span> Back to Admin phases
+            </a>
 
-            <div class="mb-8">
-                <p class="text-xs sm:text-sm uppercase tracking-wide text-gray-500 mb-1 break-words">Admin Panel</p>
+            <!-- Phase header uses per-phase gradient coordinated with card palette -->
+            <div class="rounded-2xl p-5 sm:p-6 mb-8 @BlazorMock.Components.Pages.AdminGuide.PhaseGradient(phase!.Id)">
+                <div class="mb-3">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">
+                        Admin Panel
+                    </span>
+                </div>
                 <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 break-words">@phase.Title</h1>
-                <p class="text-sm sm:text-base text-gray-600 mb-1 break-words">@phase.Subtitle</p>
-                <p class="text-sm sm:text-base text-gray-700 break-words">@phase.Description</p>
+                <p class="text-sm sm:text-base text-gray-700 mb-1 break-words">@phase.Subtitle</p>
+                <p class="text-sm sm:text-base text-gray-700 mb-3 break-words">@phase.Description</p>
+                <p class="text-sm sm:text-base text-gray-800 font-semibold">
+                    Progress: @stepsInPhase.Count(s => s.IsComplete)/@stepsInPhase.Count
+                </p>
             </div>
 
-            <div class="rounded-2xl border border-purple-200 bg-purple-50 p-6 mb-8">
-                <h2 class="text-lg sm:text-xl font-semibold text-purple-900 mb-3 break-words">Steps in this phase</h2>
-
-                <ul class="space-y-3">
-                    @foreach (var step in stepsInPhase)
-                    {
-                        <li
-                            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white border border-purple-100 rounded-xl px-3 py-2">
-                            <div class="min-w-0">
-                                <p class="text-sm sm:text-base font-medium text-purple-900 break-words">
-                                    Step @step.StepNumber: @step.Title
-                                </p>
-                                @if (step.CompletedDate is not null)
-                                {
-                                    <p class="text-xs text-gray-500 break-words">Completed
-                                        @step.CompletedDate.Value.ToLocalTime().ToString("g")</p>
-                                }
+            <!-- Steps list styled closer to trucking phase cards -->
+            <div class="grid sm:grid-cols-2 gap-4">
+                @foreach (var step in stepsInPhase)
+                {
+                    bool done = step.IsComplete;
+                    <div class="bg-white rounded-2xl border border-gray-200 p-4 flex flex-col gap-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="inline-flex h-8 w-8 items-center justify-center rounded-full @(done ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600") text-sm font-semibold">
+                                    @(done ? "✓" : step.StepNumber.ToString())
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm sm:text-base font-medium text-gray-900 break-words">
+                                        @step.Title
+                                    </p>
+                                    @if (step.CompletedDate is not null)
+                                    {
+                                        <p class="text-xs text-gray-500 break-words">Completed @step.CompletedDate.Value.ToLocalTime().ToString("g")</p>
+                                    }
+                                </div>
                             </div>
-                            <div class="flex items-center gap-2 flex-shrink-0">
-                                @if (step.IsComplete)
-                                {
-                                    <span
-                                        class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs sm:text-sm font-medium">Done</span>
-                                    <button class="px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
-                                        @onclick="() => ToggleStep(step.StepNumber)">
-                                        Mark incomplete
-                                    </button>
-                                }
-                                else
-                                {
-                                    <span
-                                        class="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs sm:text-sm font-medium">Not
-                                        started</span>
-                                    <button
-                                        class="px-2 py-1 text-xs sm:text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-                                        @onclick="() => ToggleStep(step.StepNumber)">
-                                        Mark complete
-                                    </button>
-                                }
-                            </div>
-                        </li>
-                    }
-                </ul>
+                            <div class="text-gray-300 self-start">→</div>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium @(done ? "bg-green-50 text-green-700 border border-green-200" : "bg-gray-50 text-gray-700 border border-gray-200")">
+                                @(done ? "Done" : "Not started")
+                            </span>
+                            <button class="px-2 py-1 text-xs sm:text-sm rounded-lg border border-gray-300 hover:bg-gray-50" @onclick="() => ToggleStep(step.StepNumber)">
+                                @(done ? "Mark incomplete" : "Mark complete")
+                            </button>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>

@@ -47,10 +47,10 @@ public class LearningGuideService : ILearningGuideService
         // Pokemon Collector phases (projectKey = "pokemon")
         new Phase(
             Id: "pokemon-phase-1",
-            Title: "Phase 1: Call the API",
-            Subtitle: "Wire up HttpClient",
-            Description: "Connect to the Pokemon API, make a simple test call, and render a basic list.",
-            StepNumbers: new[] { 100, 101 },
+            Title: "Phase 1: Setup & API Connection",
+            Subtitle: "Foundation",
+            Description: "Set up your environment, create a clean project, and connect to the Pokemon API.",
+            StepNumbers: new[] { 0, 1, 2 },
             ProjectKey: "pokemon"
         ),
         new Phase(
@@ -58,7 +58,7 @@ public class LearningGuideService : ILearningGuideService
             Title: "Phase 2: Lists, Paging, Loading",
             Subtitle: "Make browsing feel good",
             Description: "Add paging, loading indicators, and error states while browsing Pokemon.",
-            StepNumbers: new[] { 102, 103 },
+            StepNumbers: new[] { 3, 4, 5 },
             ProjectKey: "pokemon"
         ),
         new Phase(
@@ -66,7 +66,7 @@ public class LearningGuideService : ILearningGuideService
             Title: "Phase 3: Details & Search",
             Subtitle: "Polish the experience",
             Description: "Build detail views, search, and filtering for your Pokemon collector.",
-            StepNumbers: new[] { 104 },
+            StepNumbers: new[] { 6 },
             ProjectKey: "pokemon"
         ),
 

@@ -50,6 +50,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/BlazorMock/Components/Pages/Demo/PokemonCollectorDemo.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXFBva2Vtb25Db2xsZWN0b3JEZW1vLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BlazorMock/Components/Pages/Demo/TruckingScheduleDemo.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXFRydWNraW5nU2NoZWR1bGVEZW1vLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -64,6 +68,22 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/BlazorMock/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Examples/AdminStep0Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblN0ZXAwRXhhbXBsZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Examples/AdminStep1Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblN0ZXAxRXhhbXBsZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Examples/PokemonStep0Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xQb2tlbW9uU3RlcDBFeGFtcGxlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Examples/PokemonStep1Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xQb2tlbW9uU3RlcDFFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/Examples/Step0Example.razor]
@@ -144,14 +164,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/BlazorMock/Components/Pages/Guides/PhaseDetails.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcUGhhc2VEZXRhaWxzLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/Guide/FullGuide.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZVxGdWxsR3VpZGUucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/Guide/PhaseDetails.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZVxQaGFzZURldGFpbHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/Home.razor]
