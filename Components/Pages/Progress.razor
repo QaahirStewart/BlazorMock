@@ -5,116 +5,169 @@
 <PageTitle>Learning Progress</PageTitle>
 
 <div class="min-h-screen py-8">
-    <div class="w-full mx-auto px-4">
+    <div class="w-full mx-auto px-4 max-w-6xl">
         <!-- Header -->
         <div class="text-center mb-12">
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 break-words">
                 📊 Your Learning Progress
             </h1>
             <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">
-                Track your journey through the Blazor learning path
+                Track your journey across all learning projects
             </p>
         </div>
 
-        <!-- Progress Summary Card -->
+        <!-- Trucking Project Progress -->
         <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
             <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                    <div class="min-w-0">
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">@completedCount / 14 Steps Complete</h2>
-                        <p class="text-sm sm:text-base text-gray-600 break-words">@Math.Round((completedCount / 14.0) * 100, 1)% Progress</p>
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-3xl">🚚</span>
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">Trucking Schedule App</h2>
+                        <p class="text-sm sm:text-base text-gray-600 break-words">@truckingCompletedCount / @(truckingSteps?.Count ?? 0) steps complete</p>
                     </div>
-                    <button @onclick="ResetProgress" class="px-4 py-2 border border-gray-300 text-red-700 text-sm sm:text-base rounded-lg hover:bg-red-50 whitespace-nowrap">
-                        🔄 Reset All Progress
-                    </button>
                 </div>
                 
-                <!-- Progress Bar -->
-                <div class="w-full bg-gray-200 rounded-full h-4 mb-4">
-                    <div class="bg-green-500 h-4 rounded-full transition-all duration-300" 
-                         style="width: @((completedCount / 14.0) * 100)%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                    <div class="bg-blue-500 h-3 rounded-full transition-all duration-300" 
+                         style="width: @((truckingSteps?.Count > 0 ? (truckingCompletedCount / (double)truckingSteps.Count) * 100 : 0))%"></div>
                 </div>
-                
-                @if (completedCount >= 4)
-                {
-                    <div class="flex items-center gap-2 text-green-700 bg-green-50 rounded-lg p-3">
-                        <span class="text-lg sm:text-xl">🎉</span>
-                        <span class="text-sm sm:text-base font-semibold break-words">Phase 1 Complete! Great job!</span>
-                    </div>
-                }
+
+                <div class="space-y-3">
+                    @if (truckingSteps != null)
+                    {
+                        @foreach (var step in truckingSteps)
+                        {
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    @if (step.IsComplete)
+                                    {
+                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
+                                    }
+                                    <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
+                                </div>
+                                <button @onclick="@(async () => await ToggleStep("trucking", step.StepNumber))" 
+                                        class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-blue-600 text-white hover:bg-blue-700")">
+                                    @(step.IsComplete ? "Mark incomplete" : "Mark complete")
+                                </button>
+                            </div>
+                        }
+                    }
+                </div>
             </div>
         </div>
 
-        <!-- Steps List -->
-        <div class="bg-black/3 rounded-2xl p-5 sm:p-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 break-words">All Steps</h2>
-            
-            @if (allSteps != null)
-            {
-                <div class="space-y-4">
-                    @foreach (var step in allSteps)
+        <!-- Pokemon Project Progress -->
+        <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
+            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-3xl">🟡</span>
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">Pokemon Collector</h2>
+                        <p class="text-sm sm:text-base text-gray-600 break-words">@pokemonCompletedCount / @(pokemonSteps?.Count ?? 0) steps complete</p>
+                    </div>
+                </div>
+                
+                <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                    <div class="bg-yellow-500 h-3 rounded-full transition-all duration-300" 
+                         style="width: @((pokemonSteps?.Count > 0 ? (pokemonCompletedCount / (double)pokemonSteps.Count) * 100 : 0))%"></div>
+                </div>
+
+                <div class="space-y-3">
+                    @if (pokemonSteps != null)
                     {
-                        <div class="bg-white rounded-xl p-5 border border-gray-200">
-                            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-                                <div class="flex items-center gap-4 flex-1 min-w-0">
+                        @foreach (var step in pokemonSteps)
+                        {
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
+                                <div class="flex items-center gap-3 min-w-0">
                                     @if (step.IsComplete)
                                     {
-                                        <span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-lg">✓</span>
+                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
                                     }
                                     else
                                     {
-                                        <span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 font-semibold">@step.StepNumber</span>
+                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
                                     }
-                                    
-                                    <div class="min-w-0 flex-1">
-                                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 break-words">Step @step.StepNumber: @step.Title</h3>
-                                        @if (step.IsComplete && step.CompletedDate.HasValue)
-                                        {
-                                            <p class="text-xs sm:text-sm text-gray-500 break-words">
-                                                Completed on @step.CompletedDate.Value.ToString("MMM dd, yyyy")
-                                            </p>
-                                        }
-                                    </div>
+                                    <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
                                 </div>
-                                
-                                <div class="flex items-center gap-2 flex-shrink-0 sm:ml-auto">
-                                    @if (step.IsComplete)
-                                    {
-                                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium whitespace-nowrap">Complete</span>
-                                        <button @onclick="() => ToggleStep(step.StepNumber)" 
-                                                class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 whitespace-nowrap">
-                                            Mark Incomplete
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-medium whitespace-nowrap">Not Started</span>
-                                        <button @onclick="() => ToggleStep(step.StepNumber)" 
-                                                class="px-3 py-1 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 whitespace-nowrap">
-                                            Mark Complete
-                                        </button>
-                                    }
-                                </div>
+                                <button @onclick="@(async () => await ToggleStep("pokemon", step.StepNumber))" 
+                                        class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-yellow-600 text-white hover:bg-yellow-700")">
+                                    @(step.IsComplete ? "Mark incomplete" : "Mark complete")
+                                </button>
                             </div>
-                        </div>
+                        }
                     }
                 </div>
-            }
+            </div>
         </div>
+
+        <!-- Admin Project Progress -->
+        <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
+            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-3xl">🛡️</span>
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">Admin Panel & Auth</h2>
+                        <p class="text-sm sm:text-base text-gray-600 break-words">@adminCompletedCount / @(adminSteps?.Count ?? 0) steps complete</p>
+                    </div>
+                </div>
+                
+                <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                    <div class="bg-purple-500 h-3 rounded-full transition-all duration-300" 
+                         style="width: @((adminSteps?.Count > 0 ? (adminCompletedCount / (double)adminSteps.Count) * 100 : 0))%"></div>
+                </div>
+
+                <div class="space-y-3">
+                    @if (adminSteps != null)
+                    {
+                        @foreach (var step in adminSteps)
+                        {
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    @if (step.IsComplete)
+                                    {
+                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
+                                    }
+                                    <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
+                                </div>
+                                <button @onclick="@(async () => await ToggleStep("admin", step.StepNumber))" 
+                                        class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-purple-600 text-white hover:bg-purple-700")">
+                                    @(step.IsComplete ? "Mark incomplete" : "Mark complete")
+                                </button>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
 
         <!-- Back to Home -->
         <div class="mt-8 text-center">
-            <a href="/" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+            <a href="/guide" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                 <span>←</span>
-                Back to Home
+                Back to Learning Hub
             </a>
         </div>
     </div>
 </div>
 
 @code {
-    private List<StepProgress>? allSteps;
-    private int completedCount = 0;
+    private List<StepProgress>? truckingSteps;
+    private int truckingCompletedCount = 0;
+    
+    private List<StepProgress>? pokemonSteps;
+    private int pokemonCompletedCount = 0;
+    
+    private List<StepProgress>? adminSteps;
+    private int adminCompletedCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -123,27 +176,34 @@
 
     private async Task LoadProgressAsync()
     {
-        allSteps = await ProgressService.GetAllStepsAsync();
-        completedCount = await ProgressService.GetCompletedCountAsync();
+        truckingSteps = await ProgressService.GetAllStepsAsync("trucking");
+        truckingCompletedCount = await ProgressService.GetCompletedCountAsync("trucking");
+        
+        pokemonSteps = await ProgressService.GetAllStepsAsync("pokemon");
+        pokemonCompletedCount = await ProgressService.GetCompletedCountAsync("pokemon");
+        
+        adminSteps = await ProgressService.GetAllStepsAsync("admin");
+        adminCompletedCount = await ProgressService.GetCompletedCountAsync("admin");
     }
 
-    private async Task ToggleStep(int stepNumber)
+    private async Task ToggleStep(string projectKey, int stepNumber)
     {
-        var step = allSteps?.FirstOrDefault(s => s.StepNumber == stepNumber);
+        var step = projectKey switch
+        {
+            "trucking" => truckingSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
+            "pokemon" => pokemonSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
+            "admin" => adminSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
+            _ => null
+        };
+
         if (step != null)
         {
             if (step.IsComplete)
-                await ProgressService.MarkStepIncompleteAsync(stepNumber);
+                await ProgressService.MarkStepIncompleteAsync(projectKey, stepNumber);
             else
-                await ProgressService.MarkStepCompleteAsync(stepNumber);
+                await ProgressService.MarkStepCompleteAsync(projectKey, stepNumber);
 
             await LoadProgressAsync();
         }
-    }
-
-    private async Task ResetProgress()
-    {
-        await ProgressService.ResetAllProgressAsync();
-        await LoadProgressAsync();
     }
 }

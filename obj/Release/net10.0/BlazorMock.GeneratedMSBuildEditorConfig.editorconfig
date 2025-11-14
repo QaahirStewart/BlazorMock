@@ -42,6 +42,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pbkd1aWRlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/BlazorMock/Components/Pages/AdminPhase.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblBoYXNlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BlazorMock/Components/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -126,8 +130,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xTdGVwOUV4YW1wbGUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Guide.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZS5yYXpvcg==
+[D:/BlazorMock/Components/Pages/GuideHub.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZUh1Yi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/Guides/Demos.razor]
@@ -160,6 +164,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/BlazorMock/Components/Pages/PokemonGuide.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQb2tlbW9uR3VpZGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/PokemonPhase.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQb2tlbW9uUGhhc2UucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/Progress.razor]

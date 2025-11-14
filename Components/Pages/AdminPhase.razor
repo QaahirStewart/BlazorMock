@@ -1,0 +1,137 @@
+@page "/admin-guide/phase/{Id}"
+@inject ILearningProgressService ProgressService
+@inject ILearningGuideService GuideService
+@rendermode InteractiveServer
+
+<PageTitle>Admin Phase</PageTitle>
+
+@if (phase is null || stepsInPhase is null)
+{
+    <div class="min-h-screen flex items-center justify-center">
+        <p class="text-gray-600 text-sm sm:text-base">Loading phase&hellip;</p>
+    </div>
+}
+else
+{
+    <div class="min-h-screen py-8">
+        <div class="w-full mx-auto px-4 max-w-4xl">
+            <div class="mb-6">
+                <a href="/admin-guide" class="text-sm text-blue-600 hover:text-blue-700 font-medium">&larr; Back to Admin
+                    phases</a>
+            </div>
+
+            <div class="mb-8">
+                <p class="text-xs sm:text-sm uppercase tracking-wide text-gray-500 mb-1 break-words">Admin Panel</p>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 break-words">@phase.Title</h1>
+                <p class="text-sm sm:text-base text-gray-600 mb-1 break-words">@phase.Subtitle</p>
+                <p class="text-sm sm:text-base text-gray-700 break-words">@phase.Description</p>
+            </div>
+
+            <div class="rounded-2xl border border-purple-200 bg-purple-50 p-6 mb-8">
+                <h2 class="text-lg sm:text-xl font-semibold text-purple-900 mb-3 break-words">Steps in this phase</h2>
+
+                <ul class="space-y-3">
+                    @foreach (var step in stepsInPhase)
+                    {
+                        <li
+                            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white border border-purple-100 rounded-xl px-3 py-2">
+                            <div class="min-w-0">
+                                <p class="text-sm sm:text-base font-medium text-purple-900 break-words">
+                                    Step @step.StepNumber: @step.Title
+                                </p>
+                                @if (step.CompletedDate is not null)
+                                {
+                                    <p class="text-xs text-gray-500 break-words">Completed
+                                        @step.CompletedDate.Value.ToLocalTime().ToString("g")</p>
+                                }
+                            </div>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                @if (step.IsComplete)
+                                {
+                                    <span
+                                        class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs sm:text-sm font-medium">Done</span>
+                                    <button class="px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+                                        @onclick="() => ToggleStep(step.StepNumber)">
+                                        Mark incomplete
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span
+                                        class="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs sm:text-sm font-medium">Not
+                                        started</span>
+                                    <button
+                                        class="px-2 py-1 text-xs sm:text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                                        @onclick="() => ToggleStep(step.StepNumber)">
+                                        Mark complete
+                                    </button>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    private Phase? phase;
+    private List<StepProgress>? allSteps;
+    private List<StepProgress>? stepsInPhase;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Id))
+        {
+            return;
+        }
+
+        phase = GuideService.GetPhaseById("admin", Id);
+        allSteps = await ProgressService.GetAllStepsAsync("admin");
+
+        if (phase is not null && allSteps is not null)
+        {
+            stepsInPhase = allSteps
+            .Where(s => phase.StepNumbers.Contains(s.StepNumber))
+            .OrderBy(s => s.StepNumber)
+            .ToList();
+        }
+    }
+
+    private async Task ToggleStep(int stepNumber)
+    {
+        if (allSteps is null)
+        {
+            return;
+        }
+
+        var step = allSteps.FirstOrDefault(s => s.StepNumber == stepNumber);
+        if (step is null)
+        {
+            return;
+        }
+
+        if (step.IsComplete)
+        {
+            await ProgressService.MarkStepIncompleteAsync("admin", stepNumber);
+        }
+        else
+        {
+            await ProgressService.MarkStepCompleteAsync("admin", stepNumber);
+        }
+
+        allSteps = await ProgressService.GetAllStepsAsync("admin");
+
+        if (phase is not null && allSteps is not null)
+        {
+            stepsInPhase = allSteps
+            .Where(s => phase.StepNumbers.Contains(s.StepNumber))
+            .OrderBy(s => s.StepNumber)
+            .ToList();
+        }
+    }
+}

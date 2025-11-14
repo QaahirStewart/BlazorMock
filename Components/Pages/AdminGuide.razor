@@ -1,5 +1,4 @@
 @page "/admin-guide"
-@namespace BlazorMock.Pages
 @inject ILearningProgressService ProgressService
 @inject ILearningGuideService GuideService
 @rendermode InteractiveServer
@@ -12,13 +11,6 @@
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 break-words">
                 🛡️ Admin Panel & Authentication Guide
             </h1>
-            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed break-words">
-                Learn how to add authentication, authorization, and protected UI to a Blazor app using an admin panel.
-            </p>
-            <p class="text-sm sm:text-base text-gray-500 max-w-2xl mx-auto break-words">
-                This guide focuses on login flows, guarding routes, role-based UI, and keeping user state secure in a
-                Blazor application.
-            </p>
         </div>
 
         <!-- Progress summary -->
@@ -30,81 +22,89 @@
             </p>
         </div>
 
-        <div class="rounded-2xl border border-gray-200 bg-white p-6 mb-8">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 break-words">What you'll build</h2>
-            <p class="text-sm sm:text-base text-gray-700 mb-3 break-words">
-                A simple admin dashboard with a login experience, a protected area for admins only, and a couple of
-                management pages.
-                You can wire this up to a real identity provider later, but the focus here is understanding Blazor-side
-                patterns.
-            </p>
-            <ul class="list-disc ml-5 text-sm sm:text-base text-gray-700 space-y-1">
-                <li>Create a basic login form and track authenticated state.</li>
-                <li>Protect pages using route guards and conditional rendering.</li>
-                <li>Show/hide nav links and actions based on roles or permissions.</li>
-                <li>Handle sign-out and clearing sensitive state correctly.</li>
-            </ul>
+        <div class="text-sm text-gray-600 text-center">
+            <a href="/guide" class="text-blue-600 hover:text-blue-700 font-medium">← Back to all learning projects</a>
+        </div>
+        <!-- Learning Phases banner -->
+        <div class="bg-gradient-to-r from-gray-100 to-purple-100 rounded-2xl p-5 mt-12">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">🔰 Learning Phases</h2>
+            <p class="text-sm sm:text-base text-gray-700 break-words">Pick a phase to focus. Each card links to steps
+                with examples.</p>
         </div>
 
-        <div class="rounded-2xl border border-purple-200 bg-purple-50 p-6 mb-8">
-            <h2 class="text-xl sm:text-2xl font-semibold text-purple-900 mb-3 break-words">Phases &amp; steps</h2>
-            @if (_phases is null || _steps is null)
+        <!-- Phase cards grid -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10 max-w-6xl mx-auto"
+            hidden="@(_phases is null || _steps is null)">
+            @if (_phases is not null && _steps is not null)
             {
-                <p class="text-sm sm:text-base text-purple-900 break-words">Loading phases...</p>
-            }
-            else
-            {
-                @foreach (var phase in _phases)
+                @foreach (var ph in _phases)
                 {
-                    <div class="mb-6 pb-4 border-b border-purple-100 last:border-b-0 last:pb-0">
-                        <h3 class="text-lg sm:text-xl font-semibold text-purple-900 mb-1 break-words">@phase.Title</h3>
-                        @if (!string.IsNullOrWhiteSpace(phase.Subtitle))
-                        {
-                            <p class="text-sm sm:text-base text-purple-800 mb-2 break-words">@phase.Subtitle</p>
-                        }
-
-                        <ul class="space-y-2">
-                            @foreach (var stepNumber in phase.StepNumbers)
-                            {
-                                var step = _steps.FirstOrDefault(s => s.StepNumber == stepNumber);
-                                if (step is null)
-                                {
-                                    continue;
-                                }
-
-                                var isComplete = step.IsComplete;
-
-                                <li class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-white/60 rounded-xl px-3 py-2">
-                                    <div>
-                                        <p class="text-sm sm:text-base font-medium text-purple-900 break-words">
-                                            Step @step.StepNumber: @step.Title
-                                        </p>
-                                        <p class="text-xs sm:text-sm text-purple-700 break-words">
-                                            @if (isComplete)
-                                            {
-                                                <span>✅ Done</span>
-                                            }
-                                            else
-                                            {
-                                                <span>Not started yet</span>
-                                            }
-                                        </p>
+                    var count = _steps.Count(s => s.IsComplete && ph.StepNumbers.Contains(s.StepNumber));
+                    <a href="@($"/admin-guide/phase/{ph.Id}")"
+                        class="rounded-2xl p-0 bg-white border-2 border-gray-200 hover:shadow-lg transition-all text-left block">
+                        <div class="p-8">
+                            <div class="flex items-start justify-between gap-4 mb-3">
+                                <div class="min-w-0">
+                                    <div
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200 mb-2">
+                                        @ph.Subtitle
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <button class="px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium border transition-colors @(isComplete ? "border-purple-300 bg-purple-100 text-purple-900 hover:bg-purple-200" : "border-purple-500 bg-purple-600 text-white hover:bg-purple-700")" @onclick="() => ToggleStep(step.StepNumber)">
-                                            @(isComplete ? "Mark incomplete" : "Mark complete")
-                                        </button>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-1 break-words">@ph.Title</h3>
+                                    <p class="text-sm sm:text-base text-gray-700 leading-relaxed break-words">@ph.Description
+                                    </p>
+                                </div>
+                                <div class="text-gray-400 self-start">→</div>
+                            </div>
+                            <div class="text-sm text-gray-600">Progress: @count/@ph.StepNumbers.Length</div>
+                        </div>
+                    </a>
                 }
             }
         </div>
 
-        <div class="text-sm text-gray-600 text-center">
-            <a href="/guide" class="text-blue-600 hover:text-blue-700 font-medium">← Back to all learning projects</a>
+        <!-- Learning resources / overall progress -->
+        <div class="bg-black/3 rounded-2xl">
+            <div class="bg-black/90 rounded-2xl p-5 sm:p-6 text-white">
+                <p class="text-lg sm:text-xl font-semibold mb-4 text-center break-words">📚 Learning Resources
+                </p>
+
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                    <a href="/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl flex-shrink-0">📊</span>
+                            <div class="min-w-0">
+                                <div class="text-sm sm:text-base font-semibold break-words">Project Progress</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">View all steps & completion
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/tips" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl flex-shrink-0">💡</span>
+                            <div class="min-w-0">
+                                <div class="text-sm sm:text-base font-semibold break-words">Tips System</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">Browse Blazor & C# topics
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/guide" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl flex-shrink-0">🏠</span>
+                            <div class="min-w-0">
+                                <div class="text-sm sm:text-base font-semibold break-words">All Learning Projects</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">Back to the project hub
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="text-center text-xs sm:text-sm text-gray-300 break-words" hidden="@(_steps is null)">
+                    <strong>Progress:</strong> @_completedCount / @(_steps?.Count ?? 0) steps complete
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -121,29 +121,5 @@
         _phases = GuideService.GetPhases("admin");
     }
 
-    private async Task ToggleStep(int stepNumber)
-    {
-        if (_steps is null)
-        {
-            return;
-        }
-
-        var step = _steps.FirstOrDefault(s => s.StepNumber == stepNumber);
-        if (step is null)
-        {
-            return;
-        }
-
-        if (step.IsComplete)
-        {
-            await ProgressService.MarkStepIncompleteAsync("admin", stepNumber);
-        }
-        else
-        {
-            await ProgressService.MarkStepCompleteAsync("admin", stepNumber);
-        }
-
-        _steps = await ProgressService.GetAllStepsAsync("admin");
-        _completedCount = await ProgressService.GetCompletedCountAsync("admin");
-    }
+    // Removed ToggleStep method as part of the refactor
 }
