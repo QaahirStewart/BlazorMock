@@ -1,0 +1,149 @@
+@page "/admin-guide"
+@namespace BlazorMock.Pages
+@inject ILearningProgressService ProgressService
+@inject ILearningGuideService GuideService
+@rendermode InteractiveServer
+
+<PageTitle>Admin Panel Guide</PageTitle>
+
+<div class="min-h-screen py-8">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 break-words">
+                🛡️ Admin Panel & Authentication Guide
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed break-words">
+                Learn how to add authentication, authorization, and protected UI to a Blazor app using an admin panel.
+            </p>
+            <p class="text-sm sm:text-base text-gray-500 max-w-2xl mx-auto break-words">
+                This guide focuses on login flows, guarding routes, role-based UI, and keeping user state secure in a
+                Blazor application.
+            </p>
+        </div>
+
+        <!-- Progress summary -->
+        <div class="rounded-2xl border border-green-200 bg-green-50 p-6 mb-8" hidden="@(_steps is null)">
+            <h2 class="text-xl sm:text-2xl font-semibold text-green-900 mb-2 break-words">Your Admin Project Progress
+            </h2>
+            <p class="text-sm sm:text-base text-green-900 mb-2 break-words">
+                Progress: @_completedCount / @(_steps?.Count ?? 0) steps complete
+            </p>
+        </div>
+
+        <div class="rounded-2xl border border-gray-200 bg-white p-6 mb-8">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 break-words">What you'll build</h2>
+            <p class="text-sm sm:text-base text-gray-700 mb-3 break-words">
+                A simple admin dashboard with a login experience, a protected area for admins only, and a couple of
+                management pages.
+                You can wire this up to a real identity provider later, but the focus here is understanding Blazor-side
+                patterns.
+            </p>
+            <ul class="list-disc ml-5 text-sm sm:text-base text-gray-700 space-y-1">
+                <li>Create a basic login form and track authenticated state.</li>
+                <li>Protect pages using route guards and conditional rendering.</li>
+                <li>Show/hide nav links and actions based on roles or permissions.</li>
+                <li>Handle sign-out and clearing sensitive state correctly.</li>
+            </ul>
+        </div>
+
+        <div class="rounded-2xl border border-purple-200 bg-purple-50 p-6 mb-8">
+            <h2 class="text-xl sm:text-2xl font-semibold text-purple-900 mb-3 break-words">Phases &amp; steps</h2>
+            @if (_phases is null || _steps is null)
+            {
+                <p class="text-sm sm:text-base text-purple-900 break-words">Loading phases...</p>
+            }
+            else
+            {
+                @foreach (var phase in _phases)
+                {
+                    <div class="mb-6 pb-4 border-b border-purple-100 last:border-b-0 last:pb-0">
+                        <h3 class="text-lg sm:text-xl font-semibold text-purple-900 mb-1 break-words">@phase.Title</h3>
+                        @if (!string.IsNullOrWhiteSpace(phase.Subtitle))
+                        {
+                            <p class="text-sm sm:text-base text-purple-800 mb-2 break-words">@phase.Subtitle</p>
+                        }
+
+                        <ul class="space-y-2">
+                            @foreach (var stepNumber in phase.StepNumbers)
+                            {
+                                var step = _steps.FirstOrDefault(s => s.StepNumber == stepNumber);
+                                if (step is null)
+                                {
+                                    continue;
+                                }
+
+                                var isComplete = step.IsComplete;
+
+                                <li class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-white/60 rounded-xl px-3 py-2">
+                                    <div>
+                                        <p class="text-sm sm:text-base font-medium text-purple-900 break-words">
+                                            Step @step.StepNumber: @step.Title
+                                        </p>
+                                        <p class="text-xs sm:text-sm text-purple-700 break-words">
+                                            @if (isComplete)
+                                            {
+                                                <span>✅ Done</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Not started yet</span>
+                                            }
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button class="px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium border transition-colors @(isComplete ? "border-purple-300 bg-purple-100 text-purple-900 hover:bg-purple-200" : "border-purple-500 bg-purple-600 text-white hover:bg-purple-700")" @onclick="() => ToggleStep(step.StepNumber)">
+                                            @(isComplete ? "Mark incomplete" : "Mark complete")
+                                        </button>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="text-sm text-gray-600 text-center">
+            <a href="/guide" class="text-blue-600 hover:text-blue-700 font-medium">← Back to all learning projects</a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<StepProgress>? _steps;
+    private int _completedCount;
+    private IReadOnlyList<Phase>? _phases;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _steps = await ProgressService.GetAllStepsAsync("admin");
+        _completedCount = await ProgressService.GetCompletedCountAsync("admin");
+        _phases = GuideService.GetPhases("admin");
+    }
+
+    private async Task ToggleStep(int stepNumber)
+    {
+        if (_steps is null)
+        {
+            return;
+        }
+
+        var step = _steps.FirstOrDefault(s => s.StepNumber == stepNumber);
+        if (step is null)
+        {
+            return;
+        }
+
+        if (step.IsComplete)
+        {
+            await ProgressService.MarkStepIncompleteAsync("admin", stepNumber);
+        }
+        else
+        {
+            await ProgressService.MarkStepCompleteAsync("admin", stepNumber);
+        }
+
+        _steps = await ProgressService.GetAllStepsAsync("admin");
+        _completedCount = await ProgressService.GetCompletedCountAsync("admin");
+    }
+}

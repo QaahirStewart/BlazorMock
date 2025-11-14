@@ -4,129 +4,140 @@
 @inject ILearningGuideService GuideService
 @rendermode InteractiveServer
 
-<PageTitle>Blazor Learning Guide</PageTitle>
+<PageTitle>Blazor Learning Projects</PageTitle>
 
 <div class="min-h-screen py-8">
     <div class="w-full mx-auto px-4 max-w-5xl">
         <!-- Header Section -->
         <div class="text-center mb-12">
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 break-words">
-                📚 Blazor Learning Guide
+                📚 Blazor Learning Projects
             </h1>
             <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed break-words">
-                Step-by-step guide to building a Trucking Schedule App
+                Three guided mini-projects to learn Blazor by doing: trucking app, Pokémon collector, and admin panel.
             </p>
-            @if (completedCount >= 4)
-            {
-                <div class="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-2">
-                    <span class="text-sm sm:text-base text-green-600 font-semibold">Phase 1 Complete!</span>
-                    <span class="text-sm sm:text-base text-green-600">✓ Steps 1-4</span>
-                </div>
-            }
         </div>
 
 
 
-        @* Removed: Today's Information card *@
 
-        @* Needs to Move to full Learning Guide *@
-
-        <!-- What You'll Learn Overview -->
-        @* <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
-            <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 flex items-center break-words">
-                <span class="mr-2">🎯</span>
-                What You'll Learn
-            </h3>
-            <div class="grid sm:grid-cols-1 gap-3 sm:gap-4">
-                <div class="space-y-3">
-                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
-                        <span
-                            class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
-                        <span class="text-sm sm:text-base text-gray-800 break-words">Blazor Server components and
-                            routing</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
-                        <span
-                            class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
-                        <span class="text-sm sm:text-base text-gray-800 break-words">Forms and validation</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
-                        <span
-                            class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
-                        <span class="text-sm sm:text-base text-gray-800 break-words">Entity Framework Core</span>
-                    </div>
-                </div>
-                <div class="space-y-3">
-                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
-                        <span
-                            class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
-                        <span class="text-sm sm:text-base text-gray-800 break-words">Driver and truck management</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 rounded-2xl border border-gray-200 bg-white">
-                        <span
-                            class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs">•</span>
-                        <span class="text-sm sm:text-base text-gray-800 break-words">Route scheduling and
-                            assignments</span>
-                    </div>
-                </div>
-            </div>
-        </div> *@
-
-        @* Moved: Step 0 and demos to /guide/demos *@
-
-        <!-- Phases Hub -->
-        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5  mt-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">🔰 Learning Phases</h2>
-            <p class="text-sm sm:text-base text-gray-700 break-words">Pick a phase to focus. Each card links to steps
-                with examples.</p>
+        <!-- Projects Hub -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 mt-12">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">🔰 Choose Your Learning Project
+            </h2>
+            <p class="text-sm sm:text-base text-gray-700 break-words">Each mini-project focuses on a different slice of
+                Blazor: CRUD + EF, APIs, or authentication.</p>
         </div>
 
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10 max-w-6xl mx-auto">
-            @foreach (var ph in GuideService.GetPhases())
-            {
-                var count = steps.Count(s => s.IsComplete && ph.StepNumbers.Contains(s.StepNumber));
-                <a href="@($"/guide/phase/{ph.Id}")"
-                    class="@($"rounded-2xl p-0 bg-white border-2 border-gray-200 hover:shadow-lg transition-all text-left {PhaseHoverBorder(ph.Id)}")">
-                    <div></div>
-                    <div class="p-8">
-                        <div class="flex items-start justify-between gap-4 mb-3">
-                            <div class="min-w-0">
+        <div class="grid sm:grid-cols-1 md:grid-cols-3 gap-6 my-10 max-w-6xl mx-auto">
+            <!-- Trucking Schedule App -->
+            <a href="/trucking-guide"
+                class="rounded-2xl p-0 bg-white border-2 border-gray-200 hover:shadow-lg transition-all text-left">
+                <div class="p-6 flex flex-col h-full">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="min-w-0 flex flex-col">
+                            <div class="flex items-start gap-2 mb-2">
                                 <div
-                                    class="@($"inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {PhasePillColors(ph.Id)} mb-2")">
-                                    @ph.Subtitle</div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-1 break-words">@ph.Title</h3>
-                                <p class="text-sm sm:text-base text-gray-700 leading-relaxed break-words">@ph.Description
-                                </p>
+                                    class="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-2xl">
+                                    <span aria-hidden="true">🚚</span>
+                                </div>
+                                <div
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                    Trucking App
+                                </div>
                             </div>
-                            <div class="text-gray-400 self-start">→</div>
+
+                            <h3 class="text-xl font-bold text-gray-900 mb-1 break-words">Trucking Schedule App</h3>
+                            <p class="text-sm sm:text-base text-gray-700 leading-relaxed break-words">
+                                Learn core Blazor patterns by building a CRUD app with drivers, trucks, and routes using
+                                Entity Framework Core.
+                            </p>
                         </div>
-                        <div class="text-sm text-gray-600">Progress: @count/@ph.StepNumbers.Length</div>
                     </div>
-                </a>
-            }
+                    <div class="mt-auto text-sm text-gray-600">
+                        <p class="mt-1 text-xs sm:text-sm text-gray-500">Focus: CRUD, EF Core, forms</p>
+                        <div class="flex items-center justify-between">
+                            <span>Progress: @completedCount/14</span>
+
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Pokémon Collector App -->
+            <a href="/pokemon-guide"
+                class="rounded-2xl p-0 bg-white border-2 border-gray-200 hover:shadow-lg transition-all text-left">
+                <div class="p-6 flex flex-col h-full">
+                    <div class="flex items-start gap-4 mb-4">
+
+                        <div class="min-w-0 flex flex-col">
+                            <div class="flex  items-start gap-2 mb-2">
+                                <div
+                                    class="flex-shrink-0 w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center text-2xl">
+                                    <span aria-hidden="true">🎮</span>
+                                </div>
+                                <div
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 border border-yellow-200 mb-1">
+                                    Pokemon Collector
+                                </div>
+                            </div>
+
+                            <h3 class="text-xl font-bold text-gray-900 mb-1 break-words">Pokémon Collector</h3>
+                            <p class="text-sm sm:text-base text-gray-700 leading-relaxed break-words">
+                                Practice calling external APIs, handling loading/error states, search, filtering, and
+                                basic client-side state.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-auto text-sm text-gray-600">
+
+                        <p class="mt-1 text-xs sm:text-sm text-gray-500">Focus: HTTP APIs, state, UI patterns</p>
+                        <div class="flex items-center justify-between">
+                            <span>Progress:
+                                @pokemonCompletedCount/@ProgressService.GetAllStepsAsync("pokemon").Result.Count</span>
+
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Admin Panel App -->
+            <a href="/admin-guide"
+                class="rounded-2xl p-0 bg-white border-2 border-gray-200 hover:shadow-lg transition-all text-left">
+                <div class="p-6 flex flex-col h-full">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="min-w-0 flex flex-col">
+                            <div class="flex items-start gap-2 mb-2">
+                                <div
+                                    class="flex-shrink-0 w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-2xl">
+                                    <span aria-hidden="true">🛡️</span>
+                                </div>
+                                <div
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200 mb-1">
+                                    Admin Panel
+                                </div>
+                            </div>
+
+                            <h3 class="text-xl font-bold text-gray-900 mb-1 break-words">Admin Panel & Auth</h3>
+                            <p class="text-sm sm:text-base text-gray-700 leading-relaxed break-words">
+                                Build a simple admin dashboard while learning authentication, authorization, and
+                                protected routes in Blazor.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-auto text-sm text-gray-600">
+                        <p class="mt-1 text-xs sm:text-sm text-gray-500">Focus: Auth, roles, protected UI</p>
+                        <div class="flex items-center justify-between">
+                            <span>Progress:
+                                @adminCompletedCount/@ProgressService.GetAllStepsAsync("admin").Result.Count</span>
+
+                        </div>
+                    </div>
+                </div>
+            </a>
         </div>
 
-        <!-- Demos CTA -->
-        @* <div class="rounded-2xl p-5 border border-gray-200 bg-white mb-8">
-            <div class="flex items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-lg sm:text-xl font-semibold text-gray-900">Hands-on Demos</h3>
-                    <p class="text-sm text-gray-600">All step demos (0–13) have moved to the demos hub.</p>
-                </div>
-                <a href="/guide/demos"
-                    class="px-3 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm">Open demos →</a>
-            </div>
-        </div> *@
 
-        @* Moved: Phase 1 preview cards to /guide/demos *@
-
-        @* Moved: Quick demo to /guide/demos *@
-
-        @* Moved: Reusable components demo to /guide/demos *@
-
-        @* Moved: Event Binding demo to /guide/demos *@
-
-        @* Moved: Forms & Validation demo to /guide/demos *@
         <!-- Quick Links Section -->
         <div class="bg-black/3 rounded-2xl ">
 
@@ -135,12 +146,14 @@
                 </p>
 
                 <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                    <a href="/demo/trucking-schedule" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                    <a href="/demo/trucking-schedule"
+                        class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
                         <div class="flex items-center gap-3">
                             <span class="text-2xl flex-shrink-0">📖</span>
                             <div class="min-w-0">
                                 <div class="text-sm sm:text-base font-semibold break-words">Trucking Schedule Demo</div>
-                                <div class="text-xs sm:text-sm text-gray-300 break-words">Finished product: routes, drivers, trucks</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">Finished product: routes,
+                                    drivers, trucks</div>
                             </div>
                         </div>
                     </a>
@@ -179,11 +192,17 @@
 @code {
     private List<StepProgress> steps = new();
     private int completedCount = 0;
+    private int pokemonCompletedCount = 0;
+    private int adminCompletedCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
         steps = (await ProgressService.GetAllStepsAsync()).ToList();
         completedCount = await ProgressService.GetCompletedCountAsync();
+
+        // Project-specific progress for hub cards
+        pokemonCompletedCount = await ProgressService.GetCompletedCountAsync("pokemon");
+        adminCompletedCount = await ProgressService.GetCompletedCountAsync("admin");
     }
 
     // Phase card styling helpers to match Tips page feel and keep phase color accents
