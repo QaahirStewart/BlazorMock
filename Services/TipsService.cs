@@ -972,6 +972,567 @@ public class HttpAndDataTipsContributor : ITipsContributor
             LongELI5 = "\n\nStateHasChanged is like tapping someone on the shoulder to say 'hey, things changed, take a look.'\n\nBlazor automatically re-renders after:\n- @onclick and other event handlers\n- OnInitializedAsync completes\n- Parameter changes from parent\n\nBut Blazor DOESN'T automatically re-render after:\n- Timer.Elapsed events\n- Task.Run background work\n- External event subscriptions (SignalR, etc.)\n\nIn those cases, you call StateHasChanged() to say 'I updated state, please redraw the UI.'\n\nExample without StateHasChanged (BROKEN):\n```csharp\nprotected override void OnInitialized()\n{\n    var timer = new Timer(1000);\n    timer.Elapsed += (s, e) => {\n        count++;  // State changes, but UI doesn't update!\n    };\n    timer.Start();\n}\n```\n\nFixed:\n```csharp\ntimer.Elapsed += async (s, e) => {\n    await InvokeAsync(() => {\n        count++;\n        StateHasChanged();  // Now UI updates!\n    });\n};\n```\n\nNote: Use InvokeAsync when calling from a background thread to avoid threading issues.",
             ELI5Example = "// Example: Manual retry button\nprivate async Task RetryLoad()\n{\n    await OnInitializedAsync();  // Re-fetch data\n    StateHasChanged();  // Tell Blazor to redraw with new data\n}\n\n// Example: Timer updating UI\nprivate int seconds;\nprivate Timer? _timer;\n\nprotected override void OnInitialized()\n{\n    _timer = new Timer(1000);\n    _timer.Elapsed += async (s, e) => {\n        await InvokeAsync(() => {\n            seconds++;\n            StateHasChanged();\n        });\n    };\n    _timer.Start();\n}\n\npublic void Dispose() => _timer?.Dispose();"
         };
+
+        yield return new TipTopic(
+            Title: "Tailwind Responsive Grid",
+            Category: "Styling — CSS",
+            Type: "Utility",
+            ELI5: "Use responsive grid-cols-* classes to create grids that adapt from mobile to desktop.",
+            Example: "<div class=\"grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5\">\n    <!-- Cards -->\n</div>",
+            Tips: new[] {
+                "Default (no prefix) applies to all screen sizes, sm: for 640px+, md: for 768px+, lg: for 1024px+.",
+                "Start mobile-first: grid-cols-2 (base) then scale up with sm:, md:, lg: prefixes.",
+                "Combine with gap-* for consistent spacing between grid items."
+            }
+        )
+        {
+            LongELI5 = "\n\nTailwind's responsive grid is like building blocks that rearrange themselves based on screen size.\n\nHow it works:\n- Mobile (small screens): grid-cols-2 shows 2 columns\n- Tablet (sm: 640px+): sm:grid-cols-3 shows 3 columns\n- Small laptop (md: 768px+): md:grid-cols-4 shows 4 columns\n- Large screens (lg: 1024px+): lg:grid-cols-5 shows 5 columns\n\nMobile-first approach:\nTailwind applies styles from smallest screen up. Each breakpoint overrides the previous one:\n```html\n<div class=\"grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4\">\n```\n\nThis means:\n- 0-639px: 2 columns (grid-cols-2)\n- 640-767px: 3 columns (sm:grid-cols-3 overrides)\n- 768px+: 4 columns (md:grid-cols-4 overrides)\n\nBreakpoint reference:\n- sm: 640px (tablets)\n- md: 768px (small laptops)\n- lg: 1024px (desktops)\n- xl: 1280px (large desktops)\n- 2xl: 1536px (ultra-wide)\n\nCommon patterns:\n- Cards: grid-cols-1 sm:grid-cols-2 lg:grid-cols-3\n- Thumbnails: grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6\n- Dashboard: grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+            ELI5Example = "// Pokemon grid that adapts to screen size\n<div class=\"grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4\">\n    @foreach (var pokemon in allPokemon)\n    {\n        <div class=\"border rounded-lg p-4\">\n            <img src=\"@pokemon.SpriteUrl\" alt=\"@pokemon.Name\" />\n            <p>@pokemon.Name</p>\n        </div>\n    }\n</div>\n\n// Result:\n// Mobile: 2 cards per row\n// Tablet: 3 cards per row\n// Laptop: 4 cards per row\n// Desktop: 5 cards per row"
+        };
+
+        yield return new TipTopic(
+            Title: "Tailwind Hover Effects",
+            Category: "Styling — CSS",
+            Type: "Utility",
+            ELI5: "Add hover: prefix to any utility class to apply it only when hovering over an element.",
+            Example: "<button class=\"bg-blue-600 hover:bg-blue-700\">Hover me</button>",
+            Tips: new[] {
+                "Common hover patterns: hover:bg-*, hover:text-*, hover:border-*, hover:shadow-lg.",
+                "Combine with transition-* for smooth animations.",
+                "Works on any element, not just buttons."
+            }
+        )
+        {
+            LongELI5 = "\n\nHover effects are like magic tricks that happen when you move your mouse over something. In Tailwind, just add hover: before any utility class.\n\nCommon hover effects:\n\n**Background color changes:**\n```html\n<div class=\"bg-blue-500 hover:bg-blue-700\">Darkens on hover</div>\n```\n\n**Border and shadow:**\n```html\n<div class=\"border border-gray-200 hover:border-blue-400 hover:shadow-lg\">\n    Card lifts on hover\n</div>\n```\n\n**Text color:**\n```html\n<a class=\"text-blue-600 hover:text-blue-800\">Link</a>\n```\n\n**Scale (grow/shrink):**\n```html\n<img class=\"hover:scale-110 transition-transform\" />\n```\n\n**Multiple effects at once:**\n```html\n<button class=\"bg-green-600 hover:bg-green-700 \n               text-white hover:shadow-lg \n               transition-all\">\n    Click me\n</button>\n```\n\nWhy use transitions:\nWithout transition-*, changes are instant and jarring. With it, changes are smooth:\n```html\n<div class=\"bg-blue-500 hover:bg-blue-700 transition-colors\">\n    Smooth color fade\n</div>\n```\n\ntransition-* options:\n- transition-colors: Just colors\n- transition-all: Everything (color, size, shadow, etc.)\n- transition-transform: Just scale, rotate, etc.\n- transition-opacity: Just opacity",
+            ELI5Example = "// Pokemon card with hover effects\n<div class=\"border border-gray-200 rounded-lg p-4 \n            hover:border-blue-400 hover:shadow-lg \n            transition-all cursor-pointer\">\n    <img src=\"@pokemon.SpriteUrl\" \n         class=\"hover:scale-110 transition-transform\" />\n    <p class=\"text-gray-800 hover:text-blue-600 transition-colors\">\n        @pokemon.Name\n    </p>\n</div>\n\n// Result: Card border turns blue, shadow appears, image grows slightly, text turns blue"
+        };
+
+        yield return new TipTopic(
+            Title: "Tailwind Transitions",
+            Category: "Styling — CSS",
+            Type: "Utility",
+            ELI5: "Add smooth animations to property changes with transition-* classes.",
+            Example: "<button class=\"bg-blue-600 hover:bg-blue-700 transition-colors\">Smooth</button>",
+            Tips: new[] {
+                "transition-all animates all properties, but can be heavy—prefer specific transitions.",
+                "transition-colors for background/text colors, transition-transform for scale/rotate.",
+                "Combine with hover:, focus:, active: for interactive effects."
+            }
+        )
+        {
+            LongELI5 = "\n\nTransitions are like slow-motion for style changes. Instead of instant snaps, you get smooth fades and slides.\n\nWithout transition:\n```html\n<button class=\"bg-blue-600 hover:bg-blue-700\">Click</button>\n```\nResult: Color changes instantly (jarring)\n\nWith transition:\n```html\n<button class=\"bg-blue-600 hover:bg-blue-700 transition-colors\">Click</button>\n```\nResult: Color fades smoothly over ~150ms\n\nTransition types:\n\n**transition-colors** (colors only):\n```html\n<div class=\"bg-blue-500 hover:bg-blue-700 text-white hover:text-gray-100 transition-colors\">\n    Smooth color fade\n</div>\n```\n\n**transition-transform** (scale, rotate, translate):\n```html\n<img class=\"hover:scale-110 transition-transform\" />\n```\n\n**transition-opacity** (fade in/out):\n```html\n<div class=\"opacity-50 hover:opacity-100 transition-opacity\">\n    Fades in on hover\n</div>\n```\n\n**transition-all** (everything):\n```html\n<div class=\"bg-blue-500 hover:bg-blue-700 hover:shadow-lg transition-all\">\n    Animates color AND shadow\n</div>\n```\n\nWhy prefer specific transitions?\ntransition-all watches EVERY property for changes. If you only change colors, use transition-colors—it's more performant.\n\nDuration modifiers:\n- duration-75: Very fast (75ms)\n- duration-150: Default (150ms)\n- duration-300: Slow (300ms)\n- duration-500: Very slow (500ms)\n\nExample with custom duration:\n```html\n<button class=\"hover:bg-blue-700 transition-colors duration-300\">\n    Slow fade\n</button>\n```",
+            ELI5Example = "// Pokemon card with smooth transitions\n<div class=\"border-2 border-gray-200 rounded-xl p-4 \n            hover:border-blue-400 hover:shadow-xl \n            transition-all duration-200 cursor-pointer\">\n    \n    <img src=\"@pokemon.SpriteUrl\" \n         class=\"hover:scale-110 transition-transform duration-300\" />\n    \n    <p class=\"text-gray-700 hover:text-blue-600 \n              transition-colors duration-150\">\n        @pokemon.Name\n    </p>\n</div>\n\n// Result: \n// - Border and shadow animate smoothly (200ms)\n// - Image scales up smoothly (300ms)\n// - Text color fades smoothly (150ms)"
+        };
+
+        yield return new TipTopic(
+            Title: "String Formatting (ToString)",
+            Category: "C# — Formatting",
+            Type: "Method",
+            ELI5: "Format numbers and values as strings with specific patterns like leading zeros or currency.",
+            Example: "int id = 5;\nstring formatted = id.ToString(\"D3\");  // \"005\"",
+            Tips: new[] {
+                "\"D3\" pads integers with leading zeros to 3 digits: 5 becomes \"005\".",
+                "\"C\" formats as currency: 1234.56 becomes \"$1,234.56\".",
+                "\"N2\" formats with commas and 2 decimals: 1234.567 becomes \"1,234.57\"."
+            }
+        )
+        {
+            LongELI5 = "\n\nToString() is like a translator that converts numbers into pretty strings.\n\nCommon format patterns:\n\n**\"D\" (Decimal with leading zeros):**\n```csharp\nint id = 5;\nid.ToString(\"D3\");   // \"005\"\nid.ToString(\"D4\");   // \"0005\"\n\nint num = 25;\nnum.ToString(\"D3\");  // \"025\"\n```\nUseful for Pokemon IDs, invoice numbers, etc.\n\n**\"C\" (Currency):**\n```csharp\ndecimal price = 1234.56m;\nprice.ToString(\"C\");  // \"$1,234.56\" (US locale)\n```\n\n**\"N\" (Number with commas):**\n```csharp\nint count = 1234567;\ncount.ToString(\"N0\");  // \"1,234,567\" (no decimals)\n\ndouble value = 1234.5678;\nvalue.ToString(\"N2\");  // \"1,234.57\" (2 decimals)\n```\n\n**\"P\" (Percent):**\n```csharp\ndouble ratio = 0.75;\nratio.ToString(\"P0\");  // \"75%\" (no decimals)\nratio.ToString(\"P2\");  // \"75.00%\" (2 decimals)\n```\n\n**\"F\" (Fixed-point):**\n```csharp\ndouble value = 123.456;\nvalue.ToString(\"F2\");  // \"123.46\" (2 decimals, no commas)\n```\n\nCustom formats:\n```csharp\nint num = 5;\nnum.ToString(\"000\");    // \"005\"\nnum.ToString(\"#,##0\");  // \"5\" (commas if needed)\n\nDateTime now = DateTime.Now;\nnow.ToString(\"yyyy-MM-dd\");           // \"2025-11-15\"\nnow.ToString(\"MMM dd, yyyy\");         // \"Nov 15, 2025\"\nnow.ToString(\"hh:mm tt\");             // \"02:30 PM\"\n```\n\nPokemon example:\n```csharp\nint pokemonId = 25;  // Pikachu\nstring displayId = $\"#{pokemonId.ToString(\"D3\")}\";  // \"#025\"\n```",
+            ELI5Example = "// Format Pokemon IDs with leading zeros\n@foreach (var pokemon in allPokemon)\n{\n    int id = GetPokemonId(pokemon.Url);\n    string displayId = id.ToString(\"D3\");  // 1 → \"001\", 25 → \"025\"\n    \n    <div class=\"pokemon-card\">\n        <span class=\"text-gray-500\">#{displayId}</span>\n        <p class=\"font-bold capitalize\">@pokemon.Name</p>\n    </div>\n}\n\n// Other formatting examples:\nint count = 1234567;\nstring formatted = count.ToString(\"N0\");  // \"1,234,567\"\n\ndecimal price = 19.99m;\nstring priceText = price.ToString(\"C\");   // \"$19.99\"\n\ndouble percent = 0.856;\nstring percentText = percent.ToString(\"P1\");  // \"85.6%\""
+        };
+
+        yield return new TipTopic(
+            Title: "aspect-square (Tailwind)",
+            Category: "Styling — CSS",
+            Type: "Utility",
+            ELI5: "Force an element to be perfectly square (width equals height) regardless of content.",
+            Example: "<div class=\"aspect-square\">\n    <img src=\"image.png\" class=\"w-full h-full object-cover\" />\n</div>",
+            Tips: new[] {
+                "Useful for card grids where all items should have the same height.",
+                "Combine with object-cover on images to prevent distortion.",
+                "Other aspect ratios: aspect-video (16:9), aspect-[4/3] (custom)."
+            }
+        )
+        {
+            LongELI5 = "\n\naspect-square is like a magic box that always stays perfectly square no matter what you put in it.\n\nThe problem:\nWithout aspect-square, cards in a grid have different heights based on content:\n```html\n<div class=\"grid grid-cols-3 gap-4\">\n    <div class=\"border p-4\">\n        <img src=\"tall-image.png\" />  <!-- Tall card -->\n    </div>\n    <div class=\"border p-4\">\n        <img src=\"wide-image.png\" />  <!-- Short card -->\n    </div>\n</div>\n```\nResult: Ugly, uneven grid\n\nThe solution:\n```html\n<div class=\"grid grid-cols-3 gap-4\">\n    <div class=\"border p-4 aspect-square\">\n        <img src=\"any-image.png\" class=\"w-full h-full object-cover\" />\n    </div>\n    <div class=\"border p-4 aspect-square\">\n        <img src=\"any-image.png\" class=\"w-full h-full object-cover\" />\n    </div>\n</div>\n```\nResult: Perfect, even grid where every card is exactly square\n\nHow it works:\naspect-square sets aspect-ratio: 1 / 1 in CSS, which means:\n- Width = 100% of container\n- Height automatically adjusts to match width\n- Result: always a perfect square\n\nCombine with object-cover:\nobject-cover makes images fill the container without distortion:\n```html\n<div class=\"aspect-square bg-gray-100\">\n    <img src=\"pokemon.png\" class=\"w-full h-full object-cover\" />\n</div>\n```\n- Image fills the entire square\n- Excess is cropped (not stretched)\n- No white space\n\nOther aspect ratios:\n- aspect-video: 16:9 (like YouTube)\n- aspect-[4/3]: Custom 4:3 ratio\n- aspect-[21/9]: Ultra-wide\n\nPokemon card example:\n```html\n<div class=\"border rounded-lg overflow-hidden aspect-square\">\n    <img src=\"@GetSpriteUrl(pokemon.Id)\" \n         class=\"w-full h-full object-contain\" />\n</div>\n```\nobject-contain vs object-cover:\n- contain: Shows entire image, may have white space\n- cover: Fills space, may crop image",
+            ELI5Example = "// Pokemon grid with consistent square cards\n<div class=\"grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4\">\n    @foreach (var pokemon in allPokemon)\n    {\n        <div class=\"border-2 border-gray-200 rounded-xl overflow-hidden \n                    hover:border-blue-400 transition-colors\">\n            \n            <!-- Square image container -->\n            <div class=\"aspect-square bg-gray-100\">\n                <img src=\"@GetSpriteUrl(pokemon.Id)\" \n                     class=\"w-full h-full object-contain\" \n                     alt=\"@pokemon.Name\" />\n            </div>\n            \n            <!-- Info section -->\n            <div class=\"p-3\">\n                <span class=\"text-xs text-gray-500\">\n                    #{pokemon.Id.ToString(\"D3\")}\n                </span>\n                <p class=\"font-semibold capitalize\">@pokemon.Name</p>\n            </div>\n        </div>\n    }\n</div>\n\n// Result: All cards have same height, perfect grid alignment"
+        };
+    }
+}
+
+public class Step6TipsContributor : ITipsContributor
+{
+    public IEnumerable<TipTopic> GetTopics()
+    {
+        yield return new TipTopic(
+            Title: "@bind:after",
+            Category: "Blazor — Data Binding",
+            Type: "Directive Attribute",
+            ELI5: "Run code automatically after two-way binding updates a value.",
+            Example: "@bind:after=\"OnSearchChanged\"",
+            Tips: new[]
+            {
+                "Perfect for resetting pagination when search changes",
+                "Executes after the bound value updates",
+                "Can be synchronous or asynchronous method",
+                "Common use: currentPage = 1 after search input changes"
+            }
+        )
+        {
+            LongELI5 = """
+
+@bind:after is like saying "Do this extra thing whenever the value changes."
+
+Without @bind:after, you need manual event handling:
+```razor
+<input @oninput="OnInput" value="@searchQuery" />
+
+@code {
+    void OnInput(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? "";
+        OnSearchChanged();  // Manual call
+    }
+}
+```
+
+With @bind:after, it's automatic:
+```razor
+<input @bind="searchQuery" @bind:event="oninput" @bind:after="OnSearchChanged" />
+
+@code {
+    string searchQuery = "";
+    
+    void OnSearchChanged()
+    {
+        currentPage = 1;  // Reset pagination automatically
+    }
+}
+```
+
+Common pattern for search with pagination:
+```razor
+<input type="text" 
+       @bind="searchQuery" 
+       @bind:event="oninput" 
+       @bind:after="ResetPagination"
+       placeholder="Search..." />
+
+@code {
+    string searchQuery = "";
+    int currentPage = 1;
+    
+    void ResetPagination()
+    {
+        currentPage = 1;  // Always show page 1 when search changes
+        UpdateResults();
+    }
+}
+```
+
+Why this matters:
+When users search, they expect to see results from page 1, not stuck on page 5 of the old results. @bind:after ensures pagination resets automatically whenever the search query changes.
+""",
+            ELI5Example = "User types in search box → @bind updates searchQuery → @bind:after runs OnSearchChanged() → currentPage resets to 1 → shows first page of filtered results"
+        };
+
+        yield return new TipTopic(
+            Title: "@bind:event",
+            Category: "Blazor — Data Binding",
+            Type: "Directive Attribute",
+            ELI5: "Choose which event triggers two-way binding updates (oninput vs onchange).",
+            Example: "@bind:event=\"oninput\"",
+            Tips: new[]
+            {
+                "oninput: Updates as user types (real-time)",
+                "onchange: Updates when input loses focus (default)",
+                "Use oninput for search boxes to filter as user types",
+                "Use onchange for forms to avoid excessive updates"
+            }
+        )
+        {
+            LongELI5 = """
+
+@bind:event controls WHEN the bound value updates.
+
+Default behavior (@bind alone uses onchange):
+```razor
+<input @bind="username" />
+<!-- Updates when user clicks away or presses Enter -->
+```
+
+Real-time updates with oninput:
+```razor
+<input @bind="searchQuery" @bind:event="oninput" />
+<!-- Updates as user types each character -->
+```
+
+Comparison:
+
+**onchange** (default):
+- Updates when input loses focus (blur)
+- Or when user presses Enter
+- Better for forms (fewer updates, better performance)
+- Example: Name, email, password fields
+
+**oninput**:
+- Updates on every keystroke
+- Perfect for search/filter functionality
+- Real-time character counter
+- Live validation feedback
+
+Search box example:
+```razor
+<input type="text" 
+       @bind="searchQuery" 
+       @bind:event="oninput"
+       placeholder="Search Pokemon..." />
+
+<p>Found: @filteredResults.Count results</p>
+
+@code {
+    string searchQuery = "";
+    
+    List<Pokemon> filteredResults => allPokemon
+        .Where(p => p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+}
+```
+
+Users type "char" and see results update in real-time:
+- "c" → Shows Charizard, Charmander, etc.
+- "ch" → Narrows to Charizard, Charmander
+- "cha" → Shows Charizard, Charmander, Chansey
+
+Form field example (uses default onchange):
+```razor
+<input @bind="email" type="email" />
+<!-- Only validates when user finishes typing and clicks away -->
+```
+
+Rule of thumb: Use oninput for search/filter, use onchange (default) for form fields.
+""",
+            ELI5Example = "Search box with @bind:event=\"oninput\" updates results instantly as user types 'pika' → Pikachu appears. Without it, results only update when user clicks away."
+        };
+
+        yield return new TipTopic(
+            Title: "@onclick:stopPropagation",
+            Category: "Blazor — Event Handling",
+            Type: "Event Modifier",
+            ELI5: "Prevent clicks from bubbling up to parent elements.",
+            Example: "@onclick:stopPropagation",
+            Tips: new[]
+            {
+                "Essential for modal overlays (click modal content, don't close)",
+                "Stops event from reaching parent elements",
+                "Prevents accidental closes when clicking inside modal",
+                "Use on modal content div, not the overlay"
+            }
+        )
+        {
+            LongELI5 = """
+
+@onclick:stopPropagation stops click events from "bubbling up" to parent elements.
+
+Modal pattern WITHOUT stopPropagation (broken):
+```razor
+<!-- Clicking ANYWHERE closes the modal, even inside the content -->
+<div @onclick="CloseModal" class="fixed inset-0 bg-black/50">
+    <div class="bg-white p-6 rounded-lg">
+        <h2>Pokemon Details</h2>
+        <p>Click me closes the modal! ❌</p>
+    </div>
+</div>
+```
+
+Modal pattern WITH stopPropagation (correct):
+```razor
+<!-- Click overlay = close, click content = stays open -->
+<div @onclick="CloseModal" class="fixed inset-0 bg-black/50">
+    <div @onclick:stopPropagation class="bg-white p-6 rounded-lg">
+        <h2>Pokemon Details</h2>
+        <p>Click me keeps modal open! ✅</p>
+        <button @onclick="CloseModal">Close</button>
+    </div>
+</div>
+```
+
+How event bubbling works:
+1. User clicks inner div
+2. Event fires on inner div
+3. Event "bubbles up" to parent overlay div
+4. Parent's @onclick="CloseModal" fires
+5. Modal closes (even though user clicked content!)
+
+stopPropagation stops step 3, preventing unwanted behavior.
+
+Real-world modal example:
+```razor
+@if (showModal)
+{
+    <!-- Overlay: Click to close -->
+    <div @onclick="CloseModal" 
+         class="fixed inset-0 bg-black/50 flex items-center justify-center">
+        
+        <!-- Content: Click does nothing (stopPropagation) -->
+        <div @onclick:stopPropagation 
+             class="bg-white rounded-xl p-6 max-w-md">
+            
+            <h2>@selectedPokemon.Name</h2>
+            <img src="@selectedPokemon.SpriteUrl" />
+            
+            <!-- Explicit close button -->
+            <button @onclick="CloseModal" 
+                    class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">
+                Close
+            </button>
+        </div>
+    </div>
+}
+```
+
+User experience:
+- Click outside modal (overlay) → Closes ✅
+- Click inside modal (content) → Stays open ✅
+- Click Close button → Closes ✅
+
+Other event modifiers:
+- @onclick:preventDefault → Stops default behavior (like form submit)
+- @onclick:stopPropagation → Stops event bubbling (this tip)
+""",
+            ELI5Example = "Modal overlay: clicking outside closes modal. Modal content with stopPropagation: clicking inside keeps modal open. Without it, clicking anywhere closes the modal."
+        };
+
+        yield return new TipTopic(
+            Title: "String.Contains (Case-Insensitive)",
+            Category: "C# — String Methods",
+            Type: "Method",
+            ELI5: "Search for text inside a string, ignoring uppercase/lowercase differences.",
+            Example: "name.Contains(search, StringComparison.OrdinalIgnoreCase)",
+            Tips: new[]
+            {
+                "Perfect for search functionality (finds 'PIKACHU', 'pikachu', 'Pikachu')",
+                "Use StringComparison.OrdinalIgnoreCase for case-insensitive search",
+                "Default Contains() is case-sensitive ('pikachu' ≠ 'Pikachu')",
+                "Combine with LINQ Where() to filter collections"
+            }
+        )
+        {
+            LongELI5 = """
+
+String.Contains checks if one string exists inside another.
+
+Case-sensitive (default):
+```csharp
+string name = "Pikachu";
+bool found = name.Contains("pika");  // false ❌
+```
+
+Case-insensitive (proper search):
+```csharp
+string name = "Pikachu";
+bool found = name.Contains("pika", StringComparison.OrdinalIgnoreCase);  // true ✅
+```
+
+Real-world search implementation:
+```csharp
+List<Pokemon> allPokemon = GetAllPokemon();
+string searchQuery = "char";
+
+// Filter Pokemon whose names contain search query (case-insensitive)
+var results = allPokemon
+    .Where(p => p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+    .ToList();
+
+// Finds: Charizard, Charmander, Charmeleon
+```
+
+Why OrdinalIgnoreCase matters for search:
+
+Without it (case-sensitive):
+- User searches "pikachu" → Finds nothing (Pokemon name is "Pikachu")
+- User must type exact case "Pikachu" → Annoying!
+
+With it (case-insensitive):
+- User searches "pikachu" → Finds "Pikachu" ✅
+- User searches "PIKACHU" → Finds "Pikachu" ✅
+- User searches "PiKaChU" → Finds "Pikachu" ✅
+
+Complete search component example:
+```razor
+<input @bind="searchQuery" 
+       @bind:event="oninput" 
+       placeholder="Search Pokemon..." />
+
+<p>Found: @FilteredPokemon.Count Pokemon</p>
+
+@foreach (var pokemon in FilteredPokemon)
+{
+    <div>@pokemon.Name</div>
+}
+
+@code {
+    string searchQuery = "";
+    List<Pokemon> allPokemon = new();
+    
+    List<Pokemon> FilteredPokemon => string.IsNullOrWhiteSpace(searchQuery)
+        ? allPokemon
+        : allPokemon
+            .Where(p => p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+}
+```
+
+User searches "chu":
+- Finds: Pikachu, Raichu, Pichu
+- Case doesn't matter: "CHU", "chu", "Chu" all work
+
+StringComparison options:
+- OrdinalIgnoreCase: Fast, culture-insensitive, perfect for search
+- CurrentCultureIgnoreCase: Respects user's language/culture
+- InvariantCultureIgnoreCase: Consistent across all cultures
+
+For Pokemon search, use OrdinalIgnoreCase (fast and simple).
+""",
+            ELI5Example = "User searches 'pika' in search box → name.Contains('pika', OrdinalIgnoreCase) → Finds 'Pikachu', 'Pichu' regardless of how user typed it (PIKA, pika, Pika all work)"
+        };
+
+        yield return new TipTopic(
+            Title: "Modal Overlay Pattern",
+            Category: "Blazor — UI Patterns",
+            Type: "Pattern",
+            ELI5: "Create popup dialogs with dark overlay that close when clicking outside.",
+            Example: "Fixed overlay + centered content + stopPropagation",
+            Tips: new[]
+            {
+                "Use fixed inset-0 for full-screen overlay",
+                "Add bg-black/50 for semi-transparent dark background",
+                "Use flex items-center justify-center to center modal",
+                "@onclick on overlay to close, @onclick:stopPropagation on content"
+            }
+        )
+        {
+            LongELI5 = """
+
+Modal overlay pattern creates popup dialogs that appear on top of your app.
+
+Complete modal structure:
+```razor
+@if (showModal)
+{
+    <!-- Overlay: Dark background covering entire screen -->
+    <div @onclick="CloseModal" 
+         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        
+        <!-- Modal content: White card in center -->
+        <div @onclick:stopPropagation 
+             class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
+            
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold">Pokemon Details</h2>
+                <button @onclick="CloseModal" class="text-gray-500 hover:text-gray-700">
+                    ✕
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <img src="@pokemon.Sprite" class="w-32 h-32 mx-auto" />
+            <h3 class="text-center text-lg font-semibold">@pokemon.Name</h3>
+            
+            <!-- Footer -->
+            <button @onclick="CloseModal" 
+                    class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg">
+                Close
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    bool showModal = false;
+    Pokemon? pokemon;
+    
+    void OpenModal(Pokemon p)
+    {
+        pokemon = p;
+        showModal = true;
+    }
+    
+    void CloseModal()
+    {
+        showModal = false;
+    }
+}
+```
+
+Key Tailwind classes explained:
+
+**Overlay**:
+- `fixed`: Positioned relative to viewport (not page scroll)
+- `inset-0`: Top/right/bottom/left = 0 (covers entire screen)
+- `bg-black/50`: Black background at 50% opacity (semi-transparent)
+- `flex items-center justify-center`: Centers the modal content
+- `z-50`: High z-index to appear above everything
+
+**Modal content**:
+- `max-w-md`: Maximum width (prevents too-wide modals)
+- `w-full mx-4`: Full width with horizontal margin (responsive)
+- `rounded-xl shadow-2xl`: Rounded corners and strong shadow
+- `@onclick:stopPropagation`: Prevents closing when clicking content
+
+Pokemon details modal example:
+```razor
+@if (selectedPokemon != null)
+{
+    <div @onclick="@(() => selectedPokemon = null)" 
+         class="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+        
+        <div @onclick:stopPropagation 
+             class="bg-white rounded-2xl p-6 max-w-md w-full">
+            
+            <!-- Pokemon info -->
+            <img src="@GetSpriteUrl(selectedPokemon.Id)" 
+                 class="w-48 h-48 mx-auto" />
+            
+            <h2 class="text-2xl font-bold text-center capitalize">
+                @selectedPokemon.Name
+            </h2>
+            
+            <!-- Stats -->
+            <div class="mt-4 space-y-2">
+                <p><strong>Height:</strong> @(selectedPokemon.Height / 10.0)m</p>
+                <p><strong>Weight:</strong> @(selectedPokemon.Weight / 10.0)kg</p>
+            </div>
+            
+            <!-- Types -->
+            <div class="flex gap-2 mt-4">
+                @foreach (var type in selectedPokemon.Types)
+                {
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                        @type.Type.Name
+                    </span>
+                }
+            </div>
+            
+            <button @onclick="@(() => selectedPokemon = null)" 
+                    class="w-full mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                Close
+            </button>
+        </div>
+    </div>
+}
+```
+
+Three ways to close modal:
+1. Click overlay (dark area outside modal)
+2. Click X button in header
+3. Click Close button at bottom
+
+All call the same method to close!
+""",
+            ELI5Example = "User clicks Pokemon card → showModal = true → Dark overlay appears → White card shows Pokemon details in center → Click outside or Close button → showModal = false → Modal disappears"
+        };
     }
 }
 

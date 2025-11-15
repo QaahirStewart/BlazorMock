@@ -1,0 +1,703 @@
+@page "/pokemon-examples/step6"
+@rendermode InteractiveServer
+@inherits ExampleBase
+
+<PageTitle>Pokemon Step 6: Search, Filter & Details - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/pokemon-guide" class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Pokemon Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            🔍 Step 6: Search, Filter & Details
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Add search functionality, detailed Pokemon information modal, and create the final polished Pokemon explorer.
+        </p>
+
+        <!-- What You'll Learn (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                Search and modal interactions complete your Pokemon app! This step teaches real-time filtering with case-insensitive search, fetching detailed Pokemon data from the API, and displaying it in a professional modal overlay with proper event handling.
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Implement real-time search that filters as users type</li>
+                <li>Use case-insensitive string matching for better UX</li>
+                <li>Reset pagination automatically when search changes</li>
+                <li>Fetch detailed Pokemon data (stats, types, abilities)</li>
+                <li>Create modal overlays with proper click handling</li>
+            </ul>
+
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> Search Filtering, Modal Patterns, Event Modifiers, Data Binding, API Details
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#bindafter" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">@@bind:after</a>
+                    <a href="/tips#bindevent" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">@@bind:event</a>
+                    <a href="/tips#onclickstoppropagation" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">@@onclick:stopPropagation</a>
+                    <a href="/tips#stringcontains-case-insensitive" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">String.Contains (Case-Insensitive)</a>
+                    <a href="/tips#modal-overlay-pattern" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Modal Overlay Pattern</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: PokemonSearchExample</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                This component demonstrates search filtering, pagination reset, and modal detail views - completing the Pokemon explorer with professional search and detail functionality.
+            </p>
+
+            <!-- Full code example -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">PokemonSearchExample.razor</div>
+                <p class="text-xs text-gray-600 mb-2">Complete search and filter implementation with modal details</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Search input with @@bind:event="oninput" for real-time filtering</li>
+                    <li>@@bind:after resets pagination when search changes</li>
+                    <li>Case-insensitive Contains() for flexible search</li>
+                    <li>Modal overlay with Pokemon details</li>
+                    <li>@@onclick:stopPropagation prevents modal close on content click</li>
+                </ul>
+                <pre data-code-title="Razor (PokemonSearchExample.razor)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/pokemon-examples/demo-search"
+@@rendermode InteractiveServer
+@@inherits PokemonSearchExampleBase
+
+&lt;h3 class="text-xl font-semibold mb-4"&gt;Pokemon Search & Details&lt;/h3&gt;
+
+&lt;!-- Search input --&gt;
+&lt;div class="mb-6"&gt;
+    &lt;input type="text" 
+           @@bind="searchQuery" 
+           @@bind:event="oninput" 
+           @@bind:after="OnSearchChanged"
+           placeholder="Search Pokemon by name..." 
+           class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg
+                  focus:border-blue-400 focus:outline-none" /&gt;
+    
+    &lt;p class="text-sm text-gray-600 mt-2"&gt;
+        Found @@FilteredPokemon.Count Pokemon
+    &lt;/p&gt;
+&lt;/div&gt;
+
+@@if (isLoading)
+{
+    &lt;div class="flex items-center justify-center p-12"&gt;
+        &lt;div class="animate-spin rounded-full h-12 w-12 border-4 
+                    border-blue-600 border-t-transparent"&gt;&lt;/div&gt;
+        &lt;span class="ml-3 text-gray-600"&gt;Loading Pokemon...&lt;/span&gt;
+    &lt;/div&gt;
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    &lt;div class="bg-red-50 border-2 border-red-200 rounded-xl p-6"&gt;
+        &lt;p class="text-red-700"&gt;@@errorMessage&lt;/p&gt;
+    &lt;/div&gt;
+}
+else
+{
+    &lt;!-- Pokemon grid --&gt;
+    &lt;div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"&gt;
+        @@foreach (var pokemon in CurrentPagePokemon)
+        {
+            int id = GetPokemonId(pokemon.Url);
+            
+            &lt;div @@onclick="@@(() => ShowDetails(id))"
+                 class="border-2 border-gray-200 rounded-xl overflow-hidden 
+                        hover:border-blue-400 hover:shadow-xl 
+                        transition-all duration-200 cursor-pointer"&gt;
+                
+                &lt;div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100"&gt;
+                    &lt;img src="@@GetSpriteUrl(id)" 
+                         class="w-full h-full object-contain p-2
+                                hover:scale-110 transition-transform duration-300" 
+                         alt="@@pokemon.Name" 
+                         loading="lazy" /&gt;
+                &lt;/div&gt;
+                
+                &lt;div class="p-3 bg-white"&gt;
+                    &lt;span class="text-xs text-gray-500 font-mono"&gt;
+                        #@@id.ToString("D3")
+                    &lt;/span&gt;
+                    &lt;p class="font-semibold text-gray-800 capitalize 
+                              hover:text-blue-600 transition-colors"&gt;
+                        @@pokemon.Name
+                    &lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        }
+    &lt;/div&gt;
+
+    &lt;!-- Pagination --&gt;
+    &lt;div class="flex items-center justify-between mt-6"&gt;
+        &lt;button @@onclick="PreviousPage" 
+                disabled="@@(currentPage == 1)"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg
+                       hover:bg-blue-700 transition-colors
+                       disabled:opacity-50 disabled:cursor-not-allowed"&gt;
+            ← Previous
+        &lt;/button&gt;
+        
+        &lt;span class="text-sm text-gray-600"&gt;
+            Page @@currentPage of @@totalPages
+        &lt;/span&gt;
+        
+        &lt;button @@onclick="NextPage" 
+                disabled="@@(currentPage >= totalPages)"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg
+                       hover:bg-blue-700 transition-colors
+                       disabled:opacity-50 disabled:cursor-not-allowed"&gt;
+            Next →
+        &lt;/button&gt;
+    &lt;/div&gt;
+}
+
+&lt;!-- Modal for Pokemon details --&gt;
+@@if (selectedPokemon != null)
+{
+    &lt;div @@onclick="CloseModal" 
+         class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"&gt;
+        
+        &lt;div @@onclick:stopPropagation 
+             class="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full"&gt;
+            
+            &lt;!-- Close button --&gt;
+            &lt;div class="flex items-center justify-between mb-4"&gt;
+                &lt;h2 class="text-2xl font-bold capitalize"&gt;@@selectedPokemon.Name&lt;/h2&gt;
+                &lt;button @@onclick="CloseModal" 
+                        class="text-gray-500 hover:text-gray-700 text-2xl"&gt;
+                    ✕
+                &lt;/button&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Pokemon sprite --&gt;
+            &lt;img src="@@GetSpriteUrl(selectedPokemon.Id)" 
+                 class="w-48 h-48 mx-auto" 
+                 alt="@@selectedPokemon.Name" /&gt;
+            
+            &lt;!-- Stats --&gt;
+            &lt;div class="mt-4 space-y-2"&gt;
+                &lt;p class="text-sm"&gt;
+                    &lt;strong&gt;Height:&lt;/strong&gt; @@(selectedPokemon.Height / 10.0)m
+                &lt;/p&gt;
+                &lt;p class="text-sm"&gt;
+                    &lt;strong&gt;Weight:&lt;/strong&gt; @@(selectedPokemon.Weight / 10.0)kg
+                &lt;/p&gt;
+                &lt;p class="text-sm"&gt;
+                    &lt;strong&gt;Base Experience:&lt;/strong&gt; @@selectedPokemon.Base_Experience
+                &lt;/p&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Types --&gt;
+            &lt;div class="mt-4"&gt;
+                &lt;p class="text-sm font-semibold mb-2"&gt;Types:&lt;/p&gt;
+                &lt;div class="flex gap-2"&gt;
+                    @@foreach (var type in selectedPokemon.Types)
+                    {
+                        &lt;span class="px-3 py-1 bg-blue-100 text-blue-700 
+                                     rounded-full text-sm capitalize"&gt;
+                            @@type.Type.Name
+                        &lt;/span&gt;
+                    }
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Abilities --&gt;
+            &lt;div class="mt-4"&gt;
+                &lt;p class="text-sm font-semibold mb-2"&gt;Abilities:&lt;/p&gt;
+                &lt;div class="flex flex-wrap gap-2"&gt;
+                    @@foreach (var ability in selectedPokemon.Abilities)
+                    {
+                        &lt;span class="px-3 py-1 bg-green-100 text-green-700 
+                                     rounded-full text-sm capitalize"&gt;
+                            @@ability.Ability.Name
+                        &lt;/span&gt;
+                    }
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Close button --&gt;
+            &lt;button @@onclick="CloseModal" 
+                    class="w-full mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 
+                           text-white rounded-lg transition-colors"&gt;
+                Close
+            &lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+}</pre>
+            </div>
+
+            <!-- Step-by-step breakdown -->
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Search input with @@bind:after</div>
+                    <p class="text-xs text-gray-600 mb-2">Use @@bind:event="oninput" for real-time search and @@bind:after to reset pagination automatically when search changes</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>@@bind="searchQuery" creates two-way binding</li>
+                        <li>@@bind:event="oninput" updates on every keystroke</li>
+                        <li>@@bind:after="OnSearchChanged" runs after each update</li>
+                        <li>OnSearchChanged() resets currentPage to 1</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;input type="text" 
+       @@bind="searchQuery" 
+       @@bind:event="oninput" 
+       @@bind:after="OnSearchChanged"
+       placeholder="Search..." /&gt;
+
+@@code {
+    string searchQuery = "";
+    
+    void OnSearchChanged()
+    {
+        currentPage = 1;  // Reset to first page
+        UpdatePagination();
+    }
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Case-insensitive search filtering</div>
+                    <p class="text-xs text-gray-600 mb-2">Use Contains with StringComparison.OrdinalIgnoreCase to match search regardless of case</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>OrdinalIgnoreCase ignores uppercase/lowercase</li>
+                        <li>Search "pika" finds "Pikachu", "PIKACHU", "pikachu"</li>
+                        <li>Empty search shows all results</li>
+                        <li>LINQ Where() filters the collection</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">List&lt;Pokemon&gt; FilteredPokemon
+{
+    get
+    {
+        if (string.IsNullOrWhiteSpace(searchQuery))
+            return allPokemon;
+        
+        return allPokemon
+            .Where(p => p.Name.Contains(searchQuery, 
+                   StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">3. Fetch Pokemon details from API</div>
+                    <p class="text-xs text-gray-600 mb-2">Call individual Pokemon endpoint to get detailed information including stats, types, and abilities</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Endpoint: https://pokeapi.co/api/v2/pokemon/{id}</li>
+                        <li>Returns height (decimeters), weight (hectograms)</li>
+                        <li>Divide by 10 to display in meters/kilograms</li>
+                        <li>Types and abilities are nested objects</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">async Task ShowDetails(int id)
+{
+    try
+    {
+        selectedPokemon = await Http.GetFromJsonAsync&lt;PokemonDetail&gt;(
+            $"https://pokeapi.co/api/v2/pokemon/{id}");
+    }
+    catch (Exception ex)
+    {
+        errorMessage = $"Failed to load Pokemon: {ex.Message}";
+    }
+}
+
+public class PokemonDetail
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public int Height { get; set; }  // In decimeters
+    public int Weight { get; set; }  // In hectograms
+    public int Base_Experience { get; set; }
+    public List&lt;PokemonType&gt; Types { get; set; } = new();
+    public List&lt;PokemonAbility&gt; Abilities { get; set; } = new();
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">4. Modal overlay with stopPropagation</div>
+                    <p class="text-xs text-gray-600 mb-2">Create modal with dark overlay that closes when clicking outside, but stays open when clicking content</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>fixed inset-0 covers entire screen</li>
+                        <li>bg-black/50 creates semi-transparent overlay</li>
+                        <li>@@onclick on overlay closes modal</li>
+                        <li>@@onclick:stopPropagation on content prevents close</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@if (selectedPokemon != null)
+{
+    &lt;!-- Overlay: Click to close --&gt;
+    &lt;div @@onclick="CloseModal" 
+         class="fixed inset-0 bg-black/50 flex items-center justify-center"&gt;
+        
+        &lt;!-- Content: Click does nothing --&gt;
+        &lt;div @@onclick:stopPropagation 
+             class="bg-white rounded-2xl p-6 max-w-md"&gt;
+            
+            &lt;h2&gt;@@selectedPokemon.Name&lt;/h2&gt;
+            &lt;button @@onclick="CloseModal"&gt;Close&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+}
+
+@@code {
+    void CloseModal() => selectedPokemon = null;
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">5. Display types and abilities</div>
+                    <p class="text-xs text-gray-600 mb-2">Loop through nested type and ability objects to display them as badges</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Types: pokemon.Types[].Type.Name</li>
+                        <li>Abilities: pokemon.Abilities[].Ability.Name</li>
+                        <li>Use capitalize class for proper names</li>
+                        <li>Different colors for types (blue) vs abilities (green)</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;!-- Types --&gt;
+&lt;div class="flex gap-2"&gt;
+    @@foreach (var type in selectedPokemon.Types)
+    {
+        &lt;span class="px-3 py-1 bg-blue-100 text-blue-700 
+                     rounded-full text-sm capitalize"&gt;
+            @@type.Type.Name
+        &lt;/span&gt;
+    }
+&lt;/div&gt;
+
+&lt;!-- Abilities --&gt;
+&lt;div class="flex flex-wrap gap-2"&gt;
+    @@foreach (var ability in selectedPokemon.Abilities)
+    {
+        &lt;span class="px-3 py-1 bg-green-100 text-green-700 
+                     rounded-full text-sm capitalize"&gt;
+            @@ability.Ability.Name
+        &lt;/span&gt;
+    }
+&lt;/div&gt;</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+
+            <div class="space-y-3">
+                <!-- Pro Tips (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Always reset pagination on search</p>
+                            <p class="text-xs text-blue-800">When users search, they expect to see page 1 of results, not stuck on page 5 of the old data. Use @@bind:after="OnSearchChanged" to automatically reset currentPage = 1 whenever the search query changes.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use OrdinalIgnoreCase for search</p>
+                            <p class="text-xs text-blue-800">StringComparison.OrdinalIgnoreCase makes search flexible - users can type "pikachu", "PIKACHU", or "Pikachu" and all will match. Without it, search is case-sensitive and frustrating.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">stopPropagation prevents modal close</p>
+                            <p class="text-xs text-blue-800">Put @@onclick:stopPropagation on modal content to prevent clicks inside from bubbling up to the overlay. This keeps the modal open when clicking content, but closes when clicking outside.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Divide height and weight by 10</p>
+                            <p class="text-xs text-blue-800">PokeAPI returns height in decimeters and weight in hectograms. Divide by 10 to display in meters and kilograms: height / 10.0 converts 7 decimeters to 0.7 meters.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use @@bind:event="oninput" for real-time search</p>
+                            <p class="text-xs text-blue-800">oninput updates on every keystroke, creating instant search results as users type. The default onchange only updates when they click away, which feels sluggish for search boxes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting (Yellow) -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li><strong>Search doesn't find results:</strong> Make sure you're using StringComparison.OrdinalIgnoreCase. Without it, "pikachu" won't match "Pikachu".</li>
+                        <li><strong>Stuck on wrong page after search:</strong> Add @@bind:after="OnSearchChanged" to reset currentPage = 1 when search query changes.</li>
+                        <li><strong>Modal closes when clicking content:</strong> Add @@onclick:stopPropagation to the modal content div. The overlay should have @@onclick="CloseModal", but content should stop propagation.</li>
+                        <li><strong>Can't close modal:</strong> Make sure CloseModal() sets selectedPokemon = null, and the modal only renders when selectedPokemon != null.</li>
+                        <li><strong>Types/abilities don't display:</strong> Check the nested structure: type.Type.Name and ability.Ability.Name (capital T/A). The API returns nested objects.</li>
+                        <li><strong>Search updates on blur, not typing:</strong> Add @@bind:event="oninput" to update on every keystroke instead of the default onchange behavior.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Add search state:</strong>
+                    Create searchQuery string and FilteredPokemon computed property
+                </li>
+                <li>
+                    <strong>Create search input:</strong>
+                    Use @@bind="searchQuery" @@bind:event="oninput" @@bind:after="OnSearchChanged"
+                </li>
+                <li>
+                    <strong>Filter Pokemon:</strong>
+                    Use LINQ Where() with Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+                </li>
+                <li>
+                    <strong>Reset pagination:</strong>
+                    In OnSearchChanged(), set currentPage = 1 and recalculate totalPages
+                </li>
+                <li>
+                    <strong>Add click handlers:</strong>
+                    Use @@onclick="@@(() => ShowDetails(id))" on cards
+                </li>
+                <li>
+                    <strong>Fetch Pokemon details:</strong>
+                    Call https://pokeapi.co/api/v2/pokemon/{id} with GetFromJsonAsync
+                </li>
+                <li>
+                    <strong>Create modal overlay:</strong>
+                    Use fixed inset-0 bg-black/50 with @@onclick="CloseModal"
+                </li>
+                <li>
+                    <strong>Add modal content:</strong>
+                    Use @@onclick:stopPropagation on content div to prevent close on content clicks
+                </li>
+                <li>
+                    <strong>Display Pokemon details:</strong>
+                    Show name, sprite, height/10, weight/10, types, abilities
+                </li>
+                <li>
+                    <strong>Route:</strong>
+                    Access at /pokemon-examples/demo-search
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">Search Pokemon, filter results, and click cards to see detailed information in a modal.</p>
+
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                <!-- Search input -->
+                <div class="mb-6">
+                    <input type="text" 
+                           @bind="searchQuery" 
+                           @bind:event="oninput" 
+                           @bind:after="OnSearchChanged"
+                           placeholder="Search Pokemon by name..." 
+                           class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg
+                                  focus:border-blue-400 focus:outline-none" />
+                    
+                    <p class="text-sm text-gray-600 mt-2">
+                        Found @FilteredPokemon.Count Pokemon
+                    </p>
+                </div>
+
+                @if (isLoading)
+                {
+                    <div class="flex items-center justify-center p-12">
+                        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+                        <span class="ml-3 text-gray-600">Loading Pokemon...</span>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6">
+                        <p class="text-red-700">@errorMessage</p>
+                    </div>
+                }
+                else
+                {
+                    <!-- Pokemon grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        @foreach (var pokemon in CurrentPagePokemon)
+                        {
+                            int id = GetPokemonId(pokemon.Url);
+                            
+                            <div @onclick="@(async () => await ShowDetails(id))"
+                                 class="border-2 border-gray-200 rounded-xl overflow-hidden 
+                                        hover:border-blue-400 hover:shadow-xl 
+                                        transition-all duration-200 cursor-pointer">
+                                
+                                <div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100">
+                                    <img src="@GetSpriteUrl(id)" 
+                                         class="w-full h-full object-contain p-2
+                                                hover:scale-110 transition-transform duration-300" 
+                                         alt="@pokemon.Name" 
+                                         loading="lazy" />
+                                </div>
+                                
+                                <div class="p-3 bg-white">
+                                    <span class="text-xs text-gray-500 font-mono">
+                                        #@id.ToString("D3")
+                                    </span>
+                                    <p class="font-semibold text-gray-800 capitalize 
+                                              hover:text-blue-600 transition-colors">
+                                        @pokemon.Name
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="flex items-center justify-between mt-6">
+                        <button @onclick="PreviousPage" 
+                                disabled="@(currentPage == 1)"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg
+                                       hover:bg-blue-700 transition-colors
+                                       disabled:opacity-50 disabled:cursor-not-allowed">
+                            ← Previous
+                        </button>
+                        
+                        <span class="text-sm text-gray-600">
+                            Page @currentPage of @totalPages
+                        </span>
+                        
+                        <button @onclick="NextPage" 
+                                disabled="@(currentPage >= totalPages)"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg
+                                       hover:bg-blue-700 transition-colors
+                                       disabled:opacity-50 disabled:cursor-not-allowed">
+                            Next →
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <p class="text-xs text-gray-600 mt-4 text-center">💡 Try searching for "char" or "pika" and click Pokemon to see details!</p>
+        </div>
+
+        <!-- Modal for Pokemon details -->
+        @if (selectedPokemon != null)
+        {
+            <div @onclick="CloseModal" 
+                 class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                
+                <div @onclick:stopPropagation 
+                     class="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full">
+                    
+                    <!-- Close button -->
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-bold capitalize">@selectedPokemon.Name</h2>
+                        <button @onclick="CloseModal" 
+                                class="text-gray-500 hover:text-gray-700 text-2xl">
+                            ✕
+                        </button>
+                    </div>
+                    
+                    <!-- Pokemon sprite -->
+                    <img src="@GetSpriteUrl(selectedPokemon.Id)" 
+                         class="w-48 h-48 mx-auto" 
+                         alt="@selectedPokemon.Name" />
+                    
+                    <!-- Stats -->
+                    <div class="mt-4 space-y-2">
+                        <p class="text-sm">
+                            <strong>Height:</strong> @(selectedPokemon.Height / 10.0)m
+                        </p>
+                        <p class="text-sm">
+                            <strong>Weight:</strong> @(selectedPokemon.Weight / 10.0)kg
+                        </p>
+                        <p class="text-sm">
+                            <strong>Base Experience:</strong> @selectedPokemon.Base_Experience
+                        </p>
+                    </div>
+                    
+                    <!-- Types -->
+                    <div class="mt-4">
+                        <p class="text-sm font-semibold mb-2">Types:</p>
+                        <div class="flex gap-2">
+                            @foreach (var type in selectedPokemon.Types)
+                            {
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 
+                                             rounded-full text-sm capitalize">
+                                    @type.Type.Name
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    
+                    <!-- Abilities -->
+                    <div class="mt-4">
+                        <p class="text-sm font-semibold mb-2">Abilities:</p>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach (var ability in selectedPokemon.Abilities)
+                            {
+                                <span class="px-3 py-1 bg-green-100 text-green-700 
+                                             rounded-full text-sm capitalize">
+                                    @ability.Ability.Name
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    
+                    <!-- Close button -->
+                    <button @onclick="CloseModal" 
+                            class="w-full mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 
+                                   text-white rounded-lg transition-colors">
+                        Close
+                    </button>
+                </div>
+            </div>
+        }
+
+        <!-- Mark Complete (Green Card) -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 6?</h3>
+                    <p class="text-sm text-gray-600">Congratulations! Your Pokemon explorer is complete! 🎉</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                }
+            </div>
+        </div>
+
+        <!-- Congratulations Banner -->
+        <div class="bg-gradient-to-r from-yellow-200 to-emerald-200 rounded-2xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">🎊 Congratulations!</h3>
+            <p class="text-gray-700 mb-3">
+                You've built a complete Pokemon explorer with search, filtering, pagination, and detailed views! This combines all the concepts from Steps 1-6 into a polished, professional application.
+            </p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between">
+            <a href="/pokemon-examples/step5"
+                class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 5
+            </a>
+            <a href="/pokemon-guide"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">
+                Complete Guide
+                <span>✓</span>
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,443 @@
+@page "/pokemon-examples/step5"
+@rendermode InteractiveServer
+@inherits ExampleBase
+
+<PageTitle>Pokemon Step 5: Polish & Refine - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/pokemon-guide" class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Pokemon Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            ✨ Step 5: Polish & Refine
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Add responsive design, smooth hover effects, proper formatting, and visual polish to create a professional Pokemon grid.
+        </p>
+
+        <!-- What You'll Learn (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                Polishing your UI is what separates amateur projects from professional apps. This step teaches you how to use Tailwind's responsive utilities, hover effects, and transitions to create a smooth, adaptive interface that looks great on any device and responds beautifully to user interactions.
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Implement responsive grid layouts that adapt from mobile to desktop</li>
+                <li>Add smooth hover effects with transitions for professional feel</li>
+                <li>Format Pokemon IDs with leading zeros (001, 025, 151)</li>
+                <li>Use aspect-square for consistent card heights</li>
+                <li>Optimize image loading and display with proper sizing</li>
+            </ul>
+
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> Responsive Grid, Hover Effects, Transitions, String Formatting, aspect-square
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#tailwind-responsive-grid" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind Responsive Grid</a>
+                    <a href="/tips#tailwind-hover-effects" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind Hover Effects</a>
+                    <a href="/tips#tailwind-transitions" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind Transitions</a>
+                    <a href="/tips#string-formatting-tostring" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">String Formatting (ToString)</a>
+                    <a href="/tips#aspect-square-tailwind" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">aspect-square (Tailwind)</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: PokemonPolishedGrid</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                This component demonstrates a fully polished Pokemon grid with responsive columns, smooth hover effects, properly formatted IDs, and consistent card heights using aspect-square. It's the culmination of everything learned in previous steps.
+            </p>
+
+            <!-- Full code example -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">PokemonPolishedGrid.razor</div>
+                <p class="text-xs text-gray-600 mb-2">Complete polished Pokemon grid with responsive design, hover effects, and professional formatting</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Responsive grid: 2 cols mobile → 5 cols desktop</li>
+                    <li>Hover effects: border color, shadow, image scale</li>
+                    <li>Smooth transitions on all interactive elements</li>
+                    <li>Formatted IDs with ToString("D3") for leading zeros</li>
+                    <li>aspect-square for consistent card heights</li>
+                </ul>
+                <pre data-code-title="Razor (PokemonPolishedGrid.razor)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/pokemon-examples/demo-polished"
+@@rendermode InteractiveServer
+@@inherits PokemonPolishedGridBase
+
+&lt;h3 class="text-xl font-semibold mb-4"&gt;Polished Pokemon Grid&lt;/h3&gt;
+
+@@if (isLoading)
+{
+    &lt;div class="flex items-center justify-center p-12"&gt;
+        &lt;div class="animate-spin rounded-full h-12 w-12 border-4 
+                    border-blue-600 border-t-transparent"&gt;&lt;/div&gt;
+        &lt;span class="ml-3 text-gray-600"&gt;Loading Pokemon...&lt;/span&gt;
+    &lt;/div&gt;
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    &lt;div class="bg-red-50 border-2 border-red-200 rounded-xl p-6"&gt;
+        &lt;p class="text-red-700"&gt;@@errorMessage&lt;/p&gt;
+    &lt;/div&gt;
+}
+else
+{
+    &lt;!-- Responsive grid: 2 cols mobile, 3 tablet, 4 laptop, 5 desktop --&gt;
+    &lt;div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"&gt;
+        @@foreach (var pokemon in currentPagePokemon)
+        {
+            int id = GetPokemonId(pokemon.Url);
+            
+            &lt;div class="border-2 border-gray-200 rounded-xl overflow-hidden 
+                        hover:border-blue-400 hover:shadow-xl 
+                        transition-all duration-200 cursor-pointer"&gt;
+                
+                &lt;!-- Square image container --&gt;
+                &lt;div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100"&gt;
+                    &lt;img src="@@GetSpriteUrl(id)" 
+                         class="w-full h-full object-contain p-2
+                                hover:scale-110 transition-transform duration-300" 
+                         alt="@@pokemon.Name" 
+                         loading="lazy" /&gt;
+                &lt;/div&gt;
+                
+                &lt;!-- Info section --&gt;
+                &lt;div class="p-3 bg-white"&gt;
+                    &lt;span class="text-xs text-gray-500 font-mono"&gt;
+                        #@@id.ToString("D3")
+                    &lt;/span&gt;
+                    &lt;p class="font-semibold text-gray-800 capitalize 
+                              hover:text-blue-600 transition-colors"&gt;
+                        @@pokemon.Name
+                    &lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        }
+    &lt;/div&gt;
+
+    &lt;!-- Pagination --&gt;
+    &lt;div class="flex items-center justify-between mt-6"&gt;
+        &lt;button @@onclick="PreviousPage" 
+                disabled="@@(currentPage == 1)"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg
+                       hover:bg-blue-700 transition-colors
+                       disabled:opacity-50 disabled:cursor-not-allowed"&gt;
+            ← Previous
+        &lt;/button&gt;
+        
+        &lt;span class="text-sm text-gray-600"&gt;
+            Page @@currentPage of @@totalPages
+        &lt;/span&gt;
+        
+        &lt;button @@onclick="NextPage" 
+                disabled="@@(currentPage >= totalPages)"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg
+                       hover:bg-blue-700 transition-colors
+                       disabled:opacity-50 disabled:cursor-not-allowed"&gt;
+            Next →
+        &lt;/button&gt;
+    &lt;/div&gt;
+}</pre>
+            </div>
+
+            <!-- Step-by-step breakdown -->
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Responsive grid layout</div>
+                    <p class="text-xs text-gray-600 mb-2">Use Tailwind's responsive prefixes to create a grid that adapts from 2 columns on mobile to 5 columns on large screens</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>grid-cols-2: Base (mobile) - 2 columns</li>
+                        <li>sm:grid-cols-3: Small screens (640px+) - 3 columns</li>
+                        <li>md:grid-cols-4: Medium screens (768px+) - 4 columns</li>
+                        <li>lg:grid-cols-5: Large screens (1024px+) - 5 columns</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"&gt;
+    &lt;!-- Cards --&gt;
+&lt;/div&gt;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Hover effects with transitions</div>
+                    <p class="text-xs text-gray-600 mb-2">Add smooth hover effects for border, shadow, and image scale with transition classes for professional feel</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>hover:border-blue-400: Border turns blue on hover</li>
+                        <li>hover:shadow-xl: Shadow appears on hover</li>
+                        <li>transition-all duration-200: Smooth animation (200ms)</li>
+                        <li>hover:scale-110: Image grows 10% on hover</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class="border-2 border-gray-200 
+            hover:border-blue-400 hover:shadow-xl 
+            transition-all duration-200"&gt;
+    &lt;img class="hover:scale-110 transition-transform duration-300" /&gt;
+&lt;/div&gt;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">3. Format IDs with leading zeros</div>
+                    <p class="text-xs text-gray-600 mb-2">Use ToString("D3") to format Pokemon IDs with leading zeros for professional display</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>"D3" means decimal format with 3 digits minimum</li>
+                        <li>5 becomes "005", 25 becomes "025", 151 stays "151"</li>
+                        <li>Use font-mono for monospaced number display</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">int id = GetPokemonId(pokemon.Url);
+string displayId = id.ToString("D3");  // "001", "025", "151"
+
+&lt;span class="text-xs text-gray-500 font-mono"&gt;
+    #@@id.ToString("D3")
+&lt;/span&gt;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">4. aspect-square for consistent heights</div>
+                    <p class="text-xs text-gray-600 mb-2">Use aspect-square to ensure all image containers are perfectly square, creating a uniform grid</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>aspect-square forces 1:1 aspect ratio (width = height)</li>
+                        <li>Prevents cards from having different heights based on image size</li>
+                        <li>Combine with object-contain to show full image without distortion</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100"&gt;
+    &lt;img src="@@GetSpriteUrl(id)" 
+         class="w-full h-full object-contain p-2" 
+         alt="@@pokemon.Name" /&gt;
+&lt;/div&gt;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">5. Helper methods for URLs and IDs</div>
+                    <p class="text-xs text-gray-600 mb-2">Extract Pokemon ID from API URL and construct sprite image URLs programmatically</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>GetPokemonId: Parse ID from PokeAPI URL (last segment)</li>
+                        <li>GetSpriteUrl: Build sprite URL using Pokemon ID</li>
+                        <li>Use official artwork for high-quality images</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">protected static int GetPokemonId(string url)
+{
+    var parts = url.TrimEnd('/').Split('/');
+    return int.Parse(parts[^1]);  // Get last segment
+}
+
+protected static string GetSpriteUrl(int id)
+{
+    return $"https://raw.githubusercontent.com/PokeAPI/sprites/master/" +
+           $"sprites/pokemon/other/official-artwork/{id}.png";
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+
+            <div class="space-y-3">
+                <!-- Pro Tips (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use aspect-square for grid consistency</p>
+                            <p class="text-xs text-blue-800">Without aspect-square, cards have different heights based on image dimensions, creating an uneven grid. With it, every card is the same height, creating a professional, uniform layout.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Add transitions for smooth interactions</p>
+                            <p class="text-xs text-blue-800">Always pair hover effects with transitions. Without transition-*, changes are instant and jarring. With transition-all or transition-colors, changes fade smoothly, creating a polished feel.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use responsive grids mobile-first</p>
+                            <p class="text-xs text-blue-800">Start with the smallest screen (grid-cols-2) and scale up with breakpoints (sm:, md:, lg:). This ensures your app works on mobile first, then enhances for larger screens.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Format numbers consistently</p>
+                            <p class="text-xs text-blue-800">Use ToString("D3") to ensure IDs always have the same width (001, 025, 151). This makes them easier to scan and looks more professional than mixing "1", "25", and "151".</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Add loading="lazy" for images</p>
+                            <p class="text-xs text-blue-800">The loading="lazy" attribute tells browsers to only load images when they're about to scroll into view. This dramatically improves initial page load time when you have many images.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting (Yellow) -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li><strong>Grid doesn't adapt on mobile:</strong> Make sure you're using responsive prefixes (sm:, md:, lg:) and testing in a responsive browser mode or on a real device.</li>
+                        <li><strong>Hover effects are instant/jarring:</strong> Add transition classes (transition-all, transition-colors, transition-transform) to make changes smooth.</li>
+                        <li><strong>Images are distorted:</strong> Use object-contain (shows full image) or object-cover (fills space) with aspect-square to prevent stretching.</li>
+                        <li><strong>Cards have different heights:</strong> Apply aspect-square to the image container, not the entire card. Only the image section should be square.</li>
+                        <li><strong>IDs show as "1" instead of "001":</strong> Use .ToString("D3") with the integer ID, not the string from the API. Parse the ID first: int.Parse(lastSegment).</li>
+                        <li><strong>Sprites don't load:</strong> Check that GetPokemonId correctly extracts the ID from the URL. Use .TrimEnd('/').Split('/')[^1] to get the last segment.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Create the component folder:</strong>
+                    Create <code>Components/Pages/Examples/Pokemon/Step5</code> with <code>PokemonPolishedGrid.razor</code> and <code>PokemonPolishedGrid.razor.cs</code>
+                </li>
+                <li>
+                    <strong>Add responsive grid:</strong>
+                    Use <code>grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4</code> for adaptive columns
+                </li>
+                <li>
+                    <strong>Create card structure:</strong>
+                    Each card has a square image container (aspect-square) and an info section below it
+                </li>
+                <li>
+                    <strong>Add hover effects:</strong>
+                    Use hover:border-blue-400, hover:shadow-xl, hover:scale-110 with appropriate transition classes
+                </li>
+                <li>
+                    <strong>Format Pokemon IDs:</strong>
+                    Parse ID from URL with GetPokemonId, format with .ToString("D3") for leading zeros
+                </li>
+                <li>
+                    <strong>Build sprite URLs:</strong>
+                    Use GetSpriteUrl helper to construct image URLs from Pokemon IDs
+                </li>
+                <li>
+                    <strong>Test responsiveness:</strong>
+                    Use browser dev tools responsive mode to verify grid adapts correctly from mobile to desktop
+                </li>
+                <li>
+                    <strong>Route:</strong>
+                    Access at <code>/pokemon-examples/demo-polished</code>
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo (Optional) -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">See the polished design in action—responsive grid, smooth hover effects, formatted IDs, and consistent card heights.</p>
+
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                @if (isLoading)
+                {
+                    <div class="flex items-center justify-center p-12">
+                        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+                        <span class="ml-3 text-gray-600">Loading Pokemon...</span>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6">
+                        <p class="text-red-700">@errorMessage</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        @foreach (var pokemon in currentPagePokemon)
+                        {
+                            int id = GetPokemonId(pokemon.Url);
+                            
+                            <div class="border-2 border-gray-200 rounded-xl overflow-hidden 
+                                        hover:border-blue-400 hover:shadow-xl 
+                                        transition-all duration-200 cursor-pointer">
+                                
+                                <div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100">
+                                    <img src="@GetSpriteUrl(id)" 
+                                         class="w-full h-full object-contain p-2
+                                                hover:scale-110 transition-transform duration-300" 
+                                         alt="@pokemon.Name" 
+                                         loading="lazy" />
+                                </div>
+                                
+                                <div class="p-3 bg-white">
+                                    <span class="text-xs text-gray-500 font-mono">
+                                        #@id.ToString("D3")
+                                    </span>
+                                    <p class="font-semibold text-gray-800 capitalize 
+                                              hover:text-blue-600 transition-colors">
+                                        @pokemon.Name
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="flex items-center justify-between mt-6">
+                        <button @onclick="PreviousPage" 
+                                disabled="@(currentPage == 1)"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg
+                                       hover:bg-blue-700 transition-colors
+                                       disabled:opacity-50 disabled:cursor-not-allowed">
+                            ← Previous
+                        </button>
+                        
+                        <span class="text-sm text-gray-600">
+                            Page @currentPage of @totalPages
+                        </span>
+                        
+                        <button @onclick="NextPage" 
+                                disabled="@(currentPage >= totalPages)"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg
+                                       hover:bg-blue-700 transition-colors
+                                       disabled:opacity-50 disabled:cursor-not-allowed">
+                            Next →
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <p class="text-xs text-gray-600 mt-4 text-center">💡 Try hovering over cards and resizing your browser to see responsive behavior!</p>
+        </div>
+
+        <!-- Mark Complete (Green Card) -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 5?</h3>
+                    <p class="text-sm text-gray-600">Mark complete when your Pokemon grid has responsive layout, smooth hover effects, and proper formatting</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between">
+            <a href="/pokemon-examples/step4"
+                class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 4
+            </a>
+            <a href="/pokemon-examples/step6"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 6
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>
