@@ -1,0 +1,45 @@
+@* GreetingCard.razor - Reusable component with parameters *@
+
+<div class="bg-black/3 rounded-2xl p-6 mb-6">
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">💌 Greeting Cards</h2>
+
+    <div class="bg-white rounded-2xl duration-300 p-5 sm:p-6  border border-gray-200">
+        <div class="flex items-center mb-4 gap-3">
+            <div class="bg-orange-500 text-white rounded-full p-2 flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 break-words min-w-0">Hello, @Name!</h3>
+        </div>
+
+        <p class="text-sm sm:text-base text-gray-600 leading-relaxed mb-4 break-words">
+            @Message
+        </p>
+
+        <div class="flex items-center text-xs sm:text-sm text-gray-500">
+            <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="break-words">Created on @DateTime.Now.ToString("MMM dd, yyyy")</span>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    /// <summary>
+    /// The name to display in the greeting card
+    /// </summary>
+    [Parameter]
+    public string Name { get; set; } = "Guest";
+
+    /// <summary>
+    /// The message content to display in the card
+    /// </summary>
+    [Parameter]
+    public string Message { get; set; } = "Welcome to our application!";
+}

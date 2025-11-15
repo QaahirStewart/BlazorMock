@@ -1,0 +1,177 @@
+@page "/pokemon-examples/step5"
+@inject ILearningProgressService ProgressService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IDisposable
+@rendermode InteractiveServer
+
+<PageTitle>Pokemon Step 5: Polish & Refine</PageTitle>
+
+<div class="min-h-screen py-8">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <a href="/pokemon-guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Pokemon Guide
+        </a>
+
+        <div class="rounded-2xl overflow-hidden border-2 border-gray-200 bg-white mb-6">
+            <div class="h-2 w-full bg-gradient-to-r from-blue-200 via-blue-300 to-emerald-200"></div>
+            <div class="p-5 sm:p-6">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+                    ✨ Step 5: Polish & Refine
+                </h1>
+                <p class="text-gray-600">
+                    Add responsive design, hover effects, and final polish to your Pokemon list.
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2">
+                <li>Implement responsive grid layouts with Tailwind</li>
+                <li>Add hover effects and transitions</li>
+                <li>Format Pokemon numbers with leading zeros</li>
+                <li>Optimize sprite loading with proper sizing</li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 sm:p-6 mb-6 border-2 border-gray-200">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">📝 Code Example</h2>
+
+            <div class="mb-4">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">1. Responsive grid layout</h3>
+                <pre class="bg-gray-100 p-4 rounded-lg text-xs sm:text-sm font-mono overflow-x-auto">Use Tailwind responsive grid classes:
+grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5
+
+This creates 2 columns on mobile, scaling up to 5 on large screens.</pre>
+            </div>
+
+            <div class="mb-4">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">2. Polished card design</h3>
+                <pre class="bg-gray-100 p-4 rounded-lg text-xs sm:text-sm font-mono overflow-x-auto">Card styling tips:
+- Use aspect-square for consistent image containers
+- Add hover effects: hover:border-blue-400 hover:shadow-lg
+- Add transitions: transition-all
+- Format ID as "#001": pokemon.Id.ToString("D3")</pre>
+            </div>
+
+            <div class="mb-4">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">3. Format helper methods</h3>
+                <pre class="bg-gray-100 p-4 rounded-lg text-xs sm:text-sm font-mono overflow-x-auto">@@code {
+    private string GetPokemonSpriteUrl(int id)
+    {
+        return $"https://raw.githubusercontent.com/PokeAPI/sprites/master/" +
+               $"sprites/pokemon/other/official-artwork/{id}.png";
+    }
+    
+    private int GetPokemonId(string url)
+    {
+        var parts = url.TrimEnd('/').Split('/');
+        return int.Parse(parts[^1]);
+    }
+}</pre>
+            </div>
+
+            <div class="mb-4">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">4. Smooth pagination</h3>
+                <pre class="bg-gray-100 p-4 rounded-lg text-xs sm:text-sm font-mono overflow-x-auto">Add smooth transitions to pagination buttons:
+- Use hover:bg-blue-700 and transition-colors
+- Style disabled states with opacity-50
+- Show current page and total pages</pre>
+            </div>
+        </div>
+
+        <div class="bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-5 sm:p-6 mb-6">
+            <h3 class="text-lg font-bold text-yellow-900 mb-2">💡 Pro Tips</h3>
+            <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                <li>Use <code class="bg-white px-1 rounded">aspect-square</code> to maintain consistent card heights
+                </li>
+                <li>Add <code class="bg-white px-1 rounded">transition-all</code> for smooth hover effects</li>
+                <li>Use <code class="bg-white px-1 rounded">.ToString("D3")</code> to format numbers like "001", "025",
+                    "151"</li>
+                <li>Consider adding lazy loading for images: <code class="bg-white px-1 rounded">loading="lazy"</code>
+                </li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 5?</h3>
+                    <p class="text-sm text-gray-600">Mark complete when your list looks polished</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark
+                        as Complete</button>
+                }
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <a href="/pokemon-examples/step4"
+                class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 4
+            </a>
+            <a href="/pokemon-examples/step6"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 6
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isComplete;
+    private IJSObjectReference? _copyModule;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync("pokemon", 5);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task MarkComplete()
+    {
+        await ProgressService.MarkStepCompleteAsync("pokemon", 5);
+        isComplete = true;
+    }
+
+    private async Task ResetStep()
+    {
+        await ProgressService.MarkStepIncompleteAsync("pokemon", 5);
+        isComplete = false;
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
+    }
+}

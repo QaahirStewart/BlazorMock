@@ -1,0 +1,22 @@
+@page "/pokemon-examples/demo-list"
+@rendermode InteractiveServer
+@inherits PokemonListExampleBase
+
+<h3 class="text-xl font-semibold mb-3">First 20 Pokemon</h3>
+
+@if (pokemon is null)
+{
+    <p class="text-gray-500">Loading...</p>
+}
+else
+{
+    <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        @foreach (var p in pokemon)
+        {
+            <li class="bg-white border border-gray-200 rounded-xl px-3 py-2">
+                <p class="text-xs text-gray-500">Pokemon</p>
+                <p class="font-semibold capitalize">@p.Name</p>
+            </li>
+        }
+    </ul>
+}

@@ -35,6 +35,7 @@ builder.Services.AddSingleton<ITipsContributor, JsInteropTipsContributor>();
 builder.Services.AddSingleton<ITipsContributor, LifecycleAdvancedTipsContributor>();
 builder.Services.AddSingleton<ITipsContributor, DataBindingTipsContributor>();
 builder.Services.AddSingleton<ITipsContributor, CSharpLanguageTipsContributor>();
+builder.Services.AddSingleton<ITipsContributor, HttpAndDataTipsContributor>();
 
 // EF Core - SQLite
 var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=blazormock.db";

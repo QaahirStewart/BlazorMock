@@ -20,6 +20,8 @@ public record TipTopic(
         .Replace("@", "")
         .Replace("[", "")
         .Replace("]", "")
+        .Replace("<", "")
+        .Replace(">", "")
         .Replace(" ", "-")
         .Replace("(", "")
         .Replace(")", "");
@@ -690,6 +692,80 @@ public class CSharpLanguageTipsContributor : ITipsContributor
         {
             LongELI5 = "\n\nLike saying: if the cup is empty, fill it now—otherwise leave it alone.",
             ELI5Example = "_cache ??= new();"
+        };
+    }
+}
+
+public class HttpAndDataTipsContributor : ITipsContributor
+{
+    public IEnumerable<TipTopic> GetTopics()
+    {
+        yield return new TipTopic(
+            Title: "IHttpClientFactory",
+            Category: "Blazor — HTTP & Data",
+            Type: "Service",
+            ELI5: "A factory that creates and manages HttpClient instances with pre-configured settings (like base URLs and headers). Register it in Program.cs and inject it into your components.",
+            Example: "// Program.cs\nbuilder.Services.AddHttpClient(\"PokeApi\", client => client.BaseAddress = new Uri(\"https://pokeapi.co/api/v2/\"));\n\n// Component\n@inject IHttpClientFactory HttpClientFactory\n@code {\n  protected override async Task OnInitializedAsync() {\n    var client = HttpClientFactory.CreateClient(\"PokeApi\");\n    var data = await client.GetStringAsync(\"pokemon?limit=20\");\n  }\n}",
+            Tips: new[] {
+                "Name your clients for clarity (\"PokeApi\", \"WeatherApi\").",
+                "Configure base URLs, default headers, and timeout in Program.cs.",
+                "Reuse named clients across components—no need to repeat config."
+            }
+        )
+        {
+            LongELI5 = "\n\nThink of IHttpClientFactory like a car rental service. Instead of building a car from scratch every time you need one (new HttpClient()), you ask the rental service for a car that's already set up with GPS, insurance, and a full tank (configured base URL, headers, etc.).\n\nYou register the 'rental plan' once in Program.cs with a name like \"PokeApi\", specifying what the car comes with (base address = https://pokeapi.co). Then whenever a component needs to call that API, it asks the factory: 'Give me the PokeApi client' and gets a ready-to-use HttpClient.\n\nWhy use it?\n- Prevents socket exhaustion (reusing connections).\n- Centralizes config so you don't repeat BaseAddress everywhere.\n- Makes testing easier (swap out the factory for a mock).",
+            ELI5Example = "// In Program.cs:\nbuilder.Services.AddHttpClient(\"PokeApi\", client => {\n  client.BaseAddress = new Uri(\"https://pokeapi.co/api/v2/\");\n  client.DefaultRequestHeaders.Add(\"User-Agent\", \"BlazorApp\");\n});\n\n// In your component:\n@inject IHttpClientFactory Factory\n@code {\n  var client = Factory.CreateClient(\"PokeApi\");\n  var json = await client.GetStringAsync(\"pokemon/25\"); // calls https://pokeapi.co/api/v2/pokemon/25\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "GetFromJsonAsync<T>",
+            Category: "Blazor — HTTP & Data",
+            Type: "Method",
+            ELI5: "A one-liner extension method on HttpClient that fetches JSON from an API and deserializes it into a C# object in a single step.",
+            Example: "var response = await client.GetFromJsonAsync<PokemonListResponse>(\"pokemon?limit=20\");\n// response is now a PokemonListResponse object, not raw JSON string",
+            Tips: new[] {
+                "Requires System.Net.Http.Json namespace (built into .NET).",
+                "Returns null if the response is empty or invalid.",
+                "Use it instead of GetStringAsync + JsonSerializer.Deserialize for cleaner code."
+            }
+        )
+        {
+            LongELI5 = "\n\nImagine you order a pizza online. Normally you'd:\n1. Call the restaurant (HTTP GET).\n2. Get a menu card with text (JSON string).\n3. Read the menu and write down what you want on your own paper (deserialize into an object).\n\nGetFromJsonAsync<T> does all three steps at once: it calls the restaurant, reads the menu, and hands you a typed order form already filled out.\n\nExample: Instead of:\n  var json = await client.GetStringAsync(\"pokemon?limit=20\");\n  var response = JsonSerializer.Deserialize<PokemonListResponse>(json);\n\nYou write:\n  var response = await client.GetFromJsonAsync<PokemonListResponse>(\"pokemon?limit=20\");\n\nCleaner, safer, and less code.",
+            ELI5Example = "public class PokemonListResponse {\n  public List<PokemonItem> Results { get; set; } = new();\n}\n\npublic class PokemonItem {\n  public string Name { get; set; } = \"\";\n  public string Url { get; set; } = \"\";\n}\n\n@code {\n  private List<PokemonItem> pokemon = new();\n  protected override async Task OnInitializedAsync() {\n    var client = HttpClientFactory.CreateClient(\"PokeApi\");\n    var response = await client.GetFromJsonAsync<PokemonListResponse>(\"pokemon?limit=20\");\n    if (response?.Results != null) pokemon = response.Results;\n  }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "DTO models",
+            Category: "Blazor — HTTP & Data",
+            Type: "Pattern",
+            ELI5: "DTO (Data Transfer Object) models are simple C# classes that match the shape of JSON you get from an API. They let you work with strongly-typed objects instead of parsing raw strings.",
+            Example: "public class PokemonItem {\n  public string Name { get; set; } = \"\";\n  public string Url { get; set; } = \"\";\n}\n\npublic class PokemonListResponse {\n  public List<PokemonItem> Results { get; set; } = new();\n}",
+            Tips: new[] {
+                "Property names must match JSON keys (or use [JsonPropertyName] attribute).",
+                "Keep DTOs simple—just properties, no business logic.",
+                "Use records for immutability if you don't need to modify them."
+            }
+        )
+        {
+            LongELI5 = "\n\nA DTO is like a shopping list template. When you call an API, it returns data in a specific format (like a receipt). You create a C# class that mirrors that receipt's layout—item names, prices, etc.\n\nInstead of reading the receipt as raw text and parsing line by line, you hand the receipt to GetFromJsonAsync<T> and it fills out your template class automatically. Now you can say 'receipt.Total' instead of hunting for the total in a string.\n\nWhy 'DTO'? Because these classes only exist to transfer data between your app and the API—they're messengers, not the core of your app.\n\nExample: PokeAPI returns:\n{\n  \"results\": [\n    { \"name\": \"bulbasaur\", \"url\": \"https://...\" },\n    ...\n  ]\n}\n\nSo you make:\npublic class PokemonListResponse {\n  public List<PokemonItem> Results { get; set; } = new();\n}\npublic class PokemonItem {\n  public string Name { get; set; } = \"\";\n  public string Url { get; set; } = \"\";\n}\n\nNow 'response.Results[0].Name' gives you \"bulbasaur\" without manual parsing.",
+            ELI5Example = "// If JSON key is different from C# property, use attribute:\npublic class PokemonDetail {\n  [JsonPropertyName(\"base_experience\")]\n  public int BaseExperience { get; set; }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "@foreach in Razor",
+            Category: "Blazor — Rendering",
+            Type: "Loop",
+            ELI5: "Loop through a collection in Razor markup to render one block of HTML per item. Like a stamping machine that prints a card for each item in a list.",
+            Example: "<ul>\n  @foreach (var item in items) {\n    <li>@item.Name</li>\n  }\n</ul>",
+            Tips: new[] {
+                "Use @foreach for lists, arrays, or any IEnumerable.",
+                "Wrap in a null-check or show a 'Loading...' message if the collection can be null.",
+                "Keep the loop body simple—extract complex logic into methods or properties."
+            }
+        )
+        {
+            LongELI5 = "\n\n@foreach is how you turn a C# list into repeated HTML. Imagine you have a stack of Pokemon cards (a List<PokemonItem>). You want to display each card on the screen. Instead of writing <div>bulbasaur</div>, <div>charmander</div>, ... manually, you write one template and let @foreach repeat it for every card.\n\nBlazor steps through your list, and for each item, it stamps out the HTML you defined inside the loop—substituting @item.Name with the actual name.\n\nExample:\nIf you have:\nList<PokemonItem> pokemon = new() {\n  new() { Name = \"bulbasaur\" },\n  new() { Name = \"charmander\" }\n};\n\nAnd you write:\n<ul>\n  @foreach (var p in pokemon) {\n    <li class=\"card\">@p.Name</li>\n  }\n</ul>\n\nBlazor renders:\n<ul>\n  <li class=\"card\">bulbasaur</li>\n  <li class=\"card\">charmander</li>\n</ul>\n\nIt's the Razor version of a for-loop, but cleaner for UI.",
+            ELI5Example = "@if (pokemon is null) {\n  <p>Loading Pokemon...</p>\n}\nelse if (pokemon.Count == 0) {\n  <p>No Pokemon found.</p>\n}\nelse {\n  <div class=\"grid grid-cols-4 gap-3\">\n    @foreach (var p in pokemon) {\n      <div class=\"card\">\n        <p class=\"font-bold\">@p.Name</p>\n        <img src=\"@p.SpriteUrl\" alt=\"@p.Name\" />\n      </div>\n    }\n  </div>\n}"
         };
     }
 }

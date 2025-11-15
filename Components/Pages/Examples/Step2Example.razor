@@ -67,9 +67,17 @@
                 <li>Use <code>.ToString("format")</code> to format dates/times</li>
             </ul>
 
-            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-2">
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Home.razor</div>
+                <p class="text-xs text-gray-600 mb-2">Full page that wires up the @@page route, Live Demo section, and
+                    two cards that render the current date and time.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Defines the route, page title, and main layout container.</li>
+                    <li>Uses inline <code>@@DateTime.Now</code> expressions to format date and time.</li>
+                    <li>Shows how markup and C# mix smoothly inside one component.</li>
+                </ul>
                 <pre data-code-title="Razor (Home.razor)"
-                    class="text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&#64;page "/"
+                    class="code-block text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&#64;page "/"
 
 &lt;PageTitle&gt;Home&lt;/PageTitle&gt;
 
@@ -110,6 +118,70 @@
     &lt;/div&gt;
 
 &lt;/div&gt;</pre>
+            </div>
+
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Route and page title</div>
+                    <p class="text-xs text-gray-600 mb-2">This top section declares the route for the Home page and sets
+                        the browser tab title.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li><code>&#64;page "/"</code> maps the component to the root URL.</li>
+                        <li><code>&lt;PageTitle&gt;</code> controls the document title shown in the browser.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&#64;page "/"
+
+&lt;PageTitle&gt;Home&lt;/PageTitle&gt;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Live Demo container</div>
+                    <p class="text-xs text-gray-600 mb-2">This wrapper sets up the Live Demo section with a heading and
+                        a two-column grid.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Uses a rounded card with padding and border.</li>
+                        <li>Defines a responsive grid that will hold the date and time cards.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;bg-black/3 rounded-2xl p-6 mb-6&quot;&gt;
+    &lt;h2 class=&quot;text-2xl font-semibold text-gray-800 mb-4&quot;&gt;🎬 Live Demo&lt;/h2&gt;
+    &lt;div class=&quot;grid md:grid-cols-2 gap-4&quot;&gt;
+        @@* Date and time cards go here *@@
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">3. Current date card</div>
+                    <p class="text-xs text-gray-600 mb-2">This card shows how to format and display the current date
+                        using Razor.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Uses <code>@@DateTime.Now.ToString("dddd, MMMM dd, yyyy")</code> for a friendly format.</li>
+                        <li>Wraps the value in styled text to match the design system.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;p class=&quot;text-sm text-gray-500 mb-1&quot;&gt;Current Date&lt;/p&gt;
+&lt;p class=&quot;text-2xl font-semibold text-gray-900&quot;&gt;
+    &#64;DateTime.Now.ToString(&quot;dddd, MMMM dd, yyyy&quot;)
+&lt;/p&gt;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">4. Current time card</div>
+                    <p class="text-xs text-gray-600 mb-2">This card shows how to render the current time in a 12-hour
+                        clock format.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Uses <code>@@DateTime.Now.ToString("hh:mm tt")</code> to format hours and AM/PM.</li>
+                        <li>Matches the styling of the date card for consistency.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;p class=&quot;text-sm text-gray-500 mb-1&quot;&gt;Current Time&lt;/p&gt;
+&lt;p class=&quot;text-2xl font-semibold text-gray-900&quot;&gt;
+    &#64;DateTime.Now.ToString(&quot;hh:mm tt&quot;)
+&lt;/p&gt;</pre>
+                </div>
             </div>
         </div>
 

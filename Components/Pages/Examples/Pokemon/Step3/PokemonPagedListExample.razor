@@ -1,0 +1,92 @@
+@page "/pokemon-examples/demo-paged"
+@inject IHttpClientFactory HttpClientFactory
+
+<h3 class="text-xl font-semibold mb-3">Paged Pokemon List</h3>
+
+<div class="flex items-center justify-between mb-4">
+    <button class="px-3 py-1 rounded-lg border text-sm" disabled="@(currentPage == 1)" @onclick="PreviousPage">
+        3 Previous
+    </button>
+
+    <span class="text-sm text-gray-600">
+        Page <span class="font-semibold">@currentPage</span>
+        of <span class="font-semibold">@totalPages</span>
+    </span>
+
+    <button class="px-3 py-1 rounded-lg border text-sm" disabled="@(currentPage >= totalPages)" @onclick="NextPage">
+        Next 4
+    </button>
+</div>
+
+@if (allPokemon is null)
+{
+    <p class="text-gray-500">Loading Pokemon...</p>
+}
+else
+{
+    <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        @foreach (var p in GetPagedPokemon())
+        {
+            <li class="bg-white border border-gray-200 rounded-xl px-3 py-2">
+                <p class="text-xs text-gray-500">Pokemon</p>
+                <p class="font-semibold capitalize">@p.Name</p>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<PokemonItem>? allPokemon;
+    private int currentPage = 1;
+    private int pageSize = 20;
+    private int totalPages = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = HttpClientFactory.CreateClient("PokeApi");
+        var response = await client.GetFromJsonAsync<PokemonListResponse>("pokemon?limit=151");
+
+        allPokemon = response?.Results ?? new List<PokemonItem>();
+        totalPages = Math.Max(1, (int)Math.Ceiling(allPokemon.Count / (double)pageSize));
+    }
+
+    private List<PokemonItem> GetPagedPokemon()
+    {
+        if (allPokemon is null || allPokemon.Count == 0)
+        {
+            return new List<PokemonItem>();
+        }
+
+        return allPokemon
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
+    }
+
+    public class PokemonListResponse
+    {
+        public List<PokemonItem> Results { get; set; } = new();
+    }
+
+    public class PokemonItem
+    {
+        public string Name { get; set; } = "";
+        public string Url { get; set; } = "";
+    }
+}

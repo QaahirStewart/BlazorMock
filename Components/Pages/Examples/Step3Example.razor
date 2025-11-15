@@ -69,7 +69,7 @@
 
             <!-- Grey container so Show code sits inside like Step 4 -->
             <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
-                <pre data-code-title="Razor (Components/GreetingCard.razor)"
+                <pre data-code-title="Razor (Components/Pages/Examples/Trucking/Step3/GreetingCard.razor)"
                     class="text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@* GreetingCard.razor - Reusable component with parameters *@@
 
 &lt;div class=&quot;bg-black/3 rounded-2xl p-6 mb-6&quot;&gt;
@@ -129,6 +129,76 @@
 
 &lt;/div&gt;</pre>
             </div>
+
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Component wrapper and heading</div>
+                    <p class="text-xs text-gray-600 mb-2">This outer wrapper defines the greeting section and gives it a
+                        consistent card-like look.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Uses a rounded container with padding and subtle border.</li>
+                        <li>Displays a clear heading so users know what the component shows.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;bg-black/3 rounded-2xl p-6 mb-6&quot;&gt;
+
+    &lt;h2 class=&quot;text-2xl font-semibold text-gray-800 mb-4&quot;&gt;💌 Greeting Cards&lt;/h2&gt;
+
+    @@* Inner card content goes here *@@
+
+&lt;/div&gt;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Layout and message area</div>
+                    <p class="text-xs text-gray-600 mb-2">This section shows the recipient name and message with a
+                        simple layout and Tailwind styling.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Binds <code>&amp;#64;Name</code> into the heading text.</li>
+                        <li>Renders <code>&amp;#64;Message</code> in a styled paragraph for readability.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;flex items-center mb-4 gap-3&quot;&gt;
+    &lt;h3 class=&quot;text-lg sm:text-xl font-semibold text-gray-900 break-words min-w-0&quot;&gt;Hello, @@Name!&lt;/h3&gt;
+&lt;/div&gt;
+
+&lt;p class=&quot;text-sm sm:text-base text-gray-600 leading-relaxed mb-4 break-words&quot;&gt;
+    @@Message
+&lt;/p&gt;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">3. Parameter properties</div>
+                    <p class="text-xs text-gray-600 mb-2">These public properties marked with <code>[Parameter]</code>
+                        let parents pass in values.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li><code>Name</code> controls the greeting recipient.</li>
+                        <li><code>Message</code> controls the card body text.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">[Parameter]
+public string Name { get; set; } = &quot;Guest&quot;;
+
+[Parameter]
+public string Message { get; set; } = &quot;Welcome to our application!&quot;;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">4. Usage in a page</div>
+                    <p class="text-xs text-gray-600 mb-2">This snippet shows how to drop the component into a page and
+                        pass different values.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Renders two cards with different <code>Name</code> and <code>Message</code> values.</li>
+                        <li>Demonstrates simple reuse without duplicating markup.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;grid md:grid-cols-2 gap-4 mt-6&quot;&gt;
+    &lt;GreetingCard Name=&quot;John Doe&quot; Message=&quot;Welcome to your dashboard!&quot; /&gt;
+    &lt;GreetingCard Name=&quot;Sarah Smith&quot; Message=&quot;Great job on your delivery!&quot; /&gt;
+&lt;/div&gt;</pre>
+                </div>
+            </div>
         </div>
 
         <!-- How to do it -->
@@ -137,9 +207,10 @@
             <ol class="list-decimal ml-5 space-y-3 text-gray-700">
                 <li>
                     <strong>Create the component file:</strong><br>
-                    Create a new file called <code>GreetingCard.razor</code> in the <code>Components</code> folder.
+                    Create a new file called <code>GreetingCard.razor</code> in the
+                    <code>Components/Pages/Examples/Trucking/Step3</code> folder.
                     <div class="mt-1 text-sm text-gray-600">
-                        📁 <code>Components/GreetingCard.razor</code>
+                        📁 <code>Components/Pages/Examples/Trucking/Step3/GreetingCard.razor</code>
                     </div>
                 </li>
                 <li>

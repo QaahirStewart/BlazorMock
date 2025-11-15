@@ -81,9 +81,17 @@
             <p class="text-xs sm:text-sm text-gray-600 mb-2 break-words">Add to your <code
                     class="bg-gray-100 px-2 py-1 rounded text-xs sm:text-sm break-all">Components/App.razor</code> file
                 in the <code class="break-all">&lt;head&gt;</code> section:</p>
-            <pre data-code-title="Razor Code (App.razor)"
-                class="bg-gray-100 p-3 sm:p-4 rounded text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto mb-4"
-                style="white-space:pre-wrap;overflow-wrap:anywhere;">&lt;link rel="stylesheet" href="@@Assets["tailwind.css"]" /&gt;</pre>
+            <div class="bg-gray-100 rounded-lg p-3 sm:p-4 mb-4">
+                <div class="text-xs text-gray-500 mb-1">Code Example: Link Tailwind bundle</div>
+                <p class="text-xs sm:text-sm text-gray-600 mb-2 break-words">This link tag pulls in the generated
+                    <code>tailwind.css</code> file so your Pokemon app can use Tailwind classes.</p>
+                <ul class="list-disc ml-4 mb-2 text-[11px] sm:text-xs text-gray-600 space-y-1">
+                    <li><code>@@Assets["tailwind.css"]</code> resolves to the built CSS asset.</li>
+                    <li>Placing this in <code>&lt;head&gt;</code> ensures styles load before the page renders.</li>
+                </ul>
+                <pre data-code-title="Razor Code (App.razor)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;link rel="stylesheet" href="@@Assets["tailwind.css"]" /&gt;</pre>
+            </div>
 
             <div class="mt-6 pt-6 border-t border-gray-200">
                 <p class="text-xs sm:text-sm text-gray-600 mb-2 break-words"><strong>💡 Key Concepts:</strong> dotnet
@@ -91,6 +99,26 @@
                 <p class="text-xs sm:text-sm text-gray-600 break-words"><strong>✅ Result:</strong> Clean Blazor Server
                     project with Tailwind CSS ready for styling your Pokemon Collector!</p>
             </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Create the project:</strong>
+                    Run the <code>dotnet new blazor ...</code> command to scaffold your Pokemon app.
+                </li>
+                <li>
+                    <strong>Install Tailwind:</strong>
+                    Use <code>npm install tailwindcss @@tailwindcss/cli</code> and build your <code>input.css</code>
+                    into <code>wwwroot/tailwind.css</code>.
+                </li>
+                <li>
+                    <strong>Link the CSS:</strong>
+                    Add the <code>&lt;link&gt;</code> tag in <code>Components/App.razor</code> so Tailwind styles load
+                    for every page.
+                </li>
+            </ol>
         </div>
 
         <!-- Mark Complete Section -->
