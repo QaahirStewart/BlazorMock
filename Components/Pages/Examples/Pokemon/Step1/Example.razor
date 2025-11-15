@@ -1,0 +1,251 @@
+@page "/pokemon-examples/step1"
+@rendermode InteractiveServer
+@inherits ExampleBase
+
+<PageTitle>Pokemon Step 1: New Clean Project - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/pokemon-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Pokemon guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            🎯 Step 1: New Clean Project
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Create a new Blazor Server application with interactive rendering mode and set up Tailwind CSS v4 for the
+            Pokemon Collector app.
+        </p>
+
+        <!-- What You'll Learn Section (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                This foundational step teaches you how to set up a complete Blazor Server development environment from
+                scratch, including modern CSS tooling with Tailwind v4.
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>How to create a new Blazor Server project using dotnet CLI with interactive rendering</li>
+                <li>Understanding CLI flags for project configuration (--interactivity, --all-interactive, --empty)</li>
+                <li>Installing and configuring Tailwind CSS v4 via npm for modern utility-first styling</li>
+                <li>Setting up Tailwind's watch mode for automatic CSS rebuilds during development</li>
+                <li>Integrating compiled CSS into your Blazor app using the .NET asset pipeline</li>
+            </ul>
+
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> dotnet CLI, npm package management, Tailwind v4, Asset pipeline,
+                    Watch mode
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#dotnet-cli" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">dotnet CLI</a>
+                    <a href="/tips#npm" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">npm</a>
+                    <a href="/tips#tailwind-css" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind CSS</a>
+                    <a href="/tips#watch-mode" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Watch Mode</a>
+                    <a href="/tips#net-asset-pipeline" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">.NET Asset Pipeline</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component Section (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Project Setup Commands</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                Follow these CLI commands to create your Pokemon Collector project with all the necessary configuration.
+            </p>
+
+            <!-- Step 1.1: Create Project -->
+            <!-- Step 1.1: Create Project -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Step 1.1: Create New Blazor Project</div>
+                <p class="text-xs text-gray-600 mb-2">Create a clean Blazor Server project with interactive rendering
+                    and no sample pages.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li><code>-o PokemonCollector</code> → Names your output project directory</li>
+                    <li><code>--interactivity Server</code> → Enables Blazor Server mode for real-time updates</li>
+                    <li><code>--all-interactive</code> → Makes all components interactive by default</li>
+                    <li><code>--empty</code> → Creates a minimal template without example pages</li>
+                </ul>
+                <pre data-code-title="dotnet CLI"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">dotnet new blazor -o PokemonCollector --interactivity Server --all-interactive --empty</pre>
+            </div>
+
+            <!-- Step 1.2: Install Tailwind -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Step 1.2: Install Tailwind CSS v4</div>
+                <p class="text-xs text-gray-600 mb-2">Install Tailwind CSS and its CLI tool via npm.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li><code>tailwindcss</code> → Core Tailwind CSS framework (v4)</li>
+                    <li><code>@@tailwindcss/cli</code> → Command-line tool for building CSS</li>
+                </ul>
+                <pre data-code-title="npm CLI"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">npm install tailwindcss @@tailwindcss/cli</pre>
+            </div>
+
+            <!-- Step 1.3: Create input.css -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Step 1.3: Create Styles Folder & input.css</div>
+                <p class="text-xs text-gray-600 mb-2">Create a source CSS file that imports Tailwind's utilities.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Create folder: <code>Styles</code> in your project root</li>
+                    <li>Create file: <code>Styles/input.css</code></li>
+                    <li>Content: <code>@@import "tailwindcss";</code> (imports all Tailwind directives)</li>
+                </ul>
+                <pre data-code-title="Styles/input.css"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@import "tailwindcss";</pre>
+            </div>
+
+            <!-- Step 1.4: Build Tailwind -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Step 1.4: Build Tailwind CSS with Watch Mode</div>
+                <p class="text-xs text-gray-600 mb-2">Build your CSS and watch for changes during development.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li><code>-i ./Styles/input.css</code> → Input source file</li>
+                    <li><code>-o ./wwwroot/tailwind.css</code> → Output compiled CSS to wwwroot</li>
+                    <li><code>--watch</code> → Keep process running and rebuild on changes</li>
+                </ul>
+                <pre data-code-title="Tailwind CLI"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">npx @@tailwindcss/cli -i ./Styles/input.css -o ./wwwroot/tailwind.css --watch</pre>
+            </div>
+
+            <!-- Step 1.5: Link CSS -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Step 1.5: Link CSS in App.razor</div>
+                <p class="text-xs text-gray-600 mb-2">Add the compiled CSS to your app's head section so styles are
+                    available everywhere.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Open <code>Components/App.razor</code></li>
+                    <li>Add link tag in the <code>&lt;head&gt;</code> section</li>
+                    <li><code>@@Assets["tailwind.css"]</code> resolves to the built CSS asset path</li>
+                </ul>
+                <pre data-code-title="Components/App.razor (inside &lt;head&gt;)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;link rel="stylesheet" href="@@Assets["tailwind.css"]" /&gt;</pre>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips Section -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+
+            <div class="space-y-3">
+                <!-- Pro Tips (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Keep Tailwind CLI Running</p>
+                            <p class="text-xs text-blue-800">The <code>--watch</code> flag keeps the Tailwind build
+                                process running in your terminal. Leave this terminal open while developing so your CSS
+                                automatically rebuilds whenever you add new Tailwind classes to your components. This
+                                provides instant visual feedback without manual rebuilds.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use --empty for Clean Start</p>
+                            <p class="text-xs text-blue-800">The <code>--empty</code> flag creates a minimal Blazor
+                                project without sample pages or components. This gives you a clean slate to build your
+                                Pokemon app from scratch, avoiding the need to delete example code. Perfect for learning
+                                the fundamentals step by step.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Tailwind v4 Simplification</p>
+                            <p class="text-xs text-blue-800">Tailwind CSS v4 simplifies configuration significantly
+                                compared to v3. You only need a single <code>@@import "tailwindcss";</code> directive
+                                instead of managing a tailwind.config.js file. The CLI automatically detects your
+                                HTML/Razor files and generates optimized CSS.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting (Yellow) -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>If Tailwind CLI not found, ensure npm install completed successfully and try running
+                            <code>npx @@tailwindcss/cli --help</code></li>
+                        <li>If styles don't appear, verify the <code>&lt;link&gt;</code> tag is in App.razor's
+                            <code>&lt;head&gt;</code> section and Tailwind build completed</li>
+                        <li>If CSS doesn't update, make sure Tailwind CLI is running with <code>--watch</code> flag and
+                            check terminal for errors</li>
+                        <li>If asset not found error occurs, confirm <code>tailwind.css</code> exists in
+                            <code>wwwroot/</code> after running build command</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it Section -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Create the project:</strong>
+                    Run
+                    <code>dotnet new blazor -o PokemonCollector --interactivity Server --all-interactive --empty</code>
+                    to scaffold your Pokemon app with interactive server rendering.
+                </li>
+                <li>
+                    <strong>Install and configure Tailwind:</strong>
+                    Use <code>npm install tailwindcss @@tailwindcss/cli</code>, create <code>Styles/input.css</code>
+                    with the Tailwind import, then build with
+                    <code>npx @@tailwindcss/cli -i ./Styles/input.css -o ./wwwroot/tailwind.css --watch</code>.
+                </li>
+                <li>
+                    <strong>Link the CSS:</strong>
+                    Add <code>&lt;link rel="stylesheet" href="@@Assets["tailwind.css"]" /&gt;</code> in
+                    <code>Components/App.razor</code>'s <code>&lt;head&gt;</code> section so Tailwind styles load for
+                    every page.
+                </li>
+            </ol>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 1?</h3>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your Pokemon learning progress.
+                    </p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between">
+            <a href="/pokemon-examples/step0"
+                class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 0
+            </a>
+            <a href="/pokemon-examples/step2"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 2
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>

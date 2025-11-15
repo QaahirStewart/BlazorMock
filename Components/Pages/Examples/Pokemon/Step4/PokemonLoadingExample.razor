@@ -1,0 +1,47 @@
+@page "/pokemon-examples/demo-loading"
+@rendermode InteractiveServer
+@inherits PokemonLoadingExampleBase
+
+<h3 class="text-xl font-semibold mb-3">Pokemon with Loading States</h3>
+
+@if (isLoading)
+{
+    <div class="flex items-center justify-center p-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 
+                    border-blue-600 border-t-transparent"></div>
+        <span class="ml-3 text-gray-600">Loading Pokemon...</span>
+    </div>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6">
+        <h3 class="text-red-800 font-semibold mb-2">⚠️ Error</h3>
+        <p class="text-red-700">@errorMessage</p>
+        <button @onclick="RetryLoad" 
+                class="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 
+                       text-white rounded-lg transition-colors">
+            Retry
+        </button>
+    </div>
+}
+else if (allPokemon.Count == 0)
+{
+    <div class="text-center p-12 text-gray-500">
+        <p class="text-lg font-medium">No Pokemon found</p>
+        <p class="text-sm mt-2">Try again later or check your connection.</p>
+    </div>
+}
+else
+{
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        @foreach (var pokemon in allPokemon.Take(20))
+        {
+            <div class="bg-white border border-gray-200 rounded-lg p-4 
+                        hover:shadow-lg transition-shadow">
+                <p class="text-sm font-semibold text-gray-800 capitalize">
+                    @pokemon.Name
+                </p>
+            </div>
+        }
+    </div>
+}

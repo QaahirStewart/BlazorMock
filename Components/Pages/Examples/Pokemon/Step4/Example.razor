@@ -1,0 +1,399 @@
+@page "/pokemon-examples/step4"
+@rendermode InteractiveServer
+@inherits ExampleBase
+
+<PageTitle>Pokemon Step 4: Loading & Error States - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/pokemon-guide" class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Pokemon Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            ⏳ Step 4: Loading & Error States
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Handle loading, error, and empty states to provide a better user experience during async operations.
+        </p>
+
+        <!-- What You'll Learn (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                Real-world apps need to handle loading states (showing spinners while data fetches), error states (displaying friendly messages when things go wrong), and empty states (telling users when there's no data). This step teaches you the robust patterns for async data handling in Blazor.
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Add a loading spinner while fetching data from APIs</li>
+                <li>Display user-friendly error messages when API calls fail</li>
+                <li>Handle empty state gracefully when no results are found</li>
+                <li>Use try-catch-finally for robust error handling</li>
+                <li>Implement retry functionality for failed requests</li>
+            </ul>
+
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> try-catch-finally, Loading State Pattern, Error State Pattern, StateHasChanged, Conditional Rendering
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#try-catch-finally" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">try-catch-finally</a>
+                    <a href="/tips#loading-state-pattern" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Loading State Pattern</a>
+                    <a href="/tips#error-state-pattern" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Error State Pattern</a>
+                    <a href="/tips#statehaschanged" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">StateHasChanged</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: PokemonLoadingExample</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                This component demonstrates the complete pattern for handling loading, error, and empty states when fetching data from an API. It shows a spinner while loading, displays errors with a retry button when things fail, and handles the case when no data is returned.
+            </p>
+
+            <!-- Full code example -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">PokemonLoadingExample.razor</div>
+                <p class="text-xs text-gray-600 mb-2">Complete component showing robust async data handling with loading, error, and empty states</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Conditional rendering with @@if/else for different states</li>
+                    <li>Tailwind's animate-spin utility for loading spinner</li>
+                    <li>Red-themed error card with retry button</li>
+                    <li>Empty state message when no data is available</li>
+                </ul>
+                <pre data-code-title="Razor (PokemonLoadingExample.razor)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/pokemon-examples/demo-loading"
+@@rendermode InteractiveServer
+@@inherits PokemonLoadingExampleBase
+
+&lt;h3 class="text-xl font-semibold mb-3"&gt;Pokemon with Loading States&lt;/h3&gt;
+
+@@if (isLoading)
+{
+    &lt;div class="flex items-center justify-center p-12"&gt;
+        &lt;div class="animate-spin rounded-full h-12 w-12 border-4 
+                    border-blue-600 border-t-transparent"&gt;&lt;/div&gt;
+        &lt;span class="ml-3 text-gray-600"&gt;Loading Pokemon...&lt;/span&gt;
+    &lt;/div&gt;
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    &lt;div class="bg-red-50 border-2 border-red-200 rounded-xl p-6"&gt;
+        &lt;h3 class="text-red-800 font-semibold mb-2"&gt;⚠️ Error&lt;/h3&gt;
+        &lt;p class="text-red-700"&gt;@@errorMessage&lt;/p&gt;
+        &lt;button @@onclick="RetryLoad" 
+                class="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 
+                       text-white rounded-lg transition-colors"&gt;
+            Retry
+        &lt;/button&gt;
+    &lt;/div&gt;
+}
+else if (allPokemon.Count == 0)
+{
+    &lt;div class="text-center p-12 text-gray-500"&gt;
+        &lt;p class="text-lg font-medium"&gt;No Pokemon found&lt;/p&gt;
+        &lt;p class="text-sm mt-2"&gt;Try again later or check your connection.&lt;/p&gt;
+    &lt;/div&gt;
+}
+else
+{
+    &lt;div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"&gt;
+        @@foreach (var pokemon in allPokemon.Take(20))
+        {
+            &lt;div class="bg-white border border-gray-200 rounded-lg p-4 
+                        hover:shadow-lg transition-shadow"&gt;
+                &lt;p class="text-sm font-semibold text-gray-800 capitalize"&gt;
+                    @@pokemon.Name
+                &lt;/p&gt;
+            &lt;/div&gt;
+        }
+    &lt;/div&gt;
+}</pre>
+            </div>
+
+            <!-- Step-by-step breakdown -->
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Add state flags for tracking status</div>
+                    <p class="text-xs text-gray-600 mb-2">Declare boolean isLoading and nullable string errorMessage to track the component's current state</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>isLoading starts as true (assumes data needs loading on init)</li>
+                        <li>errorMessage is nullable—null means no error, string means error occurred</li>
+                        <li>allPokemon stores the fetched data</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@code {
+    protected bool isLoading = true;
+    protected string? errorMessage;
+    protected List&lt;PokemonItem&gt; allPokemon = new();
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Wrap API calls in try-catch-finally</div>
+                    <p class="text-xs text-gray-600 mb-2">Use try block for the risky API call, catch to handle errors gracefully, and finally to ensure isLoading always gets reset</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>try: Set isLoading = true, clear old errors, fetch data</li>
+                        <li>catch: Capture exception message and store in errorMessage</li>
+                        <li>finally: Always set isLoading = false (even if error occurred)</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">protected override async Task OnInitializedAsync()
+{
+    try
+    {
+        isLoading = true;
+        errorMessage = null;  // Clear previous errors
+        
+        var response = await Http.GetFromJsonAsync&lt;PokemonListResponse&gt;(
+            "https://pokeapi.co/api/v2/pokemon?limit=151"
+        );
+        
+        allPokemon = response?.Results ?? new();
+    }
+    catch (HttpRequestException ex)
+    {
+        errorMessage = $"Network error: {ex.Message}";
+    }
+    catch (Exception ex)
+    {
+        errorMessage = $"Failed to load Pokemon: {ex.Message}";
+    }
+    finally
+    {
+        isLoading = false;  // CRITICAL: Always runs
+    }
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">3. Render conditional UI based on state</div>
+                    <p class="text-xs text-gray-600 mb-2">Use @@if/else to show different UI depending on whether you're loading, have an error, have no data, or have data</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Check isLoading first → show spinner and loading message</li>
+                        <li>Check errorMessage next → show error card with retry button</li>
+                        <li>Check empty list → show "no data" message</li>
+                        <li>Finally, render the actual data grid</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@if (isLoading)
+{
+    &lt;div class="flex items-center justify-center p-12"&gt;
+        &lt;div class="animate-spin rounded-full h-12 w-12 border-4 
+                    border-blue-600 border-t-transparent"&gt;&lt;/div&gt;
+        &lt;span class="ml-3 text-gray-600"&gt;Loading Pokemon...&lt;/span&gt;
+    &lt;/div&gt;
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    &lt;!-- Error card --&gt;
+}
+else if (allPokemon.Count == 0)
+{
+    &lt;!-- Empty state --&gt;
+}
+else
+{
+    &lt;!-- Data grid --&gt;
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">4. Add retry method</div>
+                    <p class="text-xs text-gray-600 mb-2">Let users retry the API call when it fails by re-running OnInitializedAsync and calling StateHasChanged</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Call OnInitializedAsync to re-run the entire fetch logic</li>
+                        <li>Call StateHasChanged to force Blazor to re-render with new state</li>
+                        <li>Wire to retry button: @@onclick="RetryLoad"</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">protected async Task RetryLoad()
+{
+    await OnInitializedAsync();
+    StateHasChanged();
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">5. Style the loading spinner with Tailwind</div>
+                    <p class="text-xs text-gray-600 mb-2">Use Tailwind's animate-spin utility and border tricks to create a smooth spinner without any custom CSS or images</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>animate-spin: Rotates the element continuously</li>
+                        <li>rounded-full: Makes it a circle</li>
+                        <li>border-4 border-blue-600: Creates the spinner ring</li>
+                        <li>border-t-transparent: Makes top border invisible, creating the "gap" that spins</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class="animate-spin rounded-full h-12 w-12 border-4 
+            border-blue-600 border-t-transparent"&gt;
+&lt;/div&gt;</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+
+            <div class="space-y-3">
+                <!-- Pro Tips (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Always use finally for cleanup</p>
+                            <p class="text-xs text-blue-800">The finally block ALWAYS runs, even if an exception is thrown. This ensures your isLoading flag gets reset and your UI doesn't get stuck showing a spinner forever. Without finally, if the API call fails, isLoading stays true.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Show user-friendly error messages</p>
+                            <p class="text-xs text-blue-800">Don't show raw exception messages to users—they're technical and scary. Use catch blocks to translate errors into friendly language: "Unable to connect to server" instead of "HttpRequestException: The SSL connection could not be established".</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Consider skeleton loaders for better UX</p>
+                            <p class="text-xs text-blue-800">Instead of a blank screen with a spinner, show a "skeleton" version of your UI (gray rectangles where content will appear). This gives users a sense of what's coming and makes the wait feel shorter.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Initialize isLoading based on data source</p>
+                            <p class="text-xs text-blue-800">If data loads in OnInitializedAsync, start with isLoading = true. If you load data on user action (button click), start with isLoading = false and set it to true when the action triggers.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting (Yellow) -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li><strong>Spinner shows forever:</strong> You forgot the finally block. Add finally { isLoading = false; } to ensure it always resets.</li>
+                        <li><strong>Error message doesn't show:</strong> Check that you're using !string.IsNullOrEmpty(errorMessage) in your @@if condition, not just errorMessage != null.</li>
+                        <li><strong>Retry button doesn't work:</strong> Make sure RetryLoad is async and calls StateHasChanged() after OnInitializedAsync completes.</li>
+                        <li><strong>UI doesn't update after retry:</strong> You need StateHasChanged() because Blazor doesn't auto-rerender when you manually call lifecycle methods.</li>
+                        <li><strong>Multiple error types not handled:</strong> Use multiple catch blocks for different exceptions (HttpRequestException for network, JsonException for bad data, etc.).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Create the component folder:</strong>
+                    Create <code>Components/Pages/Examples/Pokemon/Step4</code> with <code>PokemonLoadingExample.razor</code> and <code>PokemonLoadingExample.razor.cs</code>
+                </li>
+                <li>
+                    <strong>Add state flags:</strong>
+                    In the code-behind, declare <code>bool isLoading = true</code>, <code>string? errorMessage</code>, and your data list
+                </li>
+                <li>
+                    <strong>Wrap API calls in try-catch-finally:</strong>
+                    In OnInitializedAsync, use try for the API call, catch for errors, and finally to reset isLoading
+                </li>
+                <li>
+                    <strong>Build conditional UI:</strong>
+                    In the markup, use @@if (isLoading) for spinner, else if (errorMessage) for error card, else if (data.Count == 0) for empty state, else for data grid
+                </li>
+                <li>
+                    <strong>Add retry functionality:</strong>
+                    Create a RetryLoad method that calls OnInitializedAsync and StateHasChanged, wire it to a button
+                </li>
+                <li>
+                    <strong>Test all states:</strong>
+                    Test loading (should see spinner briefly), success (should see data), error (temporarily break the URL to see error card), and empty (return empty array)
+                </li>
+                <li>
+                    <strong>Route:</strong>
+                    Access at <code>/pokemon-examples/demo-loading</code>
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo (Optional) -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">See the loading state pattern in action—this demo fetches the first 20 Pokemon and handles all states.</p>
+
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                @if (isLoading)
+                {
+                    <div class="flex items-center justify-center p-12">
+                        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+                        <span class="ml-3 text-gray-600">Loading Pokemon...</span>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6">
+                        <h3 class="text-red-800 font-semibold mb-2">⚠️ Error</h3>
+                        <p class="text-red-700">@errorMessage</p>
+                        <button @onclick="RetryLoad" 
+                                class="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                            Retry
+                        </button>
+                    </div>
+                }
+                else if (livePokemon.Count == 0)
+                {
+                    <div class="text-center p-12 text-gray-500">
+                        <p class="text-lg font-medium">No Pokemon found</p>
+                        <p class="text-sm mt-2">Try again later or check your connection.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        @foreach (var pokemon in livePokemon)
+                        {
+                            <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
+                                <p class="text-sm font-semibold text-gray-800 capitalize">@pokemon.Name</p>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <p class="text-xs text-gray-600 mt-4 text-center">💡 This live demo uses the exact same loading/error/empty state pattern shown in the code examples above.</p>
+        </div>
+
+        <!-- Mark Complete (Green Card) -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 4?</h3>
+                    <p class="text-sm text-gray-600">Mark complete when you've implemented loading, error, and empty states with try-catch-finally</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between">
+            <a href="/pokemon-examples/step3"
+                class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 3
+            </a>
+            <a href="/pokemon-examples/step5"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 5
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>

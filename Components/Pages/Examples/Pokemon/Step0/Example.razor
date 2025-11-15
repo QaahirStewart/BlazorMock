@@ -1,10 +1,6 @@
 @page "/pokemon-examples/step0"
-@inject ILearningProgressService ProgressService
-@inject NavigationManager Navigation
-@inject IJSRuntime JS
-@inject IHttpClientFactory HttpClientFactory
-@implements IDisposable
 @rendermode InteractiveServer
+@inherits ExampleBase
 
 <PageTitle>Pokemon Step 0: Configure HttpClient for PokeAPI</PageTitle>
 
@@ -42,9 +38,16 @@
                     test call.</li>
             </ul>
             <div class="mt-2 pt-3 border-t border-blue-200 mb-4">
-                <p class="text-xs sm:text-sm text-gray-700 mb-0"><strong>💡 Key Concepts:</strong>
+                <p class="text-xs sm:text-sm text-gray-700 mb-2"><strong>💡 Key Concepts:</strong>
                     <code>AddHttpClient</code>, base addresses, dependency injection, named clients
                 </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#ihttpclientfactory"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">IHttpClientFactory</a>
+                    <a href="/tips#dependency-injection-di"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Dependency Injection</a>
+                </div>
             </div>
             <div class="grid gap-3">
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
@@ -151,41 +154,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    private bool isComplete;
-    private IJSObjectReference? _copyModule;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            try
-            {
-                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
-                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
-            }
-        }
-    }
-
-    private async Task MarkComplete()
-    {
-        await ProgressService.MarkStepCompleteAsync("pokemon", 0);
-        isComplete = true;
-    }
-
-    private async Task ResetStep()
-    {
-        await ProgressService.MarkStepIncompleteAsync("pokemon", 0);
-        isComplete = false;
-    }
-
-    public void Dispose()
-    {
-        _copyModule?.DisposeAsync();
-    }
-}

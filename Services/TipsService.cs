@@ -22,6 +22,7 @@ public record TipTopic(
         .Replace("]", "")
         .Replace("<", "")
         .Replace(">", "")
+        .Replace(".", "")
         .Replace(" ", "-")
         .Replace("(", "")
         .Replace(")", "");
@@ -766,6 +767,210 @@ public class HttpAndDataTipsContributor : ITipsContributor
         {
             LongELI5 = "\n\n@foreach is how you turn a C# list into repeated HTML. Imagine you have a stack of Pokemon cards (a List<PokemonItem>). You want to display each card on the screen. Instead of writing <div>bulbasaur</div>, <div>charmander</div>, ... manually, you write one template and let @foreach repeat it for every card.\n\nBlazor steps through your list, and for each item, it stamps out the HTML you defined inside the loop—substituting @item.Name with the actual name.\n\nExample:\nIf you have:\nList<PokemonItem> pokemon = new() {\n  new() { Name = \"bulbasaur\" },\n  new() { Name = \"charmander\" }\n};\n\nAnd you write:\n<ul>\n  @foreach (var p in pokemon) {\n    <li class=\"card\">@p.Name</li>\n  }\n</ul>\n\nBlazor renders:\n<ul>\n  <li class=\"card\">bulbasaur</li>\n  <li class=\"card\">charmander</li>\n</ul>\n\nIt's the Razor version of a for-loop, but cleaner for UI.",
             ELI5Example = "@if (pokemon is null) {\n  <p>Loading Pokemon...</p>\n}\nelse if (pokemon.Count == 0) {\n  <p>No Pokemon found.</p>\n}\nelse {\n  <div class=\"grid grid-cols-4 gap-3\">\n    @foreach (var p in pokemon) {\n      <div class=\"card\">\n        <p class=\"font-bold\">@p.Name</p>\n        <img src=\"@p.SpriteUrl\" alt=\"@p.Name\" />\n      </div>\n    }\n  </div>\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "dotnet CLI",
+            Category: "Tooling — .NET",
+            Type: "Tool",
+            ELI5: "The command-line interface for creating, building, and running .NET projects. Like a Swiss Army knife for .NET development.",
+            Example: "dotnet new blazor -n MyApp --interactivity Server --all-interactive --empty\ndotnet build\ndotnet run",
+            Tips: new[] {
+                "Use 'dotnet new list' to see all available project templates.",
+                "Add --help to any command to see detailed options.",
+                "Combine flags to customize your project structure from the start."
+            }
+        )
+        {
+            LongELI5 = "\n\nThe dotnet CLI is like a construction foreman for .NET projects. Instead of clicking through menus in Visual Studio, you type commands that tell .NET exactly what to build.\n\n'dotnet new blazor' creates a new Blazor project from a template. The flags customize it:\n- '-n MyApp' names your project\n- '--interactivity Server' enables server-side interactivity\n- '--all-interactive' makes all components interactive by default\n- '--empty' creates a minimal project without sample pages\n\n'dotnet build' compiles your code into DLLs.\n'dotnet run' builds and starts your app.\n\nWhy use CLI instead of IDE menus? It's faster, scriptable, and works everywhere (Windows, Mac, Linux, CI/CD pipelines).",
+            ELI5Example = "# Create a new Blazor Server app\ndotnet new blazor -n PokemonCollector --interactivity Server --all-interactive --empty\n\n# Navigate into the project\ncd PokemonCollector\n\n# Build the project\ndotnet build\n\n# Run the app\ndotnet run"
+        };
+
+        yield return new TipTopic(
+            Title: "npm",
+            Category: "Tooling — Frontend",
+            Type: "Tool",
+            ELI5: "Node Package Manager—a tool for installing JavaScript libraries and tools like Tailwind CSS. Think of it as an app store for frontend development tools.",
+            Example: "npm install @tailwindcss/cli@next\nnpm run build:css",
+            Tips: new[] {
+                "package.json defines your project's dependencies and scripts.",
+                "Use 'npm install' to download all dependencies listed in package.json.",
+                "Define custom scripts in package.json to simplify common tasks."
+            }
+        )
+        {
+            LongELI5 = "\n\nnpm is like a vending machine for code tools. You tell it what you need (like Tailwind CSS), and it downloads and installs it into your project.\n\nWhen you run 'npm install @tailwindcss/cli@next', npm:\n1. Downloads the Tailwind CLI tool\n2. Saves it in a 'node_modules' folder\n3. Records it in package.json so teammates can install the same version\n\npackage.json is your shopping list. It lists all the tools your project needs and defines shortcuts (scripts) for common tasks like 'build:css' or 'watch:css'.\n\nWhy use npm in a .NET project? Because modern CSS tools like Tailwind are JavaScript-based. npm bridges the .NET and frontend worlds.",
+            ELI5Example = "// package.json\n{\n  \"scripts\": {\n    \"build:css\": \"npx @tailwindcss/cli@next -i ./Styles/input.css -o ./wwwroot/app.css\",\n    \"watch:css\": \"npx @tailwindcss/cli@next -i ./Styles/input.css -o ./wwwroot/app.css --watch\"\n  },\n  \"devDependencies\": {\n    \"@tailwindcss/cli\": \"^4.0.0-alpha.25\"\n  }\n}\n\n# Run the build script\nnpm run build:css"
+        };
+
+        yield return new TipTopic(
+            Title: "Tailwind CSS",
+            Category: "Styling — CSS",
+            Type: "Framework",
+            ELI5: "A utility-first CSS framework that provides pre-built classes like 'text-blue-500' or 'rounded-lg' so you can style without writing custom CSS.",
+            Example: "<div class=\"bg-blue-100 p-4 rounded-lg text-gray-800\">\n  Hello Tailwind!\n</div>",
+            Tips: new[] {
+                "Version 4 simplifies setup—just @import in CSS, no config file needed.",
+                "Use responsive prefixes like 'sm:text-lg' for mobile-first design.",
+                "Combine utilities to build complex designs without leaving HTML."
+            }
+        )
+        {
+            LongELI5 = "\n\nTailwind CSS is like Lego blocks for styling. Instead of writing custom CSS rules, you snap together pre-made utility classes directly in your HTML.\n\nTraditional CSS:\n<div class=\"my-card\">...</div>\n\n.my-card {\n  background-color: #dbeafe;\n  padding: 1rem;\n  border-radius: 0.5rem;\n  color: #1f2937;\n}\n\nTailwind way:\n<div class=\"bg-blue-100 p-4 rounded-lg text-gray-800\">...</div>\n\nNo need to name classes or switch between HTML and CSS files. The classes describe exactly what they do: 'bg-blue-100' = blue background, 'p-4' = padding, 'rounded-lg' = large border radius.\n\nTailwind v4 makes setup even simpler—just @import 'tailwindcss' in your CSS file and start using utilities. No complex config files required.",
+            ELI5Example = "<!-- Gradient banner with responsive text sizes -->\n<div class=\"bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-6\">\n  <h2 class=\"text-xl sm:text-2xl font-semibold text-gray-800 mb-4\">\n    What You'll Learn\n  </h2>\n  <p class=\"text-sm sm:text-base text-gray-700\">\n    Build modern UIs with utility classes.\n  </p>\n</div>"
+        };
+
+        yield return new TipTopic(
+            Title: "Watch Mode",
+            Category: "Tooling — Development",
+            Type: "Feature",
+            ELI5: "A mode where a tool automatically rebuilds your files whenever you save changes. Like having a helper that re-compiles CSS every time you edit it.",
+            Example: "npx @tailwindcss/cli -i ./Styles/input.css -o ./wwwroot/app.css --watch",
+            Tips: new[] {
+                "Keep watch mode running in a separate terminal while developing.",
+                "Use npm scripts to simplify the command: 'npm run watch:css'.",
+                "Watch mode detects changes and rebuilds automatically—no manual refresh needed."
+            }
+        )
+        {
+            LongELI5 = "\n\nWatch mode is like having a robot assistant that monitors your work. When you edit input.css and save, the robot sees the change and immediately runs the build command to regenerate app.css.\n\nWithout watch mode, you'd have to:\n1. Edit input.css\n2. Switch to terminal\n3. Run 'npm run build:css'\n4. Switch back to browser\n5. Refresh\n\nWith watch mode running (--watch flag), steps 2-3 happen automatically. You just save and refresh the browser.\n\nExample workflow:\n1. Open terminal, run 'npm run watch:css' (starts watching)\n2. Edit Styles/input.css, save\n3. Watch mode rebuilds wwwroot/app.css automatically\n4. Refresh browser to see changes\n\nLeave watch mode running all day while developing—it's your auto-save for CSS.",
+            ELI5Example = "# Terminal 1: Run watch mode (keeps running)\nnpm run watch:css\n\n# Output when you save input.css:\n# Rebuilding...\n# Done in 45ms.\n\n# Terminal 2: Run your Blazor app\ndotnet run"
+        };
+
+        yield return new TipTopic(
+            Title: ".NET Asset Pipeline",
+            Category: "Blazor — Assets",
+            Type: "Feature",
+            ELI5: "A system in .NET that copies static files (CSS, JS, images) from your project to the output folder and serves them to the browser. It's how wwwroot/app.css becomes accessible at /app.css in your app.",
+            Example: "<!-- In Layout.razor -->\n<link rel=\"stylesheet\" href=\"app.css\" />\n\n<!-- .NET serves this from wwwroot/app.css -->",
+            Tips: new[] {
+                "Files in wwwroot are served as static assets automatically.",
+                "Reference assets by their filename (app.css) not the full path (wwwroot/app.css).",
+                "Asset pipeline runs during build—ensure files exist before referencing them."
+            }
+        )
+        {
+            LongELI5 = "\n\nThe .NET asset pipeline is like a delivery truck that moves your static files (CSS, JS, images) from your source code into the running app so browsers can request them.\n\nWhere files live:\n- Source: 'wwwroot/app.css' (in your project)\n- Output: 'bin/Debug/net10.0/wwwroot/app.css' (copied during build)\n- Browser: 'https://localhost:5001/app.css' (served by Kestrel)\n\nWhen you reference '<link rel=\"stylesheet\" href=\"app.css\" />', the browser requests '/app.css' and .NET serves it from wwwroot.\n\nKey rules:\n1. Put static files in wwwroot (CSS, JS, images, fonts)\n2. Reference them by relative path (app.css, not wwwroot/app.css)\n3. Build the project so .NET copies them to the output folder\n\nTailwind workflow example:\n- You run 'npm run build:css' which generates wwwroot/app.css\n- You reference it in MainLayout.razor as 'app.css'\n- When you 'dotnet build', .NET copies wwwroot/app.css to the output\n- Browser requests /app.css and gets the Tailwind styles",
+            ELI5Example = "<!-- MainLayout.razor head section -->\n<head>\n    <link rel=\"stylesheet\" href=\"app.css\" />\n    <!-- .NET serves from wwwroot/app.css -->\n</head>\n\n# Terminal: Generate and build\nnpm run build:css  # Creates wwwroot/app.css\ndotnet build       # Copies to output folder"
+        };
+
+        yield return new TipTopic(
+            Title: "LINQ Skip/Take",
+            Category: "C# — LINQ",
+            Type: "Method",
+            ELI5: "Skip a certain number of items in a collection and take the next batch. Perfect for pagination.",
+            Example: "var page2 = items.Skip(20).Take(20).ToList(); // Items 21-40",
+            Tips: new[] {
+                "Skip(n) skips the first n items, Take(n) grabs the next n items.",
+                "Combine them for pagination: Skip((page-1)*pageSize).Take(pageSize).",
+                "Works on any IEnumerable<T> including lists, arrays, and query results."
+            }
+        )
+        {
+            LongELI5 = "\n\nImagine a deck of cards. Skip(5) means 'put the first 5 cards aside'. Take(10) means 'grab the next 10 cards from what's left'. Together, they let you grab any slice of the deck.\n\nFor pagination:\n- Page 1: Skip(0).Take(20) → first 20 items\n- Page 2: Skip(20).Take(20) → items 21-40\n- Page 3: Skip(40).Take(20) → items 41-60\n\nThe formula is: Skip((currentPage - 1) * pageSize).Take(pageSize)\n\nWhy (currentPage - 1)?\n- Page 1: (1-1)*20 = 0, so Skip(0) starts at the beginning\n- Page 2: (2-1)*20 = 20, so Skip(20) starts at item 21\n- Page 3: (3-1)*20 = 40, so Skip(40) starts at item 41\n\nSkip and Take don't modify the original collection—they return a new sequence with just the items you want.",
+            ELI5Example = "// Paginate a list of 151 Pokemon\nList<Pokemon> allPokemon = GetAll(); // 151 items\nint currentPage = 2;\nint pageSize = 20;\n\n// Get page 2 (items 21-40)\nvar page = allPokemon\n    .Skip((currentPage - 1) * pageSize)  // Skip 20\n    .Take(pageSize)                       // Take 20\n    .ToList();\n\n// page now contains Pokemon #21 through #40"
+        };
+
+        yield return new TipTopic(
+            Title: "Math.Ceiling",
+            Category: "C# — Math",
+            Type: "Method",
+            ELI5: "Round a decimal number up to the nearest whole number. Used to calculate total pages when items don't divide evenly.",
+            Example: "int totalPages = (int)Math.Ceiling(151 / 20.0); // 8 pages",
+            Tips: new[] {
+                "Always rounds UP: Ceiling(7.1) = 8, Ceiling(7.9) = 8.",
+                "Cast one operand to double to avoid integer division: count / (double)pageSize.",
+                "Essential for pagination to ensure the last partial page is counted."
+            }
+        )
+        {
+            LongELI5 = "\n\nMath.Ceiling is like a strict teacher grading homework. Even if you're 99% done with page 8, the teacher says 'you need 8 full pages', so they round up.\n\nWhy use it for pagination?\nIf you have 151 Pokemon and show 20 per page:\n- 151 ÷ 20 = 7.55 pages\n- Without Ceiling: you'd think you have 7 pages, and the last 11 Pokemon disappear!\n- With Ceiling(7.55) = 8 pages, the last 11 Pokemon get their own page 8.\n\nCommon mistake: Integer division\n```csharp\nint totalPages = 151 / 20;  // WRONG: 7 (integer division drops decimals)\nint totalPages = (int)Math.Ceiling(151 / 20.0);  // CORRECT: 8\n```\n\nYou MUST convert to double before dividing, or C# does integer division and throws away the decimal before Ceiling sees it.\n\nAlternative ways to ensure double division:\n- count / (double)pageSize\n- (double)count / pageSize\n- count / 20.0 (add .0 to make it a double literal)",
+            ELI5Example = "// Calculate pages for 151 items, 20 per page\nint itemCount = 151;\nint pageSize = 20;\n\n// WRONG - integer division\nint wrong = itemCount / pageSize;  // 7 (loses last 11 items!)\n\n// CORRECT - cast to double first\nint correct = (int)Math.Ceiling(itemCount / (double)pageSize);  // 8\n\n// Also correct\nint alsoCorrect = (int)Math.Ceiling((double)itemCount / pageSize);  // 8"
+        };
+
+        yield return new TipTopic(
+            Title: "disabled Attribute",
+            Category: "Blazor — HTML Attributes",
+            Type: "Attribute",
+            ELI5: "Disable a button or input so users can't interact with it. In Blazor, use disabled=\"@(condition)\" to make it dynamic.",
+            Example: "<button disabled=\"@(currentPage == 1)\">Previous</button>",
+            Tips: new[] {
+                "In Blazor, wrap the condition in @(): disabled=\"@(condition)\".",
+                "Use CSS like disabled:opacity-50 to style disabled elements.",
+                "Disabled buttons don't fire onclick events—guards are still good practice."
+            }
+        )
+        {
+            LongELI5 = "\n\nThe 'disabled' attribute is like putting a plastic cover over a button. You can see it, but you can't press it.\n\nIn regular HTML:\n```html\n<button disabled>Can't click me</button>\n```\n\nIn Blazor, you want it to be dynamic (enable/disable based on conditions):\n```razor\n<button disabled=\"@(currentPage == 1)\">Previous</button>\n```\n\nThis reads as: 'Disable this button when currentPage equals 1.'\n\nWhy the @() syntax?\n- The @ tells Blazor 'this is C# code, not plain text'\n- The () groups the condition so Blazor evaluates it as true/false\n- Result: When currentPage is 1, disabled=\"true\", otherwise disabled=\"false\"\n\nCommon mistake:\n```razor\n<!-- WRONG - Blazor treats this as the string 'currentPage == 1', not code -->\n<button disabled=\"currentPage == 1\">Previous</button>\n\n<!-- CORRECT -->\n<button disabled=\"@(currentPage == 1)\">Previous</button>\n```\n\nStyling disabled buttons:\n```razor\n<button class=\"disabled:opacity-50 disabled:cursor-not-allowed\"\n        disabled=\"@(currentPage >= totalPages)\">\n    Next\n</button>\n```\n\nThe disabled:opacity-50 class makes the button look faded when disabled, giving users a visual cue.",
+            ELI5Example = "// Pagination buttons with disabled states\n<button disabled=\"@(currentPage == 1)\"\n        @onclick=\"PreviousPage\">\n    ← Previous\n</button>\n\n<button disabled=\"@(currentPage >= totalPages)\"\n        @onclick=\"NextPage\">\n    Next →\n</button>\n\n@code {\n    int currentPage = 1;\n    int totalPages = 8;\n    \n    void NextPage() {\n        if (currentPage < totalPages) currentPage++;\n    }\n    \n    void PreviousPage() {\n        if (currentPage > 1) currentPage--;\n    }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "try-catch-finally",
+            Category: "C# — Error Handling",
+            Type: "Pattern",
+            ELI5: "Protect your code from crashing by catching errors and ensuring cleanup happens no matter what.",
+            Example: "try {\n    await LoadDataAsync();\n} catch (Exception ex) {\n    errorMessage = ex.Message;\n} finally {\n    isLoading = false;\n}",
+            Tips: new[] {
+                "Use try to wrap risky code (API calls, file access, etc.).",
+                "Use catch to handle errors gracefully instead of crashing.",
+                "Use finally to ensure cleanup code ALWAYS runs (loading flags, disposing resources)."
+            }
+        )
+        {
+            LongELI5 = "\n\ntry-catch-finally is like a safety net for tightrope walking.\n\n- **try**: You walk the rope (run risky code like an API call)\n- **catch**: If you fall (an error happens), the safety net catches you and you handle it gracefully\n- **finally**: No matter what (fell or made it across), you take off your harness (cleanup code)\n\nWhy use it?\nWithout try-catch, one error crashes your whole app. With it, you can show a friendly error message and let the user retry.\n\nfinally is critical for flags like isLoading:\n```csharp\ntry {\n    isLoading = true;\n    await Http.GetFromJsonAsync<Data>(url);\n} catch (Exception ex) {\n    errorMessage = ex.Message;\n    // If this was the end, isLoading would stay true forever!\n} finally {\n    isLoading = false;  // ALWAYS runs, even if catch triggers\n}\n```\n\nWithout finally, if the API call fails, isLoading stays true and your UI shows a spinner forever.",
+            ELI5Example = "// Robust API call with loading and error states\nbool isLoading;\nstring? errorMessage;\nList<Item> items = new();\n\nprotected override async Task OnInitializedAsync()\n{\n    try\n    {\n        isLoading = true;\n        errorMessage = null;\n        items = await Http.GetFromJsonAsync<List<Item>>(\"api/items\") ?? new();\n    }\n    catch (HttpRequestException ex)\n    {\n        errorMessage = $\"Network error: {ex.Message}\";\n    }\n    catch (Exception ex)\n    {\n        errorMessage = $\"Unexpected error: {ex.Message}\";\n    }\n    finally\n    {\n        isLoading = false;  // Always runs\n    }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "Loading State Pattern",
+            Category: "Blazor — State Management",
+            Type: "Pattern",
+            ELI5: "Track whether data is being fetched so you can show a spinner or skeleton loader instead of a blank screen.",
+            Example: "bool isLoading = true;\n@if (isLoading) {\n    <p>Loading...</p>\n} else {\n    @* Show data *@\n}",
+            Tips: new[] {
+                "Initialize isLoading = true if data loads in OnInitializedAsync.",
+                "Set isLoading = false in finally block to ensure it always resets.",
+                "Use Tailwind's animate-spin for simple spinners."
+            }
+        )
+        {
+            LongELI5 = "\n\nLoading states are like the 'please wait' sign at a restaurant kitchen. Instead of staring at an empty table wondering if your food will ever come, you see a sign that says 'your order is being prepared.'\n\nThe pattern:\n1. Start with isLoading = true (assumes data needs loading)\n2. In OnInitializedAsync, fetch your data\n3. In finally, set isLoading = false (whether success or error)\n4. In the UI, show different content based on isLoading\n\nWhy it matters:\nWithout loading states, users see a blank screen and wonder if the app is broken. With them, users know the app is working and data is coming.\n\nCommon mistake: Forgetting finally\n```csharp\ntry {\n    isLoading = true;\n    data = await FetchAsync();\n    isLoading = false;  // WRONG: If FetchAsync throws, this never runs!\n}\n```\n\nCorrect:\n```csharp\ntry {\n    isLoading = true;\n    data = await FetchAsync();\n} finally {\n    isLoading = false;  // CORRECT: Always runs\n}\n```",
+            ELI5Example = "bool isLoading = true;\nList<Pokemon> pokemon = new();\n\nprotected override async Task OnInitializedAsync()\n{\n    try\n    {\n        isLoading = true;\n        pokemon = await Http.GetFromJsonAsync<List<Pokemon>>(url) ?? new();\n    }\n    finally\n    {\n        isLoading = false;\n    }\n}\n\n// In markup:\n@if (isLoading)\n{\n    <div class=\"flex items-center gap-3\">\n        <div class=\"animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent\"></div>\n        <span>Loading Pokemon...</span>\n    </div>\n}\nelse\n{\n    <div class=\"grid grid-cols-3 gap-4\">\n        @foreach (var p in pokemon)\n        {\n            <div>@p.Name</div>\n        }\n    </div>\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "Error State Pattern",
+            Category: "Blazor — State Management",
+            Type: "Pattern",
+            ELI5: "Store error messages in a nullable string so you can show friendly errors instead of crashing.",
+            Example: "string? errorMessage;\ntry { await LoadAsync(); }\ncatch (Exception ex) { errorMessage = ex.Message; }",
+            Tips: new[] {
+                "Use string? errorMessage to store error text (null = no error).",
+                "Clear errorMessage before retrying: errorMessage = null.",
+                "Show user-friendly messages, not raw stack traces."
+            }
+        )
+        {
+            LongELI5 = "\n\nError states are like a friendly note when the vending machine is broken: 'Sorry, out of order. Try again later.' Instead of just not giving you your snack and saying nothing, it tells you what's wrong.\n\nThe pattern:\n1. Declare: string? errorMessage; (nullable = no error by default)\n2. In try, set errorMessage = null (clear old errors)\n3. In catch, set errorMessage = ex.Message or a friendly version\n4. In UI, check if errorMessage has a value and show it\n\nWhy it matters:\nWithout error states, your app fails silently. Users see nothing, have no idea what happened, and get frustrated. With error states, they know what went wrong and can retry or report it.\n\nUser-friendly messages:\n```csharp\ncatch (HttpRequestException ex)\n{\n    errorMessage = \"Unable to connect to the server. Please check your internet connection.\";\n}\ncatch (Exception ex)\n{\n    errorMessage = \"Something went wrong. Please try again later.\";\n    Console.WriteLine($\"Error details: {ex}\");  // Log full details for debugging\n}\n```",
+            ELI5Example = "string? errorMessage;\nList<Pokemon> pokemon = new();\n\nprotected override async Task OnInitializedAsync()\n{\n    try\n    {\n        errorMessage = null;  // Clear previous errors\n        pokemon = await Http.GetFromJsonAsync<List<Pokemon>>(url) ?? new();\n    }\n    catch (HttpRequestException ex)\n    {\n        errorMessage = $\"Network error: {ex.Message}\";\n    }\n    catch (Exception ex)\n    {\n        errorMessage = \"Failed to load Pokemon. Please try again.\";\n        Console.WriteLine(ex);  // Log for debugging\n    }\n}\n\n// In markup:\n@if (!string.IsNullOrEmpty(errorMessage))\n{\n    <div class=\"bg-red-50 border border-red-200 rounded-lg p-4\">\n        <h3 class=\"text-red-800 font-semibold\">⚠️ Error</h3>\n        <p class=\"text-red-700\">@errorMessage</p>\n        <button @onclick=\"OnInitializedAsync\" class=\"mt-2 px-4 py-2 bg-red-600 text-white rounded\">Retry</button>\n    </div>\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "StateHasChanged",
+            Category: "Blazor — Lifecycle",
+            Type: "Method",
+            ELI5: "Tell Blazor to re-render the component because you changed state outside the normal flow.",
+            Example: "private void UpdateFromTimer() {\n    count++;\n    StateHasChanged();\n}",
+            Tips: new[] {
+                "Blazor auto-rerenders after event handlers (@onclick, etc.)—no need to call it there.",
+                "You DO need it after timer callbacks, background tasks, or event subscriptions.",
+                "Call it when state changes but Blazor doesn't know it changed."
+            }
+        )
+        {
+            LongELI5 = "\n\nStateHasChanged is like tapping someone on the shoulder to say 'hey, things changed, take a look.'\n\nBlazor automatically re-renders after:\n- @onclick and other event handlers\n- OnInitializedAsync completes\n- Parameter changes from parent\n\nBut Blazor DOESN'T automatically re-render after:\n- Timer.Elapsed events\n- Task.Run background work\n- External event subscriptions (SignalR, etc.)\n\nIn those cases, you call StateHasChanged() to say 'I updated state, please redraw the UI.'\n\nExample without StateHasChanged (BROKEN):\n```csharp\nprotected override void OnInitialized()\n{\n    var timer = new Timer(1000);\n    timer.Elapsed += (s, e) => {\n        count++;  // State changes, but UI doesn't update!\n    };\n    timer.Start();\n}\n```\n\nFixed:\n```csharp\ntimer.Elapsed += async (s, e) => {\n    await InvokeAsync(() => {\n        count++;\n        StateHasChanged();  // Now UI updates!\n    });\n};\n```\n\nNote: Use InvokeAsync when calling from a background thread to avoid threading issues.",
+            ELI5Example = "// Example: Manual retry button\nprivate async Task RetryLoad()\n{\n    await OnInitializedAsync();  // Re-fetch data\n    StateHasChanged();  // Tell Blazor to redraw with new data\n}\n\n// Example: Timer updating UI\nprivate int seconds;\nprivate Timer? _timer;\n\nprotected override void OnInitialized()\n{\n    _timer = new Timer(1000);\n    _timer.Elapsed += async (s, e) => {\n        await InvokeAsync(() => {\n            seconds++;\n            StateHasChanged();\n        });\n    };\n    _timer.Start();\n}\n\npublic void Dispose() => _timer?.Dispose();"
         };
     }
 }

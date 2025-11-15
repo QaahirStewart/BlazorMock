@@ -1,0 +1,383 @@
+@page "/pokemon-examples/step3"
+@rendermode InteractiveServer
+@inherits ExampleBase
+
+<PageTitle>Pokemon Step 3: Add Paging - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/pokemon-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Pokemon Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            🎯 Step 3: Add Paging
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Implement client-side pagination to browse Pokemon in manageable chunks.
+        </p>
+
+        <!-- What You'll Learn Section (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                You'll build on your Step 2 list and add simple client-side paging so you can move through more
+                Pokemon without making extra API calls.
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Calculate total pages based on item count and page size</li>
+                <li>Use <code class="bg-white px-2 py-1 rounded">Skip()</code> and <code
+                        class="bg-white px-2 py-1 rounded">Take()</code> LINQ methods to page through lists</li>
+                <li>Create Previous/Next navigation buttons wired to helper methods</li>
+                <li>Disable navigation buttons when you reach the first or last page</li>
+            </ul>
+
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> Client-side paging, Skip/Take, Math.Ceiling, Button state
+                    management
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#linq-skiptake" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">LINQ Skip/Take</a>
+                    <a href="/tips#mathceiling" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Math.Ceiling</a>
+                    <a href="/tips#disabled-attribute" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">disabled Attribute</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component Section (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: Paged Pokemon List</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                This example builds on Step 2 and adds client-side paging so you can move through the Pokemon list
+                without making extra API calls.
+            </p>
+
+            <!-- Full code example -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">PokemonPagedListExample.razor</div>
+                <p class="text-xs text-gray-600 mb-2">Full component that fetches all Pokemon once, stores them in memory, and implements client-side pagination with navigation controls.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Keeps all Pokemon in memory after initial fetch (limit=151)</li>
+                    <li>Uses Skip and Take to slice the list into pages</li>
+                    <li>Disables Previous/Next buttons at list boundaries</li>
+                    <li>Shows current page and total pages for user context</li>
+                </ul>
+                <pre data-code-title="Razor + C# (PokemonPagedListExample.razor)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/pokemon-examples/demo-paged"
+@@rendermode InteractiveServer
+@@inherits PokemonPagedListExampleBase
+
+&lt;h3 class="text-xl font-semibold mb-3"&gt;Paged Pokemon List&lt;/h3&gt;
+
+&lt;div class="flex items-center justify-between mb-4"&gt;
+    &lt;button class="px-3 py-1 rounded-lg border text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled="@@(currentPage == 1)"
+            @@onclick="PreviousPage"&gt;
+        ← Previous
+    &lt;/button&gt;
+
+    &lt;span class="text-sm text-gray-600"&gt;
+        Page &lt;span class="font-semibold"&gt;@@currentPage&lt;/span&gt;
+        of &lt;span class="font-semibold"&gt;@@totalPages&lt;/span&gt;
+    &lt;/span&gt;
+
+    &lt;button class="px-3 py-1 rounded-lg border text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled="@@(currentPage &gt;= totalPages)"
+            @@onclick="NextPage"&gt;
+        Next →
+    &lt;/button&gt;
+&lt;/div&gt;
+
+@@if (allPokemon is null)
+{
+    &lt;p class="text-gray-500"&gt;Loading Pokemon...&lt;/p&gt;
+}
+else
+{
+    &lt;ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"&gt;
+        @@foreach (var p in GetPagedPokemon())
+        {
+            &lt;li class="bg-white border border-gray-200 rounded-xl px-3 py-2"&gt;
+                &lt;p class="text-xs text-gray-500"&gt;Pokemon&lt;/p&gt;
+                &lt;p class="font-semibold capitalize"&gt;@@p.Name&lt;/p&gt;
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+}</pre>
+            </div>
+
+            <!-- Step-by-step breakdown -->
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Add paging state</div>
+                    <p class="text-xs text-gray-600 mb-2">Define fields that control pagination: the full list, current page, page size, and total pages calculation.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li><code>allPokemon</code> holds every Pokemon fetched from the API (stored once)</li>
+                        <li><code>currentPage</code> tracks which page the user is viewing (starts at 1)</li>
+                        <li><code>pageSize</code> determines how many items per page (20 in this example)</li>
+                        <li><code>totalPages</code> uses Math.Ceiling to round up for partial last page</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">protected List&lt;PokemonItem&gt;? allPokemon;
+protected int currentPage = 1;
+protected int pageSize = 20;
+protected int totalPages = 1;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Calculate total pages on load</div>
+                    <p class="text-xs text-gray-600 mb-2">After fetching all Pokemon, calculate how many pages are needed using Math.Ceiling to handle partial pages.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Fetch 151 Pokemon in a single API call (limit=151)</li>
+                        <li>Store the full list in <code>allPokemon</code></li>
+                        <li>Divide total count by page size and round up with Math.Ceiling</li>
+                        <li>If you have 151 items and pageSize=20, you get 8 pages (20+20+20+20+20+20+20+11)</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">protected override async Task OnInitializedAsync()
+{
+    var client = HttpClientFactory.CreateClient("PokeApi");
+    var response = await client.GetFromJsonAsync&lt;PokemonListResponse&gt;("pokemon?limit=151");
+    
+    allPokemon = response?.Results ?? new List&lt;PokemonItem&gt;();
+    totalPages = (int)Math.Ceiling(allPokemon.Count / (double)pageSize);
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">3. GetPagedPokemon helper</div>
+                    <p class="text-xs text-gray-600 mb-2">Slice the full list to return only the items for the current page using LINQ Skip and Take methods.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li><code>Skip((currentPage - 1) * pageSize)</code> skips all items from previous pages</li>
+                        <li><code>Take(pageSize)</code> then grabs the next 20 items for the current page</li>
+                        <li>Example: page 2 with pageSize 20 → Skip(20), Take(20) → items 21-40</li>
+                        <li>Returns empty list if allPokemon is null for safe rendering</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">protected List&lt;PokemonItem&gt; GetPagedPokemon()
+{
+    if (allPokemon is null || allPokemon.Count == 0)
+    {
+        return new List&lt;PokemonItem&gt;();
+    }
+
+    return allPokemon
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">4. Navigation methods</div>
+                    <p class="text-xs text-gray-600 mb-2">Methods to move forward or backward through pages with boundary checks to prevent going out of range.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li><code>NextPage</code> increments currentPage but only if not already at the last page</li>
+                        <li><code>PreviousPage</code> decrements currentPage but only if not already at page 1</li>
+                        <li>Guards prevent currentPage from going below 1 or above totalPages</li>
+                        <li>Blazor automatically re-renders when currentPage changes, showing new items</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">protected void NextPage()
+{
+    if (currentPage &lt; totalPages)
+    {
+        currentPage++;
+    }
+}
+
+protected void PreviousPage()
+{
+    if (currentPage &gt; 1)
+    {
+        currentPage--;
+    }
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">5. Navigation UI with disabled states</div>
+                    <p class="text-xs text-gray-600 mb-2">Render Previous/Next buttons with disabled attributes to prevent navigation beyond valid page range.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Previous button disabled when currentPage == 1 (can't go before first page)</li>
+                        <li>Next button disabled when currentPage >= totalPages (can't go after last page)</li>
+                        <li>Middle text shows "Page X of Y" for user orientation</li>
+                        <li>Tailwind classes (disabled:opacity-50, disabled:cursor-not-allowed) provide visual feedback</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class="flex items-center justify-between mb-4"&gt;
+    &lt;button class="px-3 py-1 rounded-lg border text-sm disabled:opacity-50"
+            disabled="@@(currentPage == 1)"
+            @@onclick="PreviousPage"&gt;
+        ← Previous
+    &lt;/button&gt;
+
+    &lt;span class="text-sm text-gray-600"&gt;
+        Page @@currentPage of @@totalPages
+    &lt;/span&gt;
+
+    &lt;button class="px-3 py-1 rounded-lg border text-sm disabled:opacity-50"
+            disabled="@@(currentPage &gt;= totalPages)"
+            @@onclick="NextPage"&gt;
+        Next →
+    &lt;/button&gt;
+&lt;/div&gt;</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips Section (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+
+            <div class="space-y-3">
+                <!-- Pro Tips (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Client-side vs Server-side Paging</p>
+                            <p class="text-xs text-blue-800">Client-side paging (used here) fetches all data once and slices it in the browser. This is perfect for small datasets (like 151 Pokemon) because it's instant and doesn't require API calls for each page. For large datasets (thousands of rows), use server-side paging where the API returns only one page at a time.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Why Math.Ceiling?</p>
+                            <p class="text-xs text-blue-800">Math.Ceiling rounds up to ensure partial pages are counted. With 151 items and pageSize=20, you get 7.55 pages. Math.Ceiling(7.55) = 8, so you need 8 pages total. Without it, the last 11 Pokemon wouldn't have a page.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Reset to Page 1 When Filtering</p>
+                            <p class="text-xs text-blue-800">When you add search/filter features (Step 4), always reset currentPage to 1 when the user changes filters. Otherwise, they might end up on page 5 of a filtered list that only has 2 pages, seeing nothing.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting (Yellow) -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li><strong>Buttons don't disable:</strong> Check your disabled attribute syntax - it should be <code>disabled="@@(condition)"</code> not <code>disabled="condition"</code></li>
+                        <li><strong>Empty pages at the end:</strong> Verify Math.Ceiling is casting to double: <code>(double)pageSize</code> before division</li>
+                        <li><strong>Wrong items showing:</strong> Double-check Skip/Take formula: Skip should be <code>(currentPage - 1) * pageSize</code>, not <code>currentPage * pageSize</code></li>
+                        <li><strong>Page count is 0:</strong> Ensure totalPages calculation happens after allPokemon is populated in OnInitializedAsync</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it Section (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Create component files:</strong>
+                    Create <code>PokemonPagedListExample.razor</code> and <code>PokemonPagedListExample.razor.cs</code> in
+                    <code>Components/Pages/Examples/Pokemon/Step3</code>
+                </li>
+                <li>
+                    <strong>Add the markup:</strong>
+                    Copy the Razor markup from the sample above into the .razor file, including the @@page directive and navigation controls
+                </li>
+                <li>
+                    <strong>Add the code-behind:</strong>
+                    Create the code-behind class with paging state, OnInitializedAsync, GetPagedPokemon, and navigation methods
+                </li>
+                <li>
+                    <strong>Run and test:</strong>
+                    Navigate to <code>/pokemon-examples/demo-paged</code> and verify Previous/Next buttons work correctly
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo Section -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">This demo fetches the first 151 Pokemon once and lets you page
+                through them on the client using the same pattern as the sample component.</p>
+
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                @if (livePagedPokemon is null)
+                {
+                    <p class="text-sm text-gray-500">Loading Pokemon from PokeAPI...</p>
+                }
+                else if (livePagedPokemon.Count == 0)
+                {
+                    <p class="text-sm text-gray-500">No Pokemon found. Try refreshing the page.</p>
+                }
+                else
+                {
+                    <div class="flex items-center justify-between mb-4">
+                        <button class="px-3 py-1 rounded-lg border text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled="@(liveCurrentPage == 1)" @onclick="LivePreviousPage">
+                            ← Previous
+                        </button>
+
+                        <span class="text-sm text-gray-600">
+                            Page <span class="font-semibold">@liveCurrentPage</span>
+                            of <span class="font-semibold">@liveTotalPages</span>
+                        </span>
+
+                        <button class="px-3 py-1 rounded-lg border text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled="@(liveCurrentPage >= liveTotalPages)" @onclick="LiveNextPage">
+                            Next →
+                        </button>
+                    </div>
+
+                    <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                        @foreach (var p in GetLivePagedPokemon())
+                        {
+                            <li class="bg-white border border-gray-200 rounded-xl px-3 py-2">
+                                <p class="text-xs text-gray-500">Pokemon</p>
+                                <p class="font-semibold capitalize">@p.Name</p>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+
+            <p class="text-xs text-gray-600 mt-4 text-center">💡 This live demo reuses the same paging pattern: fetch once, store in memory, and slice with Skip/Take.</p>
+        </div>
+
+        <!-- Mark Complete Section (Green Card) -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 3?</h3>
+                    <p class="text-sm text-gray-600">Mark complete when pagination works correctly</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark
+                        as Complete</button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation Section -->
+        <div class="flex items-center justify-between">
+            <a href="/pokemon-examples/step2"
+                class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 2
+            </a>
+            <a href="/pokemon-examples/step4"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 4
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>
