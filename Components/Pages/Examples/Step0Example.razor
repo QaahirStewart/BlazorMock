@@ -16,7 +16,8 @@
         <div class="rounded-2xl overflow-hidden border border-gray-200 bg-white mb-6">
             <div class="h-2 w-full bg-gradient-to-r from-indigo-200 via-sky-200 to-sky-300"></div>
             <div class="p-5 sm:p-6">
-                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">🧰 Step 0: Prerequisites & VS Code Setup</h1>
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">🧰 Step 0: Prerequisites & VS Code Setup
+                </h1>
                 <p class="text-gray-600">Install the toolchain and verify your environment works before coding.</p>
             </div>
         </div>
@@ -32,15 +33,18 @@
             <div class="mt-4 grid gap-3">
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
                     <div class="text-xs text-gray-500 mb-1">Verify .NET</div>
-                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">dotnet --info</pre>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">dotnet --info</pre>
                 </div>
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
                     <div class="text-xs text-gray-500 mb-1">Verify Node & npm</div>
-                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">node --version
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">node --version
 npm --version</pre>
                 </div>
             </div>
-            <p class="text-xs sm:text-sm text-gray-600 mt-4">See <span class="font-mono">Docs/Steps/Step00.md</span> for full instructions.</p>
+            <p class="text-xs sm:text-sm text-gray-600 mt-4">See <span class="font-mono">Docs/Steps/Step00.md</span> for
+                full instructions.</p>
         </div>
 
         <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
@@ -53,22 +57,27 @@ npm --version</pre>
                 {
                     <div class="flex items-center gap-3">
                         <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
-                        <button @onclick="ResetStep" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
                     </div>
                 }
                 else
                 {
-                    <button @onclick="MarkComplete" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark
+                        as Complete</button>
                 }
             </div>
         </div>
 
         <div class="flex items-center justify-between">
-            <a href="/guide" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <a href="/guide"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <span>←</span>
                 Back to Guide
             </a>
-            <a href="/examples/step1" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+            <a href="/trucking-examples/step1"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                 Next: Step 1
                 <span>→</span>
             </a>

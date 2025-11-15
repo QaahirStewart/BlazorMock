@@ -1,0 +1,562 @@
+@page "/trucking-examples/step9"
+@inherits ExampleBase
+@rendermode InteractiveServer
+
+<PageTitle>Trucking Step 9: CRUD Operations - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <div class="mb-8">
+            <a href="/trucking-guide"
+                class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Trucking Guide
+            </a>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                🎯 Step 9: CRUD Operations
+            </h1>
+            <p class="text-xl text-gray-600">
+                Create, Read, Update, and Delete database records using Entity Framework Core in Blazor components.
+            </p>
+        </div>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">📘 What You'll Learn</h2>
+            <p class="text-gray-700 mb-3">
+                CRUD operations (Create, Read, Update, Delete) are the foundation of database interaction in
+                applications.
+            </p>
+            <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                <li>Inject AppDbContext into Blazor components</li>
+                <li>Load data asynchronously with ToListAsync() in OnInitializedAsync</li>
+                <li>Create new records with Add() and SaveChangesAsync()</li>
+                <li>Update existing records by modifying tracked entities</li>
+                <li>Delete records with Remove() and SaveChangesAsync()</li>
+                <li>Handle errors and provide user feedback</li>
+            </ul>
+
+            <!-- Key Concepts Footer -->
+            <div class="mt-4 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> ToListAsync, FindAsync, SaveChangesAsync
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#tolistasync"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">ToListAsync</a>
+                    <a href="/tips#findasync"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">FindAsync</a>
+                    <a href="/tips#savechangesasync"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">SaveChangesAsync</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Example: Read (List) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 1</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">READ: List All Drivers</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                Query the database with DbContext, load data asynchronously, and render a table with Edit/Delete
+                actions.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li>Inject AppDbContext to access database</li>
+                <li><code class="px-1 rounded bg-gray-100">ToListAsync()</code> loads data without blocking UI thread
+                </li>
+                <li>Use null check pattern (drivers == null) while loading</li>
+                <li><code class="px-1 rounded bg-gray-100">FindAsync(id)</code> retrieves single entity by primary key
+                </li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="Razor + C# (List Drivers)">
+@@page "/drivers"
+@@inject AppDbContext DbContext
+@@inject NavigationManager Navigation
+
+&lt;h1&gt;Drivers&lt;/h1&gt;
+
+@@if (drivers == null)
+{
+    &lt;p&gt;Loading...&lt;/p&gt;
+}
+else if (!drivers.Any())
+{
+    &lt;p&gt;No drivers found. Add one to get started!&lt;/p&gt;
+}
+else
+{
+    &lt;table class="w-full"&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;Name&lt;/th&gt;
+                &lt;th&gt;License&lt;/th&gt;
+                &lt;th&gt;Actions&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            @@foreach (var driver in drivers)
+            {
+                &lt;tr&gt;
+                    &lt;td&gt;@@driver.Name&lt;/td&gt;
+                    &lt;td&gt;@@driver.LicenseLevel&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;button @@onclick="() =&gt; EditDriver(driver.Id)"&gt;Edit&lt;/button&gt;
+                        &lt;button @@onclick="() =&gt; DeleteDriver(driver.Id)"&gt;Delete&lt;/button&gt;
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+            }
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+}
+
+@@code {
+    private List&lt;Driver&gt;? drivers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        drivers = await DbContext.Drivers.ToListAsync();
+    }
+
+    private void EditDriver(int id)
+    {
+        Navigation.NavigateTo($"/drivers/edit/{id}");
+    }
+
+    private async Task DeleteDriver(int id)
+    {
+        var driver = await DbContext.Drivers.FindAsync(id);
+        if (driver != null)
+        {
+            DbContext.Drivers.Remove(driver);
+            await DbContext.SaveChangesAsync();
+            drivers = await DbContext.Drivers.ToListAsync();
+        }
+    }
+}
+</pre>
+            </div>
+        </div>
+
+        <!-- Code Example: Create -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 2</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">CREATE: Add New Driver</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                Use EditForm with validation to capture input, add the entity to DbContext, and save changes.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li><code class="px-1 rounded bg-gray-100">Add(entity)</code> marks entity for insertion</li>
+                <li><code class="px-1 rounded bg-gray-100">SaveChangesAsync()</code> commits changes to database</li>
+                <li>Navigate after successful save to provide feedback</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="Razor + C# (Create Driver)">
+@@page "/drivers/add"
+@@inject AppDbContext DbContext
+@@inject NavigationManager Navigation
+
+&lt;h1&gt;Add New Driver&lt;/h1&gt;
+
+&lt;EditForm Model="newDriver" OnValidSubmit="HandleValidSubmit"&gt;
+    &lt;DataAnnotationsValidator /&gt;
+    &lt;ValidationSummary /&gt;
+
+    &lt;div&gt;
+        &lt;label&gt;Name:&lt;/label&gt;
+        &lt;InputText @@bind-Value="newDriver.Name" /&gt;
+    &lt;/div&gt;
+
+    &lt;div&gt;
+        &lt;label&gt;License Number:&lt;/label&gt;
+        &lt;InputText @@bind-Value="newDriver.LicenseNumber" /&gt;
+    &lt;/div&gt;
+
+    &lt;div&gt;
+        &lt;label&gt;License Level:&lt;/label&gt;
+        &lt;InputSelect @@bind-Value="newDriver.LicenseLevel"&gt;
+            @@foreach (var level in Enum.GetValues&lt;LicenseLevel&gt;())
+            {
+                &lt;option value="@@level"&gt;@@level&lt;/option&gt;
+            }
+        &lt;/InputSelect&gt;
+    &lt;/div&gt;
+
+    &lt;button type="submit"&gt;Save Driver&lt;/button&gt;
+&lt;/EditForm&gt;
+
+@@code {
+    private Driver newDriver = new();
+
+    private async Task HandleValidSubmit()
+    {
+        // Add entity to DbContext
+        DbContext.Drivers.Add(newDriver);
+        
+        // Save changes to database
+        await DbContext.SaveChangesAsync();
+        
+        // Navigate back to list
+        Navigation.NavigateTo("/drivers");
+    }
+}
+</pre>
+            </div>
+        </div>
+
+        <!-- Code Example: Update -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 3</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">UPDATE: Edit Existing Driver</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                Load an entity by ID, bind it to a form, modify properties, and save changes back to the database.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li>Use route parameter <code class="px-1 rounded bg-gray-100">{id:int}</code> to capture entity ID</li>
+                <li>EF Core change tracking automatically detects modifications</li>
+                <li>No need to call Update() - just modify properties and SaveChangesAsync()</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="Razor + C# (Update Driver)">
+@@page "/drivers/edit/{id:int}"
+@@inject AppDbContext DbContext
+@@inject NavigationManager Navigation
+
+@@if (driver == null)
+{
+    &lt;p&gt;Loading...&lt;/p&gt;
+}
+else
+{
+    &lt;h1&gt;Edit Driver&lt;/h1&gt;
+
+    &lt;EditForm Model="driver" OnValidSubmit="HandleValidSubmit"&gt;
+        &lt;DataAnnotationsValidator /&gt;
+        &lt;ValidationSummary /&gt;
+
+        &lt;div&gt;
+            &lt;label&gt;Name:&lt;/label&gt;
+            &lt;InputText @@bind-Value="driver.Name" /&gt;
+        &lt;/div&gt;
+
+        &lt;div&gt;
+            &lt;label&gt;License Number:&lt;/label&gt;
+            &lt;InputText @@bind-Value="driver.LicenseNumber" /&gt;
+        &lt;/div&gt;
+
+        &lt;button type="submit"&gt;Save Changes&lt;/button&gt;
+        &lt;a href="/drivers"&gt;Cancel&lt;/a&gt;
+    &lt;/EditForm&gt;
+}
+
+@@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Driver? driver;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load driver by ID
+        driver = await DbContext.Drivers.FindAsync(Id);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // EF Core tracks changes automatically
+        await DbContext.SaveChangesAsync();
+        
+        // Navigate back to list
+        Navigation.NavigateTo("/drivers");
+    }
+}
+</pre>
+            </div>
+        </div>
+
+        <!-- Code Example: Delete -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 4</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">DELETE: Remove Driver</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                Find an entity, remove it from DbContext, and save changes to delete from the database.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li><code class="px-1 rounded bg-gray-100">Remove(entity)</code> marks entity for deletion</li>
+                <li>Always confirm deletions to prevent accidental data loss</li>
+                <li>Consider soft deletes (IsDeleted flag) instead of hard deletes for important data</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="C# (Delete Method)">
+private async Task DeleteDriver(int id)
+{
+    // Confirm with user first
+    if (!await JSRuntime.InvokeAsync&lt;bool&gt;("confirm", 
+        "Are you sure you want to delete this driver?"))
+    {
+        return;
+    }
+
+    // Find the entity
+    var driver = await DbContext.Drivers.FindAsync(id);
+    
+    if (driver != null)
+    {
+        // Mark for deletion
+        DbContext.Drivers.Remove(driver);
+        
+        // Save changes
+        await DbContext.SaveChangesAsync();
+        
+        // Refresh the list
+        drivers = await DbContext.Drivers.ToListAsync();
+        
+        // Notify user
+        StateHasChanged();
+    }
+}
+</pre>
+            </div>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo: CRUD Operations</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Interact with a live driver list demonstrating Create, Read, Update, and Delete operations with EF Core.
+            </p>
+
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                @if (demoDrivers == null)
+                {
+                    <p class="text-sm text-gray-500">Loading drivers...</p>
+                }
+                else
+                {
+                    <!-- Driver List -->
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Driver List</h3>
+
+                    @if (!demoDrivers.Any())
+                    {
+                        <p class="text-sm text-gray-500 mb-4">No drivers found. Add one to get started!</p>
+                    }
+                    else
+                    {
+                        <div class="overflow-x-auto mb-6">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left">Name</th>
+                                        <th class="px-4 py-2 text-left">License</th>
+                                        <th class="px-4 py-2 text-left">Rate</th>
+                                        <th class="px-4 py-2 text-left">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var driver in demoDrivers)
+                                    {
+                                        <tr class="border-t">
+                                            <td class="px-4 py-2">@driver.Name</td>
+                                            <td class="px-4 py-2">@driver.LicenseNumber</td>
+                                            <td class="px-4 py-2">$@driver.HourlyRate/hr</td>
+                                            <td class="px-4 py-2">
+                                                <button @onclick="() => DeleteDemoDriver(driver.Id)"
+                                                    class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors">
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                    <!-- Add Driver Form -->
+                    <div class="border-t pt-4">
+                        <h4 class="text-sm font-semibold text-gray-800 mb-3">Add New Driver</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="text" @bind="newDriverName" placeholder="Name"
+                                class="px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                            <input type="text" @bind="newDriverLicense" placeholder="License Number"
+                                class="px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                            <input type="number" @bind="newDriverRate" placeholder="Hourly Rate"
+                                class="px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                            <button @onclick="AddDemoDriver"
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+                                Add Driver
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <p class="text-xs text-gray-600 mt-4 text-center">
+                💡 This demo uses in-memory data to demonstrate CRUD patterns without a real database
+            </p>
+        </div>
+
+        <!-- Important Notes & Tips -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">💡 Important Notes & Tips</h2>
+
+            <!-- Pro Tips -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                <h3 class="text-lg font-semibold text-blue-900 mb-3">💎 Pro Tips</h3>
+                <ul class="list-disc pl-5 text-blue-800 space-y-2">
+                    <li><strong>Use async methods:</strong> Always use ToListAsync(), FindAsync(), SaveChangesAsync() -
+                        never blocking versions in Blazor</li>
+                    <li><strong>Change tracking:</strong> EF Core automatically tracks modifications to loaded entities
+                        - no need to call Update() explicitly</li>
+                    <li><strong>DbContext lifetime:</strong> DbContext is scoped per request - don't store it as a field
+                        in components</li>
+                    <li><strong>Error handling:</strong> Wrap database operations in try-catch blocks to handle
+                        connection failures and constraint violations gracefully</li>
+                    <li><strong>Refresh after changes:</strong> Call StateHasChanged() after database operations to
+                        update the UI immediately</li>
+                </ul>
+            </div>
+
+            <!-- Troubleshooting -->
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <h3 class="text-lg font-semibold text-yellow-900 mb-3">⚠️ Troubleshooting</h3>
+                <ul class="list-disc pl-5 text-yellow-800 space-y-2">
+                    <li><strong>"Cannot access a disposed object":</strong> Don't store DbContext as a field - inject it
+                        fresh for each operation</li>
+                    <li><strong>Changes not saving:</strong> Ensure you call SaveChangesAsync() after
+                        Add/Remove/modifications</li>
+                    <li><strong>"Entity already being tracked":</strong> Use AsNoTracking() for read-only queries or
+                        ensure you're not adding duplicates</li>
+                    <li><strong>Null reference on FindAsync:</strong> Check if entity exists before accessing properties
+                        - FindAsync returns null if not found</li>
+                    <li><strong>UI not updating after delete:</strong> Reload the list and call StateHasChanged() to
+                        trigger UI refresh</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">1️⃣ READ: Load Data</h3>
+                    <p class="text-gray-700 mb-2">
+                        Inject AppDbContext and use ToListAsync() in OnInitializedAsync to load data asynchronously.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            drivers = await DbContext.Drivers.ToListAsync();
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">2️⃣ CREATE: Add New Records</h3>
+                    <p class="text-gray-700 mb-2">
+                        Create a new instance, add it to DbContext with Add(), and save with SaveChangesAsync().
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            DbContext.Drivers.Add(newDriver); await DbContext.SaveChangesAsync();
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">3️⃣ UPDATE: Modify Existing Records</h3>
+                    <p class="text-gray-700 mb-2">
+                        Load entity with FindAsync(), modify its properties, and save - EF Core tracks changes
+                        automatically.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            var driver = await DbContext.Drivers.FindAsync(id); driver.Name = "New Name"; await DbContext.SaveChangesAsync();
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">4️⃣ DELETE: Remove Records</h3>
+                    <p class="text-gray-700 mb-2">
+                        Find the entity, call Remove() on DbContext, and save changes to delete from database.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            var driver = await DbContext.Drivers.FindAsync(id); DbContext.Drivers.Remove(driver); await DbContext.SaveChangesAsync();
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">5️⃣ Handle Errors Gracefully</h3>
+                    <p class="text-gray-700 mb-2">
+                        Wrap database operations in try-catch blocks and provide user feedback for errors.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            try { await DbContext.SaveChangesAsync(); } catch (Exception ex) { errorMessage = ex.Message; }
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mark Complete -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Ready to move on?</h3>
+                    <p class="text-gray-600">
+                        @if (isComplete)
+                        {
+                            <span class="text-green-600 font-medium">✅ Step completed!</span>
+                        }
+                        else
+                        {
+                            <span>Mark this step as complete when you're ready.</span>
+                        }
+                    </p>
+                </div>
+                <div class="flex gap-3">
+                    @if (!isComplete)
+                    {
+                        <button @onclick="MarkComplete"
+                            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                            ✓ Mark Complete
+                        </button>
+                    }
+                    else
+                    {
+                        <button @onclick="ResetStep"
+                            class="px-6 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Reset Step
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 flex flex-col sm:flex-row justify-between gap-4">
+            <a href="/trucking-examples/step8"
+                class="inline-flex items-center gap-2 px-6 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span> Previous: Setup EF Core
+            </a>
+            <a href="/trucking-guide"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Back to Guide <span>📚</span>
+            </a>
+        </div>
+    </div>
+</div>

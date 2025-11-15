@@ -1536,4 +1536,252 @@ All call the same method to close!
     }
 }
 
+// Step 1 Tips: Project Setup & Tooling
+public class Step1TipsContributor : ITipsContributor
+{
+    public IEnumerable<TipTopic> GetTopics()
+    {
+        yield return new TipTopic(
+            Title: "dotnet CLI",
+            Category: "Tooling — .NET",
+            Type: "Tool",
+            ELI5: "Command-line tool for creating, building, running, and managing .NET projects.",
+            Example: "dotnet new blazor -o MyApp\ndotnet build\ndotnet run",
+            Tips: new[] {
+                "Use 'dotnet new list' to see all available project templates",
+                "Add --help to any command for detailed usage information",
+                "Flags like --interactivity and --empty customize your project setup"
+            }
+        )
+        {
+            LongELI5 = "\n\nThe dotnet CLI is your Swiss Army knife for .NET development. Instead of clicking through wizards, you type one command and boom - new project created. It handles everything: creating files, restoring packages, compiling code, running your app. Think of it like ordering food: 'dotnet new blazor' is like saying 'I'll have a Blazor Server app, please.' The CLI knows exactly what files to create, what packages to include, and how to wire everything together. Developers love it because it's fast, scriptable, and works the same on Windows, Mac, and Linux.",
+            ELI5Example = "# Create new Blazor Server app with interactive mode\ndotnet new blazor -o TruckingApp --interactivity Server --all-interactive --empty\n\n# Navigate into project\ncd TruckingApp\n\n# Restore packages (usually automatic)\ndotnet restore\n\n# Build the project\ndotnet build\n\n# Run the application\ndotnet run\n\n# See what template created\ndir  # Windows\nls   # Mac/Linux"
+        };
+
+        yield return new TipTopic(
+            Title: "npm packages",
+            Category: "Tooling — Frontend",
+            Type: "Package Manager",
+            ELI5: "npm installs JavaScript libraries and tools for your web project.",
+            Example: "npm install tailwindcss @tailwindcss/cli\nnpm install --save-dev typescript",
+            Tips: new[] {
+                "npm install adds packages to node_modules folder",
+                "package.json tracks which packages your project needs",
+                "Use @ symbol for scoped packages like @tailwindcss/cli"
+            }
+        )
+        {
+            LongELI5 = "\n\nnpm is like an app store for JavaScript tools. Instead of downloading files manually, you type 'npm install tailwindcss' and boom - the entire Tailwind library appears in your project. npm tracks everything in package.json (like a shopping list) and stores files in node_modules (like your pantry). When someone else clones your project, they just run 'npm install' and get the exact same packages. Scoped packages (with @) are like brand names - @tailwindcss/cli is the official Tailwind CLI tool, not a knockoff.",
+            ELI5Example = "# Install Tailwind CSS v4 and its CLI\nnpm install tailwindcss @tailwindcss/cli\n\n# package.json now shows:\n# \"dependencies\": {\n#   \"tailwindcss\": \"^4.0.0\",\n#   \"@tailwindcss/cli\": \"^4.0.0\"\n# }\n\n# Files appear in node_modules/\n# node_modules/tailwindcss/\n# node_modules/@tailwindcss/cli/\n\n# Use the installed CLI\nnpx @tailwindcss/cli --help"
+        };
+
+        yield return new TipTopic(
+            Title: "Tailwind CSS",
+            Category: "Styling — CSS Frameworks",
+            Type: "Framework",
+            ELI5: "Utility-first CSS framework that lets you style elements with pre-made class names instead of writing custom CSS.",
+            Example: "<div class=\"flex items-center gap-4 p-6 bg-blue-100 rounded-lg\">\n  <h1 class=\"text-2xl font-bold text-blue-900\">Hello</h1>\n</div>",
+            Tips: new[] {
+                "Tailwind v4 uses @import \"tailwindcss\" instead of config files",
+                "Combine utility classes to build complex designs quickly",
+                "Responsive: use sm:, md:, lg: prefixes for breakpoints",
+                "Use --watch flag to rebuild CSS as you code"
+            }
+        )
+        {
+            LongELI5 = "\n\nTailwind CSS is like building with LEGO blocks instead of sculpting clay. Instead of writing custom CSS rules (the clay), you use pre-made utility classes (the blocks) right in your HTML. Want padding? Add 'p-4'. Want blue background? Add 'bg-blue-100'. Need responsive design? Add 'sm:text-lg md:text-xl'. Tailwind v4 is even simpler - just @import \"tailwindcss\" in your CSS file and you're ready. The --watch flag is your friend during development - it watches your files and rebuilds the CSS instantly when you change classes. No more switching between HTML and CSS files!",
+            ELI5Example = "/* Styles/input.css - Tailwind v4 */\n@import \"tailwindcss\";\n\n<!-- Your component -->\n<div class=\"max-w-4xl mx-auto p-6\">\n  <h1 class=\"text-3xl font-bold text-gray-900 mb-4\">\n    Welcome\n  </h1>\n  <p class=\"text-gray-600 leading-relaxed\">\n    Built with Tailwind!\n  </p>\n  <button class=\"px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg\">\n    Click Me\n  </button>\n</div>\n\n<!-- Responsive example -->\n<div class=\"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4\">\n  <!-- Cards here -->\n</div>"
+        };
+
+        yield return new TipTopic(
+            Title: ".NET Asset Pipeline",
+            Category: "Blazor — Static Files",
+            Type: "System",
+            ELI5: "Blazor's system for managing static files (CSS, JS, images) with fingerprinting for cache busting.",
+            Example: "<link rel=\"stylesheet\" href=\"@Assets[\"tailwind.css\"]\" />\n<script src=\"@Assets[\"app.js\"]\" />",
+            Tips: new[] {
+                "Assets[\"file.css\"] generates URLs with hash for cache busting",
+                "Put files in wwwroot folder to make them accessible",
+                "Fingerprinting ensures users get fresh files after updates",
+                "No need to manually version your CSS/JS files"
+            }
+        )
+        {
+            LongELI5 = "\n\nThe .NET Asset Pipeline solves a common web problem: browser caching. When you update your CSS file, browsers might keep showing the old cached version. Blazor's asset pipeline fixes this by adding a unique fingerprint (hash) to your file URLs. Instead of 'tailwind.css', it becomes 'tailwind.abc123.css' where 'abc123' changes every time the file changes. This forces browsers to download the new version. Just use @Assets[\"tailwind.css\"] in your code and Blazor handles the rest. It's like putting a version number on your files, but automatic and based on actual content changes.",
+            ELI5Example = "<!-- App.razor <head> section -->\n<link rel=\"stylesheet\" href=\"@Assets[\"tailwind.css\"]\" />\n\n<!-- Blazor generates: -->\n<link rel=\"stylesheet\" href=\"/tailwind.7a8b9c.css\" />\n\n<!-- After you update tailwind.css: -->\n<link rel=\"stylesheet\" href=\"/tailwind.4d5e6f.css\" />\n\n<!-- The hash (7a8b9c → 4d5e6f) changes! -->\n<!-- Browser sees different URL → downloads fresh file -->\n<!-- Users always get your latest CSS! -->"
+        };
+    }
+}
+
 // Blazor component styling and patterns
+
+
+// Entity Framework Core and Database topics
+public class EntityFrameworkTipsContributor : ITipsContributor
+{
+    public IEnumerable<TipTopic> GetTopics()
+    {
+        yield return new TipTopic(
+            Title: "POCO Models",
+            Category: "Entity Framework — Models",
+            Type: "Pattern",
+            ELI5: "Plain Old CLR Objects - simple C# classes that represent database tables without inheriting from special base classes.",
+            Example: "public class Driver\n{\n    public int Id { get; set; }\n    public string Name { get; set; } = string.Empty;\n    public decimal HourlyRate { get; set; }\n}",
+            Tips: new[] {
+                "Keep models simple - just properties and basic logic",
+                "EF Core tracks changes automatically - no special methods needed",
+                "Id property is auto-detected as primary key",
+                "Use = string.Empty or required keyword to avoid null warnings"
+            }
+        )
+        {
+            LongELI5 = "\n\nPOCO stands for Plain Old CLR Object. It's a fancy way of saying 'just a normal C# class'. Unlike older frameworks that forced you to inherit from special base classes or implement interfaces, EF Core works with your plain classes. Think of it like filling out a form - you don't need special paper, regular paper works fine. Your Driver class is just properties that match database columns. EF Core is smart enough to figure out that Id is the primary key, Name is a string column, and HourlyRate is a decimal column. No magic inheritance, no special attributes required (though you can add them for validation). This makes your code cleaner and easier to test.",
+            ELI5Example = "// This is a POCO - just a plain class!\npublic class Driver\n{\n    public int Id { get; set; }          // EF Core knows this is the primary key\n    public string Name { get; set; } = string.Empty;  // String column\n    public decimal HourlyRate { get; set; }           // Decimal column\n    public bool IsAvailable { get; set; }             // Boolean column\n}\n\n// NOT a POCO - has to inherit from special base class (old way)\npublic class OldDriver : EntityBase  // ❌ Don't do this\n{\n    // Same properties...\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "Data Annotations",
+            Category: "Entity Framework — Validation",
+            Type: "Attribute",
+            ELI5: "Attributes like [Required] and [StringLength] that add validation rules and configure database columns.",
+            Example: "[Required]\n[StringLength(100)]\npublic string Name { get; set; } = string.Empty;",
+            Tips: new[] {
+                "Validates data before saving to database",
+                "Works with Blazor forms automatically",
+                "Common ones: [Required], [StringLength], [Range], [EmailAddress]",
+                "Generates database constraints (NOT NULL, VARCHAR length)"
+            }
+        )
+        {
+            LongELI5 = "\n\nData annotations are like putting rules on a form field. [Required] means 'this field cannot be empty' - like when a website won't let you submit without filling in your name. [StringLength(100)] means 'this text can be at most 100 characters' - like a tweet limit but for database fields. These rules work two ways: they validate user input in your Blazor forms (showing error messages), AND they create database constraints (making the database enforce the rules too). It's like having a bouncer at two doors - one checks your form before it leaves the browser, another checks at the database door. This prevents bad data from getting into your database.",
+            ELI5Example = "public class Driver\n{\n    public int Id { get; set; }\n\n    [Required]                    // Cannot be null or empty\n    [StringLength(100)]           // Max 100 characters → VARCHAR(100)\n    public string Name { get; set; } = string.Empty;\n\n    [Required]\n    [StringLength(20)]\n    public string LicenseNumber { get; set; } = string.Empty;\n\n    [Range(0, 50)]                // Must be between 0 and 50\n    public int YearsOfExperience { get; set; }\n\n    [Range(0, 200)]\n    public decimal HourlyRate { get; set; }\n}\n\n// Blazor automatically shows validation errors:\n// <ValidationMessage For=\"() => driver.Name\" />"
+        };
+
+        yield return new TipTopic(
+            Title: "DbContext",
+            Category: "Entity Framework — Core Concepts",
+            Type: "Class",
+            ELI5: "The main class that manages database connections and provides access to your tables through DbSet properties.",
+            Example: "public class AppDbContext : DbContext\n{\n    public DbSet<Driver> Drivers { get; set; }\n    public DbSet<Route> Routes { get; set; }\n}",
+            Tips: new[] {
+                "Inject into components - don't create instances yourself",
+                "Scoped lifetime - one instance per request",
+                "Tracks entity changes automatically",
+                "Call SaveChangesAsync() to commit changes to database"
+            }
+        )
+        {
+            LongELI5 = "\n\nDbContext is like your database receptionist. You tell it what you want (get all drivers, save this new route) and it handles the actual database work. Think of DbSet properties as filing cabinets - Drivers is the cabinet holding all driver records, Routes holds all route records. The DbContext manages connections, tracks changes you make, and generates SQL commands. When you modify a driver's name, DbContext remembers that change. When you call SaveChangesAsync(), it sends an UPDATE statement to the database. In Blazor, you inject DbContext into your components (don't new it up) so ASP.NET can manage the database connection properly.",
+            ELI5Example = "@inject AppDbContext DbContext\n\n@code {\n    private List<Driver> drivers;\n\n    protected override async Task OnInitializedAsync()\n    {\n        // Load all drivers from database\n        drivers = await DbContext.Drivers.ToListAsync();\n    }\n\n    private async Task UpdateDriver(Driver driver)\n    {\n        // Modify the driver\n        driver.HourlyRate = 45.00m;\n        \n        // DbContext tracked the change!\n        // Just call SaveChangesAsync to update database\n        await DbContext.SaveChangesAsync();\n    }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "DbSet<T>",
+            Category: "Entity Framework — Core Concepts",
+            Type: "Property",
+            ELI5: "A property on DbContext that represents a table in your database and lets you query, add, update, or delete records.",
+            Example: "public DbSet<Driver> Drivers { get; set; }\n// Query: await DbContext.Drivers.ToListAsync()\n// Add: DbContext.Drivers.Add(newDriver)",
+            Tips: new[] {
+                "Each DbSet<T> maps to a database table",
+                "Use ToListAsync(), FindAsync() to query data",
+                "Use Add(), Remove() to modify data",
+                "Changes aren't saved until you call SaveChangesAsync()"
+            }
+        )
+        {
+            LongELI5 = "\n\nDbSet<T> is like a collection that's connected to a database table. DbSet<Driver> represents your Drivers table. You can treat it like a list - loop through it with foreach, filter it with LINQ (Where, Skip, Take), but behind the scenes it's querying the real database. When you call DbContext.Drivers.ToListAsync(), EF Core generates a SQL SELECT statement and loads the data. When you call DbContext.Drivers.Add(newDriver), it marks that driver for insertion, but doesn't actually insert until you call SaveChangesAsync(). Think of it as a shopping cart - you add items (Add), remove items (Remove), but the purchase doesn't happen until checkout (SaveChangesAsync).",
+            ELI5Example = "public class AppDbContext : DbContext\n{\n    // Each DbSet = one table\n    public DbSet<Driver> Drivers { get; set; }\n    public DbSet<Route> Routes { get; set; }\n    public DbSet<Truck> Trucks { get; set; }\n}\n\n// Usage in component:\nprotected override async Task OnInitializedAsync()\n{\n    // Query the Drivers table\n    var allDrivers = await DbContext.Drivers.ToListAsync();\n    \n    // Filter with LINQ - generates SQL WHERE clause\n    var available = await DbContext.Drivers\n        .Where(d => d.IsAvailable)\n        .ToListAsync();\n}\n\nprivate async Task AddNewDriver()\n{\n    var driver = new Driver { Name = \"John\" };\n    DbContext.Drivers.Add(driver);  // Staged for insert\n    await DbContext.SaveChangesAsync();  // Actually inserts\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "EF Core Migrations",
+            Category: "Entity Framework — Database Schema",
+            Type: "Tool",
+            ELI5: "Version control for your database schema - tracks changes to tables and columns over time.",
+            Example: "dotnet ef migrations add InitialCreate\ndotnet ef database update",
+            Tips: new[] {
+                "Run 'dotnet ef migrations add <Name>' after changing models",
+                "Run 'dotnet ef database update' to apply changes to database",
+                "Each migration is a snapshot of schema changes",
+                "Don't edit old migrations - create new ones for changes"
+            }
+        )
+        {
+            LongELI5 = "\n\nMigrations are like Git for your database structure. When you add a new property to your Driver model, the database table needs a new column. Instead of manually writing SQL, you create a migration that describes the change. 'dotnet ef migrations add AddPhoneNumber' creates a file with code to add the column (Up method) and remove it (Down method). Then 'dotnet ef database update' applies that change to your actual database. If you later deploy to production, you run the same migrations there to keep databases in sync. Each migration builds on the previous ones, like Git commits. This means your team can track how the database evolved and easily recreate it from scratch.",
+            ELI5Example = "// 1. Add property to model\npublic class Driver\n{\n    public int Id { get; set; }\n    public string Name { get; set; }\n    public string PhoneNumber { get; set; }  // NEW!\n}\n\n// 2. Create migration\n// dotnet ef migrations add AddPhoneNumber\n// → Creates file: Migrations/20241115_AddPhoneNumber.cs\n\npublic partial class AddPhoneNumber : Migration\n{\n    protected override void Up(MigrationBuilder migrationBuilder)\n    {\n        migrationBuilder.AddColumn<string>(\n            name: \"PhoneNumber\",\n            table: \"Drivers\",\n            nullable: true);\n    }\n    \n    protected override void Down(MigrationBuilder migrationBuilder)\n    {\n        migrationBuilder.DropColumn(\n            name: \"PhoneNumber\",\n            table: \"Drivers\");\n    }\n}\n\n// 3. Apply to database\n// dotnet ef database update\n// → Adds PhoneNumber column to Drivers table"
+        };
+
+        yield return new TipTopic(
+            Title: "ToListAsync",
+            Category: "Entity Framework — Queries",
+            Type: "Method",
+            ELI5: "Executes a query and loads all results into a List<T> without blocking the UI thread.",
+            Example: "var drivers = await DbContext.Drivers.ToListAsync();",
+            Tips: new[] {
+                "Always use async version in Blazor - never ToList()",
+                "Loads all results into memory - be careful with large tables",
+                "Use Where() before ToListAsync() to filter data",
+                "Triggers actual database query execution"
+            }
+        )
+        {
+            LongELI5 = "\n\nToListAsync() is the moment your LINQ query actually runs against the database. Before you call it, you're just building a query (like writing a shopping list). When you call ToListAsync(), EF Core converts your LINQ to SQL, sends it to the database, waits for results, and loads everything into a C# List. The 'Async' part means it doesn't freeze your UI while waiting - your Blazor component can show a loading spinner. Think of it like ordering food: you place the order (write LINQ), then await the delivery (ToListAsync), but you can do other things while waiting. Always use the Async version in Blazor, or you'll freeze the browser.",
+            ELI5Example = "protected override async Task OnInitializedAsync()\n{\n    // ❌ BAD - blocks UI thread\n    // var drivers = DbContext.Drivers.ToList();\n    \n    // ✅ GOOD - async, doesn't block\n    var drivers = await DbContext.Drivers.ToListAsync();\n    \n    // Filter before loading to reduce data\n    var available = await DbContext.Drivers\n        .Where(d => d.IsAvailable)        // SQL WHERE clause\n        .OrderBy(d => d.Name)              // SQL ORDER BY\n        .ToListAsync();                    // Execute query\n    \n    // For large tables, use pagination\n    var page1 = await DbContext.Drivers\n        .Skip(0)\n        .Take(10)\n        .ToListAsync();\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "SaveChangesAsync",
+            Category: "Entity Framework — Persistence",
+            Type: "Method",
+            ELI5: "Commits all pending changes (inserts, updates, deletes) to the database in a single transaction.",
+            Example: "DbContext.Drivers.Add(newDriver);\nawait DbContext.SaveChangesAsync();",
+            Tips: new[] {
+                "Call after Add(), Remove(), or modifying entities",
+                "All changes happen in one transaction - all or nothing",
+                "Returns number of affected rows",
+                "Throws exception if database constraints violated"
+            }
+        )
+        {
+            LongELI5 = "\n\nSaveChangesAsync() is the checkout button for your database shopping cart. You can Add() new entities, Remove() old ones, and modify properties, but nothing actually happens in the database until you call SaveChangesAsync(). It's like editing a document - you make changes, but they're not saved until you hit the Save button. EF Core tracks everything you changed, then generates the right SQL commands (INSERT, UPDATE, DELETE) and sends them all at once in a transaction. If anything fails (like violating a unique constraint), nothing gets saved - it rolls back everything. Always await it to handle errors and get the count of rows affected.",
+            ELI5Example = "private async Task CreateDriver()\n{\n    var driver = new Driver\n    {\n        Name = \"John Doe\",\n        LicenseNumber = \"CDL-12345\",\n        HourlyRate = 45.00m\n    };\n    \n    // Mark for insertion\n    DbContext.Drivers.Add(driver);\n    \n    // Actually insert into database\n    await DbContext.SaveChangesAsync();\n    // Now driver.Id has the generated primary key value!\n}\n\nprivate async Task UpdateDriver(Driver driver)\n{\n    // Just modify properties - EF tracks changes\n    driver.HourlyRate = 50.00m;\n    driver.IsAvailable = false;\n    \n    // Save changes to database\n    await DbContext.SaveChangesAsync();\n}\n\nprivate async Task DeleteDriver(int id)\n{\n    var driver = await DbContext.Drivers.FindAsync(id);\n    if (driver != null)\n    {\n        DbContext.Drivers.Remove(driver);\n        await DbContext.SaveChangesAsync();\n    }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "FindAsync",
+            Category: "Entity Framework — Queries",
+            Type: "Method",
+            ELI5: "Finds an entity by its primary key value, returning null if not found.",
+            Example: "var driver = await DbContext.Drivers.FindAsync(id);",
+            Tips: new[] {
+                "Fastest way to get single entity by ID",
+                "Returns null if not found - always check before using",
+                "Checks in-memory tracked entities first, then database",
+                "Use for Edit/Delete operations where you have the ID"
+            }
+        )
+        {
+            LongELI5 = "\n\nFindAsync() is like looking up someone in a phone book by their phone number (the ID). You give it a primary key value, and it returns that exact entity or null if it doesn't exist. It's optimized - it first checks if EF Core already loaded that entity earlier (in-memory cache), and only hits the database if needed. This makes it very fast for Edit/Delete scenarios where you already know the ID. Always check if the result is null before using it, because if that ID doesn't exist in the database, you'll get null back and trying to use it will crash with a NullReferenceException.",
+            ELI5Example = "// Edit form - need to load existing driver\n[Parameter]\npublic int DriverId { get; set; }\n\nprivate Driver? driver;\n\nprotected override async Task OnInitializedAsync()\n{\n    // Load driver by ID\n    driver = await DbContext.Drivers.FindAsync(DriverId);\n    \n    if (driver == null)\n    {\n        // Not found - maybe deleted by someone else\n        Navigation.NavigateTo(\"/drivers\");\n        return;\n    }\n}\n\nprivate async Task DeleteDriver(int id)\n{\n    var driver = await DbContext.Drivers.FindAsync(id);\n    \n    // Always check for null!\n    if (driver != null)\n    {\n        DbContext.Drivers.Remove(driver);\n        await DbContext.SaveChangesAsync();\n    }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "Navigation Properties",
+            Category: "Entity Framework — Relationships",
+            Type: "Property",
+            ELI5: "Properties that link related entities together, like a Driver having many Routes or a Route belonging to one Driver.",
+            Example: "public class Driver\n{\n    public int Id { get; set; }\n    public List<Route> Routes { get; set; }\n}\n\npublic class Route\n{\n    public int DriverId { get; set; }\n    public Driver Driver { get; set; }\n}",
+            Tips: new[] {
+                "Use List<T> for one-to-many (Driver has many Routes)",
+                "Use single property for many-to-one (Route has one Driver)",
+                "EF Core creates foreign key columns automatically",
+                "Use Include() to load related data (eager loading)"
+            }
+        )
+        {
+            LongELI5 = "\n\nNavigation properties create relationships between your entities, just like tables are related in a database. Think of it like a family tree - a parent (Driver) can have multiple children (Routes), and each child knows who their parent is. When you put 'public List<Route> Routes' on Driver, you're saying 'a driver can have many routes'. When you put 'public Driver Driver' on Route, you're saying 'a route belongs to one driver'. EF Core uses these properties to create foreign key columns (like DriverId on the Routes table). You can then navigate from a driver to see all their routes, or from a route to see which driver owns it. Use Include() to load related data in one query, or EF Core will lazy-load it later.",
+            ELI5Example = "// One-to-Many: Driver has many Routes\npublic class Driver\n{\n    public int Id { get; set; }\n    public string Name { get; set; }\n    \n    // Navigation property - collection for \"many\"\n    public List<Route> Routes { get; set; } = new();\n}\n\npublic class Route\n{\n    public int Id { get; set; }\n    public string Name { get; set; }\n    \n    // Foreign key\n    public int DriverId { get; set; }\n    \n    // Navigation property - single for \"one\"\n    public Driver Driver { get; set; } = null!;\n}\n\n// Usage - load driver with their routes\nvar driver = await DbContext.Drivers\n    .Include(d => d.Routes)  // Eager load routes\n    .FirstOrDefaultAsync(d => d.Id == driverId);\n\n// Now can access: driver.Routes (List of Route objects)\n// Or from a route: route.Driver (the Driver object)"
+        };
+    }
+}
+

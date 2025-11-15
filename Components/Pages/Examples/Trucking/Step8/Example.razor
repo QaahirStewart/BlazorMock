@@ -1,0 +1,408 @@
+@page "/trucking-examples/step8"
+@inherits ExampleBase
+@rendermode InteractiveServer
+
+<PageTitle>Trucking Step 8: Setup EF Core & DbContext - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <div class="mb-8">
+            <a href="/trucking-guide"
+                class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Trucking Guide
+            </a>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                🎯 Step 8: Setup EF Core & DbContext
+            </h1>
+            <p class="text-xl text-gray-600">
+                Configure Entity Framework Core with SQLite database, create DbContext, and set up migrations for schema
+                management.
+            </p>
+        </div>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">📘 What You'll Learn</h2>
+            <p class="text-gray-700 mb-3">
+                Entity Framework Core requires setup to connect your models to a database through DbContext and
+                migrations.
+            </p>
+            <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                <li>Install EF Core NuGet packages for SQLite</li>
+                <li>Create AppDbContext with DbSet properties</li>
+                <li>Configure entity relationships in OnModelCreating</li>
+                <li>Add connection strings to appsettings.json</li>
+                <li>Register DbContext in dependency injection</li>
+                <li>Create and apply migrations to generate database schema</li>
+            </ul>
+
+            <!-- Key Concepts Footer -->
+            <div class="mt-4 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> DbContext, DbSet&lt;T&gt;, EF Core Migrations
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#dbcontext"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">DbContext</a>
+                    <a href="/tips#dbsett"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">DbSet&lt;T&gt;</a>
+                    <a href="/tips#ef-core-migrations"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Migrations</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Example: Install Packages -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 1</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">Install EF Core Packages</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                Install the required NuGet packages for Entity Framework Core with SQLite database provider.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li><code class="px-1 rounded bg-gray-100">Microsoft.EntityFrameworkCore.Sqlite</code> provides SQLite
+                    database support</li>
+                <li><code class="px-1 rounded bg-gray-100">Microsoft.EntityFrameworkCore.Tools</code> enables migration
+                    commands</li>
+                <li><code class="px-1 rounded bg-gray-100">Microsoft.EntityFrameworkCore.Design</code> required for
+                    design-time tooling</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="dotnet CLI (Package Installation)">
+# Install EF Core with SQLite provider
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+
+# Install EF Core tools for migrations
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+
+# Install design-time services
+dotnet add package Microsoft.EntityFrameworkCore.Design
+</pre>
+            </div>
+        </div>
+
+        <!-- Code Example: DbContext -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 2</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">Create AppDbContext</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                The DbContext class manages database connections and provides DbSet properties for each entity type.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li><code class="px-1 rounded bg-gray-100">DbSet&lt;T&gt;</code> represents a table in the database</li>
+                <li><code class="px-1 rounded bg-gray-100">OnModelCreating</code> configures entity relationships and
+                    constraints</li>
+                <li>Fluent API provides precise control over database schema</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="C# (Data/AppDbContext.cs)">
+using Microsoft.EntityFrameworkCore;
+using BlazorMock.Models;
+
+namespace BlazorMock.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options)
+    {
+    }
+
+    // DbSet properties - each represents a table
+    public DbSet&lt;Driver&gt; Drivers { get; set; }
+    public DbSet&lt;Truck&gt; Trucks { get; set; }
+    public DbSet&lt;Route&gt; Routes { get; set; }
+
+    // Configure entity relationships and constraints
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // Configure Driver entity
+        modelBuilder.Entity&lt;Driver&gt;(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.HourlyRate).HasColumnType("decimal(10,2)");
+            
+            // One driver can have many routes
+            entity.HasMany(d => d.Routes)
+                  .WithOne(r => r.Driver)
+                  .HasForeignKey(r => r.DriverId);
+        });
+
+        // Configure Truck entity
+        modelBuilder.Entity&lt;Truck&gt;(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TruckNumber).IsRequired().HasMaxLength(50);
+            
+            // One truck can have many routes
+            entity.HasMany(t => t.Routes)
+                  .WithOne(r => r.Truck)
+                  .HasForeignKey(r => r.TruckId);
+        });
+
+        // Configure Route entity
+        modelBuilder.Entity&lt;Route&gt;(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.RouteNumber).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.EstimatedFuelCost).HasColumnType("decimal(10,2)");
+        });
+    }
+}
+</pre>
+            </div>
+        </div>
+
+        <!-- Code Example: Connection String & Registration -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 3</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">Configure & Register DbContext</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                Add connection string to appsettings.json and register DbContext in Program.cs for dependency injection.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li>Connection string defines database location and settings</li>
+                <li><code class="px-1 rounded bg-gray-100">AddDbContext</code> registers DbContext with scoped lifetime
+                </li>
+                <li><code class="px-1 rounded bg-gray-100">UseSqlite</code> configures SQLite as the database provider
+                </li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre data-code-title="JSON (appsettings.json)">
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=trucking.db"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information"
+    }
+  }
+}
+</pre>
+            </div>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="C# (Program.cs)">
+using Microsoft.EntityFrameworkCore;
+using BlazorMock.Data;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add Blazor services
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+// Register DbContext with SQLite
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =>
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
+var app = builder.Build();
+
+// Configure middleware pipeline...
+app.Run();
+</pre>
+            </div>
+        </div>
+
+        <!-- Code Example: Migrations -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 4</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">Create and Apply Migrations</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                Migrations are version control for your database schema, tracking changes and allowing schema updates.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li><code class="px-1 rounded bg-gray-100">migrations add</code> creates a new migration based on model
+                    changes</li>
+                <li><code class="px-1 rounded bg-gray-100">database update</code> applies pending migrations to the
+                    database</li>
+                <li><code class="px-1 rounded bg-gray-100">migrations list</code> shows all migrations and their status
+                </li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="dotnet CLI (EF Core Migrations)">
+# Create your first migration
+dotnet ef migrations add InitialCreate
+
+# Apply the migration to create the database
+dotnet ef database update
+
+# View migration status
+dotnet ef migrations list
+
+# Remove the last migration (if not yet applied)
+dotnet ef migrations remove
+</pre>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">💡 Important Notes & Tips</h2>
+
+            <!-- Pro Tips -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                <h3 class="text-lg font-semibold text-blue-900 mb-3">💎 Pro Tips</h3>
+                <ul class="list-disc pl-5 text-blue-800 space-y-2">
+                    <li><strong>Scoped lifetime:</strong> DbContext uses scoped lifetime in web apps - one instance per
+                        request prevents concurrency issues</li>
+                    <li><strong>Migration naming:</strong> Use descriptive names like "AddDriverHourlyRate" instead of
+                        generic "Migration1"</li>
+                    <li><strong>OnModelCreating vs Attributes:</strong> Fluent API (OnModelCreating) takes precedence
+                        over data annotations</li>
+                    <li><strong>SQLite limitations:</strong> SQLite doesn't support all SQL Server features (e.g., no
+                        ALTER COLUMN) - may need to recreate tables</li>
+                    <li><strong>Connection string security:</strong> Never commit passwords or secrets - use User
+                        Secrets or environment variables</li>
+                </ul>
+            </div>
+
+            <!-- Troubleshooting -->
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <h3 class="text-lg font-semibold text-yellow-900 mb-3">⚠️ Troubleshooting</h3>
+                <ul class="list-disc pl-5 text-yellow-800 space-y-2">
+                    <li><strong>"No DbContext was found":</strong> Ensure packages are installed and DbContext is
+                        registered in Program.cs</li>
+                    <li><strong>"Build failed" during migration:</strong> Fix all compilation errors before running EF
+                        commands</li>
+                    <li><strong>Migration creates wrong schema:</strong> Review the generated migration file in
+                        Migrations/ folder before applying</li>
+                    <li><strong>"Database is locked":</strong> Close all connections to the SQLite file - restart app if
+                        needed</li>
+                    <li><strong>Model changes not reflected:</strong> You must create a new migration after each model
+                        change - EF Core doesn't auto-update</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">1️⃣ Install EF Core Packages</h3>
+                    <p class="text-gray-700 mb-2">
+                        Run dotnet add package commands to install Microsoft.EntityFrameworkCore.Sqlite, .Tools, and
+                        .Design packages.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            dotnet add package Microsoft.EntityFrameworkCore.Sqlite (and Tools, Design)
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">2️⃣ Create AppDbContext Class</h3>
+                    <p class="text-gray-700 mb-2">
+                        Create Data/AppDbContext.cs inheriting from DbContext with DbSet properties for each model and
+                        configure relationships in OnModelCreating.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            public class AppDbContext : DbContext with DbSet&lt;Driver&gt;, DbSet&lt;Truck&gt;, etc.
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">3️⃣ Add Connection String</h3>
+                    <p class="text-gray-700 mb-2">
+                        Edit appsettings.json to add a "ConnectionStrings" section with "DefaultConnection" pointing to
+                        your SQLite database file.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            "ConnectionStrings": { "DefaultConnection": "Data Source=trucking.db" }
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">4️⃣ Register DbContext</h3>
+                    <p class="text-gray-700 mb-2">
+                        In Program.cs, call builder.Services.AddDbContext&lt;AppDbContext&gt; with options.UseSqlite()
+                        to register for dependency injection.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            builder.Services.AddDbContext&lt;AppDbContext&gt;(options => options.UseSqlite(...))
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">5️⃣ Create and Apply Migration</h3>
+                    <p class="text-gray-700 mb-2">
+                        Run dotnet ef migrations add InitialCreate to generate migration, then dotnet ef database update
+                        to create the database schema.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            dotnet ef migrations add InitialCreate && dotnet ef database update
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mark Complete -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Ready to move on?</h3>
+                    <p class="text-gray-600">
+                        @if (isComplete)
+                        {
+                            <span class="text-green-600 font-medium">✅ Step completed!</span>
+                        }
+                        else
+                        {
+                            <span>Mark this step as complete when you're ready.</span>
+                        }
+                    </p>
+                </div>
+                <div class="flex gap-3">
+                    @if (!isComplete)
+                    {
+                        <button @onclick="MarkComplete"
+                            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                            ✓ Mark Complete
+                        </button>
+                    }
+                    else
+                    {
+                        <button @onclick="ResetStep"
+                            class="px-6 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Reset Step
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 flex flex-col sm:flex-row justify-between gap-4">
+            <a href="/trucking-examples/step7"
+                class="inline-flex items-center gap-2 px-6 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span> Previous: EF Core Models
+            </a>
+            <a href="/trucking-examples/step9"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: CRUD Operations <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>

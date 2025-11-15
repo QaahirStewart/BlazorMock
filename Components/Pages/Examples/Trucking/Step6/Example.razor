@@ -1,0 +1,399 @@
+@page "/trucking-examples/step6"
+@inherits ExampleBase
+@rendermode InteractiveServer
+
+<PageTitle>Trucking Step 6: Routing & Navigation - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <div class="mb-8">
+            <a href="/trucking-guide"
+                class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+                <span>←</span> Back to Trucking Guide
+            </a>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                🎯 Step 6: Routing & Navigation
+            </h1>
+            <p class="text-xl text-gray-600">
+                Define routes, navigate between pages, use NavLink for active state, and NavigationManager for programmatic navigation.
+            </p>
+        </div>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">📘 What You'll Learn</h2>
+            <p class="text-gray-700 mb-3">
+                Blazor's routing system uses the @@page directive and provides powerful navigation components with automatic active state management.
+            </p>
+            <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                <li>Use @@page directive to define component routes</li>
+                <li>Navigate with NavLink components and automatic active styling</li>
+                <li>Build responsive navigation menus in MainLayout</li>
+                <li>Programmatically navigate using NavigationManager</li>
+                <li>Handle route parameters and constraints</li>
+            </ul>
+        </div>
+
+        <!-- Code Example: page Directive -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 1</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">The @@page Directive</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                Map routes to components using the @@page directive. Multiple routes can point to the same component.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li>Use <code class="px-1 rounded bg-gray-100">@@page "/route"</code> at the top of your component</li>
+                <li>Multiple @@page directives allow multiple routes to the same component</li>
+                <li>Route constraints like <code class="px-1 rounded bg-gray-100">{id:int}</code> ensure type safety</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="Razor (@@page Directive)">
+&lt;!-- Components/Pages/Drivers.razor --&gt;
+@@page "/drivers"
+
+&lt;div class="min-h-screen py-8 bg-gray-50"&gt;
+    &lt;div class="max-w-5xl mx-auto px-4"&gt;
+        &lt;h1 class="text-3xl font-bold text-gray-900 mb-6"&gt;🚗 Drivers&lt;/h1&gt;
+        &lt;p class="text-gray-600"&gt;Manage your truck drivers here.&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Components/Pages/Home.razor --&gt;
+@@page "/"
+@@page "/home"
+
+&lt;div class="min-h-screen py-8 bg-gray-50"&gt;
+    &lt;div class="max-w-5xl mx-auto px-4"&gt;
+        &lt;h1 class="text-3xl font-bold text-gray-900 mb-6"&gt;🏠 Dashboard&lt;/h1&gt;
+        &lt;p class="text-gray-600"&gt;Accessible via both / and /home routes.&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Components/Pages/DriverDetails.razor --&gt;
+@@page "/driver/{driverId:int}"
+@@inject NavigationManager Navigation
+
+@@code {
+    [Parameter]
+    public int DriverId { get; set; }
+}
+
+&lt;h1&gt;Driver Details: #@@DriverId&lt;/h1&gt;
+</pre>
+            </div>
+        </div>
+
+        <!-- Code Example: NavLink Component -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 2</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">NavLink with Active State</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                NavLink generates anchor tags with automatic active state styling based on the current URL.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li><code class="px-1 rounded bg-gray-100">Match="NavLinkMatch.All"</code> requires exact URL match (use for home page)</li>
+                <li><code class="px-1 rounded bg-gray-100">ActiveClass</code> defines custom CSS for active links</li>
+                <li>Default behavior uses prefix matching for nested routes</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="Razor (NavLink Component)">
+&lt;nav class="bg-blue-600 text-white shadow-lg"&gt;
+    &lt;div class="max-w-7xl mx-auto px-4"&gt;
+        &lt;div class="flex items-center justify-between h-16"&gt;
+            &lt;div class="text-xl font-bold"&gt;Trucking Schedule&lt;/div&gt;
+            
+            &lt;div class="flex gap-4"&gt;
+                &lt;NavLink href="/" Match="NavLinkMatch.All"
+                         class="px-3 py-2 rounded hover:bg-blue-700"
+                         ActiveClass="bg-blue-800 font-semibold"&gt;
+                    Home
+                &lt;/NavLink&gt;
+                
+                &lt;NavLink href="/drivers"
+                         class="px-3 py-2 rounded hover:bg-blue-700"
+                         ActiveClass="bg-blue-800 font-semibold"&gt;
+                    Drivers
+                &lt;/NavLink&gt;
+                
+                &lt;NavLink href="/trucks"
+                         class="px-3 py-2 rounded hover:bg-blue-700"
+                         ActiveClass="bg-blue-800 font-semibold"&gt;
+                    Trucks
+                &lt;/NavLink&gt;
+                
+                &lt;NavLink href="/routes"
+                         class="px-3 py-2 rounded hover:bg-blue-700"
+                         ActiveClass="bg-blue-800 font-semibold"&gt;
+                    Routes
+                &lt;/NavLink&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/nav&gt;
+</pre>
+            </div>
+        </div>
+
+        <!-- Code Example: NavigationManager -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <div class="mb-3">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Code Example 3</p>
+                <h3 class="text-lg font-semibold text-gray-800 mt-1">Programmatic Navigation</h3>
+            </div>
+            <p class="text-xs text-gray-600 mb-3">
+                Use NavigationManager to navigate from C# code, handle redirects, and listen to URL changes.
+            </p>
+            <ul class="list-disc pl-5 text-[11px] text-gray-600 space-y-1 mb-4">
+                <li><code class="px-1 rounded bg-gray-100">NavigateTo(url)</code> navigates to a new URL</li>
+                <li><code class="px-1 rounded bg-gray-100">forceLoad: true</code> forces full page reload</li>
+                <li><code class="px-1 rounded bg-gray-100">LocationChanged</code> event detects navigation</li>
+            </ul>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto">
+                <pre data-code-title="C# (NavigationManager)">
+@@page "/driver-form"
+@@inject NavigationManager Navigation
+
+&lt;button @@onclick="SaveAndNavigate"
+        class="px-6 py-3 bg-green-600 text-white rounded-lg"&gt;
+    Save &amp; Go to Drivers
+&lt;/button&gt;
+
+&lt;button @@onclick="GoBack"
+        class="px-6 py-3 border border-gray-300 rounded-lg"&gt;
+    Cancel
+&lt;/button&gt;
+
+@@code {
+    private void SaveAndNavigate()
+    {
+        // Save data...
+        
+        // Navigate to drivers list
+        Navigation.NavigateTo("/drivers");
+    }
+
+    private void GoBack()
+    {
+        // Navigate back to previous page
+        Navigation.NavigateTo("/guide");
+    }
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to location changes
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        Console.WriteLine($"Navigated to: {e.Location}");
+        StateHasChanged(); // Refresh UI if needed
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}
+</pre>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">💡 Important Notes & Tips</h2>
+            
+            <!-- Pro Tips -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                <h3 class="text-lg font-semibold text-blue-900 mb-3">💎 Pro Tips</h3>
+                <ul class="list-disc pl-5 text-blue-800 space-y-2">
+                    <li><strong>NavLink vs anchor:</strong> Always use NavLink for internal navigation to get automatic active state and SPA behavior</li>
+                    <li><strong>Match.All for home:</strong> Use Match="NavLinkMatch.All" on the home page link to prevent it being active on all routes</li>
+                    <li><strong>Route constraints:</strong> Use {id:int}, {name:alpha}, {date:datetime} to validate route parameters at the routing level</li>
+                    <li><strong>Query parameters:</strong> Access query strings via NavigationManager.Uri and parse with QueryHelpers from Microsoft.AspNetCore.WebUtilities</li>
+                    <li><strong>LocationChanged cleanup:</strong> Always unsubscribe from LocationChanged in Dispose() to prevent memory leaks</li>
+                </ul>
+            </div>
+
+            <!-- Troubleshooting -->
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <h3 class="text-lg font-semibold text-yellow-900 mb-3">⚠️ Troubleshooting</h3>
+                <ul class="list-disc pl-5 text-yellow-800 space-y-2">
+                    <li><strong>Home link always active:</strong> Add Match="NavLinkMatch.All" to your home page NavLink to require exact match</li>
+                    <li><strong>404 Not Found:</strong> Verify @@page directive is at the very top of the component (before @@inject, @@using, etc.)</li>
+                    <li><strong>ActiveClass not working:</strong> Check CSS specificity - ActiveClass may need !important or higher specificity</li>
+                    <li><strong>Navigation not updating UI:</strong> Call StateHasChanged() after programmatic navigation if component state depends on URL</li>
+                    <li><strong>Route parameters null:</strong> Ensure [Parameter] attribute is on the property and property name matches route template (case-insensitive)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">1️⃣ Add Routes to Your Pages</h3>
+                    <p class="text-gray-700 mb-2">
+                        Create page components (Drivers.razor, Trucks.razor, Routes.razor) and add @@page directives at the top of each file.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            @@page "/drivers" at the top of Components/Pages/Drivers.razor
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">2️⃣ Create Navigation Menu in MainLayout</h3>
+                    <p class="text-gray-700 mb-2">
+                        Edit Components/Layout/MainLayout.razor to add a navigation bar with NavLink components for each page.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            Use &lt;NavLink href="/drivers" ActiveClass="active"&gt; for each menu item
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">3️⃣ Style Active Links</h3>
+                    <p class="text-gray-700 mb-2">
+                        Add ActiveClass property to NavLink components to highlight the current page with custom CSS.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            ActiveClass="bg-blue-800 font-semibold" applies these classes when link is active
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">4️⃣ Add Programmatic Navigation</h3>
+                    <p class="text-gray-700 mb-2">
+                        Inject NavigationManager and use NavigateTo() method to navigate after form submissions or user actions.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            @@inject NavigationManager Navigation; then Navigation.NavigateTo("/drivers");
+                        </code>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">5️⃣ Test Your Navigation</h3>
+                    <p class="text-gray-700 mb-2">
+                        Run your app and click through the navigation menu to verify routes work and active states update correctly.
+                    </p>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                        <code class="text-xs text-gray-700">
+                            Test each link, verify URL changes, and check active highlighting
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Demo -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🚗 Interactive Demo: Navigation Manager</h2>
+            <p class="text-gray-700 mb-6">
+                Try the buttons below to see NavigationManager in action. The current URL will update as you navigate.
+            </p>
+
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                <div class="mb-6">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Current Location:</p>
+                    <div class="bg-white border border-gray-300 rounded-lg p-3">
+                        <code class="text-xs text-blue-600 break-all">@currentUri</code>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="font-semibold text-gray-800 mb-3">Navigate to Different Pages:</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button @onclick='() => NavigateToPage("/")' 
+                                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                            🏠 Navigate to Home
+                        </button>
+                        
+                        <button @onclick='() => NavigateToPage("/trucking-guide")' 
+                                class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                            📚 Navigate to Guide
+                        </button>
+                        
+                        <button @onclick='() => NavigateToPage("/trucking-examples/step1")' 
+                                class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors">
+                            🚀 Navigate to Step 1
+                        </button>
+                        
+                        <button @onclick='() => NavigateToPage("/trucking-examples/step5")' 
+                                class="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors">
+                            📋 Navigate to Step 5
+                        </button>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-200 mt-4">
+                        <p class="text-xs text-gray-500 mb-3">
+                            💡 Notice how the URL in the address bar and above updates when you click the buttons!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mark Complete -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Ready to move on?</h3>
+                    <p class="text-gray-600">
+                        @if (isComplete)
+                        {
+                            <span class="text-green-600 font-medium">✅ Step completed!</span>
+                        }
+                        else
+                        {
+                            <span>Mark this step as complete when you're ready.</span>
+                        }
+                    </p>
+                </div>
+                <div class="flex gap-3">
+                    @if (!isComplete)
+                    {
+                        <button @onclick="MarkComplete"
+                            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                            ✓ Mark Complete
+                        </button>
+                    }
+                    else
+                    {
+                        <button @onclick="ResetStep"
+                            class="px-6 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Reset Step
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 flex flex-col sm:flex-row justify-between gap-4">
+            <a href="/trucking-examples/step5"
+                class="inline-flex items-center gap-2 px-6 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span> Previous: Forms & Validation
+            </a>
+            <a href="/trucking-guide"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Back to Guide <span>📚</span>
+            </a>
+        </div>
+    </div>
+</div>

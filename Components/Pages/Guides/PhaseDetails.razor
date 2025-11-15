@@ -17,7 +17,7 @@
         completedInPhase = phase is null ? 0 : steps.Count(s => s.IsComplete && phase.StepNumbers.Contains(s.StepNumber));
     }
 
-    private string StepHref(int n) => n == 0 ? "/examples/step0" : $"/examples/step{n}";
+    private string StepHref(int n) => n == 0 ? "/trucking-examples/step0" : $"/trucking-examples/step{n}";
 
     // Styling helpers to match Guide page accents
     private static string PhasePillColors(string id) => id switch
@@ -65,11 +65,13 @@ else
             <!-- Phase Header styled like Guide's Phases Hub, with per-phase colors -->
             <div class="rounded-2xl p-5 sm:p-6 mb-8 @(PhaseHeaderGradient(phase.Id))">
                 <div class="mb-2">
-                    <span class="@("inline-flex items-center px-2 py-1 rounded-full text-xs font-medium " + PhasePillColors(phase.Id))">@phase.Subtitle</span>
+                    <span
+                        class="@("inline-flex items-center px-2 py-1 rounded-full text-xs font-medium " + PhasePillColors(phase.Id))">@phase.Subtitle</span>
                 </div>
                 <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">@phase.Title</h1>
                 <p class="text-sm sm:text-base text-gray-700 mb-3">@phase.Description</p>
-                <div class="text-xs sm:text-sm text-gray-700"><strong>Progress:</strong> @completedInPhase/@phase.StepNumbers.Length</div>
+                <div class="text-xs sm:text-sm text-gray-700"><strong>Progress:</strong>
+                    @completedInPhase/@phase.StepNumbers.Length</div>
             </div>
 
             @* Special Step 0 callout (keeps original style) *@
@@ -78,7 +80,8 @@ else
                 <div class="bg-black/3 rounded-2xl p-6 mb-8">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                         <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
-                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">0</span>
+                            <span
+                                class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">0</span>
                             🧰 Step 0: Prerequisites & VS Code Setup
                         </h3>
                         <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">Setup</span>
@@ -92,17 +95,23 @@ else
                             <li>Install .NET SDK (10.0+)</li>
                             <li>Install Node.js LTS and npm</li>
                             <li>Install VS Code + extensions: C#, Razor, Tailwind CSS IntelliSense</li>
-                            <li>Verify tools: <span class="font-mono">dotnet --info</span>, <span class="font-mono">node -v</span>, <span class="font-mono">npm -v</span></li>
+                            <li>Verify tools: <span class="font-mono">dotnet --info</span>, <span class="font-mono">node
+                                    -v</span>, <span class="font-mono">npm -v</span></li>
                         </ul>
                         <div class="flex flex-wrap gap-2">
                             <a href="https://dotnet.microsoft.com/download" target="_blank" rel="noopener noreferrer"
-                               class="inline-flex items-center gap-2 px-4 py-2 bg-black/85 hover:bg-black text-white text-sm sm:text-base rounded-lg transition-colors">.NET Download →</a>
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-black/85 hover:bg-black text-white text-sm sm:text-base rounded-lg transition-colors">.NET
+                                Download →</a>
                             <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer"
-                               class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">Node.js (LTS) →</a>
-                            <a href="https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit" target="_blank" rel="noopener noreferrer"
-                               class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">VS Code C# →</a>
+                                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">Node.js
+                                (LTS) →</a>
+                            <a href="https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit"
+                                target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">VS
+                                Code C# →</a>
                         </div>
-                        <p class="text-xs sm:text-sm text-gray-600 mt-3">See <span class="font-mono">Docs/Steps/Step00.md</span> for the full checklist.</p>
+                        <p class="text-xs sm:text-sm text-gray-600 mt-3">See <span class="font-mono">Docs/Steps/Step00.md</span>
+                            for the full checklist.</p>
                     </div>
                 </div>
             }
