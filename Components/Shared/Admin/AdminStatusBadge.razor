@@ -1,0 +1,31 @@
+@namespace BlazorMock.Components.Shared.Admin
+
+<div class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium @BackgroundClass">
+    <span class="h-1.5 w-1.5 rounded-full @DotClass"></span>
+    <span>@Label</span>
+</div>
+
+@code {
+    [Parameter] public string Status { get; set; } = "active";
+
+    private string Label => Status switch
+    {
+        "trial" => "Trial",
+        "overdue" => "Overdue",
+        _ => "Active"
+    };
+
+    private string BackgroundClass => Status switch
+    {
+        "trial" => "bg-amber-100 text-amber-800",
+        "overdue" => "bg-red-100 text-red-800",
+        _ => "bg-emerald-100 text-emerald-800"
+    };
+
+    private string DotClass => Status switch
+    {
+        "trial" => "bg-amber-500",
+        "overdue" => "bg-red-500",
+        _ => "bg-emerald-500"
+    };
+}

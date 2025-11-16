@@ -70,9 +70,18 @@ public class LearningProgressService : ILearningProgressService
             new() { StepNumber = 5, StepId = "pokemon-step5", Title = "Show loading and error states", ProjectKey = "pokemon", IsComplete = false },
             new() { StepNumber = 6, StepId = "pokemon-step6", Title = "Add search, filtering, and a details view", ProjectKey = "pokemon", IsComplete = false },
 
-            // Admin Panel steps (projectKey = "admin")
+            // Admin SaaS Dashboard steps (projectKey = "admin")
             new() { StepNumber = 0, StepId = "admin-step0", Title = "Prerequisites & VS Code Setup", ProjectKey = "admin", IsComplete = false },
-            new() { StepNumber = 1, StepId = "admin-step1", Title = "New Clean Project", ProjectKey = "admin", IsComplete = false }
+            new() { StepNumber = 1, StepId = "admin-step1", Title = "New Clean Project", ProjectKey = "admin", IsComplete = false },
+            new() { StepNumber = 2, StepId = "admin-step2", Title = "Reusable Stat Card", ProjectKey = "admin", IsComplete = false },
+            new() { StepNumber = 3, StepId = "admin-step3", Title = "Status Badges & Dashboard Shell", ProjectKey = "admin", IsComplete = false },
+            new() { StepNumber = 4, StepId = "admin-step4", Title = "Auth Service & Admin Roles", ProjectKey = "admin", IsComplete = false },
+            new() { StepNumber = 5, StepId = "admin-step5", Title = "Role Toggle & Profile Chip", ProjectKey = "admin", IsComplete = false },
+            new() { StepNumber = 6, StepId = "admin-step6", Title = "Locked Tiles & Disabled Actions", ProjectKey = "admin", IsComplete = false },
+            new() { StepNumber = 7, StepId = "admin-step7", Title = "Access Explanation Banner", ProjectKey = "admin", IsComplete = false },
+            new() { StepNumber = 8, StepId = "admin-step8", Title = "Subscription Panel", ProjectKey = "admin", IsComplete = false },
+            new() { StepNumber = 9, StepId = "admin-step9", Title = "Billing Summary Panel", ProjectKey = "admin", IsComplete = false },
+            new() { StepNumber = 10, StepId = "admin-step10", Title = "Profile Settings Panel", ProjectKey = "admin", IsComplete = false }
         };
     }
 

@@ -1,0 +1,29 @@
+@page "/admin-examples/demo-auth"
+@rendermode InteractiveServer
+@inherits AdminAuthExampleBase
+
+<h3 class="text-xl font-semibold mb-3">Admin Auth Demo (Mock, Modern Style)</h3>
+
+<div class="space-y-4">
+    <div class="flex flex-wrap gap-2">
+        <button @onclick="SignInRegular" class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">Sign in as Regular (password-style)</button>
+        <button @onclick="SignInAdmin" class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">Sign in as Admin (password-style)</button>
+        <button @onclick="SignInWithPasskey" class="px-4 py-2 text-sm font-medium bg-green-600 hover:bg-green-700 text-white rounded transition-colors">Sign in with Passkey (Admin)</button>
+        <button @onclick="SignOut" class="px-4 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 transition-colors">Sign out</button>
+    </div>
+
+    @if (CurrentUser is null)
+    {
+        <p class="text-sm text-gray-600">No user signed in. Use one of the buttons above.</p>
+    }
+    else
+    {
+        <div class="bg-white rounded-xl p-4 border border-gray-200">
+            <p class="text-sm text-gray-700 mb-1"><strong>User:</strong> @CurrentUser.UserName</p>
+            <p class="text-sm text-gray-700 mb-1"><strong>Roles:</strong> @(string.Join(", ", CurrentUser.Roles))</p>
+            <p class="text-sm text-gray-700 mb-1"><strong>Authenticated:</strong> @IsAuthenticated</p>
+            <p class="text-sm text-gray-700 mb-1"><strong>Auth method (amr):</strong> @AuthMethod</p>
+            <p class="text-sm text-gray-700"><strong>Device:</strong> @DeviceName</p>
+        </div>
+    }
+</div>

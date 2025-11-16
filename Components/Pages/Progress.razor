@@ -23,13 +23,15 @@
                     <span class="text-3xl">🚚</span>
                     <div>
                         <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">Trucking Schedule App</h2>
-                        <p class="text-sm sm:text-base text-gray-600 break-words">@truckingCompletedCount / @(truckingSteps?.Count ?? 0) steps complete</p>
+                        <p class="text-sm sm:text-base text-gray-600 break-words">@truckingCompletedCount /
+                            @(truckingSteps?.Count ?? 0) steps complete</p>
                     </div>
                 </div>
-                
+
                 <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
-                    <div class="bg-blue-500 h-3 rounded-full transition-all duration-300" 
-                         style="width: @((truckingSteps?.Count > 0 ? (truckingCompletedCount / (double)truckingSteps.Count) * 100 : 0))%"></div>
+                    <div class="bg-blue-500 h-3 rounded-full transition-all duration-300"
+                        style="width: @((truckingSteps?.Count > 0 ? (truckingCompletedCount / (double)truckingSteps.Count) * 100 : 0))%">
+                    </div>
                 </div>
 
                 <div class="space-y-3">
@@ -37,20 +39,23 @@
                     {
                         @foreach (var step in truckingSteps)
                         {
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
+                            <div
+                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
                                 <div class="flex items-center gap-3 min-w-0">
                                     @if (step.IsComplete)
                                     {
-                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
+                                        <span
+                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
                                     }
                                     else
                                     {
-                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
+                                        <span
+                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
                                     }
                                     <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
                                 </div>
-                                <button @onclick="@(async () => await ToggleStep("trucking", step.StepNumber))" 
-                                        class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-blue-600 text-white hover:bg-blue-700")">
+                                <button @onclick="@(async () => await ToggleStep("trucking", step.StepNumber))"
+                                    class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-blue-600 text-white hover:bg-blue-700")">
                                     @(step.IsComplete ? "Mark incomplete" : "Mark complete")
                                 </button>
                             </div>
@@ -67,13 +72,15 @@
                     <span class="text-3xl">🟡</span>
                     <div>
                         <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">Pokemon Collector</h2>
-                        <p class="text-sm sm:text-base text-gray-600 break-words">@pokemonCompletedCount / @(pokemonSteps?.Count ?? 0) steps complete</p>
+                        <p class="text-sm sm:text-base text-gray-600 break-words">@pokemonCompletedCount /
+                            @(pokemonSteps?.Count ?? 0) steps complete</p>
                     </div>
                 </div>
-                
+
                 <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
-                    <div class="bg-yellow-500 h-3 rounded-full transition-all duration-300" 
-                         style="width: @((pokemonSteps?.Count > 0 ? (pokemonCompletedCount / (double)pokemonSteps.Count) * 100 : 0))%"></div>
+                    <div class="bg-yellow-500 h-3 rounded-full transition-all duration-300"
+                        style="width: @((pokemonSteps?.Count > 0 ? (pokemonCompletedCount / (double)pokemonSteps.Count) * 100 : 0))%">
+                    </div>
                 </div>
 
                 <div class="space-y-3">
@@ -81,20 +88,23 @@
                     {
                         @foreach (var step in pokemonSteps)
                         {
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
+                            <div
+                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
                                 <div class="flex items-center gap-3 min-w-0">
                                     @if (step.IsComplete)
                                     {
-                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
+                                        <span
+                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
                                     }
                                     else
                                     {
-                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
+                                        <span
+                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
                                     }
                                     <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
                                 </div>
-                                <button @onclick="@(async () => await ToggleStep("pokemon", step.StepNumber))" 
-                                        class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-yellow-600 text-white hover:bg-yellow-700")">
+                                <button @onclick="@(async () => await ToggleStep("pokemon", step.StepNumber))"
+                                    class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-yellow-600 text-white hover:bg-yellow-700")">
                                     @(step.IsComplete ? "Mark incomplete" : "Mark complete")
                                 </button>
                             </div>
@@ -110,14 +120,16 @@
                 <div class="flex items-center gap-3 mb-4">
                     <span class="text-3xl">🛡️</span>
                     <div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">Admin Panel & Auth</h2>
-                        <p class="text-sm sm:text-base text-gray-600 break-words">@adminCompletedCount / @(adminSteps?.Count ?? 0) steps complete</p>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">SaaS Dashboard</h2>
+                        <p class="text-sm sm:text-base text-gray-600 break-words">@adminCompletedCount /
+                            @(adminSteps?.Count ?? 0) steps complete</p>
                     </div>
                 </div>
-                
+
                 <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
-                    <div class="bg-purple-500 h-3 rounded-full transition-all duration-300" 
-                         style="width: @((adminSteps?.Count > 0 ? (adminCompletedCount / (double)adminSteps.Count) * 100 : 0))%"></div>
+                    <div class="bg-purple-500 h-3 rounded-full transition-all duration-300"
+                        style="width: @((adminSteps?.Count > 0 ? (adminCompletedCount / (double)adminSteps.Count) * 100 : 0))%">
+                    </div>
                 </div>
 
                 <div class="space-y-3">
@@ -125,20 +137,23 @@
                     {
                         @foreach (var step in adminSteps)
                         {
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
+                            <div
+                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
                                 <div class="flex items-center gap-3 min-w-0">
                                     @if (step.IsComplete)
                                     {
-                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
+                                        <span
+                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
                                     }
                                     else
                                     {
-                                        <span class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
+                                        <span
+                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
                                     }
                                     <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
                                 </div>
-                                <button @onclick="@(async () => await ToggleStep("admin", step.StepNumber))" 
-                                        class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-purple-600 text-white hover:bg-purple-700")">
+                                <button @onclick="@(async () => await ToggleStep("admin", step.StepNumber))"
+                                    class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-purple-600 text-white hover:bg-purple-700")">
                                     @(step.IsComplete ? "Mark incomplete" : "Mark complete")
                                 </button>
                             </div>
@@ -151,7 +166,8 @@
 
         <!-- Back to Home -->
         <div class="mt-8 text-center">
-            <a href="/guide" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+            <a href="/guide"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                 <span>←</span>
                 Back to Learning Hub
             </a>
@@ -162,10 +178,10 @@
 @code {
     private List<StepProgress>? truckingSteps;
     private int truckingCompletedCount = 0;
-    
+
     private List<StepProgress>? pokemonSteps;
     private int pokemonCompletedCount = 0;
-    
+
     private List<StepProgress>? adminSteps;
     private int adminCompletedCount = 0;
 
@@ -178,10 +194,10 @@
     {
         truckingSteps = await ProgressService.GetAllStepsAsync("trucking");
         truckingCompletedCount = await ProgressService.GetCompletedCountAsync("trucking");
-        
+
         pokemonSteps = await ProgressService.GetAllStepsAsync("pokemon");
         pokemonCompletedCount = await ProgressService.GetCompletedCountAsync("pokemon");
-        
+
         adminSteps = await ProgressService.GetAllStepsAsync("admin");
         adminCompletedCount = await ProgressService.GetCompletedCountAsync("admin");
     }

@@ -1,0 +1,15 @@
+@page "/admin-examples/demo-stat-cards"
+@rendermode InteractiveServer
+@inherits AdminStatCardExampleBase
+
+<h3 class="text-xl font-semibold mb-3">Admin Stat Cards Demo</h3>
+
+<div class="grid gap-4 sm:grid-cols-3">
+    <AdminStatCard Title="Monthly Recurring Revenue" Value="$24,800" HelperText="+8.2% vs last month" Status="good" />
+
+    <AdminStatCard Title="Active Subscriptions" Value="1,204" HelperText="Starter, Growth, and Scale plans"
+        Status="neutral" />
+
+    <AdminStatCard Title="Churn This Month" Value="2.1%" HelperText="Watching accounts at risk closely"
+        Status="warning" />
+</div>

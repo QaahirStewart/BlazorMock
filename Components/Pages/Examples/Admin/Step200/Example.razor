@@ -1,11 +1,11 @@
-@page "/admin-examples/step0"
+@page "/admin-examples/step200"
 @inject ILearningProgressService ProgressService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @implements IDisposable
 @rendermode InteractiveServer
 
-<PageTitle>Admin Step 0: Prerequisites &amp; VS Code Setup - Example</PageTitle>
+<PageTitle>Admin Step 1: Prerequisites &amp; VS Code Setup - Example</PageTitle>
 
 <div class="min-h-screen py-8">
     <div class="w-full mx-auto px-4 max-w-5xl">
@@ -14,9 +14,9 @@
         </a>
 
         <div class="rounded-2xl overflow-hidden border border-gray-200 bg-white mb-6">
-            <div class="h-2 w-full bg-gradient-to-r from-indigo-200 via-purple-200 to-rose-300"></div>
+            <div class="h-2 w-full bg-gradient-to-r from-purple-200 via-purple-300 to-purple-400"></div>
             <div class="p-5 sm:p-6">
-                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">🧰 Admin Step 0: Prerequisites &amp; VS
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">🧰 Admin Step 1: Prerequisites &amp; VS
                     Code Setup</h1>
                 <p class="text-gray-600">Install the toolchain and verify your environment works before building the
                     Admin Panel.</p>
@@ -34,11 +34,13 @@
             <div class="mt-4 grid gap-3">
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
                     <div class="text-xs text-gray-500 mb-1">Verify .NET</div>
-                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">dotnet --info</pre>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">dotnet --info</pre>
                 </div>
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
                     <div class="text-xs text-gray-500 mb-1">Verify Node &amp; npm</div>
-                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">node --version
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">node --version
 npm --version</pre>
                 </div>
             </div>
@@ -49,7 +51,7 @@ npm --version</pre>
         <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Admin Step 0?</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Admin Step 1?</h3>
                     <p class="text-sm text-gray-600">Mark it complete to track your Admin progress.</p>
                 </div>
                 @if (isComplete)
@@ -69,17 +71,26 @@ npm --version</pre>
             </div>
         </div>
 
-        <div class="flex items-center justify-between">
-            <a href="/admin-guide"
-                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <span>←</span>
-                Back to Admin guide
-            </a>
-            <a href="/admin-examples/step1"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                Next: Step 1
-                <span>→</span>
-            </a>
+        <!-- Navigation -->
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    Environment ready! Let's create a clean Blazor project for your admin panel.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/admin-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/admin-examples/step201"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 2</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -90,7 +101,7 @@ npm --version</pre>
 
     protected override async Task OnInitializedAsync()
     {
-        var step = await ProgressService.GetStepAsync("admin", 0);
+        var step = await ProgressService.GetStepAsync("admin", 200);
         isComplete = step?.IsComplete ?? false;
     }
 
@@ -112,13 +123,13 @@ npm --version</pre>
 
     private async Task MarkComplete()
     {
-        await ProgressService.MarkStepCompleteAsync("admin", 0);
+        await ProgressService.MarkStepCompleteAsync("admin", 200);
         isComplete = true;
     }
 
     private async Task ResetStep()
     {
-        await ProgressService.MarkStepIncompleteAsync("admin", 0);
+        await ProgressService.MarkStepIncompleteAsync("admin", 200);
         isComplete = false;
     }
 

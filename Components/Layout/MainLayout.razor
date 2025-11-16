@@ -1,6 +1,9 @@
 ﻿@inherits LayoutComponentBase
 @inject BlazorMock.Services.LayoutState Layout
 @inject IJSRuntime JS
+@inject BlazorMock.Services.IUserAuthService Auth
+@inject NavigationManager Navigation
+@implements IDisposable
 
 <div class="min-h-screen ">
     <!-- Top Nav -->
@@ -57,6 +60,74 @@
                         </li>
                     </ul>
 
+                    <!-- User Profile Icon / Sign In (desktop) -->
+                    <div class="hidden md:block order-3">
+                        @if (Auth.IsAuthenticated && Auth.CurrentUser != null)
+                        {
+                            <div class="relative">
+                                <button @onclick="ToggleProfileMenu"
+                                    class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors">
+                                    @if (!string.IsNullOrEmpty(Auth.CurrentUser.ProfilePictureUrl))
+                                    {
+                                        <img src="@Auth.CurrentUser.ProfilePictureUrl" alt="@Auth.CurrentUser.FullName"
+                                            class="h-8 w-8 rounded-full object-cover border-2 border-white/30" />
+                                    }
+                                    else
+                                    {
+                                        <div
+                                            class="h-8 w-8 rounded-full @GetUserAvatarColor() flex items-center justify-center text-white text-xs font-semibold border-2 border-white/30">
+                                            @GetUserInitials()
+                                        </div>
+                                    }
+                                    <span class="text-sm font-medium">@Auth.CurrentUser.FullName</span>
+                                    <svg class="w-4 h-4 transition-transform @(isProfileMenuOpen ? "rotate-180" : "")"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                @if (isProfileMenuOpen)
+                                {
+                                    <div
+                                        class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
+                                        <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            My Profile
+                                        </a>
+                                        <a href="/analytics" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            Analytics
+                                        </a>
+                                        @if (Auth.CurrentUser.Role == "Admin")
+                                        {
+                                            <a href="/admin/dashboard"
+                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                Admin Dashboard
+                                            </a>
+                                        }
+                                        <div class="border-t border-gray-200 my-1"></div>
+                                        <button @onclick="HandleSignOut"
+                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                            Sign Out
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="flex items-center gap-2">
+                                <a href="/signin"
+                                    class="px-4 py-2 text-sm font-medium hover:bg-white/10 rounded-lg transition-colors">
+                                    Sign In
+                                </a>
+                                <a href="/signup"
+                                    class="px-4 py-2 text-sm font-medium bg-white text-black rounded-lg hover:bg-gray-100 transition-colors">
+                                    Sign Up
+                                </a>
+                            </div>
+                        }
+                    </div>
+
                     <!-- Spacer for mobile to keep logo centered -->
                     <div class="md:hidden w-10 order-3"></div>
                 </div>
@@ -80,13 +151,49 @@
                             </NavLink>
                             <NavLink href="/demo/trucking-schedule"
                                 class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
-                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Trucking
-                                Demo
+                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Demo
                             </NavLink>
                             <NavLink href="/progress"
                                 class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
                                 ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Progress
                             </NavLink>
+                            @if (Auth.IsAuthenticated && Auth.CurrentUser != null)
+                            {
+                                <div class="border-t border-white/10 my-2"></div>
+                                <NavLink href="/profile"
+                                    class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
+                                    ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">My Profile
+                                </NavLink>
+                                <NavLink href="/analytics"
+                                    class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
+                                    ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Analytics
+                                </NavLink>
+                                @if (Auth.CurrentUser.Role == "Admin")
+                                {
+                                    <NavLink href="/admin/dashboard"
+                                        class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
+                                        ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Admin
+                                        Dashboard
+                                    </NavLink>
+                                }
+                                <div class="border-t border-white/10 my-2"></div>
+                                <button @onclick="HandleSignOut"
+                                    class="w-full text-left px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors text-red-400">
+                                    Sign Out
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="border-t border-white/10 my-2"></div>
+                                <NavLink href="/signin"
+                                    class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
+                                    ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Sign In
+                                </NavLink>
+                                <NavLink href="/signup"
+                                    class="px-3 py-2 text-sm sm:text-base rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                                    ActiveClass="bg-white/20 text-white font-semibold" @onclick="CloseMobileMenu">Sign Up
+                                </NavLink>
+                            }
                         </nav>
                     </div>
                 </div>
@@ -115,8 +222,18 @@
 
 @code {
     private bool isMobileMenuOpen;
+    private bool isProfileMenuOpen;
     private IJSObjectReference? _codeModule;
 
+    protected override void OnInitialized()
+    {
+        Auth.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        Auth.OnChange -= StateHasChanged;
+    }
 
     private void ToggleMobileMenu()
     {
@@ -126,6 +243,36 @@
     private void CloseMobileMenu()
     {
         isMobileMenuOpen = false;
+    }
+
+    private void ToggleProfileMenu()
+    {
+        isProfileMenuOpen = !isProfileMenuOpen;
+    }
+
+    private string GetUserInitials()
+    {
+        if (Auth.CurrentUser == null) return "?";
+        var names = Auth.CurrentUser.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (names.Length >= 2)
+            return $"{names[0][0]}{names[1][0]}".ToUpper();
+        return Auth.CurrentUser.FullName.Length > 0 ? Auth.CurrentUser.FullName[0].ToString().ToUpper() : "?";
+    }
+
+    private string GetUserAvatarColor()
+    {
+        if (Auth.CurrentUser == null) return "bg-gray-500";
+        var colors = new[] { "bg-blue-500", "bg-purple-500", "bg-green-500", "bg-pink-500", "bg-indigo-500" };
+        var hash = Auth.CurrentUser.Email.GetHashCode();
+        return colors[Math.Abs(hash) % colors.Length];
+    }
+
+    private void HandleSignOut()
+    {
+        Auth.SignOut();
+        isProfileMenuOpen = false;
+        isMobileMenuOpen = false;
+        Navigation.NavigateTo("/", forceLoad: true);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -141,6 +288,4 @@
             catch { /* no-op if module missing */ }
         }
     }
-
-
 }

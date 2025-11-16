@@ -1,11 +1,11 @@
-@page "/admin-examples/step1"
+@page "/admin-examples/step201"
 @inject ILearningProgressService ProgressService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @implements IDisposable
 @rendermode InteractiveServer
 
-<PageTitle>Admin Step 1: New Clean Project - Example</PageTitle>
+<PageTitle>Admin Step 2: New Clean Project - Example</PageTitle>
 
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
@@ -16,7 +16,7 @@
                 <span>←</span> Back to Admin guide
             </a>
             <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 break-words">
-                🎯 Admin Step 1: New Clean Project
+                🎯 Admin Step 2: New Clean Project
             </h1>
             <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">
                 Create a new Blazor Server application and wire up Tailwind CSS v4 that you'll use as the foundation for
@@ -28,7 +28,7 @@
         <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 break-words">📘 What You'll Do</h2>
 
-            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 1.1: Create New Blazor
+            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 2.1: Create New Blazor
                 Project</h3>
             <pre data-code-title="dotnet CLI"
                 class="bg-gray-100 p-3 sm:p-4 rounded-lg text-xs sm:text-sm font-mono w-full max-w-full overflow-x-auto mb-4"
@@ -48,13 +48,13 @@
                 </ul>
             </div>
 
-            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 1.2: Install Tailwind CSS
+            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 2.2: Install Tailwind CSS
                 v4</h3>
             <pre data-code-title="npm CLI"
                 class="bg-gray-100 p-3 sm:p-4 rounded text-xs sm:text-sm font-mono w-full max-w-full overflow-x-auto mb-4"
                 style="white-space:pre-wrap;overflow-wrap:anywhere;">npm install tailwindcss @@tailwindcss/cli</pre>
 
-            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 1.3: Create Styles Folder
+            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 2.3: Create Styles Folder
                 &amp; input.css</h3>
             <p class="text-xs sm:text-sm text-gray-600 mb-2 break-words">Create folder: <code
                     class="bg-gray-100 px-2 py-1 rounded text-xs sm:text-sm">Styles</code></p>
@@ -64,7 +64,7 @@
                     class="bg-gray-100 px-2 py-1 rounded font-mono text-xs sm:text-sm break-all">@@import "tailwindcss";</code>
             </p>
 
-            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 1.4: Build Tailwind CSS
+            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 2.4: Build Tailwind CSS
             </h3>
             <pre data-code-title="Tailwind CLI"
                 class="bg-gray-100 p-3 sm:p-4 rounded text-xs sm:text-sm font-mono w-full max-w-full overflow-x-auto mb-4"
@@ -76,7 +76,7 @@
                     changes. Keep this terminal open while developing.</p>
             </div>
 
-            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 1.5: Link CSS in
+            <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 break-words">Step 2.5: Link CSS in
                 App.razor</h3>
             <p class="text-xs sm:text-sm text-gray-600 mb-2 break-words">Add to your <code
                     class="bg-gray-100 px-2 py-1 rounded text-xs sm:text-sm break-all">Components/App.razor</code> file
@@ -119,17 +119,30 @@
         </div>
 
         <!-- Navigation -->
-        <div class="flex items-center justify-between">
-            <a href="/admin-guide"
-                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <span>←</span>
-                Back to Admin guide
-            </a>
-            <a href="/admin-examples/step2"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                Next: Step 2
-                <span>→</span>
-            </a>
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    Project configured! Now let's build a login page with fake authentication.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/admin-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/admin-examples/step200"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 1</span>
+                    </a>
+                    <a href="/admin-examples/step202"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 3</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -140,7 +153,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var step = await ProgressService.GetStepAsync("admin", 1);
+        var step = await ProgressService.GetStepAsync("admin", 201);
         isComplete = step?.IsComplete ?? false;
     }
 
@@ -162,13 +175,13 @@
 
     private async Task MarkComplete()
     {
-        await ProgressService.MarkStepCompleteAsync("admin", 1);
+        await ProgressService.MarkStepCompleteAsync("admin", 201);
         isComplete = true;
     }
 
     private async Task ResetStep()
     {
-        await ProgressService.MarkStepIncompleteAsync("admin", 1);
+        await ProgressService.MarkStepIncompleteAsync("admin", 201);
         isComplete = false;
     }
 

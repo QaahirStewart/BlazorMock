@@ -15,15 +15,17 @@ else
 {
     <div class="min-h-screen py-8">
         <div class="w-full mx-auto px-4 max-w-5xl">
-            <a href="/admin-guide" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 text-sm sm:text-base">
+            <a href="/admin-guide"
+                class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 text-sm sm:text-base">
                 <span>←</span> Back to Admin phases
             </a>
 
             <!-- Phase header uses per-phase gradient coordinated with card palette -->
             <div class="rounded-2xl p-5 sm:p-6 mb-8 @BlazorMock.Components.Pages.AdminGuide.PhaseGradient(phase!.Id)">
                 <div class="mb-3">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">
-                        Admin Panel
+                    <span
+                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200">
+                        SaaS Dashboard
                     </span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 break-words">@phase.Title</h1>
@@ -34,15 +36,58 @@ else
                 </p>
             </div>
 
+            @* Special Step 0 callout *@
+            @if (phase.StepNumbers.Contains(0))
+            {
+                <div class="bg-black/3 rounded-2xl p-6 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                            <span
+                                class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm">0</span>
+                            🧰 Step 0: Prerequisites & VS Code Setup
+                        </h3>
+                        <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">Setup</span>
+                    </div>
+                    <div class="bg-white rounded-xl p-5 border border-gray-200">
+                        <p class="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed break-words">
+                            Get your machine ready: install the .NET SDK, Node.js (for Tailwind build), and VS Code with the C#,
+                            Razor, and Tailwind CSS IntelliSense extensions.
+                        </p>
+                        <ul class="list-disc ml-5 text-sm sm:text-base text-gray-700 space-y-1 mb-4">
+                            <li>Install .NET SDK (10.0+)</li>
+                            <li>Install Node.js LTS and npm</li>
+                            <li>Install VS Code + extensions: C#, Razor, Tailwind CSS IntelliSense</li>
+                            <li>Verify tools: <span class="font-mono">dotnet --info</span>, <span class="font-mono">node
+                                    -v</span>, <span class="font-mono">npm -v</span></li>
+                        </ul>
+                        <div class="flex flex-wrap gap-2">
+                            <a href="https://dotnet.microsoft.com/download" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-black/85 hover:bg-black text-white text-sm sm:text-base rounded-lg transition-colors">.NET
+                                Download →</a>
+                            <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">Node.js
+                                (LTS) →</a>
+                            <a href="https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit"
+                                target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">VS
+                                Code C# →</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
             <!-- Steps list styled closer to trucking phase cards -->
             <div class="grid sm:grid-cols-2 gap-4">
-                @foreach (var step in stepsInPhase)
+                @foreach (var step in stepsInPhase.Where(s => s.StepNumber > 0))
                 {
                     bool done = step.IsComplete;
-                    <div class="bg-white rounded-2xl border border-gray-200 p-4 flex flex-col gap-3">
+                    var href = $"/admin-examples/step{step.StepNumber}";
+                    <a href="@href"
+                        class="bg-white rounded-2xl border border-gray-200 p-4 flex flex-col gap-3 hover:shadow-sm transition group">
                         <div class="flex items-start justify-between gap-3">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="inline-flex h-8 w-8 items-center justify-center rounded-full @(done ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600") text-sm font-semibold">
+                                <div
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-full @(done ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600") text-sm font-semibold">
                                     @(done ? "✓" : step.StepNumber.ToString())
                                 </div>
                                 <div class="min-w-0">
@@ -51,21 +96,25 @@ else
                                     </p>
                                     @if (step.CompletedDate is not null)
                                     {
-                                        <p class="text-xs text-gray-500 break-words">Completed @step.CompletedDate.Value.ToLocalTime().ToString("g")</p>
+                                        <p class="text-xs text-gray-500 break-words">Completed
+                                            @step.CompletedDate.Value.ToLocalTime().ToString("g")</p>
                                     }
                                 </div>
                             </div>
-                            <div class="text-gray-300 self-start">→</div>
+                            <div class="text-gray-300 self-start group-hover:text-gray-500">→</div>
                         </div>
                         <div class="flex items-center justify-between gap-3">
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium @(done ? "bg-green-50 text-green-700 border border-green-200" : "bg-gray-50 text-gray-700 border border-gray-200")">
+                            <span
+                                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium @(done ? "bg-green-50 text-green-700 border border-green-200" : "bg-gray-50 text-gray-700 border border-gray-200")">
                                 @(done ? "Done" : "Not started")
                             </span>
-                            <button class="px-2 py-1 text-xs sm:text-sm rounded-lg border border-gray-300 hover:bg-gray-50" @onclick="() => ToggleStep(step.StepNumber)">
+                            <button type="button"
+                                class="px-2 py-1 text-xs sm:text-sm rounded-lg border border-gray-300 hover:bg-gray-50"
+                                @onclick:stopPropagation="true" @onclick="() => ToggleStep(step.StepNumber)">
                                 @(done ? "Mark incomplete" : "Mark complete")
                             </button>
                         </div>
-                    </div>
+                    </a>
                 }
             </div>
         </div>

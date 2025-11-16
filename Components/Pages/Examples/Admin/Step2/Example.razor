@@ -1,0 +1,258 @@
+@page "/admin-examples/step2"
+@rendermode InteractiveServer
+@inherits ExampleBase
+
+<PageTitle>Admin Step 2: Build a Reusable Stat Card - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <a href="/admin-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Admin Guide
+        </a>
+
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            🎯 Step 2: Build a Reusable Stat Card
+        </h1>
+
+        <p class="text-xl text-gray-600 mb-8">
+            In this step you design a small, reusable stat card component you can drop into any admin dashboard to show
+            key metrics like MRR, active subscriptions, or churn.
+        </p>
+
+        <div class="bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                You'll turn a one-off metric tile into a reusable component with clear props for label, value, trend,
+                and status. This is the building block for your subscription, billing, and profile summary tiles later
+                in the track.
+            </p>
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Design a clean stat card layout that works for multiple metrics.</li>
+                <li>Pass data into the card using parameters instead of hard-coding values.</li>
+                <li>Use subtle badges and colors to communicate status at a glance.</li>
+                <li>Prepare the card so you can reuse it in the final <code class="text-[11px]">/admin/dashboard</code>.
+                </li>
+            </ul>
+
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> reusable stat tiles, props/parameters, SaaS dashboard layout
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#saas-admin-dashboard-layout"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">SaaS
+                        Admin Dashboard Layout</a>
+                    <a href="/tips#reusable-stat-cards"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Reusable
+                        Stat Cards</a>
+                    <a href="/tips#semantic-status-badges"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Semantic
+                        Status Badges</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: AdminStatCardExample</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                <code class="text-[11px]">AdminStatCardExample</code> shows how to render the same stat card component
+                three different ways: for MRR, active subscriptions, and churn. Each card uses a shared layout but
+                different labels, values, and status badges.
+            </p>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Components/Pages/Examples/Admin/Step2/AdminStatCardExample.razor
+                </div>
+                <p class="text-xs text-gray-600 mb-2">Razor markup that uses a single stat card component multiple times
+                    with different parameters.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Shows how to pass title, value, helper text, and status into a reusable component.</li>
+                    <li>Uses small color differences to indicate "good", "neutral", and "warning" states.</li>
+                    <li>Lays the foundation for the tiles that will appear at the top of <code
+                            class="text-[11px]">/admin/dashboard</code>.</li>
+                </ul>
+                <pre data-code-title="Razor (AdminStatCardExample.razor)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page &quot;/admin-examples/demo-stat-cards&quot;
+@@rendermode InteractiveServer
+@@inherits AdminStatCardExampleBase
+
+&lt;h3 class=&quot;text-xl font-semibold mb-3&quot;&gt;Admin Stat Cards Demo&lt;/h3&gt;
+
+&lt;div class=&quot;grid gap-4 sm:grid-cols-3&quot;&gt;
+    &lt;AdminStatCard
+        Title=&quot;Monthly Recurring Revenue&quot;
+        Value=&quot;$24,800&quot;
+        HelperText=&quot;+8.2% vs last month&quot;
+        Status=&quot;good&quot; /&gt;
+
+    &lt;AdminStatCard
+        Title=&quot;Active Subscriptions&quot;
+        Value=&quot;1,204&quot;
+        HelperText=&quot;Starter, Growth, and Scale plans&quot;
+        Status=&quot;neutral&quot; /&gt;
+
+    &lt;AdminStatCard
+        Title=&quot;Churn This Month&quot;
+        Value=&quot;2.1%&quot;
+        HelperText=&quot;Watching accounts at risk closely&quot;
+        Status=&quot;warning&quot; /&gt;
+&lt;/div&gt;</pre>
+            </div>
+
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Define a stat card API</div>
+                    <p class="text-xs text-gray-600 mb-2">Start by giving your stat card a clear set of parameters so it
+                        can represent any metric, not just MRR.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Keep parameter names simple: <code class="text-[11px]">Title</code>, <code
+                                class="text-[11px]">Value</code>, <code class="text-[11px]">HelperText</code>, and <code
+                                class="text-[11px]">Status</code>.</li>
+                        <li>Use <code class="text-[11px]">Status</code> to pick colors (good, neutral, warning).</li>
+                        <li>Avoid hard-coding numbers so you can reuse the card in other steps.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">[Parameter] public string Title { get; set; } = string.Empty;
+[Parameter] public string Value { get; set; } = string.Empty;
+[Parameter] public string HelperText { get; set; } = string.Empty;
+[Parameter] public string Status { get; set; } = &quot;neutral&quot;;</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Map status to semantic styles</div>
+                    <p class="text-xs text-gray-600 mb-2">Use a small helper method to translate the <code
+                            class="text-[11px]">Status</code> into Tailwind-style utility classes so your UI stays
+                        consistent.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Return a different text color for good/neutral/warning states.</li>
+                        <li>Keep the mapping logic in one place so you can tweak it later.</li>
+                        <li>Reuse the same pattern in later steps for badges and lock states.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">protected string GetStatusTextClass() =&gt; Status switch
+{
+    &quot;good&quot; =&gt; &quot;text-emerald-600&quot;,
+    &quot;warning&quot; =&gt; &quot;text-amber-600&quot;,
+    _ =&gt; &quot;text-slate-600&quot;
+};</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes &amp; Tips</h2>
+            <div class="space-y-3">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Design once, reuse everywhere</p>
+                            <p class="text-xs text-blue-800">Treat this stat card like a mini design system component.
+                                Once you dial in the spacing and typography, you can reuse it in Step 3 and on the real
+                                <code class="text-[11px]">/admin/dashboard</code> page.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Keep content and layout separate</p>
+                            <p class="text-xs text-blue-800">Passing values in via parameters keeps your Razor markup
+                                clean and lets you swap out metrics without touching the component layout.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>If the cards all look the same, double-check you're passing different <code
+                                class="text-[11px]">Title</code>, <code class="text-[11px]">Value</code>, and <code
+                                class="text-[11px]">Status</code> values.</li>
+                        <li>If the status colors never change, confirm your helper uses the exact status strings you're
+                            passing in.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
+                <li>
+                    <strong>Create the demo component:</strong>
+                    Add <code>AdminStatCardExample.razor</code> and <code>AdminStatCardExample.razor.cs</code> under
+                    <code>Components/Pages/Examples/Admin/Step2</code>.
+                </li>
+                <li>
+                    <strong>Build the reusable card:</strong>
+                    Implement an <code>AdminStatCard</code> component in the same folder that accepts parameters for
+                    label, value, helper text, and status.
+                </li>
+                <li>
+                    <strong>Render multiple metrics:</strong>
+                    Use the card three times in the demo to show different admin metrics and verify the layout still
+                    feels balanced.
+                </li>
+            </ol>
+        </div>
+
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">Use the demo below to see how a single stat card component can
+                represent different admin metrics just by changing its parameters.</p>
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                <AdminStatCardExample />
+            </div>
+            <p class="text-xs text-gray-600 mt-4 text-center">💡 In later steps, these cards will sit at the top of your
+                production <code class="text-[11px]">/admin/dashboard</code> to summarize subscription health.</p>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 2?</h3>
+                    <p class="text-sm text-gray-600">Mark this step complete once your stat card component can render at
+                        least three different admin metrics just by changing its parameters.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✅ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition-colors">Mark
+                        as Complete</button>
+                }
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    Nice work&mdash;you now have a reusable stat card for your Admin dashboard. Next, you'll add badges
+                    and a shell layout where these tiles and future panels will live.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/admin-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/admin-examples/step1"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 1</span>
+                    </a>
+                    <a href="/admin-examples/step3"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 3</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+@namespace BlazorMock.Components.Shared.Admin
+
+<div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Billing Summary</h3>
+
+    <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-xs text-gray-500">Next invoice</p>
+                <p class="text-sm font-semibold text-gray-900">$99.00</p>
+                <p class="text-xs text-gray-500 mt-0.5">Due Jan 15</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500">Last payment</p>
+                <p class="text-sm font-semibold text-gray-900">$99.00</p>
+                <p class="text-xs text-gray-500 mt-0.5">Paid Dec 15</p>
+            </div>
+        </div>
+
+        <div class="pt-4 border-t border-gray-200">
+            <p class="text-xs text-gray-500 mb-1">Total spend (2025)</p>
+            <p class="text-2xl font-semibold text-gray-900">$1,188</p>
+        </div>
+
+        <div class="pt-4 border-t border-gray-200">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-semibold text-gray-700">Recent activity</p>
+                <button class="text-xs text-blue-600 hover:text-blue-700">View all</button>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div>
+                        <p class="text-xs font-medium text-gray-900">Payment successful</p>
+                        <p class="text-xs text-gray-500">Dec 15, 2025</p>
+                    </div>
+                    <p class="text-xs font-semibold text-gray-900">$99.00</p>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div>
+                        <p class="text-xs font-medium text-gray-900">Payment successful</p>
+                        <p class="text-xs text-gray-500">Nov 15, 2025</p>
+                    </div>
+                    <p class="text-xs font-semibold text-gray-900">$99.00</p>
+                </div>
+                <div class="flex items-center justify-between py-2">
+                    <div>
+                        <p class="text-xs font-medium text-gray-900">Plan upgraded</p>
+                        <p class="text-xs text-gray-500">Oct 20, 2025</p>
+                    </div>
+                    <p class="text-xs font-semibold text-gray-900">—</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

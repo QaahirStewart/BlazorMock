@@ -1,0 +1,362 @@
+@page "/admin-examples/step204"
+@rendermode InteractiveServer
+@inject ILearningProgressService ProgressService
+@inject IJSRuntime JS
+@implements IDisposable
+
+<PageTitle>Admin Step 5: Dashboard & Identity - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/admin-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Admin Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            📊 Step 5: Dashboard & Identity
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Build a complete admin dashboard layout and learn how to integrate ASP.NET Core Identity for real
+            authentication.
+        </p>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-rose-100 to-pink-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                You've built authentication and protected routes with fake credentials. Now it's time to create a
+                polished
+                dashboard UI and understand how to upgrade to real authentication with ASP.NET Core Identity for
+                production applications.
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Design a dashboard with KPI cards showing key metrics</li>
+                <li>Create activity feeds and quick action buttons</li>
+                <li>Build user management interfaces with search and filtering</li>
+                <li>Understand ASP.NET Core Identity architecture</li>
+                <li>Learn how to scaffold Identity pages for registration and login</li>
+            </ul>
+
+            <div class="mt-2 pt-3 border-t border-rose-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> Dashboard design, KPI cards, ASP.NET Core Identity, Authentication
+                    providers
+                </p>
+            </div>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo: Admin Dashboard</h2>
+
+            <div class="bg-white rounded-2xl border-2 border-gray-200 p-6">
+                <!-- KPI Cards -->
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Dashboard Overview</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-2xl border-2 border-gray-200 p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-2xl">👥</span>
+                            <span class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded">+12%</span>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-900">24</h4>
+                        <p class="text-sm text-gray-600">Total Users</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border-2 border-gray-200 p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-2xl">🟢</span>
+                            <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">Active</span>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-900">8</h4>
+                        <p class="text-sm text-gray-600">Sessions</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border-2 border-gray-200 p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-2xl">💚</span>
+                            <span
+                                class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">Healthy</span>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-900">98%</h4>
+                        <p class="text-sm text-gray-600">Uptime</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border-2 border-gray-200 p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-2xl">💾</span>
+                            <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">Normal</span>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-900">45%</h4>
+                        <p class="text-sm text-gray-600">Storage</p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Quick Actions</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button class="px-4 py-2 bg-purple-600 text-white font-medium rounded hover:bg-purple-700">
+                        Add User
+                    </button>
+                    <button class="px-4 py-2 bg-purple-600 text-white font-medium rounded hover:bg-purple-700">
+                        View Reports
+                    </button>
+                    <button class="px-4 py-2 bg-purple-600 text-white font-medium rounded hover:bg-purple-700">
+                        System Backup
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Code Sample -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: Dashboard.razor</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                A complete dashboard component with KPI cards and activity feed.
+            </p>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Dashboard.razor</div>
+                <pre data-code-title="Razor (Dashboard.razor)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/dashboard"
+@@rendermode InteractiveServer
+
+&lt;div class="p-4 sm:p-6 lg:p-8"&gt;
+    &lt;h1 class="text-3xl font-bold text-gray-900 mb-2"&gt;Dashboard&lt;/h1&gt;
+    &lt;p class="text-gray-600 mb-8"&gt;Welcome back, @@currentUser!&lt;/p&gt;
+
+    &lt;!-- KPI Cards --&gt;
+    &lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"&gt;
+        @@foreach (var kpi in kpiCards)
+        {
+            &lt;div class="bg-white rounded-2xl border-2 border-gray-200 p-6"&gt;
+                &lt;div class="flex items-center justify-between mb-2"&gt;
+                    &lt;span class="text-2xl"&gt;@@kpi.Icon&lt;/span&gt;
+                    &lt;span class="text-xs font-medium @@kpi.BadgeClass"&gt;@@kpi.Badge&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;h3 class="text-3xl font-bold text-gray-900 mb-1"&gt;@@kpi.Value&lt;/h3&gt;
+                &lt;p class="text-sm text-gray-600"&gt;@@kpi.Label&lt;/p&gt;
+            &lt;/div&gt;
+        }
+    &lt;/div&gt;
+
+    &lt;!-- Recent Activity --&gt;
+    &lt;div class="bg-white rounded-2xl border-2 border-gray-200 p-6"&gt;
+        &lt;h2 class="text-xl font-bold text-gray-900 mb-4"&gt;Recent Activity&lt;/h2&gt;
+        &lt;div class="space-y-3"&gt;
+            @@foreach (var activity in recentActivities)
+            {
+                &lt;div class="flex items-start gap-3 p-3 rounded hover:bg-gray-50"&gt;
+                    &lt;span class="text-2xl"&gt;@@activity.Icon&lt;/span&gt;
+                    &lt;div class="flex-1"&gt;
+                        &lt;p class="text-sm font-medium text-gray-900"&gt;@@activity.User&lt;/p&gt;
+                        &lt;p class="text-sm text-gray-600"&gt;@@activity.Action&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;span class="text-xs text-gray-500"&gt;@@activity.Time&lt;/span&gt;
+                &lt;/div&gt;
+            }
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+@@code {
+    private string currentUser = "Admin User";
+    
+    private List&lt;KpiCard&gt; kpiCards = new()
+    {
+        new() { Icon = "👥", Value = "24", Label = "Total Users", Badge = "+12%", BadgeClass = "text-purple-600 bg-purple-50 px-2 py-1 rounded" },
+        new() { Icon = "🟢", Value = "8", Label = "Active Sessions", Badge = "Active", BadgeClass = "text-green-600 bg-green-50 px-2 py-1 rounded" },
+        new() { Icon = "💚", Value = "98%", Label = "System Health", Badge = "Healthy", BadgeClass = "text-green-600 bg-green-50 px-2 py-1 rounded" },
+        new() { Icon = "💾", Value = "45%", Label = "Storage Used", Badge = "Normal", BadgeClass = "text-blue-600 bg-blue-50 px-2 py-1 rounded" }
+    };
+
+    private class KpiCard
+    {
+        public string Icon { get; set; } = "";
+        public string Value { get; set; } = "";
+        public string Label { get; set; } = "";
+        public string Badge { get; set; } = "";
+        public string BadgeClass { get; set; } = "";
+    }
+}</pre>
+            </div>
+        </div>
+
+        <!-- ASP.NET Core Identity -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🔐 Upgrading to Real Authentication</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                Our fake login works for demos, but production apps need real user management. ASP.NET Core Identity
+                provides complete authentication and authorization infrastructure.
+            </p>
+
+            <h3 class="text-base font-semibold text-gray-800 mb-3">What is ASP.NET Core Identity?</h3>
+            <ul class="list-disc ml-6 text-sm text-gray-700 space-y-2 mb-4">
+                <li><strong>User management:</strong> Registration, login, email confirmation</li>
+                <li><strong>Password security:</strong> Hashing, complexity rules, reset flows</li>
+                <li><strong>Role-based auth:</strong> Assign users to roles (Admin, User, Moderator)</li>
+                <li><strong>Claims & policies:</strong> Fine-grained authorization</li>
+                <li><strong>Two-factor auth:</strong> SMS, email, authenticator apps</li>
+            </ul>
+
+            <h3 class="text-base font-semibold text-gray-800 mb-3">How to Add Identity</h3>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 mb-4">
+                <div class="text-xs text-gray-500 mb-1">1. Install NuGet package</div>
+                <pre
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore</pre>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 mb-4">
+                <div class="text-xs text-gray-500 mb-1">2. Scaffold Identity pages</div>
+                <pre
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">dotnet aspnet-codegenerator identity --useDefaultUI</pre>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 mb-4">
+                <div class="text-xs text-gray-500 mb-1">3. Configure in Program.cs</div>
+                <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">builder.Services.AddIdentity&lt;IdentityUser, IdentityRole&gt;()
+    .AddEntityFrameworkStores&lt;ApplicationDbContext&gt;()
+    .AddDefaultTokenProviders();
+
+app.UseAuthentication();
+app.UseAuthorization();</pre>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p class="text-sm text-blue-800">
+                    <strong>💡 Key Difference:</strong> Instead of checking `isAuthenticated` boolean, you'll use
+                    `&lt;AuthorizeView&gt;` component and `[Authorize]` attribute to protect routes.
+                </p>
+            </div>
+
+            <h3 class="text-base font-semibold text-gray-800 mb-3">Next Steps for Production</h3>
+            <ul class="list-disc ml-6 text-sm text-gray-700 space-y-2">
+                <li>Replace fake login with Identity's built-in login page</li>
+                <li>Use `&lt;AuthorizeView&gt;` to show/hide UI based on roles</li>
+                <li>Add `[Authorize(Roles = "Admin")]` attribute to admin-only pages</li>
+                <li>Store user preferences and settings in Identity tables</li>
+                <li>Enable email confirmation and password reset</li>
+            </ul>
+        </div>
+
+        <!-- Resources -->
+        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-3">📚 Learn More</h2>
+            <ul class="list-disc ml-6 text-sm text-gray-700 space-y-2">
+                <li><a href="https://learn.microsoft.com/aspnet/core/security/authentication/identity" target="_blank"
+                        class="text-blue-600 hover:underline">
+                        Official Identity Documentation
+                    </a></li>
+                <li><a href="https://learn.microsoft.com/aspnet/core/blazor/security" target="_blank"
+                        class="text-blue-600 hover:underline">
+                        Blazor Security & Identity
+                    </a></li>
+                <li><a href="/admin/dashboard" class="text-blue-600 hover:underline">
+                        View Admin SaaS Dashboard
+                    </a></li>
+            </ul>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Congratulations! 🎉</h3>
+                    <p class="text-sm text-gray-600">You've completed the legacy Admin Panel & Authentication Guide.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Congratulations!</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    You've completed the Admin Panel tutorial! Check out the full demo or explore other projects.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/admin-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/admin-examples/step3"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 4</span>
+                    </a>
+                    <a href="/admin/dashboard"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">View Admin SaaS Dashboard</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Step progress state
+    private bool isComplete;
+    private IJSObjectReference? _copyModule;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var step = await ProgressService.GetStepAsync("admin", 204);
+        isComplete = step?.IsComplete ?? false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _copyModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/codeblocks.js");
+                await _copyModule.InvokeVoidAsync("enhancePreBlocks");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load code block enhancer: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task MarkComplete()
+    {
+        await ProgressService.MarkStepCompleteAsync("admin", 204);
+        isComplete = true;
+    }
+
+    private async Task ResetStep()
+    {
+        await ProgressService.MarkStepIncompleteAsync("admin", 204);
+        isComplete = false;
+    }
+
+    public void Dispose()
+    {
+        _copyModule?.DisposeAsync();
+    }
+}

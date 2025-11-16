@@ -1,7 +1,6 @@
 @page "/trucking-guide"
-@inject ILearningProgressService ProgressService
-@inject ILearningGuideService GuideService
 @rendermode InteractiveServer
+@inherits TruckingGuideBase
 
 <PageTitle>Trucking Learning Guide</PageTitle>
 
@@ -149,39 +148,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    private List<StepProgress> steps = new();
-    private int completedCount = 0;
-
-    protected override async Task OnInitializedAsync()
-    {
-        steps = (await ProgressService.GetAllStepsAsync()).ToList();
-        completedCount = await ProgressService.GetCompletedCountAsync();
-    }
-
-    // Phase card styling helpers to match Tips page feel and keep phase color accents
-    private static string PhaseHoverBorder(string id) => id switch
-    {
-        "phase-1" => "hover:border-purple-400",
-        "phase-2" => "hover:border-blue-400",
-        "phase-3" => "hover:border-emerald-400",
-        _ => "hover:border-gray-300"
-    };
-
-    private static string PhasePillColors(string id) => id switch
-    {
-        "phase-1" => "bg-purple-50 text-purple-700 border border-purple-200",
-        "phase-2" => "bg-blue-50 text-blue-700 border border-blue-200",
-        "phase-3" => "bg-emerald-50 text-emerald-700 border border-emerald-200",
-        _ => "bg-gray-50 text-gray-700 border border-gray-200"
-    };
-
-    private static string PhaseGradient(string id) => id switch
-    {
-        "phase-1" => "bg-gradient-to-r from-purple-200 to-purple-400",
-        "phase-2" => "bg-gradient-to-r from-blue-200 to-blue-400",
-        "phase-3" => "bg-gradient-to-r from-emerald-200 to-emerald-400",
-        _ => "bg-gradient-to-r from-gray-200 to-gray-300"
-    };
-}

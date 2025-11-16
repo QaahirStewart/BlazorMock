@@ -70,29 +70,29 @@ public class LearningGuideService : ILearningGuideService
             ProjectKey: "pokemon"
         ),
 
-        // Admin Panel phases (projectKey = "admin")
+        // Admin SaaS Dashboard phases (projectKey = "admin")
         new Phase(
             Id: "admin-phase-1",
-            Title: "Phase 1: Fake Login",
-            Subtitle: "Basic auth flow",
-            Description: "Create a simple login form, fake user, and track authenticated state.",
-            StepNumbers: new[] { 200, 201 },
+            Title: "Phase 1: Layout & Tiles",
+            Subtitle: "Project setup + shell pieces",
+            Description: "Environment setup, create a new clean project, then build the layout, reusable stat cards, and status badges.",
+            StepNumbers: new[] { 0, 1, 2, 3 },
             ProjectKey: "admin"
         ),
         new Phase(
             Id: "admin-phase-2",
-            Title: "Phase 2: Protected Routes",
-            Subtitle: "Guard the admin area",
-            Description: "Wrap your app in an auth context and guard admin-only routes and components.",
-            StepNumbers: new[] { 202, 203 },
+            Title: "Phase 2: Roles & Locking",
+            Subtitle: "Auth, roles, locked UI",
+            Description: "Add a mock auth service, role toggle, lock patterns, and access explanation banners.",
+            StepNumbers: new[] { 4, 5, 6, 7 },
             ProjectKey: "admin"
         ),
         new Phase(
             Id: "admin-phase-3",
-            Title: "Phase 3: Dashboard & Identity",
-            Subtitle: "Layout and real providers",
-            Description: "Add an admin dashboard layout and prepare to integrate with a real identity provider.",
-            StepNumbers: new[] { 204 },
+            Title: "Phase 3: Panels & Final Dashboard",
+            Subtitle: "Subscriptions, billing, profile",
+            Description: "Build subscription, billing, and profile panels and compose them into the final /admin/dashboard experience.",
+            StepNumbers: new[] { 8, 9, 10 },
             ProjectKey: "admin"
         )
     };
