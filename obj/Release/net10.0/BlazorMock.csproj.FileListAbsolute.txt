@@ -145,7 +145,6 @@ D:\BlazorMock\obj\Release\net10.0\scopedcss\bundle\BlazorMock.styles.css
 D:\BlazorMock\obj\Release\net10.0\scopedcss\projectbundle\BlazorMock.bundle.scp.css
 D:\BlazorMock\obj\Release\net10.0\compressed\gvo3tpfcsa-{0}-4kywy7iv6g-4kywy7iv6g.gz
 D:\BlazorMock\obj\Release\net10.0\compressed\gsmh2u9fd1-{0}-ht7m7dl4ng-ht7m7dl4ng.gz
-D:\BlazorMock\obj\Release\net10.0\compressed\5cb4zdb85e-{0}-ejngshkbyn-ejngshkbyn.gz
 D:\BlazorMock\obj\Release\net10.0\compressed\xllhbke8ux-{0}-13ja33weya-13ja33weya.gz
 D:\BlazorMock\obj\Release\net10.0\compressed\4x8r1evkwi-{0}-911ktl676v-911ktl676v.gz
 D:\BlazorMock\obj\Release\net10.0\compressed\o361oar9ib-{0}-txnlep1bxc-txnlep1bxc.gz
@@ -162,4 +161,4 @@ D:\BlazorMock\obj\Release\net10.0\refint\BlazorMock.dll
 D:\BlazorMock\obj\Release\net10.0\BlazorMock.pdb
 D:\BlazorMock\obj\Release\net10.0\BlazorMock.genruntimeconfig.cache
 D:\BlazorMock\obj\Release\net10.0\ref\BlazorMock.dll
-D:\BlazorMock\obj\Release\net10.0\compressed\gcy26kcw0l-{0}-3rcttv2jb1-3rcttv2jb1.gz
+D:\BlazorMock\obj\Release\net10.0\compressed\gcy26kcw0l-{0}-qskzx9dgwp-qskzx9dgwp.gz

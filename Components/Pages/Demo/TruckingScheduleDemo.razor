@@ -1,31 +1,39 @@
 @page "/demo/trucking-schedule"
 @using BlazorMock.Data
 @using BlazorMock.Models
+@using BlazorMock.Services
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<AppDbContext> DbFactory
 @inject NavigationManager Nav
 @inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JS
+@inject ScheduleService ScheduleService
+@inject TruckingValidationService ValidationService
+@inject AppState AppState
 @rendermode InteractiveServer
 
 <PageTitle>Trucking Schedule Demo</PageTitle>
 
 <div class="min-h-screen py-8">
     <div class="w-full mx-auto px-4 max-w-6xl">
-        <div class="flex items-center justify-between gap-4 mb-6">
-            <div>
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 break-words">🚚 Trucking Schedule</h1>
-                <p class="text-sm sm:text-base text-gray-600">End-to-end demo: routes, drivers, trucks, and live status</p>
-            </div>
-            <a href="/guide" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm">← Back to Guide</a>
+        <div class="mb-6 text-center">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 break-words">🚚 Trucking Schedule</h1>
+            <p class="text-sm sm:text-base text-gray-600">End-to-end demo: routes, drivers, trucks, and live status</p>
         </div>
 
         @if (!string.IsNullOrEmpty(toastMessage))
         {
-            <div class="mb-4 p-3 rounded-lg border text-sm @(toastIsError ? "bg-red-50 border-red-200 text-red-700" : "bg-green-50 border-green-200 text-green-700")">@toastMessage</div>
+            <div
+                class="mb-4 p-3 rounded-lg border text-sm @(toastIsError ? "bg-red-50 border-red-200 text-red-700" : "bg-green-50 border-green-200 text-green-700")">
+                @toastMessage</div>
         }
 
-    <!-- KPIs -->
+        <!-- Overview Section -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-3">Overview</h2>
+        </div>
+
+        <!-- KPIs -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div class="rounded-2xl border border-gray-200 bg-white p-4">
                 <div class="text-xs text-gray-500 mb-1">Scheduled</div>
@@ -38,6 +46,20 @@
                 <div class="text-xs text-gray-500">Live now</div>
             </div>
             <div class="rounded-2xl border border-gray-200 bg-white p-4">
+                <div class="text-xs text-gray-500 mb-1">Total Revenue</div>
+                <div class="text-2xl font-bold text-gray-900">$@kpiTotalRevenue.ToString("N0")</div>
+                <div class="text-xs text-gray-500">All active routes</div>
+            </div>
+            <div class="rounded-2xl border border-gray-200 bg-white p-4">
+                <div class="text-xs text-gray-500 mb-1">Est. Profit</div>
+                <div class="text-2xl font-bold text-gray-900">$@kpiEstimatedProfit.ToString("N0")</div>
+                <div class="text-xs text-gray-500">Revenue - costs</div>
+            </div>
+        </div>
+
+        <!-- Additional KPIs for Resources -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div class="rounded-2xl border border-gray-200 bg-white p-4">
                 <div class="text-xs text-gray-500 mb-1">Drivers Available</div>
                 <div class="text-2xl font-bold text-gray-900">@kpiDriversAvailable</div>
                 <div class="text-xs text-gray-500">of @kpiDriversTotal total</div>
@@ -49,12 +71,19 @@
             </div>
         </div>
 
-    <!-- Filters -->
+        <!-- Filters Section -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-3">Filters</h2>
+        </div>
+
+        <!-- Filters -->
         <div class="rounded-2xl border border-gray-200 bg-white p-4 mb-6">
             <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
                 <div class="flex-1 min-w-0">
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Search (Route #, Origin, Destination)</label>
-                    <input class="w-full rounded-lg border border-gray-300 p-2" @bind="search" placeholder="e.g., R-1001 or Los Angeles" />
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Search (Route #, Origin,
+                        Destination)</label>
+                    <input class="w-full rounded-lg border border-gray-300 p-2" @bind="search"
+                        placeholder="e.g., R-1001 or Los Angeles" />
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
@@ -77,29 +106,143 @@
                     </select>
                 </div>
                 <div class="flex gap-2">
-                    <button class="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm" @onclick="LoadAsync">Refresh</button>
-                    <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm" @onclick="ResetFilters">Reset</button>
+                    <button
+                        class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                        @onclick="LoadAsync">Refresh</button>
+                    <button
+                        class="px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
+                        @onclick="ResetFilters">Reset</button>
                 </div>
             </div>
         </div>
 
+        <!-- Cost Breakdown (Step 12: Service Pattern for Business Calculations) -->
+        @if (selectedRouteForBreakdown is not null)
+        {
+            <div class="rounded-2xl border border-blue-200 bg-blue-50 p-4 mb-6">
+                <div class="flex items-start justify-between gap-3 mb-3">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Cost Breakdown:
+                            @selectedRouteForBreakdown.RouteNumber</h3>
+                        <p class="text-sm text-gray-700">@selectedRouteForBreakdown.Origin →
+                            @selectedRouteForBreakdown.Destination (@selectedRouteForBreakdown.DistanceMiles mi)</p>
+                    </div>
+                    <button class="px-2 py-1 rounded hover:bg-blue-100 text-sm"
+                        @onclick="() => selectedRouteForBreakdown = null">✕</button>
+                </div>
+                @if (selectedRouteForBreakdown.Driver is not null)
+                {
+                    var driverPay = ScheduleService.CalculateDriverPay(selectedRouteForBreakdown.Driver,
+                    selectedRouteForBreakdown);
+                    var fuelCost = ScheduleService.EstimateFuelCost(selectedRouteForBreakdown.DistanceMiles);
+                    var totalCost = ScheduleService.CalculateTotalRouteCost(selectedRouteForBreakdown.Driver,
+                    selectedRouteForBreakdown);
+                    var minRevenue = ScheduleService.SuggestMinimumRevenue(selectedRouteForBreakdown.Driver,
+                    selectedRouteForBreakdown);
+                    var actualProfit = selectedRouteForBreakdown.Revenue - totalCost;
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="rounded-lg bg-white p-3">
+                            <div class="text-xs text-gray-500">Driver Pay</div>
+                            <div class="text-lg font-semibold text-gray-900">$@driverPay.ToString("N2")</div>
+                            <div class="text-xs text-gray-500">Base + exp + route bonuses</div>
+                        </div>
+                        <div class="rounded-lg bg-white p-3">
+                            <div class="text-xs text-gray-500">Fuel Cost</div>
+                            <div class="text-lg font-semibold text-gray-900">$@fuelCost.ToString("N2")</div>
+                            <div class="text-xs text-gray-500">@ScheduleService.AverageMpg MPG at
+                                $@ScheduleService.FuelPricePerGallon/gal</div>
+                        </div>
+                        <div class="rounded-lg bg-white p-3">
+                            <div class="text-xs text-gray-500">Total Cost</div>
+                            <div class="text-lg font-semibold text-gray-900">$@totalCost.ToString("N2")</div>
+                            <div class="text-xs text-gray-500">All expenses</div>
+                        </div>
+                        <div class="rounded-lg bg-white p-3">
+                            <div class="text-xs text-gray-500">Suggested Min Revenue</div>
+                            <div class="text-lg font-semibold text-gray-900">$@minRevenue.ToString("N2")</div>
+                            <div class="text-xs text-gray-500">20% profit margin</div>
+                        </div>
+                    </div>
+                    <div class="mt-3 rounded-lg bg-white p-3">
+                        <div class="text-xs text-gray-500">Actual Profit</div>
+                        <div class="text-2xl font-bold @(actualProfit >= 0 ? "text-green-700" : "text-red-700")">
+                            $@actualProfit.ToString("N2")</div>
+                        <div class="text-xs text-gray-500">Revenue ($@selectedRouteForBreakdown.Revenue.ToString("N2")) - Total
+                            Cost ($@totalCost.ToString("N2"))</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-sm text-gray-700">Assign a driver to see cost breakdown.</div>
+                }
+            </div>
+        }
+
+        <!-- Validation Errors Display (Step 11: Business Validation) -->
+        @if (validationErrors.Any())
+        {
+            <div class="rounded-2xl border border-red-200 bg-red-50 p-4 mb-6">
+                <div class="flex items-start justify-between gap-3 mb-2">
+                    <h3 class="text-lg font-semibold text-red-900">Validation Errors</h3>
+                    <button class="px-2 py-1 rounded hover:bg-red-100 text-sm"
+                        @onclick="() => validationErrors.Clear()">✕</button>
+                </div>
+                <ul class="list-disc ml-5 text-sm text-red-700 space-y-1">
+                    @foreach (var err in validationErrors)
+                    {
+                        <li>@err</li>
+                    }
+                </ul>
+            </div>
+        }
+
         <!-- Dev tools -->
-        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 mb-6">
+        <div class="border border-gray-200 bg-gray-50 rounded-lg p-4 mb-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <div class="text-sm text-amber-800">Development helper: Reset sample data to default (available only in Development environment).</div>
-                <button class="px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm" @onclick="ResetDemoDataAsync">Reset Demo Data</button>
+                <div class="text-sm text-gray-700">Development: Reset sample data to default state</div>
+                <button
+                    class="px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
+                    @onclick="ResetDemoDataAsync">Reset Data</button>
             </div>
         </div>
 
-        <!-- Quick Actions: Link out to CRUD pages with back link there -->
-        <div class="rounded-2xl border border-gray-200 bg-white p-4 mb-6">
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Quick Actions</h3>
-            <p class="text-sm text-gray-700 mb-3">Create or manage records on their dedicated pages. Each page includes a Back to Demo link.</p>
-            <div class="flex flex-wrap gap-2">
-                <a href="/drivers?from=demo" class="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm">Add Driver →</a>
-                <a href="/trucks?from=demo" class="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm">Add Truck →</a>
-                <a href="/routes?from=demo" class="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm">Add Route →</a>
-            </div>
+        <!-- Quick Actions Section -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-3">Quick Actions</h2>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+            <a href="/drivers?from=demo"
+                class="group block border-2 border-gray-200 bg-white hover:bg-gray-50 hover:border-blue-400 hover:shadow-lg rounded-lg p-4 transition-all duration-200">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="text-sm font-medium text-gray-900">Drivers</div>
+                    <div class="text-gray-400 group-hover:text-blue-600 transition-colors">→</div>
+                </div>
+                <div class="text-xs text-gray-500">Manage driver records</div>
+            </a>
+            <a href="/trucks?from=demo"
+                class="group block border-2 border-gray-200 bg-white hover:bg-gray-50 hover:border-blue-400 hover:shadow-lg rounded-lg p-4 transition-all duration-200">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="text-sm font-medium text-gray-900">Trucks</div>
+                    <div class="text-gray-400 group-hover:text-blue-600 transition-colors">→</div>
+                </div>
+                <div class="text-xs text-gray-500">Manage truck fleet</div>
+            </a>
+            <a href="/routes?from=demo"
+                class="group block border-2 border-gray-200 bg-white hover:bg-gray-50 hover:border-blue-400 hover:shadow-lg rounded-lg p-4 transition-all duration-200">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="text-sm font-medium text-gray-900">Routes</div>
+                    <div class="text-gray-400 group-hover:text-blue-600 transition-colors">→</div>
+                </div>
+                <div class="text-xs text-gray-500">Create and edit routes</div>
+            </a>
+        </div>
+
+        <!-- Schedule Section -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-3">Schedule</h2>
         </div>
 
         <!-- Grouped Schedule -->
@@ -113,7 +256,8 @@
         }
         else
         {
-            @foreach (var grp in FilteredRoutes().OrderBy(r => r.ScheduledStartDate).GroupBy(r => r.ScheduledStartDate.Date))
+            @foreach (var grp in FilteredRoutes().OrderBy(r => r.ScheduledStartDate).GroupBy(r =>
+                    r.ScheduledStartDate.Date))
             {
                 <div class="mb-6">
                     <div class="flex items-center gap-2 mb-2">
@@ -125,101 +269,135 @@
                     <div class="space-y-3 md:hidden">
                         @foreach (var r in grp)
                         {
-                            <div class="rounded-2xl border border-gray-200 bg-white p-4">
-                                <div class="flex items-start justify-between gap-3 mb-1">
-                                    <div class="min-w-0">
-                                        <div class="text-base font-semibold text-gray-900">@r.RouteNumber</div>
-                                        <div class="text-xs text-gray-500">@r.Type • @r.ScheduledStartDate.ToString("t")</div>
-                                    </div>
-                                    <div><span class="@GetStatusBadgeClass(r.Status)">@r.Status</span></div>
-                                </div>
-                                <div class="text-sm text-gray-800 break-words">@r.Origin → @r.Destination</div>
-                                <div class="text-xs text-gray-500 mb-2">@r.DistanceMiles mi • Revenue $@r.Revenue • Profit $@r.GetProfitMargin()</div>
-
-                                <div class="grid grid-cols-1 gap-2 mb-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs flex-shrink-0">👤</span>
+                            <div
+                                class="border-2 border-gray-200 bg-white rounded-lg overflow-hidden hover:border-blue-400 hover:shadow-lg transition-all duration-200">
+                                <!-- Header -->
+                                <div class="px-4 pt-4 pb-3 border-b border-gray-100">
+                                    <div class="flex items-start justify-between gap-3 mb-2">
                                         <div class="min-w-0">
-                                            <div class="text-sm text-gray-900">@r.Driver?.Name</div>
-                                            <div class="text-xs text-gray-500">License @r.Driver?.LicenseLevel • @r.Driver?.YearsOfExperience yr</div>
+                                            <div class="text-base font-medium text-gray-900">@r.RouteNumber</div>
+                                            <div class="text-xs text-gray-500 mt-0.5">@r.Type • @r.ScheduledStartDate.ToString("t")
+                                            </div>
                                         </div>
+                                        <div><span class="@GetStatusBadgeClass(r.Status)">@r.Status</span></div>
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs flex-shrink-0">🚛</span>
-                                        <div class="min-w-0">
-                                            <div class="text-sm text-gray-900">@r.Truck?.GetDisplayName()</div>
-                                            <div class="text-xs text-gray-500">Class @r.Truck?.Class • Cap @r.Truck?.CapacityLbs lbs</div>
-                                        </div>
-                                    </div>
+                                    <div class="text-sm text-gray-700 font-medium">@r.Origin → @r.Destination</div>
+                                    <div class="text-xs text-gray-500 mt-1">@r.DistanceMiles mi</div>
                                 </div>
 
-                                <div class="flex flex-wrap items-center gap-2">
+                                <!-- Details -->
+                                <div class="px-4 py-3 bg-gray-50 space-y-2">
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <span class="text-gray-500 w-16">Driver</span>
+                                        <span class="text-gray-900 font-medium">@(r.Driver?.Name ?? "Unassigned")</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <span class="text-gray-500 w-16">Truck</span>
+                                        <span class="text-gray-900 font-medium">@(r.Truck?.GetDisplayName() ?? "Unassigned")</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <span class="text-gray-500 w-16">Revenue</span>
+                                        <span class="text-gray-900 font-medium">$@r.Revenue.ToString("N0")</span>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="px-4 py-3 flex flex-wrap items-center gap-2">
                                     @if (r.Status == RouteStatus.Scheduled)
                                     {
-                                        <button class="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm" @onclick="() => StartRouteAsync(r.Id)">Start</button>
-                                        <button class="px-3 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-sm" @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
+                                        <button
+                                            class="px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                                            @onclick="() => StartRouteAsync(r.Id)">Start</button>
+                                        <button
+                                            class="px-3 py-1.5 text-xs font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
+                                            @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
                                     }
                                     else if (r.Status == RouteStatus.InProgress)
                                     {
-                                        <button class="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm" @onclick="() => CompleteRouteAsync(r.Id)">Complete</button>
-                                        <button class="px-3 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-sm" @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
+                                        <button
+                                            class="px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                                            @onclick="() => CompleteRouteAsync(r.Id)">Complete</button>
+                                        <button
+                                            class="px-3 py-1.5 text-xs font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
+                                            @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
                                     }
-                                    <button class="px-3 py-2 rounded-lg border text-sm hover:bg-gray-50" @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
-                                    <a href="/routes" class="px-3 py-2 rounded-lg border text-sm hover:bg-gray-50">Manage</a>
+                                    <button
+                                        class="px-3 py-1.5 text-xs font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
+                                        @onclick="() => selectedRouteForBreakdown = r">Costs</button>
+                                    <button
+                                        class="px-3 py-1.5 text-xs font-medium bg-white hover:bg-gray-50 text-gray-600 border border-gray-200 rounded transition-colors"
+                                        @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
                                 </div>
                             </div>
                         }
                     </div>
 
                     <!-- Desktop/tablet: Table -->
-                    <div class="overflow-x-auto rounded-2xl border border-gray-200 bg-white hidden md:block">
+                    <div class="overflow-x-auto border-2 border-gray-200 bg-white rounded-lg hidden md:block hover:border-blue-400 hover:shadow-lg transition-all duration-200">
                         <table class="min-w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="text-left p-2">Route</th>
-                                    <th class="text-left p-2">Details</th>
-                                    <th class="text-left p-2">Driver</th>
-                                    <th class="text-left p-2 hidden lg:table-cell">Truck</th>
-                                    <th class="text-left p-2">Status</th>
-                                    <th class="text-left p-2">Actions</th>
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Route</th>
+                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Details</th>
+                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Assigned To</th>
+                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Revenue</th>
+                                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status</th>
+                                    <th class="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="divide-y divide-gray-100">
                                 @foreach (var r in grp)
                                 {
-                                    <tr class="odd:bg-white even:bg-gray-50 align-top">
-                                        <td class="p-2 align-top">
-                                            <div class="font-semibold">@r.RouteNumber</div>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-4 py-3">
+                                            <div class="font-medium text-sm text-gray-900">@r.RouteNumber</div>
                                             <div class="text-xs text-gray-500">@r.Type</div>
                                         </td>
-                                        <td class="p-2">
-                                            <div class="text-sm">@r.Origin → @r.Destination</div>
-                                            <div class="text-xs text-gray-500">@r.DistanceMiles mi • ETD @r.ScheduledStartDate.ToString("t")</div>
-                                            <div class="text-xs text-gray-500">Revenue $@r.Revenue • Profit $@r.GetProfitMargin()</div>
+                                        <td class="px-4 py-3">
+                                            <div class="text-sm text-gray-900 font-medium">@r.Origin → @r.Destination</div>
+                                            <div class="text-xs text-gray-500">@r.DistanceMiles mi •
+                                                @r.ScheduledStartDate.ToString("t")</div>
                                         </td>
-                                        <td class="p-2">
-                                            <div class="text-sm">@r.Driver?.Name</div>
-                                            <div class="text-xs text-gray-500">License @r.Driver?.LicenseLevel • @r.Driver?.YearsOfExperience yr exp</div>
+                                        <td class="px-4 py-3">
+                                            <div class="text-xs text-gray-900">@(r.Driver?.Name ?? "No driver")</div>
+                                            <div class="text-xs text-gray-500">@(r.Truck?.GetDisplayName() ?? "No truck")</div>
                                         </td>
-                                        <td class="p-2 hidden lg:table-cell">
-                                            <div class="text-sm">@r.Truck?.GetDisplayName()</div>
-                                            <div class="text-xs text-gray-500">Class @r.Truck?.Class • Cap @r.Truck?.CapacityLbs lbs</div>
+                                        <td class="px-4 py-3">
+                                            <div class="text-sm font-medium text-gray-900">$@r.Revenue.ToString("N0")</div>
                                         </td>
-                                        <td class="p-2"><span class="@GetStatusBadgeClass(r.Status)">@r.Status</span></td>
-                                        <td class="p-2">
-                                            <div class="flex flex-wrap items-center gap-2">
+                                        <td class="px-4 py-3"><span class="@GetStatusBadgeClass(r.Status)">@r.Status</span></td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center justify-end gap-1.5">
                                                 @if (r.Status == RouteStatus.Scheduled)
                                                 {
-                                                    <button class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-sm" @onclick="() => StartRouteAsync(r.Id)">Start</button>
-                                                    <button class="px-3 py-1.5 rounded bg-orange-600 hover:bg-orange-700 text-white text-sm" @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
+                                                    <button
+                                                        class="px-2.5 py-1 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                                                        @onclick="() => StartRouteAsync(r.Id)">Start</button>
+                                                    <button
+                                                        class="px-2.5 py-1 text-xs font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
+                                                        @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
                                                 }
                                                 else if (r.Status == RouteStatus.InProgress)
                                                 {
-                                                    <button class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm" @onclick="() => CompleteRouteAsync(r.Id)">Complete</button>
-                                                    <button class="px-3 py-1.5 rounded bg-orange-600 hover:bg-orange-700 text-white text-sm" @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
+                                                    <button
+                                                        class="px-2.5 py-1 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                                                        @onclick="() => CompleteRouteAsync(r.Id)">Complete</button>
+                                                    <button
+                                                        class="px-2.5 py-1 text-xs font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
+                                                        @onclick="() => CancelRouteAsync(r.Id)">Cancel</button>
                                                 }
-                                                <button class="px-3 py-1.5 rounded border hover:bg-gray-50 text-sm" @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
-                                                <a href="/routes" class="px-3 py-1.5 rounded border hover:bg-gray-50 text-sm">Manage</a>
+                                                <button
+                                                    class="px-2.5 py-1 text-xs font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded transition-colors"
+                                                    @onclick="() => selectedRouteForBreakdown = r" title="View costs">$</button>
+                                                <button
+                                                    class="px-2.5 py-1 text-xs font-medium bg-white hover:bg-gray-50 text-gray-500 border border-gray-200 rounded transition-colors"
+                                                    @onclick="() => DeleteRouteAsync(r.Id)" title="Delete">×</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -230,16 +408,108 @@
                 </div>
             }
         }
-    </div>
-    <div class="w-full mx-auto px-4 max-w-6xl mt-10">
-        <div class="rounded-2xl border border-gray-200 bg-white p-4">
-            <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">About this demo</h2>
-            <ul class="list-disc ml-5 text-sm text-gray-700 space-y-1">
-                <li>Data is stored in SQLite via Entity Framework Core</li>
-                <li>Starting a route marks its driver and truck as unavailable</li>
-                <li>Completing a route marks them available again and sets actual timestamps</li>
-                <li>Use the <a class="text-blue-600 underline" href="/routes">Routes</a> page to edit assignments</li>
-            </ul>
+
+        <!-- About This Demo Section -->
+        <div class="mt-12 mb-8">
+            <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-6">
+                <button @onclick="() => showAboutContent = !showAboutContent" class="w-full text-left">
+                    <div class="flex items-start gap-4">
+                        <div class="text-4xl">📚</div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl font-bold text-gray-900 mb-2">About this demo</h2>
+                                <span
+                                    class="text-2xl text-gray-600 transition-transform @(showAboutContent ? "rotate-180" : "")">▼</span>
+                            </div>
+                            <p class="text-sm text-gray-700">This demo showcases the complete implementation of all
+                                concepts from the 13-step Trucking Tutorial. Each step teaches a piece of what you see
+                                here.</p>
+                        </div>
+                    </div>
+                </button>
+
+                @if (showAboutContent)
+                {
+                    <div class="mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-white rounded-lg p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2 text-sm">Database & Models (Steps 7-9)</h3>
+                                <ul class="text-xs text-gray-700 space-y-1">
+                                    <li>• POCO models with data annotations</li>
+                                    <li>• DbContext and DbSet&lt;T&gt;</li>
+                                    <li>• EF Core migrations</li>
+                                    <li>• Async CRUD operations</li>
+                                    <li>• Include() for eager loading</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white rounded-lg p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2 text-sm">Services & State (Steps 10-12)</h3>
+                                <ul class="text-xs text-gray-700 space-y-1">
+                                    <li>• AppState service for shared state</li>
+                                    <li>• StateHasChanged notifications</li>
+                                    <li>• Business validation service</li>
+                                    <li>• Calculation service pattern</li>
+                                    <li>• Scoped service lifetimes</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white rounded-lg p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2 text-sm">LINQ & Aggregation (Step 13)</h3>
+                                <ul class="text-xs text-gray-700 space-y-1">
+                                    <li>• Count(), Sum(), Average() for KPIs</li>
+                                    <li>• Where() filtering with predicates</li>
+                                    <li>• OrderBy(), GroupBy() for organization</li>
+                                    <li>• Conditional styling with switch expressions</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white rounded-lg p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2 text-sm">UI & Patterns (Steps 1-6)</h3>
+                                <ul class="text-xs text-gray-700 space-y-1">
+                                    <li>• Tailwind CSS styling</li>
+                                    <li>• Component composition</li>
+                                    <li>• Event binding with @@onclick</li>
+                                    <li>• Two-way binding with @@bind</li>
+                                    <li>• Responsive design patterns</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-4">
+                            <h3 class="text-sm font-semibold text-gray-900 mb-2">💡 Interactive Features</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-700">
+                                <div>• Click <strong>Costs</strong> button to see service calculations</div>
+                                <div>• Validation errors show when rules are violated</div>
+                                <div>• Starting routes updates resource availability</div>
+                                <div>• KPIs recalculate in real-time with LINQ</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Continue Learning Section -->
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    Want to build this yourself? Follow the step-by-step tutorial to learn how each piece works.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/demo/pokemon-collector"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Pokemon Collector Demo</span>
+                    </a>
+                    <a href="/progress"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Track Your Progress</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -253,12 +523,17 @@
     private string? typeFilterString;
     private int kpiScheduled;
     private int kpiInProgress;
+    private decimal kpiTotalRevenue;
+    private decimal kpiEstimatedProfit;
     private int kpiDriversAvailable;
     private int kpiDriversTotal;
     private int kpiTrucksAvailable;
     private int kpiTrucksTotal;
     private string? toastMessage;
     private bool toastIsError;
+    private Route? selectedRouteForBreakdown;
+    private List<string> validationErrors = new();
+    private bool showAboutContent = false;
     // Quick create removed: we now link out to dedicated pages
 
     protected override async Task OnInitializedAsync()
@@ -270,17 +545,29 @@
     {
         using var db = await DbFactory.CreateDbContextAsync();
         routes = await db.Routes
-            .Include(r => r.Driver)
-            .Include(r => r.Truck)
-            .OrderBy(r => r.ScheduledStartDate)
-            .ToListAsync();
+        .Include(r => r.Driver)
+        .Include(r => r.Truck)
+        .OrderBy(r => r.ScheduledStartDate)
+        .ToListAsync();
 
-    drivers = await db.Drivers.OrderBy(d => d.Name).ToListAsync();
-    trucks = await db.Trucks.OrderBy(t => t.TruckNumber).ToListAsync();
+        drivers = await db.Drivers.OrderBy(d => d.Name).ToListAsync();
+        trucks = await db.Trucks.OrderBy(t => t.TruckNumber).ToListAsync();
 
         var next7 = DateTime.Today.AddDays(7);
+        var activeRoutes = routes.Where(r => r.Status == RouteStatus.Scheduled || r.Status == RouteStatus.InProgress).ToList();
+
         kpiScheduled = routes.Count(r => r.Status == RouteStatus.Scheduled && r.ScheduledStartDate <= next7);
         kpiInProgress = routes.Count(r => r.Status == RouteStatus.InProgress);
+        kpiTotalRevenue = activeRoutes.Sum(r => r.Revenue);
+
+        // Calculate estimated profit using ScheduleService for cost calculations
+        decimal totalCost = 0;
+        foreach (var route in activeRoutes.Where(r => r.Driver is not null))
+        {
+            totalCost += ScheduleService.CalculateTotalRouteCost(route.Driver!, route);
+        }
+        kpiEstimatedProfit = kpiTotalRevenue - totalCost;
+
         kpiDriversAvailable = await db.Drivers.CountAsync(d => d.IsAvailable);
         kpiDriversTotal = await db.Drivers.CountAsync();
         kpiTrucksAvailable = await db.Trucks.CountAsync(t => t.IsAvailable && !t.InMaintenance);
@@ -322,8 +609,8 @@
         {
             var s = search.Trim().ToLowerInvariant();
             q = q.Where(r => (r.RouteNumber?.ToLower().Contains(s) ?? false)
-                          || (r.Origin?.ToLower().Contains(s) ?? false)
-                          || (r.Destination?.ToLower().Contains(s) ?? false));
+            || (r.Origin?.ToLower().Contains(s) ?? false)
+            || (r.Destination?.ToLower().Contains(s) ?? false));
         }
         if (!string.IsNullOrEmpty(statusFilterString) && Enum.TryParse<RouteStatus>(statusFilterString, out var st))
         {
@@ -345,12 +632,12 @@
 
     private string GetStatusBadgeClass(RouteStatus status) => status switch
     {
-        RouteStatus.Scheduled   => "inline-flex px-2 py-1 rounded-full text-xs bg-yellow-50 text-yellow-700 border border-yellow-200",
-        RouteStatus.InProgress  => "inline-flex px-2 py-1 rounded-full text-xs bg-blue-50 text-blue-700 border border-blue-200",
-        RouteStatus.Completed   => "inline-flex px-2 py-1 rounded-full text-xs bg-green-50 text-green-700 border border-green-200",
-        RouteStatus.Cancelled   => "inline-flex px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700 border",
-        RouteStatus.Delayed     => "inline-flex px-2 py-1 rounded-full text-xs bg-orange-50 text-orange-700 border border-orange-200",
-        _                        => "inline-flex px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700 border"
+        RouteStatus.Scheduled => "inline-flex px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded",
+        RouteStatus.InProgress => "inline-flex px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded",
+        RouteStatus.Completed => "inline-flex px-2 py-0.5 text-xs font-medium bg-gray-900 text-white rounded",
+        RouteStatus.Cancelled => "inline-flex px-2 py-0.5 text-xs font-medium bg-gray-200 text-gray-600 rounded",
+        RouteStatus.Delayed => "inline-flex px-2 py-0.5 text-xs font-medium bg-gray-700 text-white rounded",
+        _ => "inline-flex px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 rounded"
     };
 
     private async Task StartRouteAsync(int routeId)
@@ -360,10 +647,29 @@
             using var db = await DbFactory.CreateDbContextAsync();
             var route = await db.Routes.Include(r => r.Driver).Include(r => r.Truck).FirstOrDefaultAsync(r => r.Id == routeId);
             if (route is null) { ShowToast("Route not found", true); return; }
-            if (route.Status != RouteStatus.Scheduled) { ShowToast("Only scheduled routes can be started", true); return; }
-            if (route.Driver is null || route.Truck is null) { ShowToast("Route must have a driver and truck", true); return; }
-            if (!route.Truck.CanBeOperatedBy(route.Driver)) { ShowToast("Driver not licensed for this truck", true); return; }
-            if (!route.Driver.IsAvailable || !route.Truck.IsAvailable || route.Truck.InMaintenance) { ShowToast("Resources not available", true); return; }
+
+            // Step 11: Business validation using TruckingValidationService
+            if (!ValidationService.CanStartRoute(route))
+            {
+                ShowToast("Only scheduled routes can be started", true);
+                return;
+            }
+
+            if (route.Driver is null || route.Truck is null)
+            {
+                ShowToast("Route must have a driver and truck", true);
+                return;
+            }
+
+            // Validate assignment using the validation service
+            var errors = ValidationService.ValidateAssignment(route.Driver, route.Truck, route);
+            if (errors.Any())
+            {
+                validationErrors = errors;
+                ShowToast($"Cannot start route: {errors.Count} validation error(s)", true);
+                StateHasChanged();
+                return;
+            }
 
             route.Status = RouteStatus.InProgress;
             route.ActualStartDate = DateTime.Now;
@@ -386,7 +692,13 @@
             using var db = await DbFactory.CreateDbContextAsync();
             var route = await db.Routes.Include(r => r.Driver).Include(r => r.Truck).FirstOrDefaultAsync(r => r.Id == routeId);
             if (route is null) { ShowToast("Route not found", true); return; }
-            if (route.Status != RouteStatus.InProgress) { ShowToast("Only in-progress routes can be completed", true); return; }
+
+            // Step 11: Business validation
+            if (!ValidationService.CanCompleteRoute(route))
+            {
+                ShowToast("Only in-progress routes can be completed", true);
+                return;
+            }
 
             route.Status = RouteStatus.Completed;
             route.ActualEndDate = DateTime.Now;
@@ -410,7 +722,13 @@
             using var db = await DbFactory.CreateDbContextAsync();
             var route = await db.Routes.Include(r => r.Driver).Include(r => r.Truck).FirstOrDefaultAsync(r => r.Id == routeId);
             if (route is null) { ShowToast("Route not found", true); return; }
-            if (route.Status != RouteStatus.Scheduled && route.Status != RouteStatus.InProgress) { ShowToast("Only scheduled or in-progress routes can be cancelled", true); return; }
+
+            // Step 11: Business validation
+            if (!ValidationService.CanCancelRoute(route))
+            {
+                ShowToast("Only scheduled or in-progress routes can be cancelled", true);
+                return;
+            }
 
             if (route.Status == RouteStatus.InProgress)
             {

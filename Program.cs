@@ -39,6 +39,11 @@ builder.Services.AddSingleton<ITipsContributor, HttpAndDataTipsContributor>();
 builder.Services.AddSingleton<ITipsContributor, Step1TipsContributor>();
 builder.Services.AddSingleton<ITipsContributor, Step6TipsContributor>();
 builder.Services.AddSingleton<ITipsContributor, EntityFrameworkTipsContributor>();
+builder.Services.AddSingleton<ITipsContributor, TruckingTutorialTipsContributor>();
+
+// Trucking demo services
+builder.Services.AddScoped<ScheduleService>();
+builder.Services.AddScoped<TruckingValidationService>();
 
 // EF Core - SQLite
 var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=blazormock.db";

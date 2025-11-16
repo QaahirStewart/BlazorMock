@@ -1,0 +1,427 @@
+@page "/trucking-examples/step11"
+@rendermode InteractiveServer
+
+<PageTitle>Step 11: Assignment Logic & Business Rules - Trucking Tutorial</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <a href="/trucking-guide" class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Trucking Guide
+        </a>
+
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            🎯 Step 11: Assignment Logic & Business Rules
+        </h1>
+        <p class="text-xl text-gray-600 mb-8">
+            Implement business rules and validation for driver-truck-route assignments.
+        </p>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                Business rules protect data integrity and ensure valid operations. This step teaches you how to validate 
+                driver-truck-route assignments using license checks, experience requirements, and availability status.
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Validate driver license levels match truck requirements</li>
+                <li>Check driver experience for route types</li>
+                <li>Verify availability status before assignment</li>
+                <li>Display validation errors to users with helpful messages</li>
+            </ul>
+
+            <!-- Key Concepts Footer -->
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> Business Validation, @@bind-Value:after, Switch Expressions
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#business-validation" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Business Validation</a>
+                    <a href="/tips#bind-value-after" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">@@bind-Value:after</a>
+                    <a href="/tips#switch-expressions" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Switch Expressions</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: Assignment Form with Validation</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                This component demonstrates how to validate driver-truck-route assignments in real-time as the user selects options. 
+                It uses @@bind-Value:after to trigger validation immediately and displays warnings for invalid combinations.
+            </p>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Assignment Form with Real-time Validation</div>
+                <p class="text-xs text-gray-600 mb-2">
+                    This form validates assignments as the user makes selections, providing immediate feedback on license mismatches and experience requirements.
+                </p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>@@bind-Value:after triggers validation when selection changes</li>
+                    <li>ValidateAssignment() checks business rules and populates warning list</li>
+                    <li>Error messages explain what's wrong and what's required</li>
+                    <li>Submit button is disabled until all validation passes</li>
+                </ul>
+                <pre data-code-title="Razor + C# (Assignment Form)" class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">
+@@page "/assignments/create"
+@@inject AppDbContext DbContext
+@@inject NavigationManager Navigation
+
+&lt;h1&gt;Create New Assignment&lt;/h1&gt;
+
+@@if (errorMessage != null)
+{
+    &lt;div class="alert alert-danger"&gt;@@errorMessage&lt;/div&gt;
+}
+
+&lt;EditForm Model="newRoute" OnValidSubmit="HandleValidSubmit"&gt;
+    &lt;DataAnnotationsValidator /&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;Select Driver:&lt;/label&gt;
+        &lt;InputSelect @@bind-Value="newRoute.DriverId" @@bind-Value:after="OnDriverChanged"&gt;
+            &lt;option value="0"&gt;-- Select Driver --&lt;/option&gt;
+            @@foreach (var driver in availableDrivers)
+            {
+                &lt;option value="@@driver.Id"&gt;
+                    @@driver.Name (@@driver.LicenseLevel, @@driver.YearsOfExperience yrs)
+                &lt;/option&gt;
+            }
+        &lt;/InputSelect&gt;
+    &lt;/div&gt;
+
+    &lt;div class="form-group"&gt;
+        &lt;label&gt;Select Truck:&lt;/label&gt;
+        &lt;InputSelect @@bind-Value="newRoute.TruckId" @@bind-Value:after="ValidateAssignment"&gt;
+            &lt;option value="0"&gt;-- Select Truck --&lt;/option&gt;
+            @@foreach (var truck in availableTrucks)
+            {
+                &lt;option value="@@truck.Id"&gt;
+                    @@truck.GetDisplayName() (@@truck.Class)
+                &lt;/option&gt;
+            }
+        &lt;/InputSelect&gt;
+    &lt;/div&gt;
+
+    @@if (validationWarnings.Any())
+    {
+        &lt;div class="alert alert-warning"&gt;
+            &lt;h4&gt;Validation Warnings:&lt;/h4&gt;
+            &lt;ul&gt;
+                @@foreach (var warning in validationWarnings)
+                {
+                    &lt;li&gt;@@warning&lt;/li&gt;
+                }
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    }
+
+    &lt;button type="submit" disabled="@@(!isValid)"&gt;Create Assignment&lt;/button&gt;
+&lt;/EditForm&gt;
+                </pre>
+            </div>
+        </div>
+
+        <!-- Validation Logic -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+                ✅ Validation Logic
+            </h2>
+            <p class="text-sm sm:text-base lg:text-lg text-gray-700 mb-4">
+                Apply business rules: license level vs. truck, experience vs. route type, and maintenance flags.
+            </p>
+
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">🧩 Code Example: Validation Logic</h3>
+            <div class="bg-gray-100 rounded-lg p-4 overflow-x-auto mb-4">
+                <pre data-code-title="C# (Validation Logic)">
+@@code {
+    private List&lt;string&gt; validationWarnings = new();
+    private bool isValid = false;
+
+    private void ValidateAssignment()
+    {
+        validationWarnings.Clear();
+        isValid = true;
+
+        if (newRoute.DriverId == 0 || newRoute.TruckId == 0)
+        {
+            isValid = false;
+            return;
+        }
+
+        var driver = availableDrivers.FirstOrDefault(d =&gt; d.Id == newRoute.DriverId);
+        var truck = availableTrucks.FirstOrDefault(t =&gt; t.Id == newRoute.TruckId);
+
+        if (driver == null || truck == null) return;
+
+        // Rule 1: Check license level matches truck class
+        if (!truck.CanBeOperatedBy(driver))
+        {
+            validationWarnings.Add(
+                $"❌ {driver.Name} has {driver.LicenseLevel} license, " +
+                $"but this truck requires {truck.GetRequiredLicenseLevel()}."
+            );
+            isValid = false;
+        }
+
+        // Rule 2: Check experience for route type
+        var rt = newRoute.Type.Value;
+        bool hasExperience = rt switch
+        {
+            RouteType.Hazmat =&gt; driver.YearsOfExperience &gt;= 2,
+            RouteType.Oversized =&gt; driver.YearsOfExperience &gt;= 3,
+            RouteType.LongHaul =&gt; driver.YearsOfExperience &gt;= 1,
+            _ =&gt; true
+        };
+
+        if (!hasExperience)
+        {
+            validationWarnings.Add(
+                $"⚠️ {driver.Name} has {driver.YearsOfExperience} years experience. " +
+                $"{rt} routes require more experience."
+            );
+            isValid = false;
+        }
+
+        // Success message
+        if (isValid && !validationWarnings.Any())
+        {
+            validationWarnings.Add("✅ Assignment is valid and ready to create!");
+        }
+    }
+}
+                </pre>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+                <p class="text-sm sm:text-base text-blue-800">
+                    <strong>💡 Pro Tip:</strong> Use @@bind-Value:after to trigger validation immediately when the user selects an option!
+                </p>
+            </div>
+        </div>
+
+        <!-- Business Rules Summary -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+                🎨 Business Rules Summary
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                    <h3 class="font-semibold text-red-900 mb-2 text-sm sm:text-base">❌ Hard Rules</h3>
+                    <ul class="text-xs sm:text-sm text-red-800 space-y-1">
+                        <li>✓ License level must match truck class</li>
+                        <li>✓ Driver must have required experience</li>
+                        <li>✓ Driver must be available</li>
+                        <li>✓ Truck must be available</li>
+                        <li>✓ Truck must not be in maintenance</li>
+                    </ul>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg">
+                    <h3 class="font-semibold text-yellow-900 mb-2 text-sm sm:text-base">⚠️ Soft Warnings</h3>
+                    <ul class="text-xs sm:text-sm text-yellow-800 space-y-1">
+                        <li>✓ Truck needs maintenance soon</li>
+                        <li>✓ Driver approaching max hours</li>
+                        <li>✓ Route is very long distance</li>
+                        <li>✓ Weather conditions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">🎬 Live Demo: Assignment Validator</h2>
+
+            <div class="bg-white rounded-xl p-4 border border-gray-200">
+                <div class="grid sm:grid-cols-3 gap-3 mb-4">
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1">Route Type</label>
+                        <select class="w-full rounded border border-gray-300 p-2 text-sm"
+                            value="@(demoSelectedRouteType?.ToString() ?? string.Empty)"
+                            @onchange="OnDemoRouteTypeChanged">
+                            <option value="">-- Select Route Type --</option>
+                            @foreach (var rt in demoRouteTypes)
+                            {
+                                <option value="@rt">@rt</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1">Truck</label>
+                        <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@demoSelectedTruckId"
+                            @onchange="OnDemoTruckChanged">
+                            <option value="">-- Select Truck --</option>
+                            @foreach (var t in demoTrucks)
+                            {
+                                <option value="@t.Id">@t.DisplayName (@t.Class)</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1">Driver</label>
+                        <select class="w-full rounded border border-gray-300 p-2 text-sm" value="@demoSelectedDriverId"
+                            @onchange="OnDemoDriverChanged">
+                            <option value="">-- Select Driver --</option>
+                            @foreach (var d in demoDrivers)
+                            {
+                                <option value="@d.Id">@d.Name (@d.LicenseLevel, @d.YearsOfExperience yrs)</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                @if (demoWarnings.Any())
+                {
+                    <div class="rounded border-l-4 border-yellow-500 bg-yellow-50 p-3 mb-3">
+                        <div class="text-xs sm:text-sm text-yellow-800 font-semibold mb-1">Validation Warnings</div>
+                        <ul class="text-xs sm:text-sm text-yellow-800 list-disc ml-5 space-y-1">
+                            @foreach (var w in demoWarnings)
+                            {
+                                <li>@w</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <div class="flex items-center justify-between">
+                    <div class="text-xs sm:text-sm">
+                        <span class="font-semibold">Status:</span>
+                        @if (demoIsValid)
+                        {
+                            <span class="text-green-700">✅ Valid assignment</span>
+                        }
+                        else
+                        {
+                            <span class="text-red-700">❌ Not valid</span>
+                        }
+                    </div>
+                    <button class="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-50 text-xs sm:text-sm"
+                        @onclick="ResetDemo">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+
+            <div class="space-y-3">
+                <!-- Pro Tips (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Validate on both client and server side</p>
+                            <p class="text-xs text-blue-800">
+                                Client-side validation provides immediate feedback and better UX, but always validate on the server too for security. 
+                                Never trust client-side data - users can bypass browser validation.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use model methods for reusable validation</p>
+                            <p class="text-xs text-blue-800">
+                                Create methods like CanBeOperatedBy(Driver driver) on your Truck model. This keeps validation logic with the data 
+                                and makes it reusable across different components and API endpoints.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Provide clear, actionable error messages</p>
+                            <p class="text-xs text-blue-800">
+                                Don't just say "Invalid". Tell users exactly what's wrong and what they need to fix: 
+                                "Driver has Class C license, but this truck requires Class A."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting (Yellow) -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>Validation doesn't trigger when selecting? Use @@bind-Value:after="ValidateAssignment" on InputSelect</li>
+                        <li>Submit button stays disabled when valid? Check isValid flag is set to true when all rules pass</li>
+                        <li>Warnings don't clear? Call validationWarnings.Clear() at the start of ValidateAssignment()</li>
+                        <li>Same errors appear multiple times? Make sure to clear the list before adding new errors</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Create validation method:</strong>
+                    Add a ValidateAssignment() method that checks all business rules and populates a warnings list.
+                </li>
+                <li>
+                    <strong>Use @@bind-Value:after:</strong>
+                    On your InputSelect components, add <code>@@bind-Value:after="ValidateAssignment"</code> to trigger validation on change.
+                </li>
+                <li>
+                    <strong>Track validation state:</strong>
+                    Use boolean flags like <code>isValid</code> to control whether the submit button is enabled.
+                </li>
+                <li>
+                    <strong>Display clear errors:</strong>
+                    Show validation warnings in a styled alert box so users know exactly what to fix.
+                </li>
+                <li>
+                    <strong>Add model validation methods:</strong>
+                    Create helper methods on your models like <code>CanBeOperatedBy(Driver)</code> for reusable validation logic.
+                </li>
+                <li>
+                    <strong>Test it:</strong>
+                    Navigate to <code>/trucking-examples/step11</code> and try the live demo with different driver/truck combinations.
+                </li>
+            </ol>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 11?</h3>
+                    <p class="text-sm text-gray-600">Mark this step complete to track your progress!</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="@(async () => await ProgressService.MarkStepIncompleteAsync(11))"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between">
+            <a href="/trucking-examples/step10"
+                class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 10
+            </a>
+            <a href="/trucking-examples/step12"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 12
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>

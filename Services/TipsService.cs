@@ -1785,3 +1785,432 @@ public class EntityFrameworkTipsContributor : ITipsContributor
     }
 }
 
+// Trucking Tutorial Tips
+public class TruckingTutorialTipsContributor : ITipsContributor
+{
+    public IEnumerable<TipTopic> GetTopics()
+    {
+        // Step 1 tips
+        yield return new TipTopic(
+            Title: "npm packages",
+            Category: "Tooling — Frontend",
+            Type: "Package Manager",
+            ELI5: "npm manages JavaScript libraries and tools for your project, like a shopping list that automatically downloads what you need.",
+            Example: "npm install @tailwindcss/cli\nnpm run build:css",
+            Tips: new[]
+            {
+                "Use package.json to track dependencies.",
+                "npm install downloads packages to node_modules/.",
+                "Scripts in package.json let you run common commands."
+            }
+        )
+        {
+            LongELI5 = "\n\nnpm (Node Package Manager) is like a universal parts catalog for web development. Instead of manually downloading CSS frameworks or build tools, you tell npm what you need and it fetches everything. The package.json file is your shopping list—it lists all the packages your project depends on, their versions, and custom scripts you can run. When you run 'npm install', npm reads package.json and downloads all listed packages into a folder called node_modules. You can then use these packages in your project.",
+            ELI5Example = "// package.json\n{\n  \"scripts\": {\n    \"build:css\": \"npx tailwindcss -i Styles/input.css -o wwwroot/tailwind.css\"\n  },\n  \"dependencies\": {\n    \"@tailwindcss/cli\": \"^4.0.0\"\n  }\n}\n\n// Run scripts with: npm run build:css"
+        };
+
+        yield return new TipTopic(
+            Title: "Tailwind CSS",
+            Category: "Styling — CSS",
+            Type: "Framework",
+            ELI5: "A utility-first CSS framework where you build designs by combining small, single-purpose classes directly in your HTML.",
+            Example: "<div class=\"bg-blue-500 text-white px-4 py-2 rounded\">\n  Click me\n</div>",
+            Tips: new[]
+            {
+                "Use responsive prefixes like sm:, md:, lg: for breakpoints.",
+                "Combine utilities to create complex designs without custom CSS.",
+                "Configure colors, spacing, and fonts in tailwind.config.js."
+            }
+        )
+        {
+            LongELI5 = "\n\nTailwind CSS is like building with LEGO blocks instead of sculpting clay. Traditional CSS is like sculpting—you write custom rules for each element. Tailwind gives you pre-made utility classes (blocks) that do one thing well: 'bg-blue-500' makes the background blue, 'px-4' adds horizontal padding, 'rounded' makes corners rounded. You compose these utilities directly in your HTML to build any design. This approach is faster, more consistent, and easier to maintain than writing custom CSS. Tailwind's build process removes unused classes, keeping your final CSS file small.",
+            ELI5Example = "<!-- Traditional CSS -->\n<style>\n  .my-button { background: blue; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; }\n</style>\n<button class=\"my-button\">Click</button>\n\n<!-- Tailwind CSS -->\n<button class=\"bg-blue-500 text-white px-4 py-2 rounded\">Click</button>\n\n<!-- Responsive design -->\n<div class=\"text-sm md:text-base lg:text-lg\">\n  Responsive text\n</div>"
+        };
+
+        yield return new TipTopic(
+            Title: ".NET Asset Pipeline",
+            Category: "Blazor — Assets",
+            Type: "Build System",
+            ELI5: "The system that processes static files (CSS, JS, images) and makes them available to your Blazor app at runtime.",
+            Example: "// Program.cs\napp.MapStaticAssets();\n\n// In Razor\n<link rel=\"stylesheet\" href=\"app.css\" />",
+            Tips: new[]
+            {
+                "Place static files in wwwroot/ folder.",
+                "Use MapStaticAssets() to serve files efficiently.",
+                "Files are served from the root URL path automatically."
+            }
+        )
+        {
+            LongELI5 = "\n\nThe .NET asset pipeline is like a conveyor belt that takes your static files (CSS, JavaScript, images) from the wwwroot folder and delivers them to users' browsers. When you put files in wwwroot/, .NET automatically makes them available at the root URL. For example, wwwroot/app.css becomes available at /app.css. The MapStaticAssets() method in Program.cs enables this pipeline with optimizations like caching headers and compression. You can reference these files in your Razor pages using relative paths.",
+            ELI5Example = "// File structure:\n// wwwroot/\n//   ├── app.css\n//   ├── tailwind.css\n//   └── js/\n//       └── site.js\n\n// Program.cs\napp.MapStaticAssets();  // Enable asset serving\n\n// App.razor\n<link rel=\"stylesheet\" href=\"app.css\" />\n<link rel=\"stylesheet\" href=\"tailwind.css\" />\n<script src=\"js/site.js\"></script>"
+        };
+
+        // Step 7 tips
+        yield return new TipTopic(
+            Title: "POCO Models",
+            Category: "C# — Data Modeling",
+            Type: "Pattern",
+            ELI5: "Plain Old CLR Objects—simple C# classes with properties, no special base classes or interfaces required.",
+            Example: "public class Driver\n{\n    public int Id { get; set; }\n    public string Name { get; set; } = string.Empty;\n}",
+            Tips: new[]
+            {
+                "Keep models focused on data, not behavior.",
+                "Use init accessors for immutable properties.",
+                "Data Annotations add validation metadata."
+            }
+        )
+        {
+            LongELI5 = "\n\nPOCO (Plain Old CLR Object) means your model classes are just regular C# classes—no inheritance from framework types, no special interfaces. They're like simple containers for data. This makes them easy to test, serialize, and use with different frameworks. EF Core works great with POCOs: you define your properties, and EF Core figures out how to map them to database columns. The 'plain' part means they don't know about databases or frameworks; they just hold data.",
+            ELI5Example = "// POCO - just properties, no framework dependencies\npublic class Truck\n{\n    public int Id { get; set; }\n    public string LicensePlate { get; set; } = string.Empty;\n    public int Capacity { get; set; }\n    public bool IsAvailable { get; set; } = true;\n}\n\n// EF Core maps this to a database table automatically\n// No base class needed, no special attributes required (though you can add them)"
+        };
+
+        yield return new TipTopic(
+            Title: "Data Annotations",
+            Category: "C# — Data Modeling",
+            Type: "Attributes",
+            ELI5: "Attributes like [Required] and [MaxLength] that add validation rules and metadata to model properties.",
+            Example: "public class Driver\n{\n    [Required]\n    [StringLength(100)]\n    public string Name { get; set; } = string.Empty;\n}",
+            Tips: new[]
+            {
+                "Use [Required] for mandatory fields.",
+                "[StringLength] limits text length and creates database constraints.",
+                "[Range] validates numeric values."
+            }
+        )
+        {
+            LongELI5 = "\n\nData Annotations are like stickers you put on your model properties to say 'this field is required' or 'this text can't be longer than 100 characters'. They serve two purposes: validation (Blazor checks them when forms are submitted) and database schema (EF Core uses them to create appropriate column constraints). When you mark a property with [Required], Blazor won't let the form submit if it's empty, and EF Core creates a NOT NULL column. [StringLength(100)] limits input length and creates a VARCHAR(100) column.",
+            ELI5Example = "public class Driver\n{\n    public int Id { get; set; }\n    \n    [Required(ErrorMessage = \"Name is required\")]\n    [StringLength(100, MinimumLength = 2)]\n    public string Name { get; set; } = string.Empty;\n    \n    [Range(0, 40, ErrorMessage = \"Experience must be between 0 and 40 years\")]\n    public int YearsExperience { get; set; }\n    \n    [EmailAddress]\n    public string Email { get; set; } = string.Empty;\n}"
+        };
+
+        // Step 8 tips
+        yield return new TipTopic(
+            Title: "DbContext",
+            Category: "Blazor — Database",
+            Type: "Class",
+            ELI5: "Your gateway to the database—it manages connections, tracks changes, and saves data.",
+            Example: "public class AppDbContext : DbContext\n{\n    public DbSet<Driver> Drivers { get; set; }\n    public DbSet<Truck> Trucks { get; set; }\n}",
+            Tips: new[]
+            {
+                "Inject DbContext into components or services.",
+                "Use async methods like SaveChangesAsync() for performance.",
+                "DbContext tracks changes automatically—just modify entities and call SaveChanges()."
+            }
+        )
+        {
+            LongELI5 = "\n\nDbContext is like a project manager for your database. It handles all the messy details: opening connections, translating C# code to SQL, tracking what changed, and saving everything back. You define DbSet<T> properties for each table, and DbContext provides LINQ queries to work with them. When you modify an entity, DbContext remembers what changed. When you call SaveChangesAsync(), it generates the appropriate INSERT, UPDATE, or DELETE statements. It's your one-stop shop for database operations.",
+            ELI5Example = "public class AppDbContext : DbContext\n{\n    public DbSet<Driver> Drivers { get; set; }\n    public DbSet<Truck> Trucks { get; set; }\n    \n    protected override void OnConfiguring(DbContextOptionsBuilder options)\n        => options.UseSqlite(\"Data Source=app.db\");\n}\n\n// Usage\nvar driver = await DbContext.Drivers.FindAsync(id);\ndriver.Name = \"Updated Name\";\nawait DbContext.SaveChangesAsync();  // Saves the change"
+        };
+
+        yield return new TipTopic(
+            Title: "DbSet<T>",
+            Category: "Blazor — Database",
+            Type: "Property",
+            ELI5: "A property on DbContext that represents a table—use it to query, add, or remove entities.",
+            Example: "public DbSet<Driver> Drivers { get; set; }\n\n// Query\nvar list = await DbContext.Drivers.ToListAsync();",
+            Tips: new[]
+            {
+                "Each DbSet<T> maps to a database table.",
+                "Use LINQ to query: Where(), OrderBy(), Include().",
+                "Add entities with .Add(), remove with .Remove()."
+            }
+        )
+        {
+            LongELI5 = "\n\nDbSet<T> is like a folder that represents one table in your database. If you have a Drivers table, you create a DbSet<Driver> property. You then use LINQ to query this 'folder': DbContext.Drivers.Where(d => d.Name.Contains(\"Smith\")) translates to SQL. You can add new entities (DbContext.Drivers.Add(newDriver)), remove them (DbContext.Drivers.Remove(driver)), or modify them (just change properties). DbSet<T> is your interface to a specific table.",
+            ELI5Example = "// In DbContext\npublic DbSet<Driver> Drivers { get; set; }\npublic DbSet<Route> Routes { get; set; }\n\n// Usage\n// Query all\nvar all = await DbContext.Drivers.ToListAsync();\n\n// Query with filter\nvar experienced = await DbContext.Drivers\n    .Where(d => d.YearsExperience > 5)\n    .ToListAsync();\n\n// Add new\nvar newDriver = new Driver { Name = \"John\" };\nDbContext.Drivers.Add(newDriver);\nawait DbContext.SaveChangesAsync();"
+        };
+
+        yield return new TipTopic(
+            Title: "EF Core Migrations",
+            Category: "Blazor — Database",
+            Type: "Tool",
+            ELI5: "Version control for your database schema—create and apply changes to keep the database in sync with your models.",
+            Example: "dotnet ef migrations add InitialCreate\ndotnet ef database update",
+            Tips: new[]
+            {
+                "Run 'add migration' after changing models.",
+                "Use 'database update' to apply migrations.",
+                "Migrations are code—check them into source control."
+            }
+        )
+        {
+            LongELI5 = "\n\nMigrations are like Git commits for your database structure. When you change your C# models (add a property, change a type), you create a migration that describes how to update the database to match. 'dotnet ef migrations add CreateDriverTable' generates code that says 'add a Drivers table with these columns'. 'dotnet ef database update' runs that code against your actual database. This way, your database evolves with your code, and you have a history of all schema changes. Migrations are reversible—you can roll back if needed.",
+            ELI5Example = "// 1. Create models\npublic class Driver { public int Id { get; set; } public string Name { get; set; } }\n\n// 2. Create migration\n// dotnet ef migrations add InitialCreate\n// → Generates Migrations/XXX_InitialCreate.cs with Up() and Down() methods\n\n// 3. Apply to database\n// dotnet ef database update\n// → Creates Drivers table in database\n\n// 4. Add property to model\npublic int YearsExperience { get; set; }\n\n// 5. Create migration for change\n// dotnet ef migrations add AddExperience\n\n// 6. Apply\n// dotnet ef database update\n// → Adds YearsExperience column"
+        };
+
+        // Step 9 tips
+        yield return new TipTopic(
+            Title: "ToListAsync",
+            Category: "Blazor — Database",
+            Type: "Method",
+            ELI5: "Executes a LINQ query and returns all results as a List<T> asynchronously.",
+            Example: "var drivers = await DbContext.Drivers.ToListAsync();",
+            Tips: new[]
+            {
+                "Always use async methods in Blazor components.",
+                "ToListAsync() triggers query execution—LINQ is lazy until then.",
+                "Use Where(), OrderBy() before ToListAsync() to filter/sort."
+            }
+        )
+        {
+            LongELI5 = "\n\nToListAsync() is like pressing 'Execute' on your database query. LINQ queries are lazy—they don't run until you ask for results. When you write DbContext.Drivers.Where(d => d.Name.Contains(\"John\")), nothing happens yet. When you add .ToListAsync(), EF Core translates your LINQ to SQL, sends it to the database, and brings back all matching rows as a List<Driver>. The 'Async' part means it doesn't block your UI while waiting for the database.",
+            ELI5Example = "// Query is built but not executed\nvar query = DbContext.Drivers\n    .Where(d => d.YearsExperience > 5)\n    .OrderBy(d => d.Name);\n\n// Now execute and get results\nvar results = await query.ToListAsync();\n\n// Can also chain in one statement\nvar drivers = await DbContext.Drivers\n    .Where(d => d.IsActive)\n    .OrderByDescending(d => d.HireDate)\n    .ToListAsync();"
+        };
+
+        yield return new TipTopic(
+            Title: "FindAsync",
+            Category: "Blazor — Database",
+            Type: "Method",
+            ELI5: "Finds a single entity by its primary key value, checking the cache first before querying the database.",
+            Example: "var driver = await DbContext.Drivers.FindAsync(driverId);",
+            Tips: new[]
+            {
+                "FindAsync checks the DbContext cache before querying.",
+                "Returns null if not found.",
+                "Use FirstOrDefaultAsync for complex queries."
+            }
+        )
+        {
+            LongELI5 = "\n\nFindAsync is like checking your desk drawer before walking to the filing cabinet. When you ask for an entity by ID, DbContext first checks if it already loaded that entity earlier (the cache). If yes, it returns it instantly without hitting the database. If no, it queries the database. This is efficient for common scenarios like loading a detail page. If the entity isn't found, FindAsync returns null. For queries more complex than 'find by ID', use FirstOrDefaultAsync with Where clauses.",
+            ELI5Example = "// Find by primary key (efficient—uses cache)\nvar driver = await DbContext.Drivers.FindAsync(5);\nif (driver == null) { /* not found */ }\n\n// For complex queries, use Where + FirstOrDefaultAsync\nvar driver = await DbContext.Drivers\n    .Where(d => d.Email == email)\n    .FirstOrDefaultAsync();\n\n// Composite keys\nvar route = await DbContext.RouteAssignments.FindAsync(driverId, truckId);"
+        };
+
+        yield return new TipTopic(
+            Title: "SaveChangesAsync",
+            Category: "Blazor — Database",
+            Type: "Method",
+            ELI5: "Saves all changes tracked by DbContext to the database in a single transaction.",
+            Example: "driver.Name = \"Updated\";\nawait DbContext.SaveChangesAsync();",
+            Tips: new[]
+            {
+                "Call once after all changes to batch database operations.",
+                "Returns the number of rows affected.",
+                "Wraps all changes in a transaction—either all succeed or all fail."
+            }
+        )
+        {
+            LongELI5 = "\n\nSaveChangesAsync is like clicking 'Save All' after editing multiple files. DbContext tracks every entity you load, modify, add, or remove. When you call SaveChangesAsync(), it generates the necessary SQL (INSERT, UPDATE, DELETE) for all tracked changes and executes them in one transaction. If anything fails, nothing is saved (transaction rolls back). This ensures data consistency. The async version doesn't block the UI while waiting for the database to respond.",
+            ELI5Example = "// Load entity\nvar driver = await DbContext.Drivers.FindAsync(id);\n\n// Modify (DbContext tracks this change)\ndriver.Name = \"New Name\";\ndriver.YearsExperience = 10;\n\n// Add new entity (DbContext tracks this too)\nvar newRoute = new Route { Name = \"Route 66\", DriverId = driver.Id };\nDbContext.Routes.Add(newRoute);\n\n// Save all changes in one transaction\nawait DbContext.SaveChangesAsync();\n// → Generates: UPDATE Drivers SET Name=..., YearsExperience=... WHERE Id=...\n//              INSERT INTO Routes (Name, DriverId) VALUES (...)"
+        };
+
+        // Step 10 tips
+        yield return new TipTopic(
+            Title: "Service Lifetimes",
+            Category: "Blazor — Services",
+            Type: "Pattern",
+            ELI5: "Controls how long a service instance lives: Singleton (app-wide), Scoped (per user session), or Transient (new every time).",
+            Example: "builder.Services.AddScoped<AppState>();\nbuilder.Services.AddSingleton<ConfigService>();",
+            Tips: new[]
+            {
+                "Use Scoped for per-user state in Blazor Server.",
+                "Singleton shares one instance across all users.",
+                "Transient creates a new instance for every injection."
+            }
+        )
+        {
+            LongELI5 = "\n\nService lifetimes are like deciding whether to share tools. Singleton is like having one hammer for the entire construction site—everyone uses the same one. Scoped is like each worker getting their own toolbox at shift start and returning it at shift end—in Blazor Server, each user connection gets its own instance. Transient is like getting a brand new tool every time you ask for it—wasteful unless the tool is disposable. Choose based on whether the service holds state: stateless services can be Singleton, per-user state needs Scoped, and cheap disposable services can be Transient.",
+            ELI5Example = "// Program.cs\nbuilder.Services.AddSingleton<TimeService>();  // One for entire app\nbuilder.Services.AddScoped<ShoppingCart>();    // One per user session\nbuilder.Services.AddTransient<EmailSender>();  // New instance every time\n\n// In component\n@inject ShoppingCart Cart  // Gets the user's cart instance\n@inject TimeService Time  // Gets the shared time service"
+        };
+
+        yield return new TipTopic(
+            Title: "StateHasChanged",
+            Category: "Blazor — Lifecycle",
+            Type: "Method",
+            ELI5: "Tells Blazor to re-render the component because something changed outside the normal event flow.",
+            Example: "private void OnDataChanged()\n{\n    StateHasChanged();\n}",
+            Tips: new[]
+            {
+                "Call after async callbacks or event subscriptions.",
+                "Not needed after @onclick or @onchange—Blazor re-renders automatically.",
+                "Use InvokeAsync for thread-safe UI updates."
+            }
+        )
+        {
+            LongELI5 = "\n\nStateHasChanged is like ringing a bell to say 'something changed, please update the display'. Blazor automatically re-renders after UI events like button clicks, but if data changes from a timer, background task, or event subscription, Blazor doesn't know. You call StateHasChanged() to trigger a re-render. In event handlers that aren't direct UI events (like a service broadcasting a notification), you often need StateHasChanged() to update what the user sees.",
+            ELI5Example = "// Event subscription pattern\npublic class MyComponent : ComponentBase\n{\n    [Inject] AppState State { get; set; }\n    \n    protected override void OnInitialized()\n    {\n        State.OnChange += HandleStateChanged;\n    }\n    \n    private void HandleStateChanged()\n    {\n        StateHasChanged();  // Re-render when state changes\n    }\n    \n    public void Dispose()\n    {\n        State.OnChange -= HandleStateChanged;\n    }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "Event Notifications",
+            Category: "Blazor — Patterns",
+            Type: "Pattern",
+            ELI5: "A pattern where services notify components when data changes using C# events or callbacks.",
+            Example: "public event Action? OnChange;\nprivate void NotifyStateChanged() => OnChange?.Invoke();",
+            Tips: new[]
+            {
+                "Use Action or EventHandler for event signatures.",
+                "Always unsubscribe in Dispose to prevent memory leaks.",
+                "Components call StateHasChanged when notified."
+            }
+        )
+        {
+            LongELI5 = "\n\nEvent notifications are like a school bell system. The service is the bell—when something important happens (state changes), it rings. Components are listeners—they subscribe to the bell (event) and react when it rings (call StateHasChanged to re-render). This pattern lets multiple components stay in sync with shared state. When one component updates the state in the service, the service fires the event, and all subscribed components update their UI. Always unsubscribe when the component is disposed to avoid memory leaks.",
+            ELI5Example = "// Service with notification\npublic class AppState\n{\n    public event Action? OnChange;\n    \n    public string SelectedDriver { get; private set; } = \"\";\n    \n    public void SelectDriver(string name)\n    {\n        SelectedDriver = name;\n        OnChange?.Invoke();  // Notify subscribers\n    }\n}\n\n// Component subscribing\npublic class DriverDisplay : ComponentBase, IDisposable\n{\n    [Inject] AppState State { get; set; }\n    \n    protected override void OnInitialized()\n    {\n        State.OnChange += StateChanged;\n    }\n    \n    private void StateChanged()\n    {\n        StateHasChanged();\n    }\n    \n    public void Dispose()\n    {\n        State.OnChange -= StateChanged;  // Unsubscribe\n    }\n}"
+        };
+
+        // Step 11 tips
+        yield return new TipTopic(
+            Title: "Business Validation",
+            Category: "Blazor — Patterns",
+            Type: "Pattern",
+            ELI5: "Custom logic that validates data based on business rules, beyond simple 'required' or 'max length' checks.",
+            Example: "private string ValidateAssignment(Driver driver, Truck truck)\n{\n    if (truck.Capacity < driver.MinCapacity)\n        return \"Truck too small for driver requirements\";\n    return string.Empty;\n}",
+            Tips: new[]
+            {
+                "Put validation in services or helper methods, not UI components.",
+                "Return error messages as strings or use Result<T> pattern.",
+                "Validate before saving to prevent invalid data."
+            }
+        )
+        {
+            LongELI5 = "\n\nBusiness validation is like checking if a driver has the right license for a truck type, not just whether they have 'a' license. Data annotations handle simple rules (required, length), but business rules are complex: 'This driver needs CDL-A for this truck', 'This route exceeds the driver's max hours', 'This truck is already assigned'. You write these checks in methods that examine multiple entities and return error messages. Call validation before saving changes, and display errors to the user so they can fix issues.",
+            ELI5Example = "public class ScheduleValidator\n{\n    public List<string> ValidateAssignment(Driver driver, Truck truck, Route route)\n    {\n        var errors = new List<string>();\n        \n        if (!driver.HasLicense(truck.RequiredLicense))\n            errors.Add($\"Driver needs {truck.RequiredLicense} license\");\n        \n        if (route.Distance > driver.MaxDistance)\n            errors.Add($\"Route too long (max: {driver.MaxDistance} mi)\");\n        \n        if (truck.Capacity < route.RequiredCapacity)\n            errors.Add(\"Truck capacity insufficient\");\n        \n        return errors;\n    }\n}\n\n// In component\nvar errors = validator.ValidateAssignment(driver, truck, route);\nif (errors.Any())\n    ShowErrors(errors);\nelse\n    await SaveAssignment();"
+        };
+
+        yield return new TipTopic(
+            Title: "@bind-Value:after",
+            Category: "Blazor — Data Binding",
+            Type: "Directive",
+            ELI5: "Runs custom code immediately after a bound value changes, useful for validation or related field updates.",
+            Example: "<InputText @bind-Value=\"model.Name\" @bind-Value:after=\"ValidateName\" />",
+            Tips: new[]
+            {
+                "Use for instant validation feedback.",
+                "Can update other fields based on the changed value.",
+                "Fires on every keystroke with @bind:event=\"oninput\"."
+            }
+        )
+        {
+            LongELI5 = "\n\n@bind-Value:after is like having a helper that runs a task immediately after you update a field. When a user types in an input, the bound value updates, then your 'after' method runs. This is perfect for instant validation ('check if this name is unique'), cascading updates ('when state changes, update city dropdown'), or recalculating totals. It fires after the value binding completes, so your property already has the new value when the method runs.",
+            ELI5Example = "// Model\npublic string DriverName { get; set; } = \"\";\npublic string ValidationMessage { get; set; } = \"\";\n\n// Validation method\nprivate void ValidateDriverName()\n{\n    if (string.IsNullOrWhiteSpace(DriverName))\n        ValidationMessage = \"Name required\";\n    else if (DriverName.Length < 3)\n        ValidationMessage = \"Name too short\";\n    else\n        ValidationMessage = string.Empty;\n}\n\n// Markup\n<InputText @bind-Value=\"DriverName\" @bind-Value:after=\"ValidateDriverName\" />\n@if (!string.IsNullOrEmpty(ValidationMessage))\n{\n    <div class=\"error\">@ValidationMessage</div>\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "Switch Expressions",
+            Category: "C# — Language Features",
+            Type: "Syntax",
+            ELI5: "A concise way to return values based on pattern matching, cleaner than long if-else chains.",
+            Example: "var message = status switch\n{\n    \"Active\" => \"Driver is ready\",\n    \"OnRoute\" => \"Driver is delivering\",\n    _ => \"Unknown status\"\n};",
+            Tips: new[]
+            {
+                "Use _ for the default case (discard pattern).",
+                "Each arm must return a value of the same type.",
+                "Great for mapping enums or statuses to strings."
+            }
+        )
+        {
+            LongELI5 = "\n\nSwitch expressions are like a decision tree written backwards. Traditional switch statements are verbose with 'case', 'break', etc. Switch expressions are compact: you write the value you're checking, then 'switch', then patterns with arrows (=>) pointing to results. The _ pattern is 'default'—it matches anything that didn't match earlier patterns. The result is an expression that evaluates to a value, so you can use it in assignments, return statements, or method calls.",
+            ELI5Example = "// Traditional switch statement\nstring GetStatusMessage(string status)\n{\n    switch (status)\n    {\n        case \"Active\": return \"Ready\";\n        case \"OnRoute\": return \"Delivering\";\n        default: return \"Unknown\";\n    }\n}\n\n// Switch expression (cleaner)\nstring GetStatusMessage(string status) => status switch\n{\n    \"Active\" => \"Ready\",\n    \"OnRoute\" => \"Delivering\",\n    _ => \"Unknown\"\n};\n\n// Pattern matching\ndecimal GetBonus(Route route) => route.Type switch\n{\n    \"Hazmat\" => 250m,\n    \"Oversized\" => 300m,\n    \"LongHaul\" when route.Distance > 500 => route.Distance * 0.15m,\n    _ => 0m\n};"
+        };
+
+        // Step 12 tips
+        yield return new TipTopic(
+            Title: "Service Pattern",
+            Category: "Blazor — Patterns",
+            Type: "Architecture",
+            ELI5: "Moving business logic out of components into dedicated service classes for reusability and testability.",
+            Example: "public class ScheduleService\n{\n    public decimal CalculateDriverPay(Driver driver, Route route)\n    {\n        // Business logic here\n    }\n}",
+            Tips: new[]
+            {
+                "Keep components thin—just UI concerns.",
+                "Services hold business logic, calculations, and data access.",
+                "Register services in Program.cs for dependency injection."
+            }
+        )
+        {
+            LongELI5 = "\n\nThe service pattern is like hiring specialists instead of doing everything yourself. Components are like receptionists—they show information and handle user interactions. Services are like accountants, warehouse managers, etc.—they handle specific business tasks. When you need to calculate driver pay, the component asks the ScheduleService to do it. This separation keeps components simple (easier UI changes) and services reusable (other components can use the same logic). It also makes testing easier: you can test business logic without rendering UI.",
+            ELI5Example = "// Service class\npublic class ScheduleService\n{\n    public decimal CalculateDriverPay(int hours, decimal rate, int experience)\n    {\n        var base_pay = hours * rate;\n        var bonus = experience > 5 ? base_pay * 0.10m : 0;\n        return base_pay + bonus;\n    }\n}\n\n// Register in Program.cs\nbuilder.Services.AddScoped<ScheduleService>();\n\n// Use in component\n@inject ScheduleService Schedule\n\nprivate decimal totalPay;\n\nprivate void Calculate()\n{\n    totalPay = Schedule.CalculateDriverPay(hours, rate, experience);\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "Business Logic",
+            Category: "Blazor — Patterns",
+            Type: "Concept",
+            ELI5: "The rules and calculations that define how your application works—pricing, validation, workflows, etc.",
+            Example: "// Business logic: pay calculation with experience bonus\nvar basePay = hours * hourlyRate;\nvar bonus = years > 5 ? basePay * 0.1m : 0;\nreturn basePay + bonus;",
+            Tips: new[]
+            {
+                "Extract to services, not inline in components.",
+                "Document why rules exist, not just what they do.",
+                "Make constants for magic numbers."
+            }
+        )
+        {
+            LongELI5 = "\n\nBusiness logic is the 'how it works' of your app—the rules that make it specific to your business. It's not framework code or UI code; it's things like 'drivers with 5+ years get a 10% bonus', 'hazmat routes require special certification', 'trucks over 10 tons need a CDL-A license'. This logic often involves calculations, validations, and workflows. Keep it separate from UI code so it's reusable, testable, and easy to update when business rules change. Use services to hold business logic.",
+            ELI5Example = "// Business logic examples\npublic class TruckingRules\n{\n    // Rule: Experience bonus\n    public decimal ApplyExperienceBonus(decimal basePay, int years)\n    {\n        const decimal BonusRate = 0.01m;  // 1% per year\n        const decimal MaxBonus = 0.25m;   // Cap at 25%\n        \n        var multiplier = Math.Min(years * BonusRate, MaxBonus);\n        return basePay * (1 + multiplier);\n    }\n    \n    // Rule: License requirement\n    public bool CanDriveTruck(Driver driver, Truck truck)\n    {\n        return truck.Weight switch\n        {\n            < 10000 => driver.HasLicense(\"CDL-C\"),\n            < 26000 => driver.HasLicense(\"CDL-B\"),\n            _ => driver.HasLicense(\"CDL-A\")\n        };\n    }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "Calculation Methods",
+            Category: "C# — Methods",
+            Type: "Pattern",
+            ELI5: "Methods dedicated to performing calculations, with clear inputs and outputs, making formulas reusable and testable.",
+            Example: "public decimal CalculateFuelCost(int distance, decimal mpg, decimal pricePerGallon)\n{\n    return (distance / mpg) * pricePerGallon;\n}",
+            Tips: new[]
+            {
+                "Make them pure functions when possible (no side effects).",
+                "Use descriptive names that explain what's calculated.",
+                "Document the formula and units."
+            }
+        )
+        {
+            LongELI5 = "\n\nCalculation methods are like showing your work in math class. Instead of scattering formulas throughout your code, you create focused methods that do one calculation. This makes the formula reusable (call it from multiple places), testable (easy to verify with different inputs), and understandable (the method name explains what it calculates). Good calculation methods are pure functions: given the same inputs, they always return the same output, with no hidden dependencies or side effects.",
+            ELI5Example = "public class RouteCalculations\n{\n    private const decimal FuelPricePerGallon = 3.85m;\n    private const double AverageMpg = 6.5;\n    \n    // Pure calculation method\n    public decimal EstimateFuelCost(int distanceMiles)\n    {\n        var gallons = distanceMiles / AverageMpg;\n        return (decimal)gallons * FuelPricePerGallon;\n    }\n    \n    public decimal CalculateRevenue(int distance, decimal ratePerMile, decimal surcharges)\n    {\n        var baseRevenue = distance * ratePerMile;\n        return baseRevenue + surcharges;\n    }\n    \n    public decimal CalculateProfit(decimal revenue, decimal costs)\n    {\n        return revenue - costs;\n    }\n}\n\n// Usage\nvar calc = new RouteCalculations();\nvar fuel = calc.EstimateFuelCost(500);\nvar revenue = calc.CalculateRevenue(500, 2.5m, 50m);\nvar profit = calc.CalculateProfit(revenue, fuel);"
+        };
+
+        // Step 13 tips
+        yield return new TipTopic(
+            Title: "LINQ Aggregation",
+            Category: "C# — LINQ",
+            Type: "Methods",
+            ELI5: "Methods like Sum(), Count(), Average() that compute a single value from a collection of items.",
+            Example: "var total = routes.Sum(r => r.Revenue);\nvar avg = routes.Average(r => r.Distance);\nvar count = routes.Count(r => r.Status == \"Active\");",
+            Tips: new[]
+            {
+                "Use with filtering: routes.Where(r => r.IsActive).Sum(r => r.Revenue)",
+                "Count() with predicate is cleaner than Where().Count()",
+                "Returns default (0) for empty collections."
+            }
+        )
+        {
+            LongELI5 = "\n\nLINQ aggregation is like using a calculator on a spreadsheet column. Instead of looping through items manually to add them up, you use methods like Sum(), Count(), Average(), Min(), or Max(). These methods examine every item in a collection and return a single summary value. You can combine them with Where() to filter first: 'sum the revenue of only active routes'. Aggregation methods are expressive and concise—they clearly state your intent.",
+            ELI5Example = "var routes = await DbContext.Routes.ToListAsync();\n\n// Total revenue\nvar totalRevenue = routes.Sum(r => r.Revenue);\n\n// Count active routes\nvar activeCount = routes.Count(r => r.Status == \"Active\");\n\n// Average distance\nvar avgDistance = routes.Average(r => r.Distance);\n\n// Max revenue\nvar topRevenue = routes.Max(r => r.Revenue);\n\n// Unique drivers\nvar uniqueDrivers = routes.Select(r => r.DriverId).Distinct().Count();\n\n// Filtered aggregation\nvar completedRevenue = routes\n    .Where(r => r.Status == \"Completed\")\n    .Sum(r => r.Revenue);"
+        };
+
+        yield return new TipTopic(
+            Title: "Conditional Styling",
+            Category: "Blazor — Styling",
+            Type: "Pattern",
+            ELI5: "Applying different CSS classes based on data values or state, like showing green for 'Completed' and red for 'Delayed'.",
+            Example: "var statusClass = status switch\n{\n    \"Active\" => \"bg-green-100 text-green-700\",\n    \"Delayed\" => \"bg-red-100 text-red-700\",\n    _ => \"bg-gray-100 text-gray-700\"\n};\n\n<span class=\"@statusClass\">@status</span>",
+            Tips: new[]
+            {
+                "Use switch expressions or helper methods to map data to CSS classes.",
+                "Keep styling logic out of markup—create GetStatusClass() methods.",
+                "Use Tailwind utilities for quick color/style changes."
+            }
+        )
+        {
+            LongELI5 = "\n\nConditional styling is like traffic lights changing color based on conditions. You examine some data (like route status) and return different CSS classes based on the value. Green background for completed routes, yellow for in-progress, red for delayed. This gives instant visual feedback. In Blazor, create helper methods that return class strings, then use @GetStatusClass(status) in your markup. This keeps styling logic reusable and your markup clean.",
+            ELI5Example = "// Helper method\nprivate string GetStatusClass(string status) => status switch\n{\n    \"Scheduled\" => \"bg-blue-100 text-blue-700\",\n    \"In Progress\" => \"bg-yellow-100 text-yellow-700\",\n    \"Completed\" => \"bg-green-100 text-green-700\",\n    \"Delayed\" => \"bg-red-100 text-red-700\",\n    _ => \"bg-gray-100 text-gray-700\"\n};\n\n// Markup\n@foreach (var route in routes)\n{\n    <div class=\"route-card\">\n        <span class=\"badge @GetStatusClass(route.Status)\">\n            @route.Status\n        </span>\n        <p>@route.Name</p>\n    </div>\n}\n\n// Can also conditionally apply styles\n<div class=\"@(isUrgent ? \"border-red-500\" : \"border-gray-300\")\">\n    ...\n</div>"
+        };
+
+        yield return new TipTopic(
+            Title: "KPI Design",
+            Category: "Blazor — UI Patterns",
+            Type: "Pattern",
+            ELI5: "Key Performance Indicators—displaying important metrics (revenue, count, averages) prominently for quick insights.",
+            Example: "<div class=\"kpi-card\">\n    <div class=\"kpi-label\">Total Revenue</div>\n    <div class=\"kpi-value\">$@totalRevenue.ToString(\"N0\")</div>\n</div>",
+            Tips: new[]
+            {
+                "Show the most important numbers first.",
+                "Use large, bold text for values.",
+                "Add context with comparisons or trends."
+            }
+        )
+        {
+            LongELI5 = "\n\nKPI design is like a car dashboard showing speed, fuel, and engine temp at a glance. Key Performance Indicators are the vital stats of your business: total revenue, active routes, average delivery time. Design them to stand out: use large numbers, color coding (green for good, red for bad), and clear labels. Group related KPIs together (all financial metrics in one section). Good KPI cards give users instant understanding without needing to read tables or dig through data. They answer 'how are we doing?' at a glance.",
+            ELI5Example = "// KPI Card Component Pattern\n<div class=\"grid grid-cols-1 md:grid-cols-3 gap-4\">\n    <!-- KPI: Total Revenue -->\n    <div class=\"kpi-card bg-green-50 border border-green-200 rounded-xl p-4\">\n        <div class=\"text-xs text-green-600 font-semibold\">TOTAL REVENUE</div>\n        <div class=\"text-3xl font-bold text-green-900\">$@totalRevenue.ToString(\"N0\")</div>\n        <div class=\"text-xs text-green-700\">+12% from last month</div>\n    </div>\n    \n    <!-- KPI: Active Routes -->\n    <div class=\"kpi-card bg-blue-50 border border-blue-200 rounded-xl p-4\">\n        <div class=\"text-xs text-blue-600 font-semibold\">ACTIVE ROUTES</div>\n        <div class=\"text-3xl font-bold text-blue-900\">@activeRoutes</div>\n        <div class=\"text-xs text-blue-700\">@totalRoutes total</div>\n    </div>\n    \n    <!-- KPI: Average Distance -->\n    <div class=\"kpi-card bg-purple-50 border border-purple-200 rounded-xl p-4\">\n        <div class=\"text-xs text-purple-600 font-semibold\">AVG DISTANCE</div>\n        <div class=\"text-3xl font-bold text-purple-900\">@avgDistance.ToString(\"N0\") mi</div>\n        <div class=\"text-xs text-purple-700\">Per route</div>\n    </div>\n</div>"
+        };
+    }
+}
+

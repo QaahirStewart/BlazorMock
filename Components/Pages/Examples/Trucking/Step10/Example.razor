@@ -1,0 +1,290 @@
+@page "/trucking-examples/step10"
+@rendermode InteractiveServer
+@using BlazorMock.Services
+@implements IDisposable
+
+<PageTitle>Step 10: State Management - Trucking Tutorial</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <a href="/trucking-guide" class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Trucking Guide
+        </a>
+
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            🎯 Step 10: State Management
+        </h1>
+        <p class="text-xl text-gray-600 mb-8">
+            Share data between components using services and events.
+        </p>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                State management is essential for sharing data between components in Blazor applications. 
+                This step teaches you how to create a centralized state service with event notifications so multiple components can stay in sync.
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Create a state management service with events</li>
+                <li>Understand service lifetimes (Scoped, Singleton, Transient)</li>
+                <li>Use events to notify components of state changes</li>
+                <li>Implement proper cleanup with IDisposable</li>
+            </ul>
+
+            <!-- Key Concepts Footer -->
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> Service Lifetimes, StateHasChanged, Event Notifications
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#service-lifetimes" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Service Lifetimes</a>
+                    <a href="/tips#statehaschanged" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">StateHasChanged</a>
+                    <a href="/tips#event-notifications" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Event Notifications</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: AppState Service</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                The AppState service centralizes shared application state. It exposes properties for the selected data and 
+                fires an OnChange event when state updates, allowing multiple components to stay in sync.
+            </p>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Services/AppState.cs</div>
+                <p class="text-xs text-gray-600 mb-2">
+                    This service manages a single selected driver and notifies all subscribed components when the selection changes.
+                </p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Private field _selectedDriver stores the actual state</li>
+                    <li>Public property SelectedDriver with private setter for controlled access</li>
+                    <li>OnChange event allows components to subscribe to state changes</li>
+                    <li>NotifyStateChanged() invokes all subscribed event handlers</li>
+                </ul>
+                <pre data-code-title="C# (Services/AppState.cs)" class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">
+// Services/AppState.cs
+namespace BlazorMock.Services;
+
+public class AppState
+{
+    // Private field to store the selected driver
+    private Driver? _selectedDriver;
+
+    // Public property with private setter
+    public Driver? SelectedDriver
+    {
+        get => _selectedDriver;
+        private set
+        {
+            _selectedDriver = value;
+            NotifyStateChanged();
+        }
+    }
+
+    // Event to notify subscribers of state changes
+    public event Action? OnChange;
+
+    // Method to update the selected driver
+    public void SelectDriver(Driver? driver)
+    {
+        SelectedDriver = driver;
+    }
+
+    // Method to clear selection
+    public void ClearSelection()
+    {
+        SelectedDriver = null;
+    }
+
+    // Notify all subscribers that state has changed
+    private void NotifyStateChanged() => OnChange?.Invoke();
+}
+                </pre>
+            </div>
+
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Register in Program.cs</div>
+                    <p class="text-xs text-gray-600 mb-2">
+                        Register AppState as a Scoped service so each user gets their own instance during their session.
+                    </p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Scoped: One instance per user/circuit (recommended for user-specific state)</li>
+                        <li>Singleton: One instance for entire app (shared across all users)</li>
+                        <li>Transient: New instance every time injected (rarely used)</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">// Program.cs
+builder.Services.AddScoped&lt;AppState&gt;();</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Subscribe to state changes</div>
+                    <p class="text-xs text-gray-600 mb-2">
+                        Components subscribe to OnChange in OnInitialized and call StateHasChanged when notified.
+                    </p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Subscribe in OnInitialized() lifecycle method</li>
+                        <li>StateHasChanged triggers component re-render</li>
+                        <li>Always unsubscribe in Dispose() to prevent memory leaks</li>
+                    </ul>
+                    <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@inject AppState AppState
+@@implements IDisposable
+
+protected override void OnInitialized()
+{
+    AppState.OnChange += StateHasChanged;
+}
+
+public void Dispose()
+{
+    AppState.OnChange -= StateHasChanged;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+
+            <div class="space-y-3">
+                <!-- Pro Tips (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use Scoped lifetime for per-user state</p>
+                            <p class="text-xs text-blue-800">
+                                In Blazor Server, Scoped services create one instance per user connection (circuit). 
+                                This is perfect for state that should be isolated per user but shared across their components.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Always call StateHasChanged after event notifications</p>
+                            <p class="text-xs text-blue-800">
+                                When a component receives a state change event, it must call StateHasChanged() to trigger a re-render. 
+                                Otherwise, the UI won't update even though the underlying data changed.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Keep state services simple and focused</p>
+                            <p class="text-xs text-blue-800">
+                                Don't overload your state service with too many responsibilities. Create separate services for different domains 
+                                (e.g., UserState, CartState, NotificationState) rather than one massive AppState.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting (Yellow) -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>Component doesn't update when state changes? Verify you subscribed to OnChange and are calling StateHasChanged()</li>
+                        <li>State is shared between different users? Change service registration from Singleton to Scoped</li>
+                        <li>Memory leaks or "disposed object" errors? Implement IDisposable and unsubscribe from events in Dispose()</li>
+                        <li>Event fires but component doesn't re-render? Make sure StateHasChanged is the event handler or called within it</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Create AppState.cs service:</strong>
+                    Add a new file <code>Services/AppState.cs</code> with a property, event, and notification method.
+                </li>
+                <li>
+                    <strong>Register the service:</strong>
+                    In <code>Program.cs</code>, add <code>builder.Services.AddScoped&lt;AppState&gt;();</code> before building the app.
+                </li>
+                <li>
+                    <strong>Inject into components:</strong>
+                    Use <code>@@inject AppState AppState</code> at the top of any component that needs state access.
+                </li>
+                <li>
+                    <strong>Subscribe to changes:</strong>
+                    In <code>OnInitialized()</code>, subscribe: <code>AppState.OnChange += StateHasChanged;</code>
+                </li>
+                <li>
+                    <strong>Implement IDisposable:</strong>
+                    Add <code>@@implements IDisposable</code> and create a <code>Dispose()</code> method to unsubscribe.
+                </li>
+                <li>
+                    <strong>Test it:</strong>
+                    Navigate to <code>/trucking-examples/step10</code> and verify the live demo shows components staying in sync.
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo: Shared State</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                These two components share the same AppState service. Select a driver in one component and watch it appear in the other.
+            </p>
+
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                <div class="grid sm:grid-cols-2 gap-3 mb-4">
+                    <BlazorMock.Components.Pages.Examples.Step10.DriverPicker />
+                    <BlazorMock.Components.Pages.Examples.Step10.SelectedDriverCard />
+                </div>
+            </div>
+
+            <p class="text-xs text-gray-600 mt-4 text-center">
+                💡 This demonstrates how separate components can react to the same shared state via a scoped service.
+            </p>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 10?</h3>
+                    <p class="text-sm text-gray-600">Mark this step complete to track your progress!</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="@(async () => await ProgressService.MarkStepIncompleteAsync(10))"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between">
+            <a href="/trucking-examples/step9"
+                class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 9
+            </a>
+            <a href="/trucking-examples/step11"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                Next: Step 11
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>

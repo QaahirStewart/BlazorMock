@@ -13,15 +13,24 @@
 <div class="min-h-screen">
     @if (IsFromDemo)
     {
-        <div class="mb-4 p-3 rounded-lg border border-blue-200 bg-blue-50 text-sm text-blue-800 flex items-center justify-between">
+        <div
+            class="mb-4 p-3 rounded-lg border border-blue-200 bg-blue-50 text-sm text-blue-800 flex items-center justify-between">
             <div>You're adding a route for the Trucking Schedule Demo.</div>
-            <a href="/demo/trucking-schedule" class="px-3 py-1 rounded border border-blue-300 hover:bg-blue-100">← Back to Demo</a>
+            <a href="/demo/trucking-schedule" class="px-3 py-1 rounded border border-blue-300 hover:bg-blue-100">← Back to
+                Demo</a>
         </div>
     }
-    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 break-words">🛣️ Routes</h1>
+    <div class="mb-6">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 break-words">🛣️ Routes</h1>
+        <p class="text-sm sm:text-base text-gray-600">Manage routes and shipment schedules</p>
+    </div>
 
-    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 mb-6">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-3">📝 Add Route</h2>
+    <!-- Add Route Section -->
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Add New Route</h2>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-6">
         <EditForm Model="newRoute" OnValidSubmit="AddRouteAsync">
             <DataAnnotationsValidator />
             <ValidationSummary class="mb-3 text-xs sm:text-sm text-red-600" />
@@ -29,7 +38,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                 <div>
                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Route #</label>
-                    <InputText class="w-full rounded-lg border border-gray-300 p-2" @bind-Value="newRoute.RouteNumber" />
+                    <InputText class="w-full rounded-lg border border-gray-300 p-2"
+                        @bind-Value="newRoute.RouteNumber" />
                     <ValidationMessage For="() => newRoute.RouteNumber" class="text-xs text-red-600 mt-1" />
                 </div>
                 <div>
@@ -47,11 +57,13 @@
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Destination</label>
-                    <InputText class="w-full rounded-lg border border-gray-300 p-2" @bind-Value="newRoute.Destination" />
+                    <InputText class="w-full rounded-lg border border-gray-300 p-2"
+                        @bind-Value="newRoute.Destination" />
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Distance (mi)</label>
-                    <InputNumber class="w-full rounded-lg border border-gray-300 p-2" @bind-Value="newRoute.DistanceMiles" />
+                    <InputNumber class="w-full rounded-lg border border-gray-300 p-2"
+                        @bind-Value="newRoute.DistanceMiles" />
                 </div>
                 <div>
                     <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Driver</label>
@@ -76,15 +88,23 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-                <button type="submit" class="px-4 py-2 text-sm sm:text-base rounded-lg bg-orange-600 hover:bg-orange-700 text-white transition-colors">Add Route</button>
-                <button type="button" class="px-4 py-2 text-sm sm:text-base rounded-lg border" @onclick="ResetNewRoute">Reset</button>
+                <button type="submit"
+                    class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">Add
+                    Route</button>
+                <button type="button"
+                    class="px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
+                    @onclick="ResetNewRoute">Reset</button>
             </div>
         </EditForm>
     </div>
 
-    <div class="bg-white rounded-2xl border border-gray-200 p-4">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-3">📋 Current Routes</h2>
-        
+    <!-- Current Routes Section -->
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Current Routes</h2>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+
         @if (routes is null)
         {
             <div class="p-3 text-sm">Loading...</div>
@@ -106,11 +126,13 @@
                             <div class="space-y-2 mb-3">
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Route #</label>
-                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.RouteNumber" />
+                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editRoute!.RouteNumber" />
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Type</label>
-                                    <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.Type">
+                                    <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editRoute!.Type">
                                         @foreach (RouteType t in Enum.GetValues(typeof(RouteType)))
                                         {
                                             <option value="@t">@t</option>
@@ -119,19 +141,23 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Origin</label>
-                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.Origin" />
+                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editRoute!.Origin" />
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Destination</label>
-                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.Destination" />
+                                    <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editRoute!.Destination" />
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Distance (mi)</label>
-                                    <InputNumber class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.DistanceMiles" />
+                                    <InputNumber class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editRoute!.DistanceMiles" />
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Driver</label>
-                                    <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.DriverId">
+                                    <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editRoute!.DriverId">
                                         @foreach (var d in drivers)
                                         {
                                             <option value="@d.Id">@d.Name (@d.LicenseLevel)</option>
@@ -140,7 +166,8 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Truck</label>
-                                    <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm" @bind-Value="editRoute!.TruckId">
+                                    <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                        @bind-Value="editRoute!.TruckId">
                                         @foreach (var t in trucks)
                                         {
                                             <option value="@t.Id">@t.GetDisplayName()</option>
@@ -149,8 +176,10 @@
                                 </div>
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <button class="px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm" @onclick="() => SaveEditAsync(r.Id)">Save</button>
-                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm" @onclick="CancelEdit">Cancel</button>
+                                <button class="px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm"
+                                    @onclick="() => SaveEditAsync(r.Id)">Save</button>
+                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+                                    @onclick="CancelEdit">Cancel</button>
                             </div>
                         }
                         else
@@ -162,8 +191,10 @@
                                 <div class="text-sm text-gray-600">Truck: @r.Truck?.GetDisplayName()</div>
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm" @onclick="() => BeginEdit(r)">Edit</button>
-                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm" @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
+                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+                                    @onclick="() => BeginEdit(r)">Edit</button>
+                                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 text-sm"
+                                    @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
                             </div>
                         }
                     </div>
@@ -188,8 +219,16 @@
                             var isEditing = editRoute?.Id == r.Id;
                             <tr class="odd:bg-white even:bg-gray-50 align-top">
                                 <td class="p-2 border-b">
-                                    @if (isEditing) { <InputText class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editRoute!.RouteNumber" /> }
-                                    else { @r.RouteNumber }
+                                    @if (isEditing)
+                                    {
+                                        <InputText class="w-full rounded border border-gray-300 p-1.5"
+                                            @bind-Value="editRoute!.RouteNumber" />
+                                    }
+                                    else
+                                    {
+
+                                            @r.RouteNumber
+                                        }
                                 </td>
                                 <td class="p-2 border-b">
                                     @if (isEditing)
@@ -197,7 +236,8 @@
                                         <div class="grid grid-cols-1 gap-1">
                                             <div>
                                                 <label class="block text-xs text-gray-600">Type</label>
-                                                <InputSelect class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editRoute!.Type">
+                                                <InputSelect class="w-full rounded border border-gray-300 p-1.5"
+                                                    @bind-Value="editRoute!.Type">
                                                     @foreach (RouteType t in Enum.GetValues(typeof(RouteType)))
                                                     {
                                                         <option value="@t">@t</option>
@@ -207,55 +247,74 @@
                                             <div class="grid grid-cols-2 gap-2">
                                                 <div>
                                                     <label class="block text-xs text-gray-600">Origin</label>
-                                                    <InputText class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editRoute!.Origin" />
+                                                    <InputText class="w-full rounded border border-gray-300 p-1.5"
+                                                        @bind-Value="editRoute!.Origin" />
                                                 </div>
                                                 <div>
                                                     <label class="block text-xs text-gray-600">Destination</label>
-                                                    <InputText class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editRoute!.Destination" />
+                                                    <InputText class="w-full rounded border border-gray-300 p-1.5"
+                                                        @bind-Value="editRoute!.Destination" />
                                                 </div>
                                             </div>
                                             <div>
                                                 <label class="block text-xs text-gray-600">Distance (mi)</label>
-                                                <InputNumber class="w-28 rounded border border-gray-300 p-1.5" @bind-Value="editRoute!.DistanceMiles" />
+                                                <InputNumber class="w-28 rounded border border-gray-300 p-1.5"
+                                                    @bind-Value="editRoute!.DistanceMiles" />
                                             </div>
                                         </div>
                                     }
-                                    else { @r.GetRouteSummary() }
+                                    else
+                                    {
+
+                                        @r.GetRouteSummary()
+                                    }
                                 </td>
                                 <td class="p-2 border-b">
                                     @if (isEditing)
                                     {
-                                        <InputSelect class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editRoute!.DriverId">
+                                        <InputSelect class="w-full rounded border border-gray-300 p-1.5"
+                                            @bind-Value="editRoute!.DriverId">
                                             @foreach (var d in drivers)
                                             {
                                                 <option value="@d.Id">@d.Name (@d.LicenseLevel)</option>
                                             }
                                         </InputSelect>
                                     }
-                                    else { @r.Driver?.Name }
+                                    else
+                                    {
+
+                                        @r.Driver?.Name
+                                    }
                                 </td>
                                 <td class="p-2 border-b">
                                     @if (isEditing)
                                     {
-                                        <InputSelect class="w-full rounded border border-gray-300 p-1.5" @bind-Value="editRoute!.TruckId">
+                                        <InputSelect class="w-full rounded border border-gray-300 p-1.5"
+                                            @bind-Value="editRoute!.TruckId">
                                             @foreach (var t in trucks)
                                             {
                                                 <option value="@t.Id">@t.GetDisplayName()</option>
                                             }
                                         </InputSelect>
                                     }
-                                    else { @r.Truck?.GetDisplayName() }
+                                    else
+                                    {
+
+                                        @r.Truck?.GetDisplayName()
+                                    }
                                 </td>
                                 <td class="p-2 border-b whitespace-nowrap">
                                     @if (isEditing)
                                     {
-                                        <button class="px-3 py-1 rounded bg-green-600 text-white mr-1" @onclick="() => SaveEditAsync(r.Id)">Save</button>
+                                        <button class="px-3 py-1 rounded bg-green-600 text-white mr-1"
+                                            @onclick="() => SaveEditAsync(r.Id)">Save</button>
                                         <button class="px-3 py-1 rounded border" @onclick="CancelEdit">Cancel</button>
                                     }
                                     else
                                     {
                                         <button class="px-3 py-1 rounded border mr-1" @onclick="() => BeginEdit(r)">Edit</button>
-                                        <button class="px-3 py-1 rounded border hover:bg-gray-50" @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
+                                        <button class="px-3 py-1 rounded border hover:bg-gray-50"
+                                            @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
                                     }
                                 </td>
                             </tr>
@@ -272,7 +331,13 @@
     private List<Route> routes = new();
     private List<Driver> drivers = new();
     private List<Truck> trucks = new();
-    private Route newRoute = new() { Type = RouteType.Standard, ScheduledStartDate = DateTime.Now, Status = RouteStatus.Scheduled };
+    private Route newRoute = new()
+    {
+        Type = RouteType.Standard,
+        ScheduledStartDate = DateTime.Now,
+        Status =
+    RouteStatus.Scheduled
+    };
     private Route? editRoute;
 
     protected override async Task OnInitializedAsync()

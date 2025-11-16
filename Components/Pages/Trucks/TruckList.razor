@@ -20,10 +20,17 @@
                 Demo</a>
         </div>
     }
-    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 break-words">🚚 Trucks</h1>
+    <div class="mb-6">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 break-words">🚚 Trucks</h1>
+        <p class="text-sm sm:text-base text-gray-600">Manage your fleet's trucks and vehicles</p>
+    </div>
 
-    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 mb-6">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-3">📝 Add Truck</h2>
+    <!-- Add Truck Section -->
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Add New Truck</h2>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-6">
         <EditForm Model="newTruck" OnValidSubmit="AddTruckAsync">
             <DataAnnotationsValidator />
             <ValidationSummary class="mb-3 text-xs sm:text-sm text-red-600" />
@@ -67,16 +74,21 @@
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <button type="submit"
-                    class="px-4 py-2 text-sm sm:text-base rounded-lg bg-orange-600 hover:bg-orange-700 text-white transition-colors">Add
+                    class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">Add
                     Truck</button>
-                <button type="button" class="px-4 py-2 text-sm sm:text-base rounded-lg border"
+                <button type="button"
+                    class="px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
                     @onclick="ResetNewTruck">Reset</button>
             </div>
         </EditForm>
     </div>
 
-    <div class="bg-white rounded-2xl border border-gray-200 p-4">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-3">📋 Current Trucks</h2>
+    <!-- Current Trucks Section -->
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Current Trucks</h2>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
 
         @if (trucks is null)
         {
@@ -186,8 +198,8 @@
                                     else
                                     {
 
-                                            @t.TruckNumber
-                                        }
+                                        @t.TruckNumber
+                                    }
                                 </td>
                                 <td class="p-2 border-b">
                                     @if (isEditing)
@@ -198,8 +210,8 @@
                                     else
                                     {
 
-                                            @t.Make
-                                        }
+                                        @t.Make
+                                    }
                                 </td>
                                 <td class="p-2 border-b">
                                     @if (isEditing)
@@ -210,8 +222,8 @@
                                     else
                                     {
 
-                                            @t.Model
-                                        }
+                                        @t.Model
+                                    }
                                 </td>
                                 <td class="p-2 border-b">
                                     @if (isEditing)
@@ -222,8 +234,8 @@
                                     else
                                     {
 
-                                            @t.Year
-                                        }
+                                        @t.Year
+                                    }
                                 </td>
                                 <td class="p-2 border-b">
                                     @if (isEditing)
@@ -251,8 +263,8 @@
                                     else
                                     {
 
-                                            @t.CapacityLbs
-                                        }
+                                        @t.CapacityLbs
+                                    }
                                 </td>
                                 <td class="p-2 border-b whitespace-nowrap">
                                     @if (isEditing)

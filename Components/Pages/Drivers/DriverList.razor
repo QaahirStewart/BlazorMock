@@ -20,11 +20,18 @@
                 Demo</a>
         </div>
     }
-    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 break-words">🚗 Drivers</h1>
+    <div class="mb-6">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 break-words">🚗 Drivers</h1>
+        <p class="text-sm sm:text-base text-gray-600">Manage your fleet's drivers and their information</p>
+    </div>
+
+    <!-- Register Section -->
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Register New Driver</h2>
+    </div>
 
     <!-- Register New Driver -->
-    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 mb-6">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-3">📝 Register New Driver</h2>
+    <div class="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-6">
         <EditForm Model="newDriver" OnValidSubmit="AddDriverAsync">
             <DataAnnotationsValidator />
             <ValidationSummary class="mb-3 text-xs sm:text-sm text-red-600" />
@@ -70,10 +77,10 @@
 
             <div class="flex flex-wrap items-center gap-2">
                 <button type="submit"
-                    class="px-4 py-2 text-sm sm:text-base rounded-lg bg-orange-600 hover:bg-orange-700 text-white transition-colors">Add
+                    class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">Add
                     Driver</button>
                 <button type="button"
-                    class="px-4 py-2 text-sm sm:text-base rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+                    class="px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
                     @onclick="ResetNewDriver">Reset</button>
             </div>
         </EditForm>
@@ -91,8 +98,12 @@
         }
     </div>
 
-    <div class="bg-white rounded-2xl border border-gray-200 p-4">
-        <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-3">📋 Current Drivers</h2>
+    <!-- Current Drivers Section -->
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-3">Current Drivers</h2>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
 
         @if (drivers is null)
         {

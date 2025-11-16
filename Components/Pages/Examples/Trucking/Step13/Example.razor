@@ -1,0 +1,391 @@
+@page "/trucking-examples/step13"
+@rendermode InteractiveServer
+
+<PageTitle>Step 13: Dashboard & Reports - Trucking Tutorial</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header -->
+        <a href="/trucking-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Trucking Guide
+        </a>
+
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            📊 Step 13: Dashboard & Reports
+        </h1>
+        <p class="text-xl text-gray-600 mb-8">
+            Build a dashboard to visualize routes, drivers, and financials with LINQ aggregation.
+        </p>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                Dashboards provide at-a-glance insights into business operations. This final step shows you how to build
+                a dashboard
+                with KPIs, data aggregation using LINQ, conditional styling for status indicators, and efficient data
+                loading patterns.
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Display summary statistics and KPIs (Key Performance Indicators)</li>
+                <li>Filter and sort data dynamically with LINQ queries</li>
+                <li>Use conditional styling for visual status indicators</li>
+                <li>Aggregate data with Sum(), Count(), Average() and other LINQ methods</li>
+            </ul>
+
+            <!-- Key Concepts Footer -->
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> LINQ Aggregation, Conditional Styling, KPI Design, Include()
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#linq-aggregation"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">LINQ
+                        Aggregation</a>
+                    <a href="/tips#conditional-styling"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Conditional
+                        Styling</a>
+                    <a href="/tips#kpi-design"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">KPI
+                        Design</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: Dashboard with KPIs</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                The dashboard combines KPI cards for quick metrics, filterable data tables, and LINQ aggregations to
+                provide
+                a comprehensive view of business operations. This pattern is reusable for any reporting need.
+            </p>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Dashboard Markup Example</div>
+                <p class="text-xs text-gray-600 mb-2">
+                    KPI cards display aggregated totals, while conditional styling provides instant visual feedback on
+                    route status.
+                </p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>KPI grid shows active routes, available drivers, and monthly revenue</li>
+                    <li>Include() loads related data to avoid N+1 query problems</li>
+                    <li>GetStatusClass() returns CSS class based on route status</li>
+                    <li>LINQ methods (Sum, Count) aggregate data efficiently</li>
+                </ul>
+                <pre data-code-title="Razor (Dashboard)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">
+@@page "/dashboard"
+@@inject AppDbContext DbContext
+
+&lt;h1&gt;📊 Trucking Dashboard&lt;/h1&gt;
+
+&lt;!-- KPI Cards --&gt;
+&lt;div class="kpi-grid"&gt;
+    &lt;div class="kpi-card"&gt;
+        &lt;div class="kpi-label"&gt;Active Routes&lt;/div&gt;
+        &lt;div class="kpi-value"&gt;@@stats.ActiveRoutes&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="kpi-card"&gt;
+        &lt;div class="kpi-label"&gt;Available Drivers&lt;/div&gt;
+        &lt;div class="kpi-value"&gt;@@stats.AvailableDrivers&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="kpi-card"&gt;
+        &lt;div class="kpi-label"&gt;Monthly Revenue&lt;/div&gt;
+        &lt;div class="kpi-value"&gt;$@@stats.MonthlyRevenue.ToString("N0")&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Active Routes Table --&gt;
+&lt;table&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Route #&lt;/th&gt;
+            &lt;th&gt;Driver&lt;/th&gt;
+            &lt;th&gt;Status&lt;/th&gt;
+            &lt;th&gt;Revenue&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        @@foreach (var route in routes)
+        {
+            &lt;tr&gt;
+                &lt;td&gt;@@route.RouteNumber&lt;/td&gt;
+                &lt;td&gt;@@route.Driver.Name&lt;/td&gt;
+                &lt;td&gt;
+                    &lt;span class="@@GetStatusClass(route.Status)"&gt;
+                        @@route.Status
+                    &lt;/span&gt;
+                &lt;/td&gt;
+                &lt;td&gt;$@@route.Revenue.ToString("N2")&lt;/td&gt;
+            &lt;/tr&gt;
+        }
+    &lt;/tbody&gt;
+&lt;/table&gt;
+                </pre>
+            </div>
+
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Load data with Include()</div>
+                    <p class="text-xs text-gray-600 mb-2">
+                        Use Include() to eagerly load related entities and avoid N+1 query problems. This loads Driver
+                        and Truck data in one query.
+                    </p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Include(r => r.Driver) loads driver data</li>
+                        <li>Include(r => r.Truck) loads truck data</li>
+                        <li>Single database roundtrip instead of N+1 queries</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">routes = await DbContext.Routes
+    .Include(r => r.Driver)
+    .Include(r => r.Truck)
+    .ToListAsync();</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Aggregate with LINQ</div>
+                    <p class="text-xs text-gray-600 mb-2">
+                        Use LINQ methods to calculate statistics from collections without writing complex loops.
+                    </p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Count() returns total number of items</li>
+                        <li>Sum() adds up numeric properties</li>
+                        <li>Where() filters before aggregating</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">ActiveRoutes = routes.Count();
+MonthlyRevenue = monthlyRoutes.Sum(r => r.Revenue);
+NetProfit = monthlyRoutes.Sum(r => r.Revenue - r.DriverPay - r.EstimatedFuelCost);</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+
+            <div class="space-y-3">
+                <!-- Pro Tips (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use Include() to avoid N+1 queries</p>
+                            <p class="text-xs text-blue-800">
+                                Loading 100 routes without Include() makes 201 queries (1 for routes + 100 for drivers +
+                                100 for trucks).
+                                With Include(), it's just 1 query. This dramatically improves dashboard load times.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">LINQ makes aggregation clean and
+                                readable</p>
+                            <p class="text-xs text-blue-800">
+                                Instead of foreach loops with counters and running totals, use LINQ: Count(), Sum(),
+                                Average(), Min(), Max().
+                                The intent is clearer and there's less room for bugs.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Conditional CSS provides instant visual
+                                feedback</p>
+                            <p class="text-xs text-blue-800">
+                                Use switch expressions to return CSS classes based on status: status-active (green),
+                                status-delayed (yellow),
+                                status-completed (gray). Users can spot issues at a glance without reading text.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting (Yellow) -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>Slow dashboard loading? Use Include() for related data and consider caching statistics that
+                            don't change often</li>
+                        <li>Incorrect totals? Verify Where() filters are correct and check for null values in Sum()
+                            calculations</li>
+                        <li>NullReferenceException on navigation properties? Always use Include() when accessing related
+                            entities</li>
+                        <li>Performance degrades with more data? Add database indexes on filtered columns and paginate
+                            large tables</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Create dashboard page:</strong>
+                    Add a new page at <code>/dashboard</code> with sections for KPIs, active routes table, and other
+                    summaries.
+                </li>
+                <li>
+                    <strong>Load data with Include():</strong>
+                    Use <code>Include(r => r.Driver).Include(r => r.Truck)</code> to load related entities in one query.
+                </li>
+                <li>
+                    <strong>Calculate KPIs with LINQ:</strong>
+                    Use Count(), Sum(), Average() to aggregate data: <code>routes.Count()</code>,
+                    <code>routes.Sum(r => r.Revenue)</code>
+                </li>
+                <li>
+                    <strong>Add conditional styling:</strong>
+                    Create a GetStatusClass() method that returns CSS classes based on route status using switch
+                    expressions.
+                </li>
+                <li>
+                    <strong>Display KPI cards:</strong>
+                    Use a grid layout to show key metrics like active routes, available drivers, and monthly revenue.
+                </li>
+                <li>
+                    <strong>Test it:</strong>
+                    Navigate to <code>/trucking-examples/step13</code> to review dashboard patterns and LINQ aggregation
+                    techniques.
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo: Interactive Dashboard</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Filter routes by status to see KPIs update in real-time using LINQ aggregation. Watch how the metrics
+                change dynamically!
+            </p>
+
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                <!-- Filter Controls -->
+                <div class="mb-6 flex items-center gap-3">
+                    <label class="text-sm font-semibold text-gray-700">Filter by Status:</label>
+                    <select @bind="selectedStatus"
+                        class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                        <option value="All">All Routes</option>
+                        <option value="Scheduled">Scheduled</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Delayed">Delayed</option>
+                    </select>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4">
+                        <div class="text-xs text-blue-600 font-semibold mb-1">TOTAL ROUTES</div>
+                        <div class="text-3xl font-bold text-blue-900">@FilteredRoutes.Count</div>
+                        <div class="text-[11px] text-blue-700 mt-1">@TotalDistance mi total</div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4">
+                        <div class="text-xs text-green-600 font-semibold mb-1">TOTAL REVENUE</div>
+                        <div class="text-3xl font-bold text-green-900">$@TotalRevenue.ToString("N0")</div>
+                        <div class="text-[11px] text-green-700 mt-1">$@AverageRevenue.ToString("N0") avg/route</div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-4">
+                        <div class="text-xs text-purple-600 font-semibold mb-1">ACTIVE DRIVERS</div>
+                        <div class="text-3xl font-bold text-purple-900">@UniqueDrivers</div>
+                        <div class="text-[11px] text-purple-700 mt-1">@FilteredRoutes.Count routes assigned</div>
+                    </div>
+                </div>
+
+                <!-- Routes Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-200">
+                                <th class="text-left py-2 px-3 text-xs font-semibold text-gray-700">Route #</th>
+                                <th class="text-left py-2 px-3 text-xs font-semibold text-gray-700">Driver</th>
+                                <th class="text-left py-2 px-3 text-xs font-semibold text-gray-700">Truck</th>
+                                <th class="text-left py-2 px-3 text-xs font-semibold text-gray-700">Distance</th>
+                                <th class="text-left py-2 px-3 text-xs font-semibold text-gray-700">Revenue</th>
+                                <th class="text-left py-2 px-3 text-xs font-semibold text-gray-700">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var route in FilteredRoutes.Take(5))
+                            {
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-2 px-3 font-mono text-xs">#@route.Id</td>
+                                    <td class="py-2 px-3">@route.DriverName</td>
+                                    <td class="py-2 px-3 font-mono text-xs">@route.TruckNumber</td>
+                                    <td class="py-2 px-3">@route.Distance mi</td>
+                                    <td class="py-2 px-3 font-semibold text-green-700">$@route.Revenue.ToString("N0")</td>
+                                    <td class="py-2 px-3">
+                                        <span
+                                            class="@GetStatusClass(route.Status) px-2 py-1 rounded-full text-[11px] font-medium">
+                                            @route.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    @if (FilteredRoutes.Count > 5)
+                    {
+                        <p class="text-xs text-gray-500 mt-2 text-center">Showing 5 of @FilteredRoutes.Count routes</p>
+                    }
+                </div>
+            </div>
+
+            <p class="text-xs text-gray-600 mt-4 text-center">
+                💡 KPIs use LINQ: Count(), Sum(), Average(), Distinct() - all recalculate when you change the filter
+            </p>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">🎉 Congratulations!</h3>
+                    <p class="text-sm text-gray-600">
+                        You've completed all 13 steps of the Trucking tutorial! Mark this final step complete to
+                        celebrate your achievement.
+                    </p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="@(async () => await ProgressService.MarkStepIncompleteAsync(13))"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between">
+            <a href="/trucking-examples/step12"
+                class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <span>←</span>
+                Previous: Step 12
+            </a>
+            <a href="/trucking-guide"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                ✓ Complete! Back to Guide
+            </a>
+        </div>
+    </div>
+</div>
