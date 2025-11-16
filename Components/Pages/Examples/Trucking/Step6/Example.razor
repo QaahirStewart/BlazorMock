@@ -114,19 +114,19 @@
                     Home
                 &lt;/NavLink&gt;
                 
-                &lt;NavLink href="/drivers"
+                &lt;NavLink href="/demo/trucking/drivers"
                          class="px-3 py-2 rounded hover:bg-blue-700"
                          ActiveClass="bg-blue-800 font-semibold"&gt;
                     Drivers
                 &lt;/NavLink&gt;
                 
-                &lt;NavLink href="/trucks"
+                &lt;NavLink href="/demo/trucking/trucks"
                          class="px-3 py-2 rounded hover:bg-blue-700"
                          ActiveClass="bg-blue-800 font-semibold"&gt;
                     Trucks
                 &lt;/NavLink&gt;
                 
-                &lt;NavLink href="/routes"
+                &lt;NavLink href="/demo/trucking/routes"
                          class="px-3 py-2 rounded hover:bg-blue-700"
                          ActiveClass="bg-blue-800 font-semibold"&gt;
                     Routes
@@ -257,7 +257,7 @@
                     </p>
                     <div class="bg-white rounded-lg p-3 border border-gray-200">
                         <code class="text-xs text-gray-700">
-                            Use &lt;NavLink href="/drivers" ActiveClass="active"&gt; for each menu item
+                            Use &lt;NavLink href="/demo/trucking/drivers" ActiveClass="active"&gt; for each menu item
                         </code>
                     </div>
                 </div>
@@ -330,12 +330,12 @@
                         </button>
                         
                         <button @onclick='() => NavigateToPage("/trucking-examples/step1")' 
-                                class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors">
+                                class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
                             🚀 Navigate to Step 1
                         </button>
                         
                         <button @onclick='() => NavigateToPage("/trucking-examples/step5")' 
-                                class="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors">
+                                class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
                             📋 Navigate to Step 5
                         </button>
                     </div>
@@ -385,15 +385,30 @@
         </div>
 
         <!-- Navigation -->
-        <div class="mt-8 flex flex-col sm:flex-row justify-between gap-4">
-            <a href="/trucking-examples/step5"
-                class="inline-flex items-center gap-2 px-6 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                <span>←</span> Previous: Forms & Validation
-            </a>
-            <a href="/trucking-examples/step7"
-                class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                Next: EF Core Models <span>→</span>
-            </a>
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    Navigation is set up! Let's connect to a database with Entity Framework.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/trucking-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/trucking-examples/step5"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 5</span>
+                    </a>
+                    <a href="/trucking-examples/step7"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 7</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -99,6 +99,49 @@ The tutorial includes an interactive demo with:
 
 ## Styling Patterns
 
+### Live Demo
+
+- **Card Layout**: Grid of responsive cards (1 column mobile, 2 on tablet, 3 on desktop)
+- **Card Styling**: `border-2 border-gray-200` with hover effects (`hover:border-blue-400 hover:shadow-lg`)
+- **Status Badges**: Green badge for available drivers (`bg-green-100 text-green-700`)
+- **Delete Buttons**: Secondary style (`bg-white border border-gray-300`) full width on cards
+- **Form Inputs**: Consistent border and rounded corners (`border border-gray-300 rounded`)
+- **Add Button**: Primary blue button (`bg-blue-600 hover:bg-blue-700`)
+
+### Button Styling
+
+- Primary buttons: `px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded`
+- Secondary buttons: `px-4 py-2 border border-gray-300 rounded hover:bg-gray-50`
+- Navigation buttons: Border-2 style with rounded corners, no `-lg` suffix
+
+### Card Hover Effects
+
+- Base: `border-2 border-gray-200 rounded-lg p-4`
+- Hover: `hover:border-blue-400 hover:shadow-lg transition-all duration-200`
+
+## Common Issues & Solutions
+
+### UI Not Updating After CRUD Operations
+
+**Issue**: After adding or deleting a driver, the list doesn't update.  
+**Solution**: Call `StateHasChanged()` after modifying the list to trigger a re-render.
+
+### DbContext Disposed Error
+
+**Issue**: "Cannot access a disposed object. Object name: 'AppDbContext'."  
+**Solution**: Use `IDbContextFactory<AppDbContext>` instead of injecting DbContext directly. Create a new context with `await DbFactory.CreateDbContextAsync()` for each operation and dispose it with `await using`.
+
+### FindAsync Returns Null
+
+**Issue**: `FindAsync(id)` returns null even though the record exists.  
+**Solution**: Ensure the ID is correct and the entity hasn't been deleted. Always check for null before accessing properties.
+
+## Related Resources
+
+- [Entity Framework Core Documentation](https://docs.microsoft.com/en-us/ef/core/)
+- [Blazor Data Binding](https://docs.microsoft.com/en-us/aspnet/core/blazor/components/data-binding)
+- [Async/Await Best Practices](https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming)
+
 - Table layout for data display
 - Form inputs for creating new records
 - Action buttons (Add, Delete) with clear styling

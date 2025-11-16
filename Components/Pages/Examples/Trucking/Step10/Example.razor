@@ -266,7 +266,7 @@ public void Dispose()
                 else
                 {
                     <button @onclick="MarkComplete"
-                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition-colors">
                         Mark as Complete
                     </button>
                 }
@@ -274,17 +274,30 @@ public void Dispose()
         </div>
 
         <!-- Navigation -->
-        <div class="flex items-center justify-between">
-            <a href="/trucking-examples/step9"
-                class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <span>←</span>
-                Previous: Step 9
-            </a>
-            <a href="/trucking-examples/step11"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                Next: Step 11
-                <span>→</span>
-            </a>
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    State management mastered! Let's add component communication.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/trucking-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/trucking-examples/step9"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 9</span>
+                    </a>
+                    <a href="/trucking-examples/step11"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 11</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

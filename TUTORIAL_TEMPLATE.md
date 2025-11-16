@@ -83,8 +83,14 @@ Components/Pages/Examples/{Domain}/{StepN}/
 
 #### B. What You'll Learn Section (Gradient Banner)
 
+**IMPORTANT**: Use phase-specific gradient colors:
+
+- **Phase 1 (Steps 1-4)**: `bg-gradient-to-r from-blue-100 to-purple-100`
+- **Phase 2 (Steps 5-9)**: `bg-gradient-to-r from-green-100 to-teal-100`
+- **Phase 3 (Steps 10-13)**: `bg-gradient-to-r from-orange-100 to-red-100`
+
 ```razor
-<div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+<div class="bg-gradient-to-r from-{phase-color-1}-100 to-{phase-color-2}-100 rounded-2xl p-5 sm:p-6 mb-6">
     <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
 
     <!-- Description paragraph -->
@@ -339,10 +345,16 @@ public TipsService()
 
 #### E. How to do it Section (Gradient Banner)
 
+**IMPORTANT**: Use the same phase-specific gradient as "What You'll Learn":
+
+- **Phase 1 (Steps 1-4)**: `bg-gradient-to-r from-blue-100 to-purple-100`
+- **Phase 2 (Steps 5-9)**: `bg-gradient-to-r from-green-100 to-teal-100`
+- **Phase 3 (Steps 10-13)**: `bg-gradient-to-r from-orange-100 to-red-100`
+
 ```razor
-<div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
-    <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+<div class="bg-gradient-to-r from-{phase-color-1}-100 to-{phase-color-2}-100 rounded-xl p-6 mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+    <ol class="list-decimal ml-5 space-y-2 text-gray-700">
         <li>
             <strong>{Step title}:</strong>
             {Detailed instruction with file path}
@@ -396,13 +408,13 @@ public TipsService()
             <div class="flex items-center gap-3">
                 <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
                 <button @onclick="ResetStep"
-                    class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">Reset</button>
             </div>
         }
         else
         {
             <button @onclick="MarkComplete"
-                class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark as Complete</button>
+                class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition-colors">Mark as Complete</button>
         }
     </div>
 </div>
@@ -411,17 +423,31 @@ public TipsService()
 #### H. Navigation Section
 
 ```razor
-<div class="flex items-center justify-between">
-    <a href="/{domain}-examples/step{n-1}"
-        class="inline-flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-        <span>←</span>
-        Previous: Step {N-1}
-    </a>
-    <a href="/{domain}-examples/step{n+1}"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-        Next: Step {N+1}
-        <span>→</span>
-    </a>
+<!-- Navigation -->
+<div class="mt-8">
+    <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+        <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+        <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+            {Motivational message about completing the step or moving forward}
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="/{domain}-guide"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                <span class="text-lg">←</span>
+                <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+            </a>
+            <a href="/{domain}-examples/step{n-1}"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                <span class="text-lg">←</span>
+                <span class="text-sm sm:text-base font-semibold">Previous: Step {N-1}</span>
+            </a>
+            <a href="/{domain}-examples/step{n+1}"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                <span class="text-sm sm:text-base font-semibold">Next: Step {N+1}</span>
+                <span class="text-lg">→</span>
+            </a>
+        </div>
+    </div>
 </div>
 ```
 
@@ -604,7 +630,23 @@ public partial class {DemoComponent}Base : ComponentBase
 - **Inner Spacing**: `space-y-3` or `space-y-4` for stacked items
 - **List Spacing**: `space-y-1` or `space-y-2`
 
-### Code Blocks
+### Button Styling
+
+- **Primary buttons**: `px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors`
+- **Secondary buttons**: `px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm`
+- **Navigation buttons**: Border-2 style (`border-2 border-gray-200 rounded`) for previous, primary blue for next
+- **Completion button**: `px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded font-medium`
+- **Reset button**: `px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm`
+
+**IMPORTANT**: Use `rounded` (not `rounded-lg`) for consistency with minimal design system
+
+### Card Hover Effects
+
+- **Base card**: `border-2 border-gray-200 rounded-lg p-4`
+- **Hover state**: `hover:border-blue-400 hover:shadow-lg transition-all duration-200`
+- **Status badges**: `px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded` (or appropriate color)
+
+Use card layouts with hover effects for lists in live demos instead of tables for better mobile responsiveness.
 
 Always include:
 

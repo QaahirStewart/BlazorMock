@@ -48,16 +48,8 @@
                                 ActiveClass="text-white font-semibold underline underline-offset-4">Tips</NavLink>
                         </li>
                         <li>
-                            <NavLink href="/drivers" class="hover:text-white transition-colors"
-                                ActiveClass="text-white font-semibold underline underline-offset-4">Drivers</NavLink>
-                        </li>
-                        <li>
-                            <NavLink href="/trucks" class="hover:text-white transition-colors"
-                                ActiveClass="text-white font-semibold underline underline-offset-4">Trucks</NavLink>
-                        </li>
-                        <li>
-                            <NavLink href="/routes" class="hover:text-white transition-colors"
-                                ActiveClass="text-white font-semibold underline underline-offset-4">Routes</NavLink>
+                            <NavLink href="/demo/trucking-schedule" class="hover:text-white transition-colors"
+                                ActiveClass="text-white font-semibold underline underline-offset-4">Demo</NavLink>
                         </li>
                         <li>
                             <NavLink href="/progress" class="hover:text-white transition-colors"
@@ -76,33 +68,25 @@
                         <nav class="flex flex-col gap-1">
                             <NavLink href="/"
                                 class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
-                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Dashboard
+                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Home
+                            </NavLink>
+                            <NavLink href="/guide"
+                                class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
+                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Guide
                             </NavLink>
                             <NavLink href="/tips"
                                 class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
                                 ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Tips
                             </NavLink>
-                            <NavLink href="/drivers"
+                            <NavLink href="/demo/trucking-schedule"
                                 class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
-                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Drivers
+                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Trucking
+                                Demo
                             </NavLink>
-                            <NavLink href="/trucks"
+                            <NavLink href="/progress"
                                 class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
-                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Trucks
+                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Progress
                             </NavLink>
-                            <NavLink href="/routes"
-                                class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
-                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Routes
-                            </NavLink>
-                            <NavLink href="/drivers"
-                                class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
-                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Drivers
-                            </NavLink>
-                            <NavLink href="/trucks"
-                                class="px-3 py-2 text-sm sm:text-base rounded-lg hover:bg-white/10 transition-colors"
-                                ActiveClass="bg-white/10 text-white font-semibold" @onclick="CloseMobileMenu">Trucks
-                            </NavLink>
-
                         </nav>
                     </div>
                 </div>

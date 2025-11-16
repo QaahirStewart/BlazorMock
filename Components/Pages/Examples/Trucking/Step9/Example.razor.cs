@@ -28,7 +28,8 @@ public class ExampleBase : ComponentBase, IDisposable
         demoDrivers = new List<DemoDriver>
         {
             new() { Id = nextId++, Name = "Alice Johnson", LicenseNumber = "CDL-001", HourlyRate = 42.50m },
-            new() { Id = nextId++, Name = "Bob Smith", LicenseNumber = "CDL-002", HourlyRate = 38.00m }
+            new() { Id = nextId++, Name = "Bob Smith", LicenseNumber = "CDL-002", HourlyRate = 38.00m },
+            new() { Id = nextId++, Name = "Carol Williams", LicenseNumber = "CDL-003", HourlyRate = 40.00m }
         };
     }
 

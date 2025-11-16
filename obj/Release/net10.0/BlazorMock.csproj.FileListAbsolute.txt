@@ -161,4 +161,4 @@ D:\BlazorMock\obj\Release\net10.0\refint\BlazorMock.dll
 D:\BlazorMock\obj\Release\net10.0\BlazorMock.pdb
 D:\BlazorMock\obj\Release\net10.0\BlazorMock.genruntimeconfig.cache
 D:\BlazorMock\obj\Release\net10.0\ref\BlazorMock.dll
-D:\BlazorMock\obj\Release\net10.0\compressed\gcy26kcw0l-{0}-qskzx9dgwp-qskzx9dgwp.gz
+D:\BlazorMock\obj\Release\net10.0\compressed\gcy26kcw0l-{0}-a0ds98vrug-a0ds98vrug.gz

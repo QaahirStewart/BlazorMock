@@ -1,0 +1,386 @@
+@page "/demo/trucking/trucks"
+@using BlazorMock.Data
+@using BlazorMock.Models
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<AppDbContext> DbFactory
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<PageTitle>Truck Management - Trucking Demo</PageTitle>
+
+<div class="min-h-screen py-8">
+    <div class="w-full mx-auto px-4 max-w-6xl">
+        <div class="mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Trucks</h1>
+            <p class="text-sm text-gray-600 mt-1">Manage your fleet's trucks and vehicles</p>
+        </div>
+
+        <!-- Back to Demo Link -->
+        <div class="mb-6">
+            <a href="/demo/trucking-schedule" class="text-sm text-blue-600 hover:text-blue-700">← Back to Schedule Demo</a>
+        </div>
+
+        <!-- Add Truck Section -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-3">Add New Truck</h2>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-6">
+            <EditForm Model="newTruck" OnValidSubmit="AddTruckAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="mb-3 text-xs sm:text-sm text-red-600" />
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Truck Number</label>
+                        <InputText class="w-full rounded border border-gray-300 p-2 text-sm"
+                            @bind-Value="newTruck.TruckNumber" />
+                        <ValidationMessage For="() => newTruck.TruckNumber" class="text-xs text-red-600 mt-1" />
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Make</label>
+                        <InputText class="w-full rounded border border-gray-300 p-2 text-sm" @bind-Value="newTruck.Make" />
+                        <ValidationMessage For="() => newTruck.Make" class="text-xs text-red-600 mt-1" />
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Model</label>
+                        <InputText class="w-full rounded border border-gray-300 p-2 text-sm" @bind-Value="newTruck.Model" />
+                        <ValidationMessage For="() => newTruck.Model" class="text-xs text-red-600 mt-1" />
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Year</label>
+                        <InputNumber class="w-full rounded border border-gray-300 p-2 text-sm" @bind-Value="newTruck.Year" />
+                        <ValidationMessage For="() => newTruck.Year" class="text-xs text-red-600 mt-1" />
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Class</label>
+                        <InputSelect class="w-full rounded border border-gray-300 p-2 text-sm" @bind-Value="newTruck.Class">
+                            @foreach (TruckClass c in Enum.GetValues(typeof(TruckClass)))
+                            {
+                                <option value="@c">@c</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Capacity (lbs)</label>
+                        <InputNumber class="w-full rounded border border-gray-300 p-2 text-sm"
+                            @bind-Value="newTruck.CapacityLbs" />
+                        <ValidationMessage For="() => newTruck.CapacityLbs" class="text-xs text-red-600 mt-1" />
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="submit"
+                        class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">Add
+                        Truck</button>
+                    <button type="button"
+                        class="px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors"
+                        @onclick="ResetNewTruck">Reset</button>
+                </div>
+            </EditForm>
+        </div>
+
+        <!-- Current Trucks Section -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-3">Current Trucks</h2>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-lg p-4">
+            @if (trucks is null)
+            {
+                <div class="p-3 text-sm">Loading...</div>
+            }
+            else if (!trucks.Any())
+            {
+                <div class="p-3 text-sm">No trucks yet.</div>
+            }
+            else
+            {
+                <!-- Mobile: Card list -->
+                <div class="space-y-3 md:hidden">
+                    @foreach (var t in trucks)
+                    {
+                        var isEditing = editTruck?.Id == t.Id;
+                        <div class="rounded border-2 border-gray-200 hover:border-blue-400 transition-all duration-200 bg-white p-4">
+                            @if (isEditing)
+                            {
+                                <div class="space-y-2 mb-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Truck #</label>
+                                        <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                            @bind-Value="editTruck!.TruckNumber" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Make</label>
+                                        <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                            @bind-Value="editTruck!.Make" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Model</label>
+                                        <InputText class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                            @bind-Value="editTruck!.Model" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Year</label>
+                                        <InputNumber class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                            @bind-Value="editTruck!.Year" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Class</label>
+                                        <InputSelect class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                            @bind-Value="editTruck!.Class">
+                                            @foreach (TruckClass c in Enum.GetValues(typeof(TruckClass)))
+                                            {
+                                                <option value="@c">@c</option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">Capacity (lbs)</label>
+                                        <InputNumber class="w-full rounded border border-gray-300 p-1.5 text-sm"
+                                            @bind-Value="editTruck!.CapacityLbs" />
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <button class="px-3 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm"
+                                        @onclick="() => SaveEditAsync(t.Id)">Save</button>
+                                    <button class="px-3 py-2 rounded border border-gray-300 hover:bg-gray-50 text-sm"
+                                        @onclick="CancelEdit">Cancel</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mb-3">
+                                    <div class="text-base font-semibold text-gray-900">@t.TruckNumber</div>
+                                    <div class="text-sm text-gray-600">@t.Make @t.Model (@t.Year)</div>
+                                    <div class="text-sm text-gray-600">Class: @t.Class • Capacity: @t.CapacityLbs lbs</div>
+                                    @if (t.IsAvailable && !t.InMaintenance)
+                                    {
+                                        <span class="inline-flex px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded mt-1">Available</span>
+                                    }
+                                    else if (t.InMaintenance)
+                                    {
+                                        <span class="inline-flex px-2 py-0.5 text-xs font-medium bg-gray-700 text-white rounded mt-1">Maintenance</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded mt-1">Unavailable</span>
+                                    }
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <button class="px-3 py-2 rounded border border-gray-300 hover:bg-gray-50 text-sm"
+                                        @onclick="() => BeginEdit(t)">Edit</button>
+                                    <button class="px-3 py-2 rounded border border-gray-300 hover:bg-gray-50 text-sm"
+                                        @onclick="() => DeleteTruckAsync(t.Id)">Delete</button>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <!-- Desktop/Tablet: Table -->
+                <div class="overflow-x-auto hidden md:block">
+                    <table class="min-w-full border border-gray-200 rounded overflow-hidden">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left p-2 text-sm font-medium text-gray-700 border-b">Truck #</th>
+                                <th class="text-left p-2 text-sm font-medium text-gray-700 border-b">Make</th>
+                                <th class="text-left p-2 text-sm font-medium text-gray-700 border-b">Model</th>
+                                <th class="text-left p-2 text-sm font-medium text-gray-700 border-b">Year</th>
+                                <th class="text-left p-2 text-sm font-medium text-gray-700 border-b">Class</th>
+                                <th class="text-left p-2 text-sm font-medium text-gray-700 border-b">Capacity</th>
+                                <th class="text-left p-2 text-sm font-medium text-gray-700 border-b">Status</th>
+                                <th class="text-left p-2 text-sm font-medium text-gray-700 border-b">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in trucks)
+                            {
+                                var isEditing = editTruck?.Id == t.Id;
+                                <tr class="odd:bg-white even:bg-gray-50 align-top">
+                                    <td class="p-2 border-b text-sm">
+                                        @if (isEditing)
+                                        {
+                                            <InputText class="w-full rounded border border-gray-300 p-1.5"
+                                                @bind-Value="editTruck!.TruckNumber" />
+                                        }
+                                        else
+                                        {
+                                            @t.TruckNumber
+                                        }
+                                    </td>
+                                    <td class="p-2 border-b text-sm">
+                                        @if (isEditing)
+                                        {
+                                            <InputText class="w-full rounded border border-gray-300 p-1.5"
+                                                @bind-Value="editTruck!.Make" />
+                                        }
+                                        else
+                                        {
+                                            @t.Make
+                                        }
+                                    </td>
+                                    <td class="p-2 border-b text-sm">
+                                        @if (isEditing)
+                                        {
+                                            <InputText class="w-full rounded border border-gray-300 p-1.5"
+                                                @bind-Value="editTruck!.Model" />
+                                        }
+                                        else
+                                        {
+                                            @t.Model
+                                        }
+                                    </td>
+                                    <td class="p-2 border-b text-sm">
+                                        @if (isEditing)
+                                        {
+                                            <InputNumber class="w-24 rounded border border-gray-300 p-1.5"
+                                                @bind-Value="editTruck!.Year" />
+                                        }
+                                        else
+                                        {
+                                            @t.Year
+                                        }
+                                    </td>
+                                    <td class="p-2 border-b text-sm">
+                                        @if (isEditing)
+                                        {
+                                            <InputSelect class="w-full rounded border border-gray-300 p-1.5"
+                                                @bind-Value="editTruck!.Class">
+                                                @foreach (TruckClass c in Enum.GetValues(typeof(TruckClass)))
+                                                {
+                                                    <option value="@c">@c</option>
+                                                }
+                                            </InputSelect>
+                                        }
+                                        else
+                                        {
+                                            @t.Class
+                                        }
+                                    </td>
+                                    <td class="p-2 border-b text-sm">
+                                        @if (isEditing)
+                                        {
+                                            <InputNumber class="w-28 rounded border border-gray-300 p-1.5"
+                                                @bind-Value="editTruck!.CapacityLbs" />
+                                        }
+                                        else
+                                        {
+                                            @t.CapacityLbs
+                                        }
+                                    </td>
+                                    <td class="p-2 border-b text-sm">
+                                        @if (t.IsAvailable && !t.InMaintenance)
+                                        {
+                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded">Available</span>
+                                        }
+                                        else if (t.InMaintenance)
+                                        {
+                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium bg-gray-700 text-white rounded">Maintenance</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded">Unavailable</span>
+                                        }
+                                    </td>
+                                    <td class="p-2 border-b whitespace-nowrap">
+                                        @if (isEditing)
+                                        {
+                                            <button class="px-3 py-1 text-xs rounded bg-blue-600 text-white mr-1 hover:bg-blue-700"
+                                                @onclick="() => SaveEditAsync(t.Id)">Save</button>
+                                            <button class="px-3 py-1 text-xs rounded border border-gray-300 hover:bg-gray-50" @onclick="CancelEdit">Cancel</button>
+                                        }
+                                        else
+                                        {
+                                            <button class="px-3 py-1 text-xs rounded border border-gray-300 mr-1 hover:bg-gray-50" @onclick="() => BeginEdit(t)">Edit</button>
+                                            <button class="px-3 py-1 text-xs rounded border border-gray-300 hover:bg-gray-50"
+                                                @onclick="() => DeleteTruckAsync(t.Id)">Delete</button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Truck>? trucks;
+    private Truck newTruck = new() { Class = TruckClass.Light, Year = DateTime.Now.Year };
+    private Truck? editTruck;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        trucks = await db.Trucks.OrderBy(t => t.TruckNumber).ToListAsync();
+    }
+
+    private async Task AddTruckAsync()
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        db.Trucks.Add(newTruck);
+        await db.SaveChangesAsync();
+        newTruck = new() { Class = TruckClass.Light, Year = DateTime.Now.Year };
+        await LoadAsync();
+    }
+
+    private void ResetNewTruck()
+    {
+        newTruck = new() { Class = TruckClass.Light, Year = DateTime.Now.Year };
+    }
+
+    private async Task DeleteTruckAsync(int id)
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        var entity = await db.Trucks.FindAsync(id);
+        if (entity is not null)
+        {
+            db.Remove(entity);
+            await db.SaveChangesAsync();
+            await LoadAsync();
+        }
+    }
+
+    private void BeginEdit(Truck t)
+    {
+        editTruck = new Truck
+            {
+                Id = t.Id,
+                TruckNumber = t.TruckNumber,
+                Make = t.Make,
+                Model = t.Model,
+                Year = t.Year,
+                Class = t.Class,
+                CapacityLbs = t.CapacityLbs
+            };
+    }
+
+    private void CancelEdit() => editTruck = null;
+
+    private async Task SaveEditAsync(int id)
+    {
+        if (editTruck is null) return;
+        using var db = await DbFactory.CreateDbContextAsync();
+        var entity = await db.Trucks.FindAsync(id);
+        if (entity is null) return;
+
+        entity.TruckNumber = editTruck.TruckNumber;
+        entity.Make = editTruck.Make;
+        entity.Model = editTruck.Model;
+        entity.Year = editTruck.Year;
+        entity.Class = editTruck.Class;
+        entity.CapacityLbs = editTruck.CapacityLbs;
+
+        await db.SaveChangesAsync();
+        editTruck = null;
+        await LoadAsync();
+    }
+}
