@@ -161,4 +161,4 @@ D:\BlazorMock\obj\Debug\net10.0\swae.build.ex.cache
 D:\BlazorMock\obj\Debug\net10.0\BlazorMock.csproj.Up2Date
 D:\BlazorMock\obj\Debug\net10.0\BlazorMock.genruntimeconfig.cache
 D:\BlazorMock\obj\Debug\net10.0\ref\BlazorMock.dll
-D:\BlazorMock\obj\Debug\net10.0\compressed\gcy26kcw0l-{0}-c8n797tuxh-c8n797tuxh.gz
+D:\BlazorMock\obj\Debug\net10.0\compressed\gcy26kcw0l-{0}-f5kow8vrv1-f5kow8vrv1.gz
