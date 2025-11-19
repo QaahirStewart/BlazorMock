@@ -3,380 +3,225 @@
 @using BlazorMock.Components.Pages.Examples.AdminDashboard.Step7
 @inherits ExampleBase
 
-<PageTitle>Admin Dashboard Step 7: Analytics Page - Example</PageTitle>
+<PageTitle>Admin Dashboard Step 7: Paid Analytics Sections - Example</PageTitle>
 
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
-        <!-- Back link -->
         <a href="/admin-dashboard-guide"
             class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
             <span>←</span> Back to Admin Dashboard Guide
         </a>
 
-        <!-- Title -->
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            📊 Step 7: Analytics Page (/analytics)
+            📊 Step 7: Paid analytics gating + traffic sources
         </h1>
 
-        <!-- Description -->
         <p class="text-xl text-gray-600 mb-8">
-            Build the <code>/analytics</code> page to display summary counts and recent activity using the analytics
-            events you started recording in Step 6.
+            Mirror the paid-only sections of <code>/analytics</code> so learners see the same upgrade CTA, traffic source list, and admin summary grid that ship in <code>DashboardDemo</code>—all powered by <code>IUserAuthService</code>, not EF queries.
         </p>
 
-        <!-- What You'll Learn -->
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
-            <p class="text-gray-700 mb-4 text-sm sm:text-base">
-                In this step, you'll query the <code>Activities</code> table to compute summary metrics and display
-                recent activity in a simple, readable format.
-            </p>
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Querying analytics events to compute counts (total users, logins today, etc.).</li>
-                <li>Displaying metrics in simple summary cards.</li>
-                <li>Showing recent activity in a clean table layout.</li>
-                <li>Handling empty states when no events exist yet.</li>
+                <li>Use <code>AnalyticsBase</code> helpers (<code>IsPaidOrAdmin</code>/<code>IsAdmin</code>) to flip UI states.</li>
+                <li>Display the curated traffic source list on desktop rows + mobile cards.</li>
+                <li>Show a locked upgrade CTA for Free users that deep-links to <code>/profile</code>.</li>
+                <li>Reuse <code>Auth.AllUsers</code> to surface admin-only totals with zero EF work.</li>
             </ul>
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> EF Core LINQ aggregates, metrics cards, activity tables, empty
-                    states.
+                    <strong>💡 Key Concepts:</strong> Service-driven feature gating, deterministic sample data, accessibility-friendly locked states.
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
-                    <a href="/tips#tolistasync"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">ToListAsync</a>
-                    <a href="/tips#linq-where,-select"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">LINQ
-                        (Where, Select)</a>
-                    <a href="/tips#setup-ef-core---dbcontext"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">DbContext</a>
+                    <a href="/tips#auth-service"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth Service</a>
+                    <a href="/tips#layout-state"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Layout State</a>
+                    <a href="/tips#tailwind"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind Layouts</a>
                 </div>
             </div>
         </div>
 
-        <!-- Sample Analytics Page -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Analytics Page</h2>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample component: paid + admin sections</h2>
             <p class="text-sm text-gray-600 mb-4">
-                This example shows a basic <code>/analytics</code> page with summary metrics and a recent activity
-                table.
+                These excerpts are lifted directly from <code>Components/Pages/Demo/DashboardDemo/Analytics.razor</code>. Keep them HTML-encoded (notice every <code>&#64;</code> is written as <code>&#64;&#64;</code>) so the docs render safely.
             </p>
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
-                <div class="text-xs text-gray-500 mb-1">Components/Pages/Analytics.razor</div>
-                <p class="text-xs text-gray-600 mb-2">Analytics page with summary cards and activity table.</p>
-                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
-                    <li>Computes metrics like total users and logins today from the <code>Activities</code> table.</li>
-                    <li>Shows recent activity with type, timestamp, and user info.</li>
-                    <li>Handles empty states gracefully when no data exists.</li>
-                </ul>
-                <pre data-code-title="Components/Pages/Analytics.razor"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/analytics"
-@@using BlazorMock.Data
-@@using BlazorMock.Models
-@@inject AppDbContext Db
-
-&lt;PageTitle&gt;Analytics&lt;/PageTitle&gt;
-
-&lt;div class="max-w-6xl mx-auto p-6"&gt;
-    &lt;h1 class="text-3xl font-bold text-gray-900 mb-6"&gt;Analytics Dashboard&lt;/h1&gt;
-
-    &lt;!-- Summary Cards --&gt;
-    &lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"&gt;
-        &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
-            &lt;p class="text-sm text-gray-600 mb-1"&gt;Total Users&lt;/p&gt;
-            &lt;p class="text-2xl font-bold text-gray-900"&gt;@@totalUsers&lt;/p&gt;
+                <div class="text-xs text-gray-500 mb-1">Analytics.razor — Paid vs Free toggle</div>
+                <p class="text-xs text-gray-600 mb-2">When <code>IsPaidOrAdmin</code> is false, show the upgrade CTA instead of traffic cards.</p>
+                <pre data-code-title="Paid analytics section"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@if (IsPaidOrAdmin)
+{
+    &lt;div class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8&quot;&gt;
+        &lt;div class=&quot;flex items-center justify-between mb-4&quot;&gt;
+            &lt;h2 class=&quot;text-xl font-bold text-gray-900&quot;&gt;Advanced Analytics&lt;/h2&gt;
+            &lt;span class=&quot;px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded&quot;&gt;Paid Feature&lt;/span&gt;
         &lt;/div&gt;
-        &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
-            &lt;p class="text-sm text-gray-600 mb-1"&gt;Logins Today&lt;/p&gt;
-            &lt;p class="text-2xl font-bold text-blue-600"&gt;@@loginsToday&lt;/p&gt;
-        &lt;/div&gt;
-        &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
-            &lt;p class="text-sm text-gray-600 mb-1"&gt;Profile Updates Today&lt;/p&gt;
-            &lt;p class="text-2xl font-bold text-green-600"&gt;@@profileUpdatesToday&lt;/p&gt;
-        &lt;/div&gt;
-        &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
-            &lt;p class="text-sm text-gray-600 mb-1"&gt;Total Events&lt;/p&gt;
-            &lt;p class="text-2xl font-bold text-gray-900"&gt;@@totalEvents&lt;/p&gt;
-        &lt;/div&gt;
+        &lt;!-- metric cards trimmed for brevity --&gt;
     &lt;/div&gt;
 
-    &lt;!-- Recent Activity Table --&gt;
-    &lt;div class="bg-white rounded-lg border border-gray-200 overflow-hidden"&gt;
-        &lt;div class="px-6 py-4 border-b border-gray-200"&gt;
-            &lt;h2 class="text-xl font-semibold text-gray-900"&gt;Recent Activity&lt;/h2&gt;
+    &lt;div class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8&quot;&gt;
+        &lt;h2 class=&quot;text-xl font-bold text-gray-900 mb-4&quot;&gt;Traffic Sources&lt;/h2&gt;
+        &lt;div class=&quot;hidden sm:block divide-y divide-gray-200&quot;&gt;
+            @@foreach (var source in trafficSources)
+            {
+                &lt;div class=&quot;flex items-center justify-between py-4&quot;&gt;
+                    &lt;div class=&quot;flex items-center gap-3&quot;&gt;
+                        &lt;span class=&quot;text-2xl&quot;&gt;@@source.Icon&lt;/span&gt;
+                        &lt;div&gt;
+                            &lt;p class=&quot;text-sm font-medium text-gray-900&quot;&gt;@@source.Name&lt;/p&gt;
+                            &lt;p class=&quot;text-xs text-gray-500&quot;&gt;@@source.Visitors visitors&lt;/p&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;text-right&quot;&gt;
+                        &lt;p class=&quot;text-sm font-semibold text-gray-900&quot;&gt;@@source.Percentage%&lt;/p&gt;
+                        &lt;div class=&quot;w-24 h-2 bg-gray-200 rounded-full overflow-hidden mt-1&quot;&gt;
+                            &lt;div class=&quot;h-full bg-blue-500&quot; style=&quot;width: @@(source.Percentage)%&quot;&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            }
         &lt;/div&gt;
-        
-        @@if (recentActivities.Count == 0)
-        {
-            &lt;div class="px-6 py-8 text-center text-gray-500"&gt;
-                No activity recorded yet. Events will appear here as users sign in and update profiles.
-            &lt;/div&gt;
-        }
-        else
-        {
-            &lt;div class="overflow-x-auto"&gt;
-                &lt;table class="w-full"&gt;
-                    &lt;thead class="bg-gray-50"&gt;
-                        &lt;tr&gt;
-                            &lt;th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"&gt;Type&lt;/th&gt;
-                            &lt;th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"&gt;User ID&lt;/th&gt;
-                            &lt;th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"&gt;Timestamp&lt;/th&gt;
-                        &lt;/tr&gt;
-                    &lt;/thead&gt;
-                    &lt;tbody class="divide-y divide-gray-200"&gt;
-                        @@foreach (var activity in recentActivities)
-                        {
-                            &lt;tr class="hover:bg-gray-50"&gt;
-                                &lt;td class="px-6 py-4 text-sm text-gray-900"&gt;@@activity.Type&lt;/td&gt;
-                                &lt;td class="px-6 py-4 text-sm text-gray-600"&gt;@@activity.UserId&lt;/td&gt;
-                                &lt;td class="px-6 py-4 text-sm text-gray-600"&gt;@@activity.OccurredAt.ToString("MMM dd, yyyy h:mm tt")&lt;/td&gt;
-                            &lt;/tr&gt;
-                        }
-                    &lt;/tbody&gt;
-                &lt;/table&gt;
-            &lt;/div&gt;
-        }
+        &lt;div class=&quot;grid grid-cols-1 gap-3 sm:hidden&quot;&gt;
+            @@foreach (var source in trafficSources)
+            {
+                &lt;!-- mobile card markup --&gt;
+            }
+        &lt;/div&gt;
     &lt;/div&gt;
-&lt;/div&gt;
-
-@@code {
-    private int totalUsers;
-    private int loginsToday;
-    private int profileUpdatesToday;
-    private int totalEvents;
-    private List&lt;Activity&gt; recentActivities = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        var today = DateTime.Today;
-        var tomorrow = today.AddDays(1);
-
-        // Compute summary metrics
-        totalUsers = await Db.Users.CountAsync();
-        totalEvents = await Db.Activities.CountAsync();
-        
-        loginsToday = await Db.Activities
-            .Where(a =&gt; a.Type == "UserLogin" &amp;&amp; a.OccurredAt &gt;= today &amp;&amp; a.OccurredAt &lt; tomorrow)
-            .CountAsync();
-        
-        profileUpdatesToday = await Db.Activities
-            .Where(a =&gt; a.Type == "ProfileUpdated" &amp;&amp; a.OccurredAt &gt;= today &amp;&amp; a.OccurredAt &lt; tomorrow)
-            .CountAsync();
-
-        // Load recent activities (last 20)
-        recentActivities = await Db.Activities
-            .OrderByDescending(a =&gt; a.OccurredAt)
-            .Take(20)
-            .ToListAsync();
-    }
+}
+else
+{
+    &lt;div class=&quot;bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border-2 border-purple-200 p-8 text-center&quot;&gt;
+        &lt;h3 class=&quot;text-2xl font-bold text-gray-900 mb-2&quot;&gt;Unlock Advanced Analytics&lt;/h3&gt;
+        &lt;p class=&quot;text-gray-600 mb-6&quot;&gt;Upgrade to a Paid account to access conversion tracking, revenue metrics, traffic sources, and more.&lt;/p&gt;
+        &lt;div class=&quot;flex flex-wrap justify-center gap-3&quot;&gt;
+            &lt;a href=&quot;/profile&quot; class=&quot;px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg&quot;&gt;Upgrade Now&lt;/a&gt;
+            &lt;button class=&quot;px-6 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50&quot;&gt;Learn More&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
 }</pre>
             </div>
 
-            <!-- Step-by-step breakdown -->
-            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
-            <div class="grid gap-4">
-                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">1. Compute summary metrics with LINQ aggregates</div>
-                    <p class="text-xs text-gray-600 mb-2">Use <code>CountAsync()</code> to get totals and filter by
-                        date ranges for today's activity.</p>
-                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
-                        <li>Count all users from the <code>Users</code> table.</li>
-                        <li>Filter activities by type and date to get logins and profile updates for today.</li>
-                        <li>Store counts in local variables to display in summary cards.</li>
-                    </ul>
-                    <pre
-                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">var today = DateTime.Today;
-var tomorrow = today.AddDays(1);
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                <div class="text-xs text-gray-500 mb-1">Analytics.razor — Admin summary</div>
+                <p class="text-xs text-gray-600 mb-2">Admins get an extra grid fueled entirely by <code>Auth.AllUsers</code>.</p>
+                <pre data-code-title="Admin-only metrics"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@if (IsAdmin)
+{
+    &lt;div class=&quot;bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border-2 border-red-200 p-6 sm:p-8&quot;&gt;
+        &lt;div class=&quot;flex items-center gap-2 mb-4&quot;&gt;
+            &lt;h2 class=&quot;text-xl font-bold text-red-900&quot;&gt;Admin Analytics&lt;/h2&gt;
+            &lt;span class=&quot;px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded&quot;&gt;Admin Only&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4&quot;&gt;
+            &lt;div class=&quot;bg-white rounded-lg p-4 border-2 border-red-200&quot;&gt;
+                &lt;p class=&quot;text-xs font-medium text-red-600 uppercase&quot;&gt;Total Users&lt;/p&gt;
+                &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-1&quot;&gt;@@Auth.AllUsers.Count&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;bg-white rounded-lg p-4 border-2 border-red-200&quot;&gt;
+                &lt;p class=&quot;text-xs font-medium text-red-600 uppercase&quot;&gt;Free Accounts&lt;/p&gt;
+                &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-1&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Free&quot;)&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;bg-white rounded-lg p-4 border-2 border-red-200&quot;&gt;
+                &lt;p class=&quot;text-xs font-medium text-red-600 uppercase&quot;&gt;Paid Accounts&lt;/p&gt;
+                &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-1&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Paid&quot;)&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;bg-white rounded-lg p-4 border-2 border-red-200&quot;&gt;
+                &lt;p class=&quot;text-xs font-medium text-red-600 uppercase&quot;&gt;Admins&lt;/p&gt;
+                &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-1&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Admin&quot;)&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+}</pre>
+            </div>
 
-totalUsers = await Db.Users.CountAsync();
-loginsToday = await Db.Activities
-    .Where(a =&gt; a.Type == "UserLogin" &amp;&amp; a.OccurredAt &gt;= today &amp;&amp; a.OccurredAt &lt; tomorrow)
-    .CountAsync();</pre>
-                </div>
-                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">2. Load recent activities for the table</div>
-                    <p class="text-xs text-gray-600 mb-2">Query the most recent 20 activities ordered by timestamp.
-                    </p>
-                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
-                        <li>Use <code>OrderByDescending</code> to get newest events first.</li>
-                        <li>Use <code>Take(20)</code> to limit results and keep queries fast.</li>
-                        <li>Load into a <code>List&lt;Activity&gt;</code> for easy iteration in the table.</li>
-                    </ul>
-                    <pre
-                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">recentActivities = await Db.Activities
-    .OrderByDescending(a =&gt; a.OccurredAt)
-    .Take(20)
-    .ToListAsync();</pre>
-                </div>
+            <p class="text-xs text-gray-600 mt-4">
+                Important: the real demo keeps these cards static because the focus is on teaching Blazor layouts, not on wiring live analytics services. Stick to the shared <code>trafficSources</code> list and <code>IUserAuthService</code> data so documentation screenshots always match the running app.
+            </p>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mt-6">
+                <div class="text-xs text-gray-500 mb-1">Analytics.razor.cs — helper state</div>
+                <p class="text-xs text-gray-600 mb-2">All gating logic lives in the code-behind—no EF, no extra services.</p>
+                <pre data-code-title="AnalyticsBase helpers"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">public partial class AnalyticsBase : ComponentBase
+{
+    [Inject] protected IUserAuthService Auth { get; set; } = default!;
+    [Inject] protected NavigationManager Nav { get; set; } = default!;
+
+    protected bool IsPaidOrAdmin => Auth.CurrentUser?.Role == &quot;Paid&quot; || Auth.CurrentUser?.Role == &quot;Admin&quot;;
+    protected bool IsAdmin => Auth.CurrentUser?.Role == &quot;Admin&quot;;
+
+    protected List&lt;TrafficSource&gt; trafficSources = new()
+    {
+        new TrafficSource { Icon = &quot;🔍&quot;, Name = &quot;Google Search&quot;, Visitors = 1234, Percentage = 42 },
+        new TrafficSource { Icon = &quot;📱&quot;, Name = &quot;Social Media&quot;, Visitors = 892, Percentage = 30 },
+        new TrafficSource { Icon = &quot;📧&quot;, Name = &quot;Email Campaign&quot;, Visitors = 567, Percentage = 19 },
+        new TrafficSource { Icon = &quot;🔗&quot;, Name = &quot;Direct&quot;, Visitors = 234, Percentage = 9 }
+    };
+
+    protected class TrafficSource
+    {
+        public string Icon { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public int Visitors { get; set; }
+        public int Percentage { get; set; }
+    }
+}</pre>
             </div>
         </div>
 
-        <!-- Important Notes & Tips -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
-            <div class="space-y-3">
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Start with simple counts and tables
-                            </p>
-                            <p class="text-xs text-blue-800">You don't need fancy charts right away. Summary cards and
-                                activity tables give users immediate value and are easy to build and maintain.</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Use date filtering for "today" metrics
-                            </p>
-                            <p class="text-xs text-blue-800">Filter by <code>DateTime.Today</code> and
-                                <code>DateTime.Today.AddDays(1)</code> to get a clean date range for today's activity
-                                without time zone issues.
-                            </p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Always handle empty states</p>
-                            <p class="text-xs text-blue-800">Show a friendly message when no data exists yet so users
-                                understand the page is working—it just doesn't have events to display.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
-                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
-                        <li>If metrics show zero but you know there are events, check that your event types match
-                            exactly (e.g., <code>"UserLogin"</code> vs <code>"userLogin"</code>).</li>
-                        <li>If the table is empty, confirm events are being saved with
-                            <code>SaveChangesAsync()</code> after adding them to <code>Db.Activities</code>.
-                        </li>
-                        <li>If queries are slow, consider adding an index on <code>OccurredAt</code> and
-                            <code>Type</code> columns in a future migration.
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- How to do it -->
-        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
-            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
-                <li>
-                    <strong>Create the Analytics page:</strong>
-                    Add <code>Components/Pages/Analytics.razor</code> with the <code>@@page "/analytics"</code>
-                    directive.
-                </li>
-                <li>
-                    <strong>Inject AppDbContext:</strong>
-                    Use <code>@@inject AppDbContext Db</code> so you can query users and activities.
-                </li>
-                <li>
-                    <strong>Compute metrics in OnInitializedAsync:</strong>
-                    Use <code>CountAsync()</code> with LINQ filters to calculate total users, logins today, profile
-                    updates today, and total events.
-                </li>
-                <li>
-                    <strong>Load recent activities:</strong>
-                    Query the last 20 activities ordered by <code>OccurredAt</code> descending.
-                </li>
-                <li>
-                    <strong>Display metrics in cards:</strong>
-                    Use a grid layout with simple white cards showing each metric and its count.
-                </li>
-                <li>
-                    <strong>Show activities in a table:</strong>
-                    Loop through <code>recentActivities</code> and display type, user ID, and timestamp in table rows.
-                </li>
-                <li>
-                    <strong>Handle empty state:</strong>
-                    Show a message when <code>recentActivities.Count == 0</code> so users know the page is working.
-                </li>
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li><strong>Inherit <code>AnalyticsBase</code>:</strong> Keep markup lean by putting gating booleans + traffic data in the partial class just like the demo.</li>
+                <li><strong>Branch on plan:</strong> Wrap premium cards + traffic list in <code>&#64;&#64;if (IsPaidOrAdmin)</code> and always supply a helpful locked state for Free accounts.</li>
+                <li><strong>Reuse sample data:</strong> Traffic rows come from a simple list so the docs never drift. Resist adding random datasets per tutorial.</li>
+                <li><strong>Surface admin context:</strong> Use <code>Auth.AllUsers</code> for totals instead of duplicating EF queries—admins already loaded that data when they signed in.</li>
+                <li><strong>Link upgrades to /profile:</strong> Send users to the existing plan upgrade flow so the experience stays consistent across steps.</li>
             </ol>
         </div>
 
-        <!-- Live Demo -->
         <div class="bg-black/3 rounded-2xl p-6 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
             <p class="text-sm text-gray-600 mb-4">
-                Here's a working example of what the analytics dashboard looks like in action:
+                Toggle between Free and Paid demo accounts on <code>/signin</code> to watch the analytics view switch between the locked CTA, premium charts, and the admin summary grid.
             </p>
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-                <!-- Mock Analytics Dashboard -->
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Analytics Dashboard</h3>
-
-                    <!-- Summary Cards Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        <div class="bg-white rounded-lg border border-gray-200 p-4">
-                            <p class="text-sm text-gray-600 mb-1">Total Users</p>
-                            <p class="text-2xl font-bold text-gray-900">12</p>
+                <div class="max-w-3xl mx-auto p-8 space-y-6">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">Advanced Analytics</h2>
+                        <p class="text-gray-600">Paid plans see conversion rate, revenue/user, CLTV, and traffic sources at a glance.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white border border-gray-200 rounded-2xl p-5 text-center">
+                            <p class="text-xs uppercase text-gray-500">Conversion Rate</p>
+                            <p class="text-2xl font-semibold text-gray-900">4.8%</p>
+                            <div class="mt-3 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-500" style="width: 48%"></div>
+                            </div>
                         </div>
-                        <div class="bg-white rounded-lg border border-gray-200 p-4">
-                            <p class="text-sm text-gray-600 mb-1">Logins Today</p>
-                            <p class="text-2xl font-bold text-blue-600">8</p>
-                        </div>
-                        <div class="bg-white rounded-lg border border-gray-200 p-4">
-                            <p class="text-sm text-gray-600 mb-1">Profile Updates Today</p>
-                            <p class="text-2xl font-bold text-green-600">3</p>
-                        </div>
-                        <div class="bg-white rounded-lg border border-gray-200 p-4">
-                            <p class="text-sm text-gray-600 mb-1">Total Events</p>
-                            <p class="text-2xl font-bold text-gray-900">127</p>
+                        <div class="bg-white border border-gray-200 rounded-2xl p-5 text-center">
+                            <p class="text-xs uppercase text-gray-500">Revenue / User</p>
+                            <p class="text-2xl font-semibold text-gray-900">$24.50</p>
+                            <p class="text-xs text-emerald-600 mt-1">↑ $2.30 vs last month</p>
                         </div>
                     </div>
-
-                    <!-- Recent Activity Table -->
-                    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                            <h4 class="text-lg font-semibold text-gray-900">Recent Activity</h4>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User
-                                            ID</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                            Timestamp</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 text-sm text-gray-900">UserLogin</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">5</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">Nov 18, 2025 2:45 PM</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 text-sm text-gray-900">ProfileUpdated</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">3</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">Nov 18, 2025 1:32 PM</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 text-sm text-gray-900">UserLogin</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">7</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">Nov 18, 2025 12:18 PM</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 text-sm text-gray-900">UserLogin</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">2</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">Nov 18, 2025 11:05 AM</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 text-sm text-gray-900">ProfileUpdated</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">5</td>
-                                        <td class="px-6 py-4 text-sm text-gray-600">Nov 18, 2025 10:42 AM</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="bg-purple-50 border border-purple-100 rounded-2xl p-6 text-center">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Free plan view</h3>
+                        <p class="text-sm text-gray-600 mb-4">Free users get a friendly upgrade panel that links over to <code>/profile</code> for plan changes.</p>
+                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                            <a href="/profile" class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition">Upgrade Now</a>
+                            <button class="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition">Learn More</button>
                         </div>
                     </div>
                 </div>
-
                 <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
                     <p class="text-xs text-gray-600">
-                        💡 <strong>Try it yourself:</strong> Sign in a few times and update your profile, then check
-                        back here to see the metrics and activity table update with real data from your database.
+                        💡 <strong>Reminder:</strong> These cards are intentionally hard-coded so the guide stays screenshot-stable. When you need real analytics, layer them on in a separate tutorial.
                     </p>
                 </div>
             </div>

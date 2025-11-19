@@ -3,212 +3,149 @@
 @using BlazorMock.Components.Pages.Examples.AdminDashboard.Step8
 @inherits ExampleBase
 
-<PageTitle>Admin Dashboard Step 8: CSS-Only Visualizations - Example</PageTitle>
+<PageTitle>Admin Dashboard Step 8: CSS-Only Analytics Polish - Example</PageTitle>
 
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
-        <!-- Back link -->
         <a href="/admin-dashboard-guide"
             class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
             <span>←</span> Back to Admin Dashboard Guide
         </a>
 
-        <!-- Title -->
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            📈 Step 8: Analytics Visualizations (CSS-only)
+            📈 Step 8: CSS-only analytics polish (still no chart libs)
         </h1>
 
-        <!-- Description -->
         <p class="text-xl text-gray-600 mb-8">
-            Turn the raw numbers on your <code>/analytics</code> page into simple, CSS-only visualizations like bars,
-            progress indicators, and heatmap-style grids—no chart library required.
+            Highlight the micro-visuals that already ship on <code>/analytics</code>—conversion bars, traffic source
+            strips, and CTA gradients—so the tutorial mirrors the production CSS-only approach used in
+            <code>DashboardDemo</code>.
         </p>
 
-        <!-- What You'll Learn -->
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
-            <p class="text-gray-700 mb-4 text-sm sm:text-base">
-                In this step, you'll layer CSS-only visuals on top of the analytics metrics and recent activity you
-                built in Step 7.
-            </p>
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Mapping numeric metrics to bar-like divs using width and background color.</li>
-                <li>Building progress bars for completion or adoption metrics.</li>
-                <li>Creating a simple heatmap grid using background colors and CSS utility classes.</li>
-                <li>Designing visuals that still make sense when there's little or no data.</li>
+                <li>Map percentage values directly to inline styles like <code>style="width: 48%"</code> for the paid
+                    metric cards.</li>
+                <li>Use the shared <code>trafficSources</code> list from <code>AnalyticsBase</code> to drive desktop
+                    rows
+                    and mobile cards with thin progress bars.</li>
+                <li>Keep visuals readable by pairing every bar with text labels, deltas, and emoji icons.</li>
+                <li>Lean on Tailwind gradients, rounded corners, and borders instead of introducing chart libraries.
+                </li>
             </ul>
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Tailwind CSS utilities, data-to-visual mapping, accessible
-                    visualizations, CSS-only charts.
+                    <strong>💡 Key Concepts:</strong> Inline width binding, deterministic sample data, accessible color
+                    contrast, auth-aware visual states.
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
-                    <a href="/tips#tolistasync"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">ToListAsync</a>
-                    <a href="/tips#linq-aggregation"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">LINQ
-                        Aggregation</a>
-                    <a href="/tips#css-utility-classes"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">CSS
-                        utility classes</a>
+                    <a href="/tips#auth-service"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth
+                        Service</a>
+                    <a href="/tips#tailwind"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind
+                        Layouts</a>
+                    <a href="/tips#layout-state"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Layout
+                        State</a>
                 </div>
             </div>
         </div>
 
-
-
-        <!-- Code Example: CSS-only visualizations on /analytics -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">📄 Example: Enhancing /analytics with CSS-only visuals</h2>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample component: CSS micro-visuals from Analytics.razor
+            </h2>
             <p class="text-sm text-gray-600 mb-4">
-                This snippet shows how you might take the metrics from Step 7 and map them to CSS-based bars and
-                progress indicators in your real <code>/analytics</code> page.
+                These snippets are copy-pasted from <code>Components/Pages/Demo/DashboardDemo/Analytics.razor</code>.
+                Keep them HTML-encoded (double <code>&#64;</code>, <code>&lt;</code> entities) so the tutorial renders
+                safely.
             </p>
-            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                <div class="text-xs text-gray-500 mb-1">Components/Pages/Analytics.razor (excerpt)</div>
-                <p class="text-xs text-gray-600 mb-2">Binding analytics data to CSS widths and background colors for
-                    lightweight visualizations.</p>
-                <pre data-code-title="Components/Pages/Analytics.razor"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/analytics"
-@@using BlazorMock.Data
-@@inject AppDbContext Db
-
-&lt;PageTitle&gt;Analytics&lt;/PageTitle&gt;
-
-&lt;div class="max-w-6xl mx-auto p-6"&gt;
-    &lt;h1 class="text-3xl font-bold text-gray-900 mb-6"&gt;Analytics Dashboard&lt;/h1&gt;
-
-    &lt;!-- Summary + Visuals Row --&gt;
-    &lt;div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8"&gt;
-        &lt;!-- Summary cards from Step 7 (left) --&gt;
-        &lt;div class="lg:col-span-2 space-y-4"&gt;
-            &lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"&gt;
-                &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
-                    &lt;p class="text-sm text-gray-600 mb-1"&gt;Total Users&lt;/p&gt;
-                    &lt;p class="text-2xl font-bold text-gray-900"&gt;@@totalUsers&lt;/p&gt;
-                &lt;/div&gt;
-                &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
-                    &lt;p class="text-sm text-gray-600 mb-1"&gt;Logins Today&lt;/p&gt;
-                    &lt;p class="text-2xl font-bold text-blue-600"&gt;@@loginsToday&lt;/p&gt;
-                &lt;/div&gt;
-                &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
-                    &lt;p class="text-sm text-gray-600 mb-1"&gt;Profile Updates Today&lt;/p&gt;
-                    &lt;p class="text-2xl font-bold text-green-600"&gt;@@profileUpdatesToday&lt;/p&gt;
-                &lt;/div&gt;
-                &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
-                    &lt;p class="text-sm text-gray-600 mb-1"&gt;Total Events&lt;/p&gt;
-                    &lt;p class="text-2xl font-bold text-gray-900"&gt;@@totalEvents&lt;/p&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-
-            &lt;!-- Logins last 7 days bar strip --&gt;
-            &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
-                &lt;div class="flex items-center justify-between mb-3"&gt;
-                    &lt;h2 class="text-sm font-semibold text-gray-800"&gt;Logins in the last 7 days&lt;/h2&gt;
-                    &lt;span class="text-xs text-gray-500"&gt;CSS bars mapped from counts&lt;/span&gt;
-                &lt;/div&gt;
-                &lt;div class="space-y-2"&gt;
-                    @@foreach (var point in loginHistory)
-                    {
-                        &lt;div class="flex items-center gap-3"&gt;
-                            &lt;span class="w-16 text-xs text-gray-600"&gt;@@point.Label&lt;/span&gt;
-                            &lt;div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden"&gt;
-                                &lt;div class="h-full bg-blue-500" style="width: @@point.Percentage%"&gt;&lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;span class="w-8 text-xs text-gray-500 text-right"&gt;@@point.Count&lt;/span&gt;
-                        &lt;/div&gt;
-                    }
-                &lt;/div&gt;
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Paid metric cards with inline width bars</div>
+                <p class="text-xs text-gray-600 mb-2">No JS—just Tailwind borders and <code>style="width:…"</code>.</p>
+                <pre data-code-title="Analytics.razor — Advanced Analytics"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8&quot;&gt;
+    &lt;div class=&quot;flex items-center justify-between mb-4&quot;&gt;
+        &lt;h2 class=&quot;text-xl font-bold text-gray-900&quot;&gt;Advanced Analytics&lt;/h2&gt;
+        &lt;span class=&quot;px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded&quot;&gt;Paid Feature&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4&quot;&gt;
+        &lt;div class=&quot;border-2 border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-lg transition-all duration-200&quot;&gt;
+            &lt;p class=&quot;text-sm font-medium text-gray-700&quot;&gt;Conversion Rate&lt;/p&gt;
+            &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-2&quot;&gt;4.8%&lt;/p&gt;
+            &lt;div class=&quot;mt-3 h-2 bg-gray-200 rounded-full overflow-hidden&quot;&gt;
+                &lt;div class=&quot;h-full bg-emerald-500&quot; style=&quot;width: 48%&quot;&gt;&lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
-
-        &lt;!-- Profile completion progress (right) --&gt;
-        &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
-            &lt;h2 class="text-sm font-semibold text-gray-800 mb-3"&gt;Profile completion&lt;/h2&gt;
-            &lt;div class="w-full h-3 rounded-full bg-gray-200 overflow-hidden mb-2"&gt;
-                &lt;div class="h-full bg-green-500" style="width: @@profileCompletion%"&gt;&lt;/div&gt;
-            &lt;/div&gt;
-            &lt;p class="text-xs text-gray-600"&gt;@@profileCompletion% of active users have filled out their profile.&lt;/p&gt;
+        &lt;div class=&quot;border-2 border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-lg transition-all duration-200&quot;&gt;
+            &lt;p class=&quot;text-sm font-medium text-gray-700&quot;&gt;Revenue per User&lt;/p&gt;
+            &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-2&quot;&gt;$24.50&lt;/p&gt;
+            &lt;p class=&quot;text-xs text-emerald-600 mt-1&quot;&gt;↑ $2.30 vs last month&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;border-2 border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-lg transition-all duration-200&quot;&gt;
+            &lt;p class=&quot;text-sm font-medium text-gray-700&quot;&gt;Customer Lifetime Value&lt;/p&gt;
+            &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-2&quot;&gt;$892&lt;/p&gt;
+            &lt;p class=&quot;text-xs text-blue-600 mt-1&quot;&gt;↑ 18% growth&lt;/p&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-
-    &lt;!-- Simple heatmap --&gt;
-    &lt;div class="bg-white rounded-lg border border-gray-200 p-4 mb-8"&gt;
-        &lt;div class="flex items-center justify-between mb-3"&gt;
-            &lt;h2 class="text-sm font-semibold text-gray-800"&gt;Logins by hour (today)&lt;/h2&gt;
-            &lt;span class="text-xs text-gray-500"&gt;Darker = more logins&lt;/span&gt;
-        &lt;/div&gt;
-        &lt;div class="grid grid-cols-6 gap-1 text-[10px] text-center"&gt;
-            @@foreach (var bucket in hourlyLogins)
-            {
-                var intensityClass = bucket.Count switch
-                {
-                    0 =&gt; "bg-gray-100 text-gray-600",
-                    &lt;= 2 =&gt; "bg-blue-50 text-blue-900",
-                    &lt;= 5 =&gt; "bg-blue-200 text-blue-900",
-                    &lt;= 8 =&gt; "bg-blue-400 text-white",
-                    _ =&gt; "bg-blue-600 text-white"
-                };
-
-                &lt;div class=$"py-2 rounded {intensityClass}"&gt;@@bucket.Count&lt;/div&gt;
-            }
-        &lt;/div&gt;
-        &lt;p class="text-xs text-gray-600 mt-2"&gt;
-            Always show numeric labels so users aren't relying on color alone to interpret the data.
-        &lt;/p&gt;
-    &lt;/div&gt;
-&lt;/div&gt;
-
-@@code {
-    private List&lt;LoginHistoryPoint&gt; loginHistory = new();
-    private List&lt;HourlyBucket&gt; hourlyLogins = new();
-    private int profileCompletion;
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Example: map counts into simple view models with percentages.
-        var totalLogins = 0;
-        loginHistory = Enumerable.Range(0, 5).Select(i =&gt; new LoginHistoryPoint
-        {
-            Label = $"Day {i + 1}",
-            Count = 2 + i * 2
-        }).ToList();
-
-        totalLogins = loginHistory.Sum(p =&gt; p.Count);
-        foreach (var point in loginHistory)
-        {
-            point.Percentage = totalLogins == 0
-                ? 0
-                : (int)Math.Round((double)point.Count / totalLogins * 100);
-        }
-
-        hourlyLogins = Enumerable.Range(0, 6).Select(i =&gt; new HourlyBucket
-        {
-            Hour = i,
-            Count = i * 2
-        }).ToList();
-
-        profileCompletion = 72; // example value – compute from real data in your app
-    }
-
-    private sealed class LoginHistoryPoint
-    {
-        public string Label { get; set; } = string.Empty;
-        public int Count { get; set; }
-        public int Percentage { get; set; }
-    }
-
-    private sealed class HourlyBucket
-    {
-        public int Hour { get; set; }
-        public int Count { get; set; }
-    }
-}</pre>
+&lt;/div&gt;</pre>
             </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                <div class="text-xs text-gray-500 mb-1">Traffic sources list with responsive bars</div>
+                <p class="text-xs text-gray-600 mb-2">Same list drives both the desktop rows and mobile cards.</p>
+                <pre data-code-title="Analytics.razor — Traffic Sources"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8&quot;&gt;
+    &lt;h2 class=&quot;text-xl font-bold text-gray-900 mb-4&quot;&gt;Traffic Sources&lt;/h2&gt;
+    &lt;div class=&quot;hidden sm:block space-y-0 divide-y divide-gray-200&quot;&gt;
+        @@foreach (var source in trafficSources)
+        {
+            &lt;div class=&quot;flex items-center justify-between py-4 first:pt-0 last:pb-0&quot;&gt;
+                &lt;div class=&quot;flex items-center gap-3&quot;&gt;
+                    &lt;span class=&quot;text-2xl&quot;&gt;@@source.Icon&lt;/span&gt;
+                    &lt;div&gt;
+                        &lt;p class=&quot;text-sm font-medium text-gray-900&quot;&gt;@@source.Name&lt;/p&gt;
+                        &lt;p class=&quot;text-xs text-gray-500&quot;&gt;@@source.Visitors visitors&lt;/p&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;text-right&quot;&gt;
+                    &lt;p class=&quot;text-sm font-semibold text-gray-900&quot;&gt;@@source.Percentage%&lt;/p&gt;
+                    &lt;div class=&quot;w-24 h-2 bg-gray-200 rounded-full overflow-hidden mt-1&quot;&gt;
+                        &lt;div class=&quot;h-full bg-blue-500&quot; style=&quot;width: @@(source.Percentage)%&quot;&gt;&lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        }
+    &lt;/div&gt;
+    &lt;div class=&quot;grid grid-cols-1 gap-3 sm:hidden&quot;&gt;
+        @@foreach (var source in trafficSources)
+        {
+            &lt;div class=&quot;border-2 border-gray-200 rounded-xl p-4 hover:border-gray-300 hover:shadow-lg transition-all duration-200&quot;&gt;
+                &lt;div class=&quot;flex items-center gap-3 mb-3&quot;&gt;
+                    &lt;span class=&quot;text-2xl&quot;&gt;@@source.Icon&lt;/span&gt;
+                    &lt;div class=&quot;flex-1&quot;&gt;
+                        &lt;p class=&quot;text-sm font-medium text-gray-900&quot;&gt;@@source.Name&lt;/p&gt;
+                        &lt;p class=&quot;text-xs text-gray-500&quot;&gt;@@source.Visitors visitors&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;p class=&quot;text-sm font-semibold text-gray-900&quot;&gt;@@source.Percentage%&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;w-full h-2 bg-gray-200 rounded-full overflow-hidden&quot;&gt;
+                    &lt;div class=&quot;h-full bg-blue-500&quot; style=&quot;width: @@(source.Percentage)%&quot;&gt;&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        }
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+            </div>
+
+            <p class="text-xs text-gray-600 mt-4">
+                Notice that everything here is deterministic. The numbers are hard-coded on purpose so documentation,
+                marketing screenshots, and the live demo stay in sync.
+            </p>
         </div>
 
-        <!-- Important Notes & Tips -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
             <div class="space-y-3">
@@ -216,154 +153,128 @@
                     <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
                     <div class="space-y-4">
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Keep visuals simple and readable</p>
-                            <p class="text-xs text-blue-800">Use straight bars and simple grids before reaching for
-                                chart libraries. They're easier to build, test, and explain to learners.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Pair bars with labels</p>
+                            <p class="text-xs text-blue-800">Every bar in the demo has a headline, value, and helper
+                                copy so users never have to interpret color alone.</p>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Always include labels</p>
-                            <p class="text-xs text-blue-800">Never rely on color alone—always show the underlying
-                                numbers (counts or percentages) next to or inside your visuals.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use inline styles sparingly</p>
+                            <p class="text-xs text-blue-800">Inline <code>style="width:…"</code> is perfect for quick
+                                bars, but keep everything else in Tailwind utility classes for consistency.</p>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Handle empty or low-data states</p>
-                            <p class="text-xs text-blue-800">If there isn't much data yet, keep the visuals small and
-                                add copy explaining that the dashboard will get more interesting as usage grows.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Stay deterministic</p>
+                            <p class="text-xs text-blue-800">The traffic source list lives in <code>AnalyticsBase</code>
+                                so the page never surprises you with random datasets mid-tutorial.</p>
                         </div>
                     </div>
                 </div>
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                     <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
                     <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
-                        <li>If all bars look the same, double-check your percentage calculation and that you're
-                            applying it to the <code>width</code> style.</li>
-                        <li>If colors are hard to read, try lighter backgrounds with dark text or adjust to higher
-                            contrast Tailwind classes.</li>
-                        <li>If the layout looks broken on mobile, use responsive grid classes (like
-                            <code>sm:grid-cols-2</code>, <code>lg:grid-cols-3</code>).
+                        <li>Bars not visible? Confirm your inline width strings include the percent sign (e.g.,
+                            <code>style="width: 48%"</code>).
+                        </li>
+                        <li>Traffic percentages overflow? Keep <code>w-24</code> (desktop) and <code>w-full</code>
+                            (mobile) wrappers so bars stay inside rounded capsules.</li>
+                        <li>Colors feel off-brand? Use Tailwind's extended palette (<code>bg-emerald-500</code>,
+                            <code>bg-blue-500</code>) to stay consistent with the rest of the dashboard.
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- How to do it -->
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
-            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
-                <li>
-                    <strong>Start from your Step 7 metrics:</strong>
-                    Reuse the counts for total users, logins, and profile updates as inputs to your visuals.
-                </li>
-                <li>
-                    <strong>Create small view models:</strong>
-                    Map raw counts into simple objects (label, count, percentage) that your Razor markup can loop over.
-                </li>
-                <li>
-                    <strong>Bind percentages to <code>style="width: X%"</code>:</strong>
-                    Use inline styles (or CSS variables) to turn percentages into bar widths.
-                </li>
-                <li>
-                    <strong>Use Tailwind utilities for layout:</strong>
-                    Combine <code>grid</code>, <code>gap</code>, <code>bg-*</code>, and <code>rounded</code> classes to
-                    build bar strips, progress bars, and heatmaps.
-                </li>
-                <li>
-                    <strong>Add labels and legends:</strong>
-                    Always show the underlying numbers and, if needed, a short legend explaining what colors mean.
-                </li>
-                <li>
-                    <strong>Test empty states:</strong>
-                    Temporarily clear out your data to confirm the page still looks reasonable and explains what's
-                    happening.
-                </li>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li><strong>Inherit <code>AnalyticsBase</code>:</strong> You already did this in Step 6. Keep using the
+                    helper properties + sample data so visuals stay predictable.</li>
+                <li><strong>Hard-code the visual targets:</strong> The canonical demo intentionally uses static values
+                    (4.8%, 48%) to focus on layout, not data pipelines.</li>
+                <li><strong>Bind width as literal percent:</strong> Output <code>style="width:
+                        @@(source.Percentage)%"</code> where <code>Percentage</code> is an int from 0–100.</li>
+                <li><strong>Double up on responsive containers:</strong> Desktop rows live in a
+                    <code>hidden sm:block</code>
+                    div while mobile cards render under <code>sm:hidden</code>.</li>
+                <li><strong>Explain disabled states:</strong> When <code>IsPaidOrAdmin</code> is false, keep the
+                    gradient
+                    CTA that nudges Free users toward <code>/profile</code>.</li>
             </ol>
         </div>
 
-        <!-- Live Demo -->
         <div class="bg-black/3 rounded-2xl p-6 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
             <p class="text-sm text-gray-600 mb-4">
-                Here's a sample of the CSS-only analytics visuals you'll build:
+                Visit <code>/analytics</code> with both Free and Paid accounts to see the CSS-only visuals fade in/out
+                based on plan. Admin users also get the red summary grid from Step 7.
             </p>
-            <div class="bg-white rounded-2xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Sample CSS-Only Analytics Visuals</h3>
-
-                <!-- Reuse the same visuals as the main example block -->
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-sm font-semibold text-gray-800">Logins in the last 7 days</h3>
-                        <span class="text-xs text-gray-500">CSS bars mapped from counts</span>
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                <div class="max-w-3xl mx-auto p-8 space-y-6">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">Advanced Analytics</h2>
+                        <p class="text-gray-600">Inline bars + badges deliver instant visual cues without any chart
+                            libraries.</p>
                     </div>
-                    <div class="space-y-2">
-                        <div class="flex items-center gap-3">
-                            <span class="w-16 text-xs text-gray-600">Mon</span>
-                            <div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden">
-                                <div class="h-full bg-blue-500" style="width: 40%;"></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="border border-gray-200 rounded-2xl p-5 text-center">
+                            <p class="text-xs uppercase text-gray-500 mb-1">Conversion Rate</p>
+                            <p class="text-2xl font-semibold text-gray-900">4.8%</p>
+                            <div class="mt-3 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-500" style="width: 48%"></div>
                             </div>
-                            <span class="w-8 text-xs text-gray-500 text-right">4</span>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="w-16 text-xs text-gray-600">Tue</span>
-                            <div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden">
-                                <div class="h-full bg-blue-500" style="width: 70%;"></div>
-                            </div>
-                            <span class="w-8 text-xs text-gray-500 text-right">7</span>
+                        <div class="border border-gray-200 rounded-2xl p-5 text-center">
+                            <p class="text-xs uppercase text-gray-500 mb-1">Revenue / User</p>
+                            <p class="text-2xl font-semibold text-gray-900">$24.50</p>
+                            <p class="text-xs text-emerald-600 mt-1">↑ $2.30 vs last month</p>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="w-16 text-xs text-gray-600">Wed</span>
-                            <div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden">
-                                <div class="h-full bg-blue-500" style="width: 20%;"></div>
-                            </div>
-                            <span class="w-8 text-xs text-gray-500 text-right">2</span>
+                        <div class="border border-gray-200 rounded-2xl p-5 text-center">
+                            <p class="text-xs uppercase text-gray-500 mb-1">CLTV</p>
+                            <p class="text-2xl font-semibold text-gray-900">$892</p>
+                            <p class="text-xs text-blue-600 mt-1">↑ 18% growth</p>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="w-16 text-xs text-gray-600">Thu</span>
-                            <div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden">
-                                <div class="h-full bg-blue-500" style="width: 90%;"></div>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Traffic Sources</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">🔍</span>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Google Search</p>
+                                        <p class="text-xs text-gray-500">1,234 visitors</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-semibold text-gray-900">42%</p>
+                                    <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
+                                        <div class="h-full bg-blue-500" style="width: 42%"></div>
+                                    </div>
+                                </div>
                             </div>
-                            <span class="w-8 text-xs text-gray-500 text-right">9</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="w-16 text-xs text-gray-600">Fri</span>
-                            <div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden">
-                                <div class="h-full bg-blue-500" style="width: 60%;"></div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">📱</span>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Social Media</p>
+                                        <p class="text-xs text-gray-500">892 visitors</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-semibold text-gray-900">30%</p>
+                                    <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
+                                        <div class="h-full bg-blue-500" style="width: 30%"></div>
+                                    </div>
+                                </div>
                             </div>
-                            <span class="w-8 text-xs text-gray-500 text-right">6</span>
                         </div>
                     </div>
                 </div>
-
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-sm font-semibold text-gray-800">Profile completion</h3>
-                        <span class="text-xs text-gray-500">72% complete</span>
-                    </div>
-                    <div class="w-full h-3 rounded-full bg-gray-200 overflow-hidden">
-                        <div class="h-full bg-green-500" style="width: 72%;"></div>
-                    </div>
-                    <p class="text-xs text-gray-600 mt-2">
-                        Map completion percentage directly to the bar's width (for example,
-                        <code>style="width: 72%"</code>), and always show the numeric label for accessibility.
-                    </p>
-                </div>
-
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-sm font-semibold text-gray-800">Logins by hour (today)</h3>
-                        <span class="text-xs text-gray-500">Simple heatmap using background colors</span>
-                    </div>
-                    <div class="grid grid-cols-6 gap-1 text-[10px] text-center">
-                        <div class="py-2 rounded bg-blue-50 text-blue-900">0</div>
-                        <div class="py-2 rounded bg-blue-100 text-blue-900">1</div>
-                        <div class="py-2 rounded bg-blue-200 text-blue-900">3</div>
-                        <div class="py-2 rounded bg-blue-300 text-blue-900">5</div>
-                        <div class="py-2 rounded bg-blue-400 text-white">7</div>
-                        <div class="py-2 rounded bg-blue-500 text-white">9</div>
-                    </div>
-                    <p class="text-xs text-gray-600 mt-2">
-                        Use darker shades for larger values and lighter shades (or gray) for zero values. Always show
-                        labels so users aren't relying on color alone.
+                <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
+                    <p class="text-xs text-gray-600">
+                        💡 <strong>Reminder:</strong> CSS-only visuals keep the tutorial approachable and render exactly
+                        the same in docs, videos, and the running Blazor app.
                     </p>
                 </div>
             </div>

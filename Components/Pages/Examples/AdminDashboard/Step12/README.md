@@ -2,12 +2,14 @@
 
 ## Overview
 
-This final step adds a mobile-friendly navigation pattern and encourages students to do a finishing pass on UX, error states, and guidance.
+Step 12 keeps the tutorial’s documentation in lockstep with the real `MainLayout.razor`. It highlights the production
+hamburger button, the animated mobile drawer, and the code-behind helpers that keep auth + navigation state in sync on
+phones.
 
 ## Files in This Folder
 
-- `Example.razor` — Tutorial page explaining mobile nav and polish tasks.
-- `Example.razor.cs` — Code-behind for the tutorial page with progress tracking.
+- `Example.razor` — Tutorial content with the canonical layout snippets, live nav embed, and QA checklist.
+- `Example.razor.cs` — Progress tracking + iframe refresh helper for the embedded nav preview.
 
 ## Routes
 
@@ -15,43 +17,52 @@ This final step adds a mobile-friendly navigation pattern and encourages student
 
 ## What Students Learn
 
-1. How to design a mobile navigation pattern (e.g., hamburger menu or bottom bar) for the admin routes.
-2. How to ensure the nav adapts between desktop and mobile views.
-3. How to review and improve error handling and empty states across the app.
-4. How to align the finished app with the demo experience and guide pages.
+1. How the existing layout swaps between desktop links and the mobile drawer (`md:hidden` / `hidden md:block`).
+2. How `ToggleMobileMenu`, `CloseMobileMenu`, and `HandleSignOut` keep the drawer responsive to auth changes.
+3. How to QA Free/Paid/Admin personas on narrow screens using the `/?embed=nav` live preview.
+4. How to perform the final UX polish lap so the tutorial, screenshots, and production layout never drift.
 
 ## Key Concepts
 
-- Responsive navigation patterns
-- Handling small-screen layout constraints
-- UX polish: error messages, empty state messaging, helpful redirects
+- Single-source layouts & snippets
+- Responsive breakpoints and animated drawers
+- Auth-driven UI updates via `InvokeAsync(StateHasChanged)`
+- Device toolbar testing and manual persona verification
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step12` namespace.
-- Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `12`.
-- Ties together all previous steps into a cohesive final experience.
+- `ExampleBase` (Step 12) inherits from `ComponentBase`, injects `ILearningProgressService`, and now exposes a
+  timestamped `NavFrameSrc` plus a `RefreshNavFrame()` handler for the iframe.
+- The Razor page embeds real chunks from `Components/Layout/MainLayout.razor` and documents the same code paths used in
+  production.
 
 ## Prerequisites
 
-- Steps 0–11 completed.
+- Steps 9–11 completed (guards + desktop nav) so the mobile drawer has the correct data/state to reflect.
 
 ## Next Steps
 
-- Review overall progress in the Admin Dashboard guide and compare with the shipping demo (if available).
-- Optionally extend the project with your own features.
+- After finishing Step 12, return to `/admin-dashboard-guide` to review overall progress or branch off into custom
+  features using the same layout.
 
 ## Code Structure
 
-- `ExampleBase` handles completion tracking and JS enhancements.
-- The tutorial page focuses on mobile nav markup, behavior, and polish.
+- Hero + “What you’ll learn” section summarising the responsive goals.
+- Canonical snippet blocks for the header, drawer, and `@@code` section from `MainLayout.razor`.
+- QA checklist + live `/?embed=nav` iframe wrapped in a phone shell.
+- Completion CTA consistent with earlier steps.
 
 ## Common Issues & Solutions
 
-- **Nav unusable on small screens**: Test on narrow viewports and adjust spacing and hit targets.
-- **Inconsistent UX**: Do a full walkthrough and align patterns (buttons, typography, error handling).
+- **Drawer never closes** → ensure each `NavLink` calls `CloseMobileMenu()` via `@onclick` and that sign-out resets the
+  flag.
+- **Auth state stale between tabs** → double-check `Auth.OnChange += OnAuthStateChanged` and the dispatcher-safe
+  `InvokeAsync(StateHasChanged)` callback.
+- **Active link styling wrong** → copy the `ActiveClass` values from `MainLayout.razor` so colors match across docs and
+  production.
 
 ## Related Resources
 
-- Responsive navigation design patterns
-- General UX best practices for dashboards
+- `/tips#auth-service` — reusing the shared auth service.
+- `/tips#layout-state` — keeping layout state centralised.
+- `/tips#tailwind` — responsive Tailwind utility references.

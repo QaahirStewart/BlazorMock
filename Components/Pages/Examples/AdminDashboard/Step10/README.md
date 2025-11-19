@@ -1,13 +1,13 @@
-# Admin Dashboard Step 10 — Route Protection & Roles
+# Admin Dashboard Step 10 — Route Protection & Roles (Canonical)
 
 ## Overview
 
-This step adds route protection so only signed-in users (and optionally users with specific roles) can access `/profile`, `/analytics`, and `/admin/dashboard`.
+Mirror the live demo’s guard patterns: `/profile` and `/analytics` immediately redirect anonymous visitors to `/signin`, free users see the deterministic upgrade card from `Analytics.razor`, and only admins get the red KPI strip plus the full `/admin/dashboard` shell.
 
 ## Files in This Folder
 
-- `Example.razor` — Tutorial page explaining route protection and role checks.
-- `Example.razor.cs` — Code-behind for the tutorial page with progress tracking.
+- `Example.razor` — Documentation page with HTML-encoded snippets from the real Profile, Analytics, and AdminDashboard components.
+- `Example.razor.cs` — Progress-tracking code-behind (unchanged from earlier steps).
 
 ## Routes
 
@@ -15,42 +15,45 @@ This step adds route protection so only signed-in users (and optionally users wi
 
 ## What Students Learn
 
-1. How to protect routes so only authenticated users can access certain pages.
-2. How to redirect unauthenticated users to `/signin`.
-3. How to check user roles and hide or disable sensitive areas for non-admins.
-4. How to surface clear messaging when access is denied.
+1. How to use `IUserAuthService` (`Auth.CurrentUser`) to block signed-out users before any layout renders.
+2. How `AnalyticsBase` exposes `IsPaidOrAdmin` and `IsAdmin` helpers for feature gating.
+3. How the upgrade CTA and admin-only strip are wired to real navigation targets (back to `/profile` or `/signin`).
+4. How to test every persona using the seeded `demo=` links that pre-fill `/signin` with a redirect.
 
 ## Key Concepts
 
-- Authorization checks in Blazor Server
-- Redirecting or rendering alternate content for unauthorized users
-- Role-based access control (RBAC) at the page and component level
+- Deterministic redirects via `NavigationManager`.
+- Friendly limited-access messaging pulled from production components.
+- Role-based branching that reuses service data instead of new EF queries.
+- Documentation snippets that stay in sync with `Components/Pages/Demo/DashboardDemo/*`.
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step10` namespace.
-- Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `10`.
-- Builds on the authentication model from earlier steps.
+- `Example.razor` inherits `ExampleBase` (for checklists + JS helpers) and only renders documentation content.
+- Real guards live in `Profile.razor`, `Analytics.razor`, `AdminDashboard.razor`, and they all inject `IUserAuthService` through their partial base classes.
+- Sign-in now understands `?demo=role&redirect=/path`, which the Live Demo section links to for quick testing.
 
 ## Prerequisites
 
-- Steps 0–9 completed.
+- Steps 0–9 completed (auth service, seeded users, admin shell).
 
 ## Next Steps
 
-- Proceed to Step 11 to build a desktop navigation pattern across `/signin`, `/signup`, `/profile`, `/analytics`, and `/admin/dashboard`.
+- Step 11 focuses on navigation polish across the same routes once guards are aligned.
 
 ## Code Structure
 
-- `ExampleBase` handles completion tracking and JS enhancements.
-- The tutorial page focuses on authorization patterns and route protection.
+- `ExampleBase` keeps tracking/JS behavior.
+- `Example.razor` hosts the encoded snippets + live-demo links; no additional services are injected here.
 
 ## Common Issues & Solutions
 
-- **Users stuck in redirect loops**: Make sure the signin page itself is not protected.
-- **Admins treated as regular users**: Double-check role checks and any seed data for admin accounts.
+- **Still seeing profile content when logged out**: ensure the guard stays at the very top of `Profile.razor`.
+- **Paid users missing advanced analytics**: confirm `IsPaidOrAdmin` checks for both `"Paid"` and `"Admin"` (case-sensitive).
+- **Admin lockout text differs**: copy the exact markup from `AdminDashboard.razor` so docs and demo stay identical.
 
 ## Related Resources
 
-- ASP.NET Core authorization & roles
-- Blazor route/view authorization patterns
+- `Components/Pages/Demo/DashboardDemo/Profile.razor`
+- `Components/Pages/Demo/DashboardDemo/Analytics.razor`
+- `Components/Pages/Demo/DashboardDemo/AdminDashboard.razor`

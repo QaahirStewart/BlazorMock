@@ -1,12 +1,12 @@
-# Admin Dashboard Step 7 — Analytics Page (/analytics): Counters & Tables
+# Admin Dashboard Step 7 — Analytics Page (/analytics): Paid Feature Gating
 
 ## Overview
 
-This step builds the first version of the `/analytics` page, focusing on summary counts and tables powered by the analytics events.
+Step 7 syncs the tutorial with the real `/analytics` experience from `DashboardDemo`. Learners swap the EF-driven table mockups for the production markup that shows baseline metrics to everyone, premium cards + traffic sources to paid accounts, and an admin-only totals grid.
 
 ## Files in This Folder
 
-- `Example.razor` — Tutorial page explaining the `/analytics` counters and tables.
+- `Example.razor` — Guided walkthrough of the production analytics sections, including the locked upgrade CTA for Free users.
 - `Example.razor.cs` — Code-behind for the tutorial page with progress tracking.
 
 ## Routes
@@ -15,44 +15,46 @@ This step builds the first version of the `/analytics` page, focusing on summary
 
 ## What Students Learn
 
-1. How to query analytics events to compute summary metrics (e.g., total users, logins today).
-2. How to display metrics in simple cards.
-3. How to show recent activity in a table.
-4. How to keep queries efficient and readable.
+1. How `AnalyticsBase` and `IUserAuthService` work together to redirect anonymous visitors and expose helper booleans.
+2. How to wrap premium UI in `IsPaidOrAdmin` checks and present a graceful locked state for Free plans.
+3. How to reuse the deterministic `trafficSources` list so screenshots always match the shipped demo.
+4. How to surface admin-only totals from `Auth.AllUsers` without duplicating EF queries.
 
 ## Key Concepts
 
-- EF Core querying for aggregates
-- Translating analytics data into UI metrics
-- Designing simple metrics cards and tables
-- Handling empty states when no data exists yet
+- Auth-driven feature gating
+- Deterministic sample data for documentation
+- Tailwind layouts for premium cards, traffic lists, and alert CTAs
+- Service-powered admin summaries
 
 ## Architecture
 
 - Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step7` namespace.
 - Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `7`.
-- Uses the analytics model introduced in Step 6.
+- References the same markup + helpers that live in `Components/Pages/Demo/DashboardDemo/Analytics.razor`.
 
 ## Prerequisites
 
-- Steps 0–6 completed.
-- Activity events are being recorded for logins/profile updates.
+- Steps 0–6 completed (including the baseline `/analytics` scaffolding).
+- `IUserAuthService` wired up so Free, Paid, and Admin test accounts exist.
 
 ## Next Steps
 
-- Proceed to Step 8 to add CSS-only visualizations (bars and heatmaps) to the `/analytics` page.
+- Proceed to Step 8 to explain how the same page uses CSS-only micro-visuals (bars, progress indicators) without chart libraries.
 
 ## Code Structure
 
 - `ExampleBase` handles completion tracking and JS enhancements.
-- The tutorial page focuses on queries, metrics cards, and tables.
+- The tutorial page highlights markup excerpts for premium cards, traffic sources, and admin totals, plus the `AnalyticsBase` helper class.
 
 ## Common Issues & Solutions
 
-- **No data showing**: Confirm events are being written and the queries point to the correct date ranges.
-- **Slow queries**: Simplify filters and avoid unnecessary client-side processing.
+- **Paid UI shows for Free users**: Confirm you updated the markup to wrap premium sections in `@if (IsPaidOrAdmin)`.
+- **Locked CTA never appears**: Make sure Free testers sign in via `/signin` and that the upgrade card lives in the `else` branch.
+- **Admin grid empty**: The seeded demo accounts must include at least one Admin so `Auth.AllUsers` contains role diversity.
 
 ## Related Resources
 
-- EF Core LINQ aggregation
-- UX patterns for analytics dashboards
+- `Components/Pages/Demo/DashboardDemo/Analytics.razor`
+- `Components/Pages/Demo/DashboardDemo/Analytics.razor.cs`
+- `Services/IUserAuthService`

@@ -4,6 +4,7 @@
 @inject BlazorMock.Services.IUserAuthService Auth
 @inject NavigationManager Navigation
 @implements IDisposable
+@using Microsoft.AspNetCore.WebUtilities
 
 <div class="min-h-screen ">
     <!-- Top Nav -->
@@ -201,17 +202,20 @@
         </div>
     </header>
 
-    <!-- Page Header (outside inner container) -->
-    <div class="max-w-6xl mx-auto px-4">
-        @Layout.Header
-    </div>
-
-    <!-- Content Container -->
-    <main class="max-w-6xl  mx-auto px-4 pb-12">
-        <div class="bg-white rounded-4xl  p-6">
-            @Body
+    @if (!isNavPreview)
+    {
+        <!-- Page Header (outside inner container) -->
+        <div class="max-w-6xl mx-auto px-4">
+            @Layout.Header
         </div>
-    </main>
+
+        <!-- Content Container -->
+        <main class="max-w-6xl  mx-auto px-4 pb-12">
+            <div class="bg-white rounded-4xl  p-6">
+                @Body
+            </div>
+        </main>
+    }
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
@@ -224,15 +228,28 @@
     private bool isMobileMenuOpen;
     private bool isProfileMenuOpen;
     private IJSObjectReference? _codeModule;
+    private bool isNavPreview;
 
     protected override void OnInitialized()
     {
-        Auth.OnChange += StateHasChanged;
+        Auth.OnChange += OnAuthStateChanged;
+    }
+
+    protected override void OnParametersSet()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+        isNavPreview = query.TryGetValue("embed", out var embedValue) && embedValue == "nav";
     }
 
     public void Dispose()
     {
-        Auth.OnChange -= StateHasChanged;
+        Auth.OnChange -= OnAuthStateChanged;
+    }
+
+    private void OnAuthStateChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
     }
 
     private void ToggleMobileMenu()

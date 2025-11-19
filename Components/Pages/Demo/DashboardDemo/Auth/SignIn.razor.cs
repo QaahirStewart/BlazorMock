@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.WebUtilities;
 using BlazorMock.Services;
 
 namespace BlazorMock.Components.Pages.Auth;
@@ -14,6 +15,26 @@ public partial class SignInBase : ComponentBase
     protected bool isPasskeyAuthenticating = false;
     protected string passkeyEmail = "admin@demo.com";
     protected string passkeyPassword = "admin123";
+    protected string redirectDestination = "/profile";
+    private bool _hasRendered;
+
+    protected override void OnInitialized()
+    {
+        ApplyQueryState();
+    }
+
+    protected override void OnParametersSet()
+    {
+        ApplyQueryState();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _hasRendered = true;
+        }
+    }
 
     protected void HandleSignIn()
     {
@@ -27,7 +48,7 @@ public partial class SignInBase : ComponentBase
 
         if (Auth.SignIn(email, password))
         {
-            Nav.NavigateTo("/profile");
+            Nav.NavigateTo(redirectDestination);
         }
         else
         {
@@ -47,7 +68,7 @@ public partial class SignInBase : ComponentBase
         // Use the selected passkey user
         if (Auth.SignIn(passkeyEmail, passkeyPassword))
         {
-            Nav.NavigateTo("/profile");
+            Nav.NavigateTo(redirectDestination);
         }
         else
         {
@@ -64,6 +85,49 @@ public partial class SignInBase : ComponentBase
         passkeyEmail = demoEmail;
         passkeyPassword = demoPassword;
         errorMessage = string.Empty;
-        StateHasChanged();
+        if (_hasRendered)
+        {
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void ApplyQueryState()
+    {
+        var uri = Nav.ToAbsoluteUri(Nav.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("redirect", out var redirectValues))
+        {
+            var candidate = redirectValues.ToString();
+            if (!string.IsNullOrWhiteSpace(candidate) && candidate.StartsWith("/"))
+            {
+                redirectDestination = candidate;
+            }
+            else
+            {
+                redirectDestination = "/profile";
+            }
+        }
+        else
+        {
+            redirectDestination = "/profile";
+        }
+
+        if (query.TryGetValue("demo", out var demoValues))
+        {
+            var role = demoValues.ToString().ToLowerInvariant();
+            switch (role)
+            {
+                case "admin":
+                    SetDemoUser("admin@demo.com", "admin123");
+                    break;
+                case "paid":
+                    SetDemoUser("paid@demo.com", "paid123");
+                    break;
+                case "free":
+                    SetDemoUser("user@demo.com", "user123");
+                    break;
+            }
+        }
     }
 }

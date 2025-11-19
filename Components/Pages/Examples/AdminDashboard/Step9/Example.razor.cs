@@ -12,6 +12,9 @@ public partial class ExampleBase : ComponentBase, IDisposable
 
     protected bool isComplete;
     protected IJSObjectReference? _copyModule;
+    private string _demoFrameSrc = BuildDemoFrameSrc();
+
+    protected string DemoFrameSrc => _demoFrameSrc;
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,6 +49,41 @@ public partial class ExampleBase : ComponentBase, IDisposable
         await ProgressService.MarkStepIncompleteAsync("admin-dashboard", 9);
         isComplete = false;
     }
+
+    protected void RefreshDemoFrame()
+    {
+        _demoFrameSrc = BuildDemoFrameSrc();
+    }
+
+    protected Task LaunchAdminDemo() => LaunchDemoAsync("admin");
+
+    protected Task LaunchPaidDemo() => LaunchDemoAsync("paid");
+
+    protected Task LaunchFreeDemo() => LaunchDemoAsync("free");
+
+    private async Task LaunchDemoAsync(string role)
+    {
+        var safeRole = role.ToLowerInvariant() switch
+        {
+            "admin" => "admin",
+            "paid" => "paid",
+            _ => "free"
+        };
+
+        var redirect = Uri.EscapeDataString("/admin/dashboard");
+        var targetUrl = $"/signin?demo={safeRole}&redirect={redirect}";
+
+        try
+        {
+            await JS.InvokeVoidAsync("open", targetUrl, "_blank", "noopener");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to launch demo window: {ex.Message}");
+        }
+    }
+
+    private static string BuildDemoFrameSrc() => $"/admin/dashboard?embed=docs&ts={DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
 
     public void Dispose()
     {

@@ -14,13 +14,12 @@
 
         <!-- Title -->
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            📝 Step 3: Sign Up Page (/signup)
+            📝 Step 3: Build the /signup page (SignUp.razor)
         </h1>
 
         <!-- Description -->
         <p class="text-xl text-gray-600 mb-8">
-            Build a simple <code>/signup</code> page so new users can register for the Admin Dashboard using Blazor
-            forms, validation, and EF Core.
+            Build the real <code>/signup</code> page from the Admin Dashboard demo so new users can create an account using the same layout, styling, and behavior as the finished experience.
         </p>
 
         <!-- What You'll Learn Section -->
@@ -28,16 +27,15 @@
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
 
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Create a registration form with email, password, display name, and role.</li>
-                <li>Use Blazor's <code>EditForm</code> with validation messages.</li>
-                <li>Create and save a new <code>User</code> via <code>AppDbContext</code>.</li>
-                <li>Show success and error messages when sign up succeeds or fails.</li>
+                <li>Create a friendly two-column sign up layout with Tailwind CSS.</li>
+                <li>Bind input fields directly to component state with <code>@@bind</code>.</li>
+                <li>Call a shared <code>IUserAuthService</code> to create accounts instead of using <code>AppDbContext</code> in the page.</li>
+                <li>Show clear error messages when sign up fails and navigate to <code>/profile</code> on success.</li>
             </ul>
 
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Blazor forms, data annotations, EF Core <code>Add</code> +
-                    <code>SaveChangesAsync</code>, simple role selection.
+                    <strong>💡 Key Concepts:</strong> Blazor two-way binding, calling a shared auth service from a page, simple error handling, and navigation.
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
@@ -55,138 +53,212 @@
 
         <!-- Signup Form Example -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Minimal /signup Form</h2>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: SignUp.razor (/signup)</h2>
 
             <p class="text-sm text-gray-600 mb-4">
-                Here is a simple sign up page that collects email, password, display name, and role, validates them, and
-                creates a new <code>User</code> record.
+                This is the exact <code>SignUp.razor</code> file used by the Admin Dashboard demo. You can copy and paste it into your own app to get the same experience.
             </p>
 
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
-                <div class="text-xs text-gray-500 mb-1">Components/Pages/Auth/Signup.razor</div>
-                <p class="text-xs text-gray-600 mb-2">Blazor sign up page with <code>EditForm</code>, validation, and EF
-                    Core save.</p>
+                <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor</div>
+                <p class="text-xs text-gray-600 mb-2">Blazor sign up page with a two-column layout and demo accounts sidebar, wired to the shared auth service.</p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
-                    <li>Uses <code>EditForm</code> and data annotations for validation.</li>
-                    <li>Checks for existing users before creating a new one.</li>
-                    <li>Saves a new <code>User</code> with <code>SaveChangesAsync</code> and shows messages.</li>
+                    <li>Uses basic inputs with <code>@@bind</code> instead of <code>EditForm</code> for simplicity.</li>
+                    <li>Calls into <code>IUserAuthService</code> to perform the actual sign up.</li>
+                    <li>Shows an inline error message when something goes wrong.</li>
+                    <li>Highlights the three demo accounts your learners can use.</li>
                 </ul>
-                <pre data-code-title="Components/Pages/Auth/Signup.razor"
+                <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/signup"
-@@using BlazorMock.Data
-@@using BlazorMock.Models
-@@inject AppDbContext Db
+@@rendermode InteractiveServer
+@@using BlazorMock.Components.Pages.Auth
+@@inherits SignUpBase
 
-&lt;h3 class="text-2xl font-bold mb-4"&gt;Sign up&lt;/h3&gt;
+&lt;PageTitle&gt;Sign Up&lt;/PageTitle&gt;
 
-@@if (!string.IsNullOrEmpty(SuccessMessage))
-{
-    &lt;div class="mb-4 px-4 py-2 rounded-lg bg-green-100 text-green-800 text-sm"&gt;@@SuccessMessage&lt;/div&gt;
-}
-@@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-    &lt;div class="mb-4 px-4 py-2 rounded-lg bg-red-100 text-red-800 text-sm"&gt;@@ErrorMessage&lt;/div&gt;
-}
+&lt;div class=&quot;py-10 px-4 rounded-3xl bg-gray-50&quot;&gt;
+    &lt;div class=&quot;max-w-6xl mx-auto px-4&quot;&gt;
+        &lt;div class=&quot;grid grid-cols-1 lg:grid-cols-2 gap-6 items-start&quot;&gt;
+            &lt;!-- Left: Sign Up Form --&gt;
+            &lt;div class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8&quot;&gt;
+                &lt;div class=&quot;text-center mb-6&quot;&gt;
+                    &lt;div class=&quot;h-16 w-16 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4&quot;&gt;
+                        &lt;svg class=&quot;w-8 h-8 text-white&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;
+                            &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot;
+                                d=&quot;M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z&quot; /&gt;
+                        &lt;/svg&gt;
+                    &lt;/div&gt;
+                    &lt;h1 class=&quot;text-3xl font-bold text-gray-900&quot;&gt;Create Account&lt;/h1&gt;
+                    &lt;p class=&quot;text-gray-600 mt-2&quot;&gt;Start your journey with us&lt;/p&gt;
+                &lt;/div&gt;
 
-&lt;EditForm Model="signupModel" OnValidSubmit="HandleValidSubmit"&gt;
-    &lt;DataAnnotationsValidator /&gt;
-    &lt;ValidationSummary /&gt;
+                @@if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    &lt;div class=&quot;mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm&quot;&gt;
+                        @@errorMessage
+                    &lt;/div&gt;
+                }
 
-    &lt;div class="space-y-4"&gt;
-        &lt;div&gt;
-            &lt;label class="block text-sm font-medium text-gray-700"&gt;Email&lt;/label&gt;
-            &lt;InputText @@bind-Value="signupModel.Email" class="mt-1 block w-full rounded-lg border-gray-300" /&gt;
-            &lt;ValidationMessage For="() =&gt; signupModel.Email" /&gt;
+                &lt;div class=&quot;space-y-4&quot;&gt;
+                    &lt;div&gt;
+                        &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;Full Name&lt;/label&gt;
+                        &lt;input type=&quot;text&quot; bind=&quot;fullName&quot;
+                            class=&quot;w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500&quot;
+                            placeholder=&quot;John Doe&quot; /&gt;
+                    &lt;/div&gt;
+                    &lt;div&gt;
+                        &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;Email&lt;/label&gt;
+                        &lt;input type=&quot;email&quot; bind=&quot;email&quot;
+                            class=&quot;w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500&quot;
+                            placeholder=&quot;you@example.com&quot; /&gt;
+                    &lt;/div&gt;
+                    &lt;div&gt;
+                        &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;Password&lt;/label&gt;
+                        &lt;input type=&quot;password&quot; bind=&quot;password&quot;
+                            onkeydown=&quot;(e =&gt; { if (e.Key == 'Enter') HandleSignUp(); })&quot;
+                            class=&quot;w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500&quot;
+                            placeholder=&quot;Create a password&quot; /&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;button @@onclick=&quot;HandleSignUp&quot;
+                    class=&quot;w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg transition-colors&quot;&gt;
+                    Create Account
+                &lt;/button&gt;
+
+                &lt;div class=&quot;mt-6 text-center&quot;&gt;
+                    &lt;p class=&quot;text-sm text-gray-600&quot;&gt;
+                        Already have an account?
+                        &lt;a href=&quot;/signin&quot; class=&quot;text-emerald-600 hover:text-emerald-700 font-medium&quot;&gt;Sign In&lt;/a&gt;
+                    &lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;!-- Right: Demo Accounts --&gt;
+            &lt;div
+                class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8 flex-1 h-full flex items-center flex-col justify-center&quot;&gt;
+                &lt;h3 class=&quot;text-xl font-bold text-gray-900 mb-2&quot;&gt;Demo Accounts&lt;/h3&gt;
+                &lt;p class=&quot;text-sm text-gray-600 mb-6&quot;&gt;Try our platform with these demo accounts&lt;/p&gt;
+
+                &lt;div class=&quot;space-y-3&quot;&gt;
+                    &lt;!-- Admin Account --&gt;
+                    &lt;div class=&quot;w-full p-4 bg-white border-2 border-gray-200 rounded-xl&quot;&gt;
+                        &lt;div class=&quot;flex items-center justify-center gap-3&quot;&gt;
+                            &lt;div
+                                class=&quot;h-10 w-10 rounded-full bg-red-600 flex items-center justify-center text-white font-semibold flex-shrink-0&quot;&gt;
+                                AD
+                            &lt;/div&gt;
+                            &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
+                                &lt;div class=&quot;flex items-center gap-2 mb-1&quot;&gt;
+                                    &lt;p class=&quot;text-sm font-semibold text-gray-900&quot;&gt;Admin User&lt;/p&gt;
+                                    &lt;span
+                                        class=&quot;px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded&quot;&gt;Admin&lt;/span&gt;
+                                &lt;/div&gt;
+                                &lt;p class=&quot;text-xs text-gray-600 mb-1&quot;&gt;admin@demo.com&lt;/p&gt;
+                                &lt;p class=&quot;text-xs text-gray-500&quot;&gt;Full system access • User management&lt;/p&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+                    &lt;!-- Paid Account --&gt;
+                    &lt;div class=&quot;w-full p-4 bg-white border-2 border-gray-200 rounded-xl&quot;&gt;
+                        &lt;div class=&quot;flex items-center justify-center gap-3&quot;&gt;
+                            &lt;div
+                                class=&quot;h-10 w-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold flex-shrink-0&quot;&gt;
+                                PU
+                            &lt;/div&gt;
+                            &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
+                                &lt;div class=&quot;flex items-center gap-2 mb-1&quot;&gt;
+                                    &lt;p class=&quot;text-sm font-semibold text-gray-900&quot;&gt;Paid User&lt;/p&gt;
+                                    &lt;span
+                                        class=&quot;px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 rounded&quot;&gt;Paid&lt;/span&gt;
+                                &lt;/div&gt;
+                                &lt;p class=&quot;text-xs text-gray-600 mb-1&quot;&gt;paid@demo.com&lt;/p&gt;
+                                &lt;p class=&quot;text-xs text-gray-500&quot;&gt;Advanced analytics • Premium features&lt;/p&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+                    &lt;!-- Free Account --&gt;
+                    &lt;div class=&quot;w-full p-4 bg-white border-2 border-gray-200 rounded-xl&quot;&gt;
+                        &lt;div class=&quot;flex items-center justify-center gap-3&quot;&gt;
+                            &lt;div
+                                class=&quot;h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white font-semibold flex-shrink-0&quot;&gt;
+                                FU
+                            &lt;/div&gt;
+                            &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
+                                &lt;div class=&quot;flex items-center gap-2 mb-1&quot;&gt;
+                                    &lt;p class=&quot;text-sm font-semibold text-gray-900&quot;&gt;Free User&lt;/p&gt;
+                                    &lt;span
+                                        class=&quot;px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 rounded&quot;&gt;Free&lt;/span&gt;
+                                &lt;/div&gt;
+                                &lt;p class=&quot;text-xs text-gray-600 mb-1&quot;&gt;user@demo.com&lt;/p&gt;
+                                &lt;p class=&quot;text-xs text-gray-500&quot;&gt;Basic metrics • Limited access&lt;/p&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div class=&quot;mt-6 text-center&quot;&gt;
+                    &lt;a href=&quot;/signin&quot;
+                        class=&quot;inline-flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700 font-medium&quot;&gt;
+                        &lt;svg class=&quot;w-4 h-4&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;
+                            &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot;
+                                d=&quot;M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1&quot; /&gt;
+                        &lt;/svg&gt;
+                        Sign in with demo account
+                    &lt;/a&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
         &lt;/div&gt;
-
-        &lt;div&gt;
-            &lt;label class="block text-sm font-medium text-gray-700"&gt;Password&lt;/label&gt;
-            &lt;InputText @@bind-Value="signupModel.Password" type="password" class="mt-1 block w-full rounded-lg border-gray-300" /&gt;
-            &lt;ValidationMessage For="() =&gt; signupModel.Password" /&gt;
-        &lt;/div&gt;
-
-        &lt;div&gt;
-            &lt;label class="block text-sm font-medium text-gray-700"&gt;Display name&lt;/label&gt;
-            &lt;InputText @@bind-Value="signupModel.DisplayName" class="mt-1 block w-full rounded-lg border-gray-300" /&gt;
-            &lt;ValidationMessage For="() =&gt; signupModel.DisplayName" /&gt;
-        &lt;/div&gt;
-
-        &lt;div&gt;
-            &lt;label class="block text-sm font-medium text-gray-700"&gt;Role&lt;/label&gt;
-            &lt;InputSelect @@bind-Value="signupModel.Role" class="mt-1 block w-full rounded-lg border-gray-300"&gt;
-                &lt;option value=""&gt;Select a role...&lt;/option&gt;
-                &lt;option value="Admin"&gt;Admin&lt;/option&gt;
-                &lt;option value="Viewer"&gt;Viewer&lt;/option&gt;
-            &lt;/InputSelect&gt;
-            &lt;ValidationMessage For="() =&gt; signupModel.Role" /&gt;
-        &lt;/div&gt;
-
-        &lt;button type="submit" class="mt-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"&gt;
-            Create account
-        &lt;/button&gt;
     &lt;/div&gt;
-&lt;/EditForm&gt;
-
-@@code {
-    private SignupModel signupModel = new();
-
-    public string? SuccessMessage { get; set; }
-    public string? ErrorMessage { get; set; }
-
-    private async Task HandleValidSubmit()
-    {
-        try
-        {
-            var existing = await Db.Users.FirstOrDefaultAsync(u =&gt; u.Email == signupModel.Email);
-            if (existing != null)
-            {
-                ErrorMessage = "A user with that email already exists.";
-                SuccessMessage = null;
-                return;
-            }
-
-            var user = new User
-            {
-                Email = signupModel.Email,
-                PasswordHash = signupModel.Password,
-                DisplayName = signupModel.DisplayName,
-                Role = string.IsNullOrWhiteSpace(signupModel.Role) ? "Viewer" : signupModel.Role
-            };
-
-            Db.Users.Add(user);
-            await Db.SaveChangesAsync();
-
-            SuccessMessage = "Account created! You can now sign in.";
-            ErrorMessage = null;
-            signupModel = new();
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Something went wrong while creating the account: {ex.Message}";
-            SuccessMessage = null;
-        }
-    }
-
-    public class SignupModel
-    {
-        [Required, EmailAddress]
-        public string Email { get; set; } = string.Empty;
-
-        [Required, MinLength(6)]
-        public string Password { get; set; } = string.Empty;
-
-        [Required]
-        public string DisplayName { get; set; } = string.Empty;
-
-        public string Role { get; set; } = "Viewer";
-    }
-}</pre>
+&lt;/div&gt;</pre>
             </div>
-
             <p class="text-xs text-gray-600">
-                This example keeps things intentionally simple: passwords are stored as plain text for teaching purposes
-                only. In a real app, you would hash passwords and use a proper identity system.
+                This is a demo-only implementation. In a real app, you would hash passwords, use a proper identity system, and store users in a real database.
             </p>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mt-6">
+                <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor.cs</div>
+                <p class="text-xs text-gray-600 mb-2">Code-behind base class that injects <code>IUserAuthService</code> and handles <code>HandleSignUp</code>.</p>
+                <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor.cs"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
+using BlazorMock.Services;
+
+namespace BlazorMock.Components.Pages.Auth;
+
+public partial class SignUpBase : ComponentBase
+{
+    [Inject] protected IUserAuthService Auth { get; set; } = default!;
+    [Inject] protected NavigationManager Nav { get; set; } = default!;
+
+    protected string fullName = string.Empty;
+    protected string email = string.Empty;
+    protected string password = string.Empty;
+    protected string errorMessage = string.Empty;
+
+    protected void HandleSignUp()
+    {
+        errorMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            errorMessage = "Please fill in all fields.";
+            return;
+        }
+
+        if (Auth.SignUp(email, password, fullName))
+        {
+            Nav.NavigateTo("/profile");
+        }
+        else
+        {
+            errorMessage = "An account with this email already exists.";
+        }
+    }
+}
+</pre>
+            </div>
         </div>
 
         <!-- How to do it (Gradient Banner) -->
@@ -195,41 +267,43 @@
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
                 <li>
                     <strong>Create the folder and file:</strong>
-                    Add <code>Components/Pages/Auth/Signup.razor</code> to your project.
+                    Add <code>Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor</code> to your project (or the equivalent path in your app).
                 </li>
                 <li>
-                    <strong>Set up the route and DI:</strong>
-                    Use <code>@@page &quot;/signup&quot;</code>, import <code>BlazorMock.Data</code> and
-                    <code>BlazorMock.Models</code>, and inject <code>AppDbContext</code>.
+                    <strong>Set up the route and base class:</strong>
+                    Use <code>@@page &quot;/signup&quot;</code>, <code>@@rendermode InteractiveServer</code>, import
+                    <code>BlazorMock.Components.Pages.Auth</code>, and inherit from <code>SignUpBase</code>.
                 </li>
                 <li>
-                    <strong>Create the form model:</strong>
-                    Define a <code>SignupModel</code> class with <code>Email</code>, <code>Password</code>,
-                    <code>DisplayName</code>, and <code>Role</code> properties using data annotations.
+                    <strong>Review the code-behind:</strong>
+                    Open the <code>SignUp.razor.cs</code> file to see how <code>SignUpBase</code> injects
+                    <code>IUserAuthService</code> and <code>NavigationManager</code>, and implements
+                    <code>HandleSignUp</code>.
                 </li>
                 <li>
                     <strong>Build the form UI:</strong>
-                    Use <code>EditForm</code> with <code>InputText</code>, <code>InputSelect</code>,
-                    <code>DataAnnotationsValidator</code>, and <code>ValidationMessage</code> for each field.
+                    Use regular <code>&lt;input&gt;</code> elements with <code>@@bind</code> to capture the full name,
+                    email, and password.
                 </li>
                 <li>
-                    <strong>Handle valid submit:</strong>
-                    In <code>HandleValidSubmit</code>, check for an existing user by email, create a new
-                    <code>User</code>, call <code>Db.SaveChangesAsync()</code>, and show success or error messages.
+                    <strong>Wire up sign up:</strong>
+                    Ensure the <code>Create Account</code> button calls <code>HandleSignUp</code> which delegates to
+                    <code>IUserAuthService</code>. Show an error message when sign up fails.
                 </li>
                 <li>
-                    <strong>Default the role:</strong>
-                    If no role is selected, default to <code>&quot;Viewer&quot;</code> so new users have a safe, minimal
-                    role.
+                    <strong>Link to sign in:</strong>
+                    Add the "Already have an account? Sign In" link to <code>/signin</code> so learners can move
+                    between the two auth pages.
                 </li>
                 <li>
                     <strong>Test the flow:</strong>
-                    Run the app, go to <code>/signup</code>, create a user, then verify the record exists in the
-                    database.
+                    Run the app, go to <code>/signup</code>, try creating an account, and confirm that you're
+                    redirected to <code>/profile</code>.
                 </li>
                 <li>
                     <strong>Connect to the rest of the app:</strong>
-                    After this step, you’ll wire <code>/signin</code> and basic dashboard auth behavior in Step 4.
+                    After this step, you'll build the real <code>/signin</code> page in Step 4 to complete the auth
+                    loop.
                 </li>
             </ol>
         </div>

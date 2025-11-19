@@ -1,13 +1,13 @@
-# Admin Dashboard Step 9 — Dashboard Layout Shell (/admin/dashboard)
+# Admin Dashboard Step 9 — Real Admin Experience (/admin/dashboard)
 
 ## Overview
 
-This step builds the first version of the `/admin/dashboard` page: a responsive layout that pulls together key metrics and navigation areas.
+Replace the placeholder dashboard shell with the exact admin experience that ships under `Components/Pages/Demo/DashboardDemo/AdminDashboard`. Students mirror the production page: guard the route by role, surface seeded metrics via `IUserAuthService`, and reuse the responsive user-management UI (mobile cards + desktop table) so tutorials and the live demo stay in sync.
 
 ## Files in This Folder
 
-- `Example.razor` — Tutorial page explaining the dashboard layout shell.
-- `Example.razor.cs` — Code-behind for the tutorial page with progress tracking.
+- `Example.razor` — Tutorial page documenting the canonical admin dashboard.
+- `Example.razor.cs` — Code-behind for tutorial progress tracking.
 
 ## Routes
 
@@ -15,43 +15,44 @@ This step builds the first version of the `/admin/dashboard` page: a responsive 
 
 ## What Students Learn
 
-1. How to create a dedicated `/admin/dashboard` page.
-2. How to design a layout with header, sidebar (or nav), and main content areas.
-3. How to place summary cards and analytics components inside the dashboard.
-4. How to ensure the layout works well on both large and small screens.
+1. Blocking non-admin roles from `/admin/dashboard` with the same service used in the demo.
+2. Using `Auth.AllUsers` counts to drive KPI tiles without duplicating EF queries.
+3. Rendering both `md:hidden` card stacks and `hidden md:block` tables for responsive parity.
+4. Wiring role dropdowns and delete buttons into `Auth.AdminUpdateUserRole` / `Auth.AdminDeleteUser` helpers.
 
 ## Key Concepts
 
-- Layout composition in Blazor
-- Responsive design using Tailwind CSS
-- Reusing analytics and profile components on the dashboard
-- Separating layout from data queries where possible
+- Role-gated routes backed by `IUserAuthService`.
+- Deterministic, seeded sample data for docs + QA parity.
+- Responsive Tailwind patterns that swap card and table layouts.
+- Code-behind helpers that centralize styling (`GetRoleSelectClass`) and service calls.
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step9` namespace.
-- Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `9`.
-- Leverages analytics data from Steps 6–8.
+- Tutorial page inherits `ExampleBase` within `BlazorMock.Components.Pages.Examples.AdminDashboard.Step9`.
+- Uses `ILearningProgressService` to mark `admin-dashboard` step `9` complete.
+- Samples are HTML-encoded copies of `DashboardDemo/AdminDashboard.razor` and `.razor.cs`.
 
 ## Prerequisites
 
-- Steps 0–8 completed.
+- Steps 0–8 completed (auth service + analytics tiles already in place).
 
 ## Next Steps
 
-- Proceed to Step 10 to lock down access to `/profile`, `/analytics`, and `/admin/dashboard` using route protection.
+- Step 10 applies the same auth gating to `/profile`, `/analytics`, and other routes.
 
 ## Code Structure
 
-- `ExampleBase` handles completion tracking and JS enhancements.
-- The tutorial page focuses on layout markup and component composition.
+- `ExampleBase` continues to handle completion tracking and JS helpers.
+- `Example.razor` focuses on the admin guard, KPI grid, responsive user lists, and code-behind snippets.
 
 ## Common Issues & Solutions
 
-- **Layout breaking on mobile**: Test at smaller breakpoints and adjust flex/grid behavior.
-- **Empty dashboard**: Ensure analytics and user data are wired correctly into the layout.
+- **Admin lockout showing for admins**: Ensure your seeded admin still has `Role == "Admin"`.
+- **Dropdown styles missing**: Apply `@@GetRoleSelectClass` to both mobile and desktop selects.
+- **Delete button visible on yourself**: Preserve the `user.Id == Auth.CurrentUser.Id` guard.
 
 ## Related Resources
 
-- Tailwind CSS layout and grid docs
-- Blazor layout and component composition
+- `Components/Pages/Demo/DashboardDemo/AdminDashboard.razor`
+- Tips page sections on Auth Service and Tailwind layouts

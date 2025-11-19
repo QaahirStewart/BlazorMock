@@ -10,6 +10,10 @@ public partial class ProgressBase : ComponentBase
 {
     [Inject] protected ILearningProgressService ProgressService { get; set; } = default!;
 
+    protected const string TruckingProjectKey = "trucking";
+    protected const string PokemonProjectKey = "pokemon";
+    protected const string AdminProjectKey = "admin-dashboard";
+
     protected List<StepProgress>? truckingSteps;
     protected int truckingCompletedCount;
 
@@ -26,23 +30,23 @@ public partial class ProgressBase : ComponentBase
 
     protected async Task LoadProgressAsync()
     {
-        truckingSteps = await ProgressService.GetAllStepsAsync("trucking");
-        truckingCompletedCount = await ProgressService.GetCompletedCountAsync("trucking");
+        truckingSteps = await ProgressService.GetAllStepsAsync(TruckingProjectKey);
+        truckingCompletedCount = await ProgressService.GetCompletedCountAsync(TruckingProjectKey);
 
-        pokemonSteps = await ProgressService.GetAllStepsAsync("pokemon");
-        pokemonCompletedCount = await ProgressService.GetCompletedCountAsync("pokemon");
+        pokemonSteps = await ProgressService.GetAllStepsAsync(PokemonProjectKey);
+        pokemonCompletedCount = await ProgressService.GetCompletedCountAsync(PokemonProjectKey);
 
-        adminSteps = await ProgressService.GetAllStepsAsync("admin");
-        adminCompletedCount = await ProgressService.GetCompletedCountAsync("admin");
+        adminSteps = await ProgressService.GetAllStepsAsync(AdminProjectKey);
+        adminCompletedCount = await ProgressService.GetCompletedCountAsync(AdminProjectKey);
     }
 
     protected async Task ToggleStep(string projectKey, int stepNumber)
     {
         var step = projectKey switch
         {
-            "trucking" => truckingSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
-            "pokemon" => pokemonSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
-            "admin" => adminSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
+            TruckingProjectKey => truckingSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
+            PokemonProjectKey => pokemonSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
+            AdminProjectKey => adminSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
             _ => null
         };
 
