@@ -38,12 +38,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xHcmVldGluZ0NhcmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/AdminDashboard.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pbkRhc2hib2FyZC5yYXpvcg==
+[D:/BlazorMock/Components/Pages/AdminDashboardGuide.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pbkRhc2hib2FyZEd1aWRlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/AdminGuide.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pbkd1aWRlLnJhem9y
+[D:/BlazorMock/Components/Pages/AdminDashboardPhase.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pbkRhc2hib2FyZFBoYXNlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/AdminPhase.razor]
@@ -68,6 +68,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/BlazorMock/Components/Pages/Demo/AdminPanelDemo.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXEFkbWluUGFuZWxEZW1vLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Demo/DashboardDemo/AdminDashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXERhc2hib2FyZERlbW9cQWRtaW5EYXNoYm9hcmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/Demo/PokemonCollectorDemo.razor]
@@ -98,68 +102,44 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step0/Example.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMFxFeGFtcGxlLnJhem9y
+[D:/BlazorMock/Components/Pages/Examples/AdminDashboard/Step10/Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pbkRhc2hib2FyZFxTdGVwMTBcRXhhbXBsZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step1/AdminLayoutExample.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMVxBZG1pbkxheW91dEV4YW1wbGUucmF6b3I=
+[D:/BlazorMock/Components/Pages/Examples/AdminDashboard/Step1/Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pbkRhc2hib2FyZFxTdGVwMVxFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step1/Example.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMVxFeGFtcGxlLnJhem9y
+[D:/BlazorMock/Components/Pages/Examples/AdminDashboard/Step2/Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pbkRhc2hib2FyZFxTdGVwMlxFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step200/Example.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMjAwXEV4YW1wbGUucmF6b3I=
+[D:/BlazorMock/Components/Pages/Examples/AdminDashboard/Step3/Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pbkRhc2hib2FyZFxTdGVwM1xFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step201/Example.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMjAxXEV4YW1wbGUucmF6b3I=
+[D:/BlazorMock/Components/Pages/Examples/AdminDashboard/Step4/Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pbkRhc2hib2FyZFxTdGVwNFxFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step202/Example.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMjAyXEV4YW1wbGUucmF6b3I=
+[D:/BlazorMock/Components/Pages/Examples/AdminDashboard/Step5/Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pbkRhc2hib2FyZFxTdGVwNVxFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step203/Example.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMjAzXEV4YW1wbGUucmF6b3I=
+[D:/BlazorMock/Components/Pages/Examples/AdminDashboard/Step6/Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pbkRhc2hib2FyZFxTdGVwNlxFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step204/Example.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMjA0XEV4YW1wbGUucmF6b3I=
+[D:/BlazorMock/Components/Pages/Examples/AdminDashboard/Step7/Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pbkRhc2hib2FyZFxTdGVwN1xFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step2/AdminAuthExample.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMlxBZG1pbkF1dGhFeGFtcGxlLnJhem9y
+[D:/BlazorMock/Components/Pages/Examples/AdminDashboard/Step8/Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pbkRhc2hib2FyZFxTdGVwOFxFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step2/AdminStatCard.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMlxBZG1pblN0YXRDYXJkLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step2/AdminStatCardExample.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMlxBZG1pblN0YXRDYXJkRXhhbXBsZS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step2/Example.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwMlxFeGFtcGxlLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step3/AdminDashboardExample.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwM1xBZG1pbkRhc2hib2FyZEV4YW1wbGUucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step3/AdminDashboardShellExample.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwM1xBZG1pbkRhc2hib2FyZFNoZWxsRXhhbXBsZS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step3/AdminStatusBadge.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwM1xBZG1pblN0YXR1c0JhZGdlLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/Examples/Admin/Step3/Example.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pblxTdGVwM1xFeGFtcGxlLnJhem9y
+[D:/BlazorMock/Components/Pages/Examples/AdminDashboard/Step9/Example.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFeGFtcGxlc1xBZG1pbkRhc2hib2FyZFxTdGVwOVxFeGFtcGxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/Examples/Pokemon/Step0/Example.razor]

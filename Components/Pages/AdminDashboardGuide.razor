@@ -1,0 +1,104 @@
+@page "/admin-dashboard-guide"
+@rendermode InteractiveServer
+@inherits AdminDashboardGuideBase
+
+<PageTitle>Admin Dashboard Guide</PageTitle>
+
+<div class="min-h-screen py-8">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <div class="flex flex-col items-center justify-center gap-3 mb-4">
+                <span class="text-6xl sm:text-7xl">🛡️</span>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 break-words">
+                    Admin Dashboard Guide
+                </h1>
+            </div>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed break-words">
+                Learn authentication, protected routes, and analytics by building a focused admin dashboard experience.
+            </p>
+        </div>
+
+        <!-- Learning Phases banner (neutral for entire project) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 mt-12">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">🔰 Learning Phases</h2>
+            <p class="text-sm sm:text-base text-gray-700 break-words">Pick a phase to focus. Each card links to steps
+                with examples.</p>
+        </div>
+
+        <!-- Phase cards grid -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10 max-w-6xl mx-auto"
+             hidden="@(_phases is null || _steps is null)">
+            @if (_phases is not null && _steps is not null)
+            {
+                @foreach (var ph in _phases)
+                {
+                    var count = _steps.Count(s => s.IsComplete && ph.StepNumbers.Contains(s.StepNumber));
+                    <a href="@($"/admin-dashboard-guide/phase/{ph.Id}")"
+                       class="@($"rounded-2xl p-0 bg-white border-2 border-gray-200 hover:shadow-lg transition-all text-left block {PhaseHoverBorder(ph.Id)}")">
+                        <div class="p-8">
+                            <div class="flex items-start justify-between gap-4 mb-3">
+                                <div class="min-w-0">
+                                    <div
+                                        class="@($"inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mb-2 {PhasePillColors(ph.Id)}")">
+                                        @ph.Subtitle
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-1 break-words">@ph.Title</h3>
+                                    <p class="text-sm sm:text-base text-gray-700 leading-relaxed break-words">@ph.Description
+                                    </p>
+                                </div>
+                                <div class="text-gray-400 self-start">→</div>
+                            </div>
+                            <div class="text-sm text-gray-600">Progress: @count/@ph.StepNumbers.Length</div>
+                        </div>
+                    </a>
+                }
+            }
+        </div>
+
+        <!-- Learning resources / overall progress -->
+        <div class="bg-black/3 rounded-2xl">
+            <div class="bg-black/90 rounded-2xl p-5 sm:p-6 text-white">
+                <p class="text-lg sm:text-xl font-semibold mb-4 text-center break-words">📚 Learning Resources
+                </p>
+
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                    <a href="/demo/admin-dashboard"
+                       class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl flex-shrink-0">📖</span>
+                            <div class="min-w-0">
+                                <div class="text-sm sm:text-base font-semibold break-words">Admin Dashboard Demo</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">Finished experience: sign in, profile, analytics, dashboard</div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/tips" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl flex-shrink-0">💡</span>
+                            <div class="min-w-0">
+                                <div class="text-sm sm:text-base font-semibold break-words">Tips System</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">Browse Blazor & C# topics
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl flex-shrink-0">📊</span>
+                            <div class="min-w-0">
+                                <div class="text-sm sm:text-base font-semibold break-words">Project Progress</div>
+                                <div class="text-xs sm:text-sm text-gray-300 break-words">View all steps & completion
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="text-center text-xs sm:text-sm text-gray-300 break-words" hidden="@(_steps is null)">
+                    <strong>Progress:</strong> @_completedCount / @(_steps?.Count ?? 0) steps complete
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

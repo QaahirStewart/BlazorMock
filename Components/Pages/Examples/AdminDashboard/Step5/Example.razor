@@ -1,0 +1,395 @@
+@page "/admin-dashboard-examples/step5"
+@rendermode InteractiveServer
+@inherits ExampleBase
+
+<PageTitle>Admin Dashboard Step 5: Profile Page - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/admin-dashboard-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Admin Dashboard Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            🎯 Step 5: Profile Page
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Teach users how to build a profile page where signed-in users can view and update their details.
+        </p>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                In this step, you'll build a simple Profile page that lets a signed-in user see and edit their own
+                information, using the same AppState and EF Core patterns you've used for sign-in and sign-up.
+            </p>
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Reading the current user from shared <code>AppState</code>.</li>
+                <li>Loading and updating a single user record with EF Core.</li>
+                <li>Using <code>EditForm</code> to edit an existing entity.</li>
+                <li>Showing success and error messages for profile updates.</li>
+            </ul>
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> EditForm for existing data, EF Core updates, shared AppState.
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#editform-+-validation"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">EditForm
+                        + Validation</a>
+                    <a href="/tips#savechangesasync"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">SaveChangesAsync</a>
+                    <a href="/tips#findasync"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">FindAsync</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component Section -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: Profile.razor</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                This sample shows a basic profile page that lets the current signed-in user view and update their
+                display name and role using an <code>EditForm</code> bound to a simple model.
+            </p>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Components/Pages/Profile.razor</div>
+                <p class="text-xs text-gray-600 mb-2">Profile page bound to the current user from AppState.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Reads the signed-in user from <code>AppState</code>.</li>
+                    <li>Shows a simple form for updating display name and role.</li>
+                    <li>Persists changes back to the database with EF Core.</li>
+                </ul>
+                <pre data-code-title="Components/Pages/Profile.razor"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/profile"
+@@using BlazorMock.Data
+@@using BlazorMock.Models
+@@inject AppDbContext Db
+@@inject BlazorMock.Services.AppState AppState
+
+&lt;h3 class="text-2xl font-bold mb-4"&gt;Your Profile&lt;/h3&gt;
+
+@@if (AppState.CurrentUser is null)
+{
+    &lt;p class="text-sm text-gray-600"&gt;You need to sign in before you can view your profile.&lt;/p&gt;
+}
+else
+{
+    &lt;EditForm Model="profileModel" OnValidSubmit="HandleValidSubmit"&gt;
+        &lt;DataAnnotationsValidator /&gt;
+        &lt;ValidationSummary /&gt;
+
+        &lt;div class="space-y-4"&gt;
+            &lt;div&gt;
+                &lt;label class="block text-sm font-medium text-gray-700"&gt;Email&lt;/label&gt;
+                &lt;input class="mt-1 block w-full rounded-lg border-gray-300 bg-gray-100 text-gray-600" value="@@AppState.CurrentUser.Email" disabled /&gt;
+            &lt;/div&gt;
+
+            &lt;div&gt;
+                &lt;label class="block text-sm font-medium text-gray-700"&gt;Display name&lt;/label&gt;
+                &lt;InputText @@bind-Value="profileModel.DisplayName" class="mt-1 block w-full rounded-lg border-gray-300" /&gt;
+            &lt;/div&gt;
+
+            &lt;div&gt;
+                &lt;label class="block text-sm font-medium text-gray-700"&gt;Role&lt;/label&gt;
+                &lt;InputSelect @@bind-Value="profileModel.Role" class="mt-1 block w-full rounded-lg border-gray-300"&gt;
+                    &lt;option value="Admin"&gt;Admin&lt;/option&gt;
+                    &lt;option value="Viewer"&gt;Viewer&lt;/option&gt;
+                &lt;/InputSelect&gt;
+            &lt;/div&gt;
+
+            &lt;button type="submit" class="mt-2 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"&gt;
+                Save changes
+            &lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/EditForm&gt;
+}
+
+@@code {
+    private ProfileModel profileModel = new();
+
+    protected override void OnInitialized()
+    {
+        if (AppState.CurrentUser is not null)
+        {
+            profileModel.DisplayName = AppState.CurrentUser.DisplayName;
+            profileModel.Role = AppState.CurrentUser.Role;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (AppState.CurrentUser is null)
+        {
+            return;
+        }
+
+        var user = await Db.Users.FirstOrDefaultAsync(u =&gt; u.Id == AppState.CurrentUser.Id);
+        if (user is null)
+        {
+            return;
+        }
+
+        user.DisplayName = profileModel.DisplayName;
+        user.Role = profileModel.Role;
+
+        await Db.SaveChangesAsync();
+
+        AppState.CurrentUser.DisplayName = profileModel.DisplayName;
+        AppState.CurrentUser.Role = profileModel.Role;
+    }
+
+    public class ProfileModel
+    {
+        [Required]
+        public string DisplayName { get; set; } = string.Empty;
+
+        [Required]
+        public string Role { get; set; } = "Viewer";
+    }
+}</pre>
+            </div>
+
+            <!-- Step-by-step breakdown -->
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Read current user from AppState</div>
+                    <p class="text-xs text-gray-600 mb-2">The profile page uses the shared AppState service to find the
+                        current signed-in user.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Checks <code>AppState.CurrentUser</code> in <code>OnInitialized</code>.</li>
+                        <li>Copies existing values into a local <code>ProfileModel</code>.</li>
+                        <li>Falls back to a friendly message if no one is signed in.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@code {
+    private ProfileModel profileModel = new();
+
+    protected override void OnInitialized()
+    {
+        if (AppState.CurrentUser is not null)
+        {
+            profileModel.DisplayName = AppState.CurrentUser.DisplayName;
+            profileModel.Role = AppState.CurrentUser.Role;
+        }
+    }
+}</pre>
+                </div>
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Save updates back to the database</div>
+                    <p class="text-xs text-gray-600 mb-2">On submit, the page looks up the user in the database,
+                        applies changes, and saves them with EF Core.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Loads the current user by <code>Id</code> using <code>FirstOrDefaultAsync</code>.</li>
+                        <li>Copies form values onto the entity.</li>
+                        <li>Calls <code>SaveChangesAsync</code> and updates <code>AppState.CurrentUser</code>.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">private async Task HandleValidSubmit()
+{
+    if (AppState.CurrentUser is null)
+    {
+        return;
+    }
+
+    var user = await Db.Users.FirstOrDefaultAsync(u =&gt; u.Id == AppState.CurrentUser.Id);
+    if (user is null)
+    {
+        return;
+    }
+
+    user.DisplayName = profileModel.DisplayName;
+    user.Role = profileModel.Role;
+
+    await Db.SaveChangesAsync();
+
+    AppState.CurrentUser.DisplayName = profileModel.DisplayName;
+    AppState.CurrentUser.Role = profileModel.Role;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+            <div class="space-y-3">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Keep the profile form small and focused
+                            </p>
+                            <p class="text-xs text-blue-800">Only expose fields that make sense for end users to edit
+                                (like display name). Keep sensitive fields (like email confirmation or internal IDs)
+                                admin-only.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Reuse your AppState service</p>
+                            <p class="text-xs text-blue-800">By keeping the current user in AppState, you can show their
+                                info in the navbar, dashboard, and profile page without re-querying the database every
+                                time.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>If the form never shows, make sure you're setting <code>AppState.CurrentUser</code> on
+                            successful sign-in.</li>
+                        <li>If changes don't stick, confirm <code>SaveChangesAsync</code> is being awaited and no
+                            exceptions are swallowed.</li>
+                        <li>If you get a null reference on <code>AppState.CurrentUser</code>, add a null check and show
+                            a
+                            friendly "please sign in" message.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
+                <li>
+                    <strong>Create the Profile page:</strong>
+                    Add <code>Profile.razor</code> under <code>Components/Pages/</code> with the
+                    <code>@@page "/profile"</code> directive and inject <code>AppDbContext</code> and
+                    <code>AppState</code>.
+                </li>
+                <li>
+                    <strong>Bind the form to the current user:</strong>
+                    In <code>OnInitialized</code>, copy values from <code>AppState.CurrentUser</code> into a
+                    <code>ProfileModel</code>, then bind your <code>InputText</code> and <code>InputSelect</code>
+                    components.
+                </li>
+                <li>
+                    <strong>Save changes with EF Core:</strong>
+                    In <code>HandleValidSubmit</code>, look up the user by <code>Id</code>, copy the edited values, and
+                    call <code>SaveChangesAsync</code>. Remember to keep <code>AppState.CurrentUser</code> in sync so
+                    the
+                    rest of the UI updates.
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Here's what the <code>/profile</code> page looks like:
+            </p>
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                <div class="max-w-2xl mx-auto p-8">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-2">Profile</h2>
+                        <p class="text-gray-600">Update your account information</p>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                        <p class="text-sm text-blue-800">
+                            <strong>Signed in as:</strong> user@example.com
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" value="user@example.com"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                            <input type="text" value="User"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button
+                                class="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                                Save Changes
+                            </button>
+                            <button
+                                class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                                Sign Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
+                    <p class="text-xs text-gray-600">
+                        💡 <strong>Try it live:</strong> <a href="/profile"
+                            class="text-blue-600 hover:text-blue-700 font-medium">Open /profile →</a> to update your
+                        account after signing in.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 5?</h3>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning
+                        progress.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                            Reset
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    With your Profile page in place, your Admin Dashboard now has a complete basic auth loop: sign up,
+                    sign in, and manage who you are.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/admin-dashboard-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step4"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 4</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step6"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 6</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

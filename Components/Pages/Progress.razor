@@ -1,6 +1,6 @@
 @page "/progress"
-@inject ILearningProgressService ProgressService
 @rendermode InteractiveServer
+@inherits ProgressBase
 
 <PageTitle>Learning Progress</PageTitle>
 
@@ -174,52 +174,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    private List<StepProgress>? truckingSteps;
-    private int truckingCompletedCount = 0;
-
-    private List<StepProgress>? pokemonSteps;
-    private int pokemonCompletedCount = 0;
-
-    private List<StepProgress>? adminSteps;
-    private int adminCompletedCount = 0;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadProgressAsync();
-    }
-
-    private async Task LoadProgressAsync()
-    {
-        truckingSteps = await ProgressService.GetAllStepsAsync("trucking");
-        truckingCompletedCount = await ProgressService.GetCompletedCountAsync("trucking");
-
-        pokemonSteps = await ProgressService.GetAllStepsAsync("pokemon");
-        pokemonCompletedCount = await ProgressService.GetCompletedCountAsync("pokemon");
-
-        adminSteps = await ProgressService.GetAllStepsAsync("admin");
-        adminCompletedCount = await ProgressService.GetCompletedCountAsync("admin");
-    }
-
-    private async Task ToggleStep(string projectKey, int stepNumber)
-    {
-        var step = projectKey switch
-        {
-            "trucking" => truckingSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
-            "pokemon" => pokemonSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
-            "admin" => adminSteps?.FirstOrDefault(s => s.StepNumber == stepNumber),
-            _ => null
-        };
-
-        if (step != null)
-        {
-            if (step.IsComplete)
-                await ProgressService.MarkStepIncompleteAsync(projectKey, stepNumber);
-            else
-                await ProgressService.MarkStepCompleteAsync(projectKey, stepNumber);
-
-            await LoadProgressAsync();
-        }
-    }
-}

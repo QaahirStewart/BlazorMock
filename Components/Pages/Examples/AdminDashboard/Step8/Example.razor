@@ -1,0 +1,428 @@
+@page "/admin-dashboard-examples/step8"
+@rendermode InteractiveServer
+@using BlazorMock.Components.Pages.Examples.AdminDashboard.Step8
+@inherits ExampleBase
+
+<PageTitle>Admin Dashboard Step 8: CSS-Only Visualizations - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/admin-dashboard-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Admin Dashboard Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            📈 Step 8: Analytics Visualizations (CSS-only)
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Turn the raw numbers on your <code>/analytics</code> page into simple, CSS-only visualizations like bars,
+            progress indicators, and heatmap-style grids—no chart library required.
+        </p>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                In this step, you'll layer CSS-only visuals on top of the analytics metrics and recent activity you
+                built in Step 7.
+            </p>
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Mapping numeric metrics to bar-like divs using width and background color.</li>
+                <li>Building progress bars for completion or adoption metrics.</li>
+                <li>Creating a simple heatmap grid using background colors and CSS utility classes.</li>
+                <li>Designing visuals that still make sense when there's little or no data.</li>
+            </ul>
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> Tailwind CSS utilities, data-to-visual mapping, accessible
+                    visualizations, CSS-only charts.
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#tolistasync"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">ToListAsync</a>
+                    <a href="/tips#linq-aggregation"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">LINQ
+                        Aggregation</a>
+                    <a href="/tips#css-utility-classes"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">CSS
+                        utility classes</a>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Code Example: CSS-only visualizations on /analytics -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">📄 Example: Enhancing /analytics with CSS-only visuals</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                This snippet shows how you might take the metrics from Step 7 and map them to CSS-based bars and
+                progress indicators in your real <code>/analytics</code> page.
+            </p>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                <div class="text-xs text-gray-500 mb-1">Components/Pages/Analytics.razor (excerpt)</div>
+                <p class="text-xs text-gray-600 mb-2">Binding analytics data to CSS widths and background colors for
+                    lightweight visualizations.</p>
+                <pre data-code-title="Components/Pages/Analytics.razor"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/analytics"
+@@using BlazorMock.Data
+@@inject AppDbContext Db
+
+&lt;PageTitle&gt;Analytics&lt;/PageTitle&gt;
+
+&lt;div class="max-w-6xl mx-auto p-6"&gt;
+    &lt;h1 class="text-3xl font-bold text-gray-900 mb-6"&gt;Analytics Dashboard&lt;/h1&gt;
+
+    &lt;!-- Summary + Visuals Row --&gt;
+    &lt;div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8"&gt;
+        &lt;!-- Summary cards from Step 7 (left) --&gt;
+        &lt;div class="lg:col-span-2 space-y-4"&gt;
+            &lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"&gt;
+                &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
+                    &lt;p class="text-sm text-gray-600 mb-1"&gt;Total Users&lt;/p&gt;
+                    &lt;p class="text-2xl font-bold text-gray-900"&gt;@@totalUsers&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
+                    &lt;p class="text-sm text-gray-600 mb-1"&gt;Logins Today&lt;/p&gt;
+                    &lt;p class="text-2xl font-bold text-blue-600"&gt;@@loginsToday&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
+                    &lt;p class="text-sm text-gray-600 mb-1"&gt;Profile Updates Today&lt;/p&gt;
+                    &lt;p class="text-2xl font-bold text-green-600"&gt;@@profileUpdatesToday&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
+                    &lt;p class="text-sm text-gray-600 mb-1"&gt;Total Events&lt;/p&gt;
+                    &lt;p class="text-2xl font-bold text-gray-900"&gt;@@totalEvents&lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;!-- Logins last 7 days bar strip --&gt;
+            &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
+                &lt;div class="flex items-center justify-between mb-3"&gt;
+                    &lt;h2 class="text-sm font-semibold text-gray-800"&gt;Logins in the last 7 days&lt;/h2&gt;
+                    &lt;span class="text-xs text-gray-500"&gt;CSS bars mapped from counts&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;div class="space-y-2"&gt;
+                    @@foreach (var point in loginHistory)
+                    {
+                        &lt;div class="flex items-center gap-3"&gt;
+                            &lt;span class="w-16 text-xs text-gray-600"&gt;@@point.Label&lt;/span&gt;
+                            &lt;div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden"&gt;
+                                &lt;div class="h-full bg-blue-500" style="width: @@point.Percentage%"&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;span class="w-8 text-xs text-gray-500 text-right"&gt;@@point.Count&lt;/span&gt;
+                        &lt;/div&gt;
+                    }
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Profile completion progress (right) --&gt;
+        &lt;div class="bg-white rounded-lg border border-gray-200 p-4"&gt;
+            &lt;h2 class="text-sm font-semibold text-gray-800 mb-3"&gt;Profile completion&lt;/h2&gt;
+            &lt;div class="w-full h-3 rounded-full bg-gray-200 overflow-hidden mb-2"&gt;
+                &lt;div class="h-full bg-green-500" style="width: @@profileCompletion%"&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;p class="text-xs text-gray-600"&gt;@@profileCompletion% of active users have filled out their profile.&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Simple heatmap --&gt;
+    &lt;div class="bg-white rounded-lg border border-gray-200 p-4 mb-8"&gt;
+        &lt;div class="flex items-center justify-between mb-3"&gt;
+            &lt;h2 class="text-sm font-semibold text-gray-800"&gt;Logins by hour (today)&lt;/h2&gt;
+            &lt;span class="text-xs text-gray-500"&gt;Darker = more logins&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="grid grid-cols-6 gap-1 text-[10px] text-center"&gt;
+            @@foreach (var bucket in hourlyLogins)
+            {
+                var intensityClass = bucket.Count switch
+                {
+                    0 =&gt; "bg-gray-100 text-gray-600",
+                    &lt;= 2 =&gt; "bg-blue-50 text-blue-900",
+                    &lt;= 5 =&gt; "bg-blue-200 text-blue-900",
+                    &lt;= 8 =&gt; "bg-blue-400 text-white",
+                    _ =&gt; "bg-blue-600 text-white"
+                };
+
+                &lt;div class=$"py-2 rounded {intensityClass}"&gt;@@bucket.Count&lt;/div&gt;
+            }
+        &lt;/div&gt;
+        &lt;p class="text-xs text-gray-600 mt-2"&gt;
+            Always show numeric labels so users aren't relying on color alone to interpret the data.
+        &lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+@@code {
+    private List&lt;LoginHistoryPoint&gt; loginHistory = new();
+    private List&lt;HourlyBucket&gt; hourlyLogins = new();
+    private int profileCompletion;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Example: map counts into simple view models with percentages.
+        var totalLogins = 0;
+        loginHistory = Enumerable.Range(0, 5).Select(i =&gt; new LoginHistoryPoint
+        {
+            Label = $"Day {i + 1}",
+            Count = 2 + i * 2
+        }).ToList();
+
+        totalLogins = loginHistory.Sum(p =&gt; p.Count);
+        foreach (var point in loginHistory)
+        {
+            point.Percentage = totalLogins == 0
+                ? 0
+                : (int)Math.Round((double)point.Count / totalLogins * 100);
+        }
+
+        hourlyLogins = Enumerable.Range(0, 6).Select(i =&gt; new HourlyBucket
+        {
+            Hour = i,
+            Count = i * 2
+        }).ToList();
+
+        profileCompletion = 72; // example value – compute from real data in your app
+    }
+
+    private sealed class LoginHistoryPoint
+    {
+        public string Label { get; set; } = string.Empty;
+        public int Count { get; set; }
+        public int Percentage { get; set; }
+    }
+
+    private sealed class HourlyBucket
+    {
+        public int Hour { get; set; }
+        public int Count { get; set; }
+    }
+}</pre>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+            <div class="space-y-3">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Keep visuals simple and readable</p>
+                            <p class="text-xs text-blue-800">Use straight bars and simple grids before reaching for
+                                chart libraries. They're easier to build, test, and explain to learners.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Always include labels</p>
+                            <p class="text-xs text-blue-800">Never rely on color alone—always show the underlying
+                                numbers (counts or percentages) next to or inside your visuals.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Handle empty or low-data states</p>
+                            <p class="text-xs text-blue-800">If there isn't much data yet, keep the visuals small and
+                                add copy explaining that the dashboard will get more interesting as usage grows.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>If all bars look the same, double-check your percentage calculation and that you're
+                            applying it to the <code>width</code> style.</li>
+                        <li>If colors are hard to read, try lighter backgrounds with dark text or adjust to higher
+                            contrast Tailwind classes.</li>
+                        <li>If the layout looks broken on mobile, use responsive grid classes (like
+                            <code>sm:grid-cols-2</code>, <code>lg:grid-cols-3</code>).
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
+                <li>
+                    <strong>Start from your Step 7 metrics:</strong>
+                    Reuse the counts for total users, logins, and profile updates as inputs to your visuals.
+                </li>
+                <li>
+                    <strong>Create small view models:</strong>
+                    Map raw counts into simple objects (label, count, percentage) that your Razor markup can loop over.
+                </li>
+                <li>
+                    <strong>Bind percentages to <code>style="width: X%"</code>:</strong>
+                    Use inline styles (or CSS variables) to turn percentages into bar widths.
+                </li>
+                <li>
+                    <strong>Use Tailwind utilities for layout:</strong>
+                    Combine <code>grid</code>, <code>gap</code>, <code>bg-*</code>, and <code>rounded</code> classes to
+                    build bar strips, progress bars, and heatmaps.
+                </li>
+                <li>
+                    <strong>Add labels and legends:</strong>
+                    Always show the underlying numbers and, if needed, a short legend explaining what colors mean.
+                </li>
+                <li>
+                    <strong>Test empty states:</strong>
+                    Temporarily clear out your data to confirm the page still looks reasonable and explains what's
+                    happening.
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Here's a sample of the CSS-only analytics visuals you'll build:
+            </p>
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Sample CSS-Only Analytics Visuals</h3>
+
+                <!-- Reuse the same visuals as the main example block -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-semibold text-gray-800">Logins in the last 7 days</h3>
+                        <span class="text-xs text-gray-500">CSS bars mapped from counts</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-gray-600">Mon</span>
+                            <div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden">
+                                <div class="h-full bg-blue-500" style="width: 40%;"></div>
+                            </div>
+                            <span class="w-8 text-xs text-gray-500 text-right">4</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-gray-600">Tue</span>
+                            <div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden">
+                                <div class="h-full bg-blue-500" style="width: 70%;"></div>
+                            </div>
+                            <span class="w-8 text-xs text-gray-500 text-right">7</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-gray-600">Wed</span>
+                            <div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden">
+                                <div class="h-full bg-blue-500" style="width: 20%;"></div>
+                            </div>
+                            <span class="w-8 text-xs text-gray-500 text-right">2</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-gray-600">Thu</span>
+                            <div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden">
+                                <div class="h-full bg-blue-500" style="width: 90%;"></div>
+                            </div>
+                            <span class="w-8 text-xs text-gray-500 text-right">9</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-16 text-xs text-gray-600">Fri</span>
+                            <div class="flex-1 h-3 rounded-full bg-gray-200 overflow-hidden">
+                                <div class="h-full bg-blue-500" style="width: 60%;"></div>
+                            </div>
+                            <span class="w-8 text-xs text-gray-500 text-right">6</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-semibold text-gray-800">Profile completion</h3>
+                        <span class="text-xs text-gray-500">72% complete</span>
+                    </div>
+                    <div class="w-full h-3 rounded-full bg-gray-200 overflow-hidden">
+                        <div class="h-full bg-green-500" style="width: 72%;"></div>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2">
+                        Map completion percentage directly to the bar's width (for example,
+                        <code>style="width: 72%"</code>), and always show the numeric label for accessibility.
+                    </p>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-semibold text-gray-800">Logins by hour (today)</h3>
+                        <span class="text-xs text-gray-500">Simple heatmap using background colors</span>
+                    </div>
+                    <div class="grid grid-cols-6 gap-1 text-[10px] text-center">
+                        <div class="py-2 rounded bg-blue-50 text-blue-900">0</div>
+                        <div class="py-2 rounded bg-blue-100 text-blue-900">1</div>
+                        <div class="py-2 rounded bg-blue-200 text-blue-900">3</div>
+                        <div class="py-2 rounded bg-blue-300 text-blue-900">5</div>
+                        <div class="py-2 rounded bg-blue-400 text-white">7</div>
+                        <div class="py-2 rounded bg-blue-500 text-white">9</div>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2">
+                        Use darker shades for larger values and lighter shades (or gray) for zero values. Always show
+                        labels so users aren't relying on color alone.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 8?</h3>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning
+                        progress.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                            Reset
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Next up: Dashboard Shell</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    With analytics visuals in place, you're ready to create the main <code>/admin/dashboard</code> shell
+                    that surfaces key metrics, navigation, and quick actions for admins.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/admin-dashboard-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step7"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 7</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step9"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 9</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

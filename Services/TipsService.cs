@@ -283,6 +283,61 @@ public class ServicesTipsContributor : ITipsContributor
             LongELI5 = "\n\nSingleton: one big water cooler for the whole office. Scoped: one water bottle per person. Transient: a brand-new cup every time you ask.",
             ELI5Example = "// Program.cs\nbuilder.Services.AddSingleton<AppClock>();\nbuilder.Services.AddScoped<UserCart>();\nbuilder.Services.AddTransient<Formatter>();"
         };
+
+        // Step 4 - Admin auth model tips
+        yield return new TipTopic(
+            Title: "In-memory demo auth service",
+            Category: "Blazor — Services",
+            Type: "Service",
+            ELI5: "A simple service that keeps a few fake users in memory so you can sign in/out without a database.",
+            Example: "public class AdminAuthService {\n  private readonly List<AdminUser> _users = [...];\n  private AdminUser? _currentUser;\n  public bool SignIn(string email, string password) { /* lookup and set _currentUser */ }\n  public void SignOut() => _currentUser = null;\n}",
+            Tips: new[]
+            {
+                "Great for teaching auth flows without bringing in Identity or a database.",
+                "Keep it internal to the demo so it doesn't replace your real app auth.",
+                "Later you can swap the implementation to hit a real store while keeping the same interface."
+            }
+        )
+        {
+            LongELI5 = "\n\nThink of this like a practice login sheet pinned to the classroom wall. The names aren't real customers, but you can still practice logging in as 'Free', 'Admin', or 'Super Admin' to see how the UI changes.",
+            ELI5Example = "var service = new AdminAuthService();\nservice.SignIn(\"admin@example.com\", \"demo\");\nvar user = service.GetCurrentUser(); // 'Paid Admin'"
+        };
+
+        yield return new TipTopic(
+            Title: "Cascading current user",
+            Category: "Blazor — Services",
+            Type: "State",
+            ELI5: "Wrap part of your UI in a provider component and pass the current user down as a CascadingValue so any child can read it.",
+            Example: "<AdminAuthProvider>\n  <AdminDashboard />\n</AdminAuthProvider>\n\n// AdminAuthProvider.razor\n<CascadingValue Value=\"CurrentUser\">@ChildContent</CascadingValue>",
+            Tips: new[]
+            {
+                "Use cascading values for app-wide context like 'current user' or 'theme'.",
+                "Keep the provider small; most logic lives in a service like AdminAuthService.",
+                "Avoid overusing cascading values for arbitrary data; prefer parameters first."
+            }
+        )
+        {
+            LongELI5 = "\n\nImagine putting a name tag on everyone inside a certain room. You don't hand-copy the name to every object; the room itself knows who is signed in and kids inside can just look at the name tag.",
+            ELI5Example = "@code { [CascadingParameter] public AdminUser? CurrentUser { get; set; } }\n<p>@(CurrentUser is null ? \"Not signed in\" : $\"Hello, {CurrentUser.FullName}!\")</p>"
+        };
+
+        yield return new TipTopic(
+            Title: "Role strings vs enums",
+            Category: "C# — Types",
+            Type: "Design",
+            ELI5: "You can store roles as strings (\"Admin\") or as enums (Role.Admin); enums are safer, strings are more flexible for simple demos.",
+            Example: "public class AdminUser { public string Role { get; set; } = \"Regular\"; }\n// or\npublic enum AdminRole { Regular, Admin, SuperAdmin }",
+            Tips: new[]
+            {
+                "Strings are fine for small demos; avoid magic strings scattered everywhere.",
+                "Enums give you compile-time safety and IntelliSense for valid roles.",
+                "If you start with strings, you can refactor to an enum once the roles stabilize."
+            }
+        )
+        {
+            LongELI5 = "\n\nUsing strings is like writing roles on sticky notes — quick, but easy to misspell. Enums are like printing the roles on a small menu you always pick from.",
+            ELI5Example = "public enum AdminRole { Regular, Admin, SuperAdmin }\npublic class AdminUser { public AdminRole Role { get; set; } = AdminRole.Regular; }"
+        };
     }
 }
 
@@ -1621,6 +1676,61 @@ public class EntityFrameworkTipsContributor : ITipsContributor
 {
     public IEnumerable<TipTopic> GetTopics()
     {
+        // Admin Dashboard Step 6: Blazor + C# analytics-focused tips
+        yield return new TipTopic(
+            Title: "Blazor + EF Core basics",
+            Category: "Blazor — Data & EF Core",
+            Type: "Pattern",
+            ELI5: "Use a scoped DbContext with dependency injection so your Blazor components can query and save data.",
+            Example: "@inject AppDbContext Db\nvar users = await Db.Users.ToListAsync();",
+            Tips: new[]
+            {
+                "Register AppDbContext with AddDbContext in Program.cs.",
+                "Inject AppDbContext into components with @inject instead of new-ing it up.",
+                "Always use async methods like ToListAsync() and SaveChangesAsync() in Blazor."
+            }
+        )
+        {
+            LongELI5 = "\n\nIn a Blazor app, Entity Framework Core is your go-to way to talk to a SQL database. You register an AppDbContext once in Program.cs, and then inject it into pages or services.\n\nIn Blazor Server, DbContext should be scoped so each user/request gets its own instance. Components can then use LINQ queries and SaveChangesAsync() without worrying about connection management.\n\nThis is the same pattern you used for the Admin Dashboard auth and profile pages, and it's exactly what you'll use for analytics events too.",
+            ELI5Example = "// Program.cs\nvar connectionString = builder.Configuration.GetConnectionString(\"AppDbContext\");\nbuilder.Services.AddDbContext<AppDbContext>(options =>\n    options.UseSqlServer(connectionString));\n\n// In a Blazor component\n@inject AppDbContext Db\n\n@code {\n    List<User> users = new();\n\n    protected override async Task OnInitializedAsync()\n    {\n        users = await Db.Users.ToListAsync();\n    }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "C# logging patterns",
+            Category: "C# — Diagnostics",
+            Type: "Pattern",
+            ELI5: "Use ILogger<T> and simple helper methods to record important events without cluttering your code.",
+            Example: "_logger.LogInformation(\"User {UserId} signed in\", user.Id);",
+            Tips: new[]
+            {
+                "Inject ILogger<T> into your components or services.",
+                "Use structured logging with placeholders instead of string concatenation.",
+                "Log only what you need to debug and understand user flows."
+            }
+        )
+        {
+            LongELI5 = "\n\nLogging is how you leave breadcrumbs in your app so future-you can understand what happened. In .NET you usually inject ILogger<T> and call methods like LogInformation or LogWarning.\n\nStructured logging (using placeholders like {Name}) is better than string concatenation because log tools can filter and search on those named properties.\n\nFor analytics-style features, you often combine logging with a lightweight Activity table: logs tell you the story in text, the Activity rows give you something you can query and chart.",
+            ELI5Example = "public class AuthService\n{\n    private readonly AppDbContext _db;\n    private readonly ILogger<AuthService> _logger;\n\n    public AuthService(AppDbContext db, ILogger<AuthService> logger)\n    {\n        _db = db;\n        _logger = logger;\n    }\n\n    public async Task<User?> SignInAsync(string email, string password)\n    {\n        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);\n        if (user == null)\n        {\n            _logger.LogWarning(\"Failed sign-in for {Email}\", email);\n            return null;\n        }\n\n        _logger.LogInformation(\"User {UserId} signed in\", user.Id);\n        return user;\n    }\n}"
+        };
+
+        yield return new TipTopic(
+            Title: "Blazor analytics events",
+            Category: "Blazor — Analytics",
+            Type: "Pattern",
+            ELI5: "Record key user actions in a simple Activity table so you can query and chart them later.",
+            Example: "Db.Activities.Add(new Activity { UserId = user.Id, Type = \"UserLogin\" });\nawait Db.SaveChangesAsync();",
+            Tips: new[]
+            {
+                "Start with a single Activity table and a Type string.",
+                "Log only a few important events at first (logins, profile updates).",
+                "Use UTC timestamps (DateTime.UtcNow) so you can compare events across time zones."
+            }
+        )
+        {
+            LongELI5 = "\n\nAn Activity table is a super simple way to add analytics to a Blazor app. Each row says \"this user did this thing at this time\". You don't need a fancy analytics service to start—just a DbSet<Activity>.\n\nYou typically log events in the same places you already have business logic: when a user signs in successfully, when they update their profile, when an admin views a dashboard.\n\nLater you can query this table to build an /analytics page with charts and recent-activity feeds.",
+            ELI5Example = "// Activity model\npublic class Activity\n{\n    public int Id { get; set; }\n    public int? UserId { get; set; }\n    public string Type { get; set; } = string.Empty; // e.g. \"UserLogin\"\n    public DateTime OccurredAt { get; set; } = DateTime.UtcNow;\n    public string? Metadata { get; set; }\n}\n\n// Usage in sign-in flow\nDb.Activities.Add(new Activity\n{\n    UserId = user.Id,\n    Type = \"UserLogin\",\n    OccurredAt = DateTime.UtcNow\n});\n\nawait Db.SaveChangesAsync();"
+        };
+
         yield return new TipTopic(
             Title: "POCO Models",
             Category: "Entity Framework — Models",
@@ -1637,6 +1747,63 @@ public class EntityFrameworkTipsContributor : ITipsContributor
         {
             LongELI5 = "\n\nPOCO stands for Plain Old CLR Object. It's a fancy way of saying 'just a normal C# class'. Unlike older frameworks that forced you to inherit from special base classes or implement interfaces, EF Core works with your plain classes. Think of it like filling out a form - you don't need special paper, regular paper works fine. Your Driver class is just properties that match database columns. EF Core is smart enough to figure out that Id is the primary key, Name is a string column, and HourlyRate is a decimal column. No magic inheritance, no special attributes required (though you can add them for validation). This makes your code cleaner and easier to test.",
             ELI5Example = "// This is a POCO - just a plain class!\npublic class Driver\n{\n    public int Id { get; set; }          // EF Core knows this is the primary key\n    public string Name { get; set; } = string.Empty;  // String column\n    public decimal HourlyRate { get; set; }           // Decimal column\n    public bool IsAvailable { get; set; }             // Boolean column\n}\n\n// NOT a POCO - has to inherit from special base class (old way)\npublic class OldDriver : EntityBase  // ❌ Don't do this\n{\n    // Same properties...\n}"
+        };
+
+        // EF Core-specific topics used by tutorial pages
+        yield return new TipTopic(
+            Title: "EF Core Models",
+            Category: "Entity Framework Core",
+            Type: "Model",
+            ELI5: "Design C# classes that Entity Framework Core can map to database tables.",
+            Example: "public class User {\n  public int Id { get; set; }\n  public string Email { get; set; } = string.Empty;\n}",
+            Tips: new[]
+            {
+                "Give each entity a primary key property like Id or UserId.",
+                "Use simple CLR types (int, string, DateTime) for most columns.",
+                "Navigation properties (like ICollection<Order>) express relationships between tables."
+            }
+        )
+        {
+            LongELI5 = "\n\nAn EF Core model is just a plain C# class that EF knows how to turn into a table. Properties become columns, and a primary key like 'Id' tells EF how to track each row. You don't need special base classes—just regular POCOs (plain old CLR objects). Later, migrations read these classes to figure out what tables and columns to create.",
+            ELI5Example = "public class User\n{\n  public int Id { get; set; }    // primary key\n  public string Email { get; set; } = string.Empty;\n  public string PasswordHash { get; set; } = string.Empty;\n  public string DisplayName { get; set; } = string.Empty;\n}"
+        };
+
+        // Setting up DbContext and registration
+        yield return new TipTopic(
+            Title: "Setup EF Core - DbContext",
+            Category: "Entity Framework Core",
+            Type: "DbContext",
+            ELI5: "Create a DbContext that exposes DbSet<T> properties and register it so you can inject it into your app.",
+            Example: "public class AppDbContext : DbContext {\n  public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}\n  public DbSet<User> Users => Set<User>();\n}",
+            Tips: new[]
+            {
+                "Derive your context from DbContext and accept DbContextOptions in the constructor.",
+                "Expose a DbSet<T> for each entity you want to query or save.",
+                "Register the DbContext in Program.cs with AddDbContext so it can be injected."
+            }
+        )
+        {
+            LongELI5 = "\n\nThink of DbContext as your app's gatekeeper to the database. It knows which tables exist (via DbSet<T> properties) and how to translate LINQ queries into SQL. You register it once in Program.cs, and then components or services can ask for AppDbContext via dependency injection instead of new-ing it up manually.",
+            ELI5Example = "// Program.cs\nvar connectionString = builder.Configuration.GetConnectionString(\"AppDbContext\");\nbuilder.Services.AddDbContext<AppDbContext>(options =>\n    options.UseSqlServer(connectionString));\n\n// Usage in a service\npublic class UserService(AppDbContext db) {\n  public Task<List<User>> GetUsersAsync() => db.Users.ToListAsync();\n}"
+        };
+
+        // Connection strings basics
+        yield return new TipTopic(
+            Title: "Connection strings",
+            Category: "Entity Framework Core",
+            Type: "Config",
+            ELI5: "A small piece of text that tells EF Core which database to talk to and how.",
+            Example: "\"ConnectionStrings\": {\n  \"AppDbContext\": \"Server=(localdb)\\\\mssqllocaldb;Database=AdminDashboardDb;Trusted_Connection=True;MultipleActiveResultSets=true\"\n}",
+            Tips: new[]
+            {
+                "Store connection strings in appsettings.json under the ConnectionStrings section.",
+                "Use builder.Configuration.GetConnectionString(name) in Program.cs to read them.",
+                "Keep secrets (real passwords) out of source control; use environment-specific overrides."
+            }
+        )
+        {
+            LongELI5 = "\n\nA connection string is like your GPS directions to the database: it says which server to hit, which database name to use, and how to log in. EF Core doesn't care about the details—it just passes that text to the underlying database provider. In development you might use (localdb) with integrated security; in production you usually plug in a real server address and credentials.",
+            ELI5Example = "// appsettings.Development.json\n{\n  \"ConnectionStrings\": {\n    \"AppDbContext\": \"Server=(localdb)\\\\mssqllocaldb;Database=AdminDashboardDb;Trusted_Connection=True;MultipleActiveResultSets=true\"\n  }\n}\n\n// Program.cs\nvar cs = builder.Configuration.GetConnectionString(\"AppDbContext\");\nservices.AddDbContext<AppDbContext>(o => o.UseSqlServer(cs));"
         };
 
         yield return new TipTopic(

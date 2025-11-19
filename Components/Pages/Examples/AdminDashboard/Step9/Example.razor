@@ -1,0 +1,503 @@
+@page "/admin-dashboard-examples/step9"
+@rendermode InteractiveServer
+@using BlazorMock.Components.Pages.Examples.AdminDashboard.Step9
+@inherits ExampleBase
+
+<PageTitle>Admin Dashboard Step 9: Dashboard Layout Shell - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/admin-dashboard-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Admin Dashboard Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            🧭 Step 9: Dashboard Layout Shell (/admin/dashboard)
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Build the first version of your <code>/admin/dashboard</code> page: a responsive layout that brings together
+            navigation, key metrics, and analytics components from previous steps.
+        </p>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                In this step, you'll create a dedicated <code>/admin/dashboard</code> layout shell that pulls together
+                summary cards, analytics visuals, and navigation into one responsive page.
+            </p>
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Designing a dashboard layout with header, navigation, and main content areas.</li>
+                <li>Placing analytics summary cards and CSS-only visuals inside the dashboard.</li>
+                <li>Ensuring the layout adapts nicely between desktop and mobile screens.</li>
+                <li>Keeping layout markup separate from data-loading logic where possible.</li>
+            </ul>
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> layout composition, responsive grids, component reuse, dashboard
+                    shell.
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#tailwind-css"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind
+                        CSS</a>
+                    <a href="/tips#linq-aggregation"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">LINQ
+                        Aggregation</a>
+                    <a href="/tips#blazor-component-composition"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Blazor
+                        component composition</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component: Admin Dashboard Layout -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: AdminDashboardShell</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                This sample shows a simple <code>/admin/dashboard</code> layout shell that pulls together your summary
+                cards, analytics visuals, and quick navigation.
+            </p>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Components/Pages/Admin/Dashboard.razor</div>
+                <p class="text-xs text-gray-600 mb-2">Dashboard layout with header, sidebar-style navigation, and main
+                    analytics content.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Provides a clear header and navigation area for admin routes.</li>
+                    <li>Reuses summary cards and analytics visuals from your <code>/analytics</code> page.</li>
+                    <li>Uses responsive Tailwind classes so it works on both large and small screens.</li>
+                </ul>
+                <pre data-code-title="Razor + C# (Dashboard.razor)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/admin/dashboard"
+
+&lt;PageTitle&gt;Admin Dashboard&lt;/PageTitle&gt;
+
+&lt;div class="min-h-screen bg-gray-950 text-white"&gt;
+    &lt;div class="max-w-6xl mx-auto px-4 py-6"&gt;
+        &lt;!-- Header --&gt;
+        &lt;header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6"&gt;
+            &lt;div&gt;
+                &lt;h1 class="text-3xl font-bold"&gt;Admin Dashboard&lt;/h1&gt;
+                &lt;p class="text-sm text-gray-400"&gt;Quick overview of signups, usage, and recent activity.&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;nav class="flex flex-wrap gap-2"&gt;
+                &lt;a href="/signup" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-medium"&gt;/signup&lt;/a&gt;
+                &lt;a href="/signin" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-medium"&gt;/signin&lt;/a&gt;
+                &lt;a href="/profile" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-medium"&gt;/profile&lt;/a&gt;
+                &lt;a href="/analytics" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-medium"&gt;/analytics&lt;/a&gt;
+            &lt;/nav&gt;
+        &lt;/header&gt;
+
+        &lt;div class="grid grid-cols-1 lg:grid-cols-[240px,1fr] gap-6"&gt;
+            &lt;!-- Sidebar / Quick Links --&gt;
+            &lt;aside class="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-4"&gt;
+                &lt;div&gt;
+                    &lt;h2 class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide"&gt;Quick links&lt;/h2&gt;
+                    &lt;ul class="space-y-1 text-sm"&gt;
+                        &lt;li&gt;&lt;a href="/signup" class="hover:text-blue-300"&gt;Create account&lt;/a&gt;&lt;/li&gt;
+                        &lt;li&gt;&lt;a href="/signin" class="hover:text-blue-300"&gt;Sign in test&lt;/a&gt;&lt;/li&gt;
+                        &lt;li&gt;&lt;a href="/profile" class="hover:text-blue-300"&gt;Profile page&lt;/a&gt;&lt;/li&gt;
+                        &lt;li&gt;&lt;a href="/analytics" class="hover:text-blue-300"&gt;Analytics details&lt;/a&gt;&lt;/li&gt;
+                    &lt;/ul&gt;
+                &lt;/div&gt;
+
+                &lt;div&gt;
+                    &lt;h2 class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide"&gt;Status&lt;/h2&gt;
+                    &lt;div class="space-y-2 text-xs text-gray-300"&gt;
+                        &lt;p&gt;&lt;span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2"&gt;&lt;/span&gt;Database connected&lt;/p&gt;
+                        &lt;p&gt;&lt;span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2"&gt;&lt;/span&gt;Analytics logging events&lt;/p&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/aside&gt;
+
+            &lt;!-- Main content --&gt;
+            &lt;main class="space-y-6"&gt;
+                &lt;!-- Summary cards row (reuse ideas from /analytics) --&gt;
+                &lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"&gt;
+                    &lt;div class="bg-white/5 border border-white/10 rounded-2xl p-4"&gt;
+                        &lt;p class="text-xs text-gray-400 mb-1"&gt;Total Users&lt;/p&gt;
+                        &lt;p class="text-2xl font-semibold"&gt;1,234&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class="bg-white/5 border border-white/10 rounded-2xl p-4"&gt;
+                        &lt;p class="text-xs text-gray-400 mb-1"&gt;Logins Today&lt;/p&gt;
+                        &lt;p class="text-2xl font-semibold text-blue-300"&gt;27&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class="bg-white/5 border border-white/10 rounded-2xl p-4"&gt;
+                        &lt;p class="text-xs text-gray-400 mb-1"&gt;Profile Updates&lt;/p&gt;
+                        &lt;p class="text-2xl font-semibold text-emerald-300"&gt;9&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div class="bg-white/5 border border-white/10 rounded-2xl p-4"&gt;
+                        &lt;p class="text-xs text-gray-400 mb-1"&gt;Total Events&lt;/p&gt;
+                        &lt;p class="text-2xl font-semibold"&gt;542&lt;/p&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Analytics strip (reuse CSS-only visuals idea) --&gt;
+                &lt;section class="bg-white/5 border border-white/10 rounded-2xl p-4"&gt;
+                    &lt;div class="flex items-center justify-between mb-3"&gt;
+                        &lt;h2 class="text-sm font-semibold"&gt;Logins in the last 7 days&lt;/h2&gt;
+                        &lt;a href="/analytics" class="text-xs text-blue-300 hover:text-blue-200"&gt;View details&lt;/a&gt;
+                    &lt;/div&gt;
+                    &lt;div class="space-y-2"&gt;
+                        &lt;div class="flex items-center gap-3"&gt;
+                            &lt;span class="w-16 text-xs text-gray-400"&gt;Mon&lt;/span&gt;
+                            &lt;div class="flex-1 h-2 rounded-full bg-white/10 overflow-hidden"&gt;
+                                &lt;div class="h-full bg-blue-400" style="width: 40%;"&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;span class="w-8 text-xs text-gray-400 text-right"&gt;4&lt;/span&gt;
+                        &lt;/div&gt;
+                        &lt;div class="flex items-center gap-3"&gt;
+                            &lt;span class="w-16 text-xs text-gray-400"&gt;Tue&lt;/span&gt;
+                            &lt;div class="flex-1 h-2 rounded-full bg-white/10 overflow-hidden"&gt;
+                                &lt;div class="h-full bg-blue-400" style="width: 70%;"&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;span class="w-8 text-xs text-gray-400 text-right"&gt;7&lt;/span&gt;
+                        &lt;/div&gt;
+                        &lt;div class="flex items-center gap-3"&gt;
+                            &lt;span class="w-16 text-xs text-gray-400"&gt;Wed&lt;/span&gt;
+                            &lt;div class="flex-1 h-2 rounded-full bg-white/10 overflow-hidden"&gt;
+                                &lt;div class="h-full bg-blue-400" style="width: 25%;"&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;span class="w-8 text-xs text-gray-400 text-right"&gt;3&lt;/span&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/section&gt;
+
+                &lt;!-- Recent activity table (compact) --&gt;
+                &lt;section class="bg-white/5 border border-white/10 rounded-2xl p-4"&gt;
+                    &lt;div class="flex items-center justify-between mb-3"&gt;
+                        &lt;h2 class="text-sm font-semibold"&gt;Recent Activity&lt;/h2&gt;
+                        &lt;a href="/analytics" class="text-xs text-blue-300 hover:text-blue-200"&gt;Full analytics&lt;/a&gt;
+                    &lt;/div&gt;
+                    &lt;div class="overflow-x-auto"&gt;
+                        &lt;table class="w-full text-xs"&gt;
+                            &lt;thead class="bg-white/5"&gt;
+                                &lt;tr&gt;
+                                    &lt;th class="px-3 py-2 text-left font-medium text-gray-300"&gt;Type&lt;/th&gt;
+                                    &lt;th class="px-3 py-2 text-left font-medium text-gray-300"&gt;User&lt;/th&gt;
+                                    &lt;th class="px-3 py-2 text-left font-medium text-gray-300"&gt;When&lt;/th&gt;
+                                &lt;/tr&gt;
+                            &lt;/thead&gt;
+                            &lt;tbody class="divide-y divide-white/10"&gt;
+                                &lt;tr class="hover:bg-white/5"&gt;
+                                    &lt;td class="px-3 py-2"&gt;UserLogin&lt;/td&gt;
+                                    &lt;td class="px-3 py-2 text-gray-300"&gt;user@example.com&lt;/td&gt;
+                                    &lt;td class="px-3 py-2 text-gray-400"&gt;Just now&lt;/td&gt;
+                                &lt;/tr&gt;
+                                &lt;tr class="hover:bg-white/5"&gt;
+                                    &lt;td class="px-3 py-2"&gt;ProfileUpdated&lt;/td&gt;
+                                    &lt;td class="px-3 py-2 text-gray-300"&gt;admin@example.com&lt;/td&gt;
+                                    &lt;td class="px-3 py-2 text-gray-400"&gt;5 min ago&lt;/td&gt;
+                                &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                    &lt;/div&gt;
+                &lt;/section&gt;
+            &lt;/main&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+            </div>
+
+            <!-- Step-by-step breakdown -->
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Create the /admin/dashboard shell</div>
+                    <p class="text-xs text-gray-600 mb-2">Start with a full-page layout that has a header at the top,
+                        a sidebar on the left, and a main content area on the right.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Use a dark background so summary cards and charts stand out.</li>
+                        <li>Place navigation links for your key routes (/signup, /signin, /profile, /analytics) in the
+                            header or sidebar.</li>
+                        <li>Reserve the main area for summary cards, charts, and recent activity.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class="min-h-screen bg-gray-950 text-white"&gt;
+    &lt;div class="max-w-6xl mx-auto px-4 py-6"&gt;
+        &lt;!-- Header, sidebar, main content go here --&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+                </div>
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Reuse analytics and profile ideas</div>
+                    <p class="text-xs text-gray-600 mb-2">Bring over your summary cards and CSS-only visuals from
+                        <code>/analytics</code> and place them into the main dashboard area.
+                    </p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Show total users, logins today, profile updates, and total events at the top.</li>
+                        <li>Use a smaller version of your login bar strip under the summary cards.</li>
+                        <li>Add a compact recent activity table so admins can see what's happening at a glance.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;main class="space-y-6"&gt;
+    &lt;!-- Summary cards row --&gt;
+    &lt;!-- CSS-only login bars --&gt;
+    &lt;!-- Recent activity table --&gt;
+&lt;/main&gt;</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+            <div class="space-y-3">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Keep the shell simple at first</p>
+                            <p class="text-xs text-blue-800">You don't need complex widgets or tabs on day one. A
+                                header, navigation, summary cards, and a couple of charts are enough to feel real and be
+                                genuinely useful.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Reuse components instead of copying
+                                markup</p>
+                            <p class="text-xs text-blue-800">Once you're happy with your <code>/analytics</code>
+                                visuals, extract them into components and drop them into the dashboard. This keeps the
+                                layout shell focused on composition, not data-fetching.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Design for mobile early</p>
+                            <p class="text-xs text-blue-800">Test your dashboard on narrow viewports. Make sure cards
+                                stack nicely and the sidebar either collapses or moves above the main content instead
+                                of squishing everything.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>If the layout looks cramped, increase padding on the outer container and reduce the number
+                            of cards per row on small screens.</li>
+                        <li>If navigation links feel lost, group them under a "Quick links" heading or move them into a
+                            dedicated sidebar card.</li>
+                        <li>If the page feels slow, double-check that heavy queries still live on
+                            <code>/analytics</code> and that the dashboard uses lighter summary queries or cached data.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
+                <li>
+                    <strong>Create the /admin/dashboard page:</strong>
+                    Add <code>Components/Pages/Admin/Dashboard.razor</code> with the
+                    <code>@@page "/admin/dashboard"</code> directive.
+                </li>
+                <li>
+                    <strong>Add a header and navigation:</strong>
+                    Include a page title and quick links to <code>/signup</code>, <code>/signin</code>,
+                    <code>/profile</code>, and <code>/analytics</code>.
+                </li>
+                <li>
+                    <strong>Define a two-column layout:</strong>
+                    Use a grid or flexbox to create a sidebar area and a main content area that stack on small screens.
+                </li>
+                <li>
+                    <strong>Drop in summary cards:</strong>
+                    Reuse or recreate the summary metrics from <code>/analytics</code> at the top of the main area.
+                </li>
+                <li>
+                    <strong>Add a small analytics strip:</strong>
+                    Show a compact version of your logins bar strip so admins can see trends without leaving the
+                    dashboard.
+                </li>
+                <li>
+                    <strong>Include recent activity:</strong>
+                    Add a short table or list of recent events so admins can quickly scan what's happening.
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Once you've wired up your <code>/admin/dashboard</code> page, it will feel like this:
+            </p>
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                <div class="max-w-6xl mx-auto px-4 py-6 bg-gray-50">
+                    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                            <p class="text-xs text-gray-500">Signups, usage, and recent activity at a glance.</p>
+                        </div>
+                        <nav class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1.5 rounded-full bg-blue-50 text-xs text-blue-700">/signup</span>
+                            <span class="px-3 py-1.5 rounded-full bg-blue-50 text-xs text-blue-700">/signin</span>
+                            <span class="px-3 py-1.5 rounded-full bg-blue-50 text-xs text-blue-700">/profile</span>
+                            <span class="px-3 py-1.5 rounded-full bg-blue-50 text-xs text-blue-700">/analytics</span>
+                        </nav>
+                    </header>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-[240px,1fr] gap-6">
+                        <aside class="bg-white border border-gray-200 rounded-2xl p-4 space-y-4">
+                            <div>
+                                <h2 class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Quick
+                                    links</h2>
+                                <ul class="space-y-1 text-xs text-gray-700">
+                                    <li>• Create account</li>
+                                    <li>• Sign in test</li>
+                                    <li>• Profile page</li>
+                                    <li>• Analytics details</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h2 class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Status
+                                </h2>
+                                <p class="text-xs text-gray-600">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>
+                                    Analytics connected
+                                </p>
+                            </div>
+                        </aside>
+
+                        <main class="space-y-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="bg-white border border-gray-200 rounded-2xl p-4">
+                                    <p class="text-xs text-gray-500 mb-1">Total Users</p>
+                                    <p class="text-2xl font-semibold text-gray-900">1,234</p>
+                                </div>
+                                <div class="bg-white border border-gray-200 rounded-2xl p-4">
+                                    <p class="text-xs text-gray-500 mb-1">Logins Today</p>
+                                    <p class="text-2xl font-semibold text-blue-600">27</p>
+                                </div>
+                                <div class="bg-white border border-gray-200 rounded-2xl p-4">
+                                    <p class="text-xs text-gray-500 mb-1">Profile Updates</p>
+                                    <p class="text-2xl font-semibold text-emerald-600">9</p>
+                                </div>
+                                <div class="bg-white border border-gray-200 rounded-2xl p-4">
+                                    <p class="text-xs text-gray-500 mb-1">Total Events</p>
+                                    <p class="text-2xl font-semibold text-gray-900">542</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-2xl p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h2 class="text-sm font-semibold text-gray-900">Logins in the last 7 days</h2>
+                                    <span class="text-xs text-blue-600">View details</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-16 text-xs text-gray-500">Mon</span>
+                                        <div class="flex-1 h-2 rounded-full bg-gray-200 overflow-hidden">
+                                            <div class="h-full bg-blue-500" style="width: 40%;"></div>
+                                        </div>
+                                        <span class="w-8 text-xs text-gray-500 text-right">4</span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-16 text-xs text-gray-500">Tue</span>
+                                        <div class="flex-1 h-2 rounded-full bg-gray-200 overflow-hidden">
+                                            <div class="h-full bg-blue-500" style="width: 70%;"></div>
+                                        </div>
+                                        <span class="w-8 text-xs text-gray-500 text-right">7</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white border border-gray-200 rounded-2xl p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h2 class="text-sm font-semibold text-gray-900">Recent Activity</h2>
+                                    <span class="text-xs text-blue-600">Full analytics</span>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-xs">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-500">Type</th>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-500">User</th>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-500">When</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-3 py-2 text-gray-900">UserLogin</td>
+                                                <td class="px-3 py-2 text-gray-700">user@example.com</td>
+                                                <td class="px-3 py-2 text-gray-500">Just now</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-3 py-2 text-gray-900">ProfileUpdated</td>
+                                                <td class="px-3 py-2 text-gray-700">admin@example.com</td>
+                                                <td class="px-3 py-2 text-gray-500">5 min ago</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 9?</h3>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning
+                        progress.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                            Reset
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    With your dashboard shell in place, you're ready to lock down access and add more advanced
+                    interactions in the next steps.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/admin-dashboard-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step8"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 8</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step10"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 10</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,369 @@
+@page "/admin-dashboard-examples/step2"
+@rendermode InteractiveServer
+@inherits ExampleBase
+
+<PageTitle>Admin Dashboard Step 2: Minimal Auth Model &amp; DbContext - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/admin-dashboard-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Admin Dashboard Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            🎯 Step 2: Minimal Auth Model &amp; DbContext
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Define a teaching-only <code>User</code> entity and <code>AppDbContext</code> so your Admin Dashboard can
+            persist users with Entity Framework Core.
+        </p>
+
+        <!-- What You'll Learn Section (Shared gradient) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                In this step you model the core <code>User</code> concept for the Admin Dashboard and wire up a minimal
+                <code>AppDbContext</code> using EF Core so later steps can create, query, and update users.
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Create a simple <code>User</code> entity tailored for the tutorial.</li>
+                <li>Define an <code>AppDbContext</code> with a <code>DbSet&lt;User&gt;</code>.</li>
+                <li>Configure EF Core with a connection string in <code>appsettings.json</code>.</li>
+                <li>Add and apply the first migration to create the database schema.</li>
+            </ul>
+
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> EF Core DbContext, DbSet&lt;T&gt;, connection strings, migrations
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#ef-core-models"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">EF
+                        Core Models</a>
+                    <a href="/tips#setup-ef-core---dbcontext"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Setup
+                        EF Core - DbContext</a>
+                    <a href="/tips#connection-strings"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Connection
+                        strings</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Code Section (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Minimal User Model &amp; DbContext</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                Start by defining a small <code>User</code> entity and a matching <code>AppDbContext</code> that EF Core
+                can use to persist data.
+            </p>
+
+            <!-- User entity example -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Models/User.cs</div>
+                <p class="text-xs text-gray-600 mb-2">A lightweight user model with the fields needed for sign up,
+                    sign in, and profile display.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li><code>Id</code> is the primary key.</li>
+                    <li><code>Email</code> is required and should be unique.</li>
+                    <li><code>DisplayName</code> is what you show in the UI.</li>
+                    <li><code>Role</code> keeps the door open for admin/user roles later.</li>
+                </ul>
+                <pre data-code-title="Models/User.cs"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">namespace BlazorMock.Models;
+
+public class User
+{
+    public int Id { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string Role { get; set; } = "User";
+}</pre>
+            </div>
+
+            <!-- DbContext example -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Data/AppDbContext.cs</div>
+                <p class="text-xs text-gray-600 mb-2">A minimal EF Core DbContext that exposes a <code>Users</code>
+                    set for queries and saves.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Inherit from <code>DbContext</code>.</li>
+                    <li>Expose <code>DbSet&lt;User&gt; Users</code> for querying and saving users.</li>
+                    <li>Use <code>OnModelCreating</code> to enforce required properties or unique indexes if desired.
+                    </li>
+                </ul>
+                <pre data-code-title="Data/AppDbContext.cs"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using BlazorMock.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace BlazorMock.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options)
+    {
+    }
+
+    public DbSet&lt;User&gt; Users =&gt; Set&lt;User&gt;();
+}</pre>
+            </div>
+
+            <!-- appsettings.json connection string example -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">appsettings.json (connection string)</div>
+                <p class="text-xs text-gray-600 mb-2">Add a connection string that EF Core will use for the
+                    <code>AppDbContext</code>.
+                </p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>The name <code>AppDbContext</code> should match what you use in <code>Program.cs</code>.</li>
+                    <li>For a tutorial, a local SQLite or SQL Server database is fine.</li>
+                </ul>
+                <pre data-code-title="appsettings.json (snippet)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">"ConnectionStrings": {
+  "AppDbContext": "Server=(localdb)\\mssqllocaldb;Database=AdminDashboardDb;Trusted_Connection=True;MultipleActiveResultSets=true"
+}</pre>
+            </div>
+
+            <!-- Program.cs registration example -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Program.cs (register DbContext)</div>
+                <p class="text-xs text-gray-600 mb-2">Register the <code>AppDbContext</code> so you can inject it into
+                    pages and services.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Use <code>AddDbContext&lt;AppDbContext&gt;</code> with the same connection string name.</li>
+                    <li>Import <code>BlazorMock.Data</code> and <code>Microsoft.EntityFrameworkCore</code>.</li>
+                </ul>
+                <pre data-code-title="Program.cs (snippet)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using BlazorMock.Data;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("AppDbContext")
+                      ?? throw new InvalidOperationException("Connection string 'AppDbContext' not found.");
+
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlServer(connectionString));</pre>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips Section -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+
+            <div class="space-y-3">
+                <!-- Pro Tips (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Keep the User model focused</p>
+                            <p class="text-xs text-blue-800">For a teaching app, you don't need every possible field.
+                                Start with just what the early steps require (email, password hash, display name,
+                                role). You can always extend the model in later steps as the dashboard grows.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use a separate teaching database</p>
+                            <p class="text-xs text-blue-800">Point your connection string at a database dedicated to
+                                this tutorial (like <code>AdminDashboardDb</code>). That way you can drop and recreate
+                                it freely without affecting any real data on your machine.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Let EF Core handle the schema</p>
+                            <p class="text-xs text-blue-800">Instead of manually creating tables, lean on migrations to
+                                keep your schema in sync with your C# models. It keeps the mental model simpler:
+                                "change the class, make a migration, update the database."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting (Yellow) -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>If EF Core tools are missing, install them via
+                            <code>dotnet tool install --global dotnet-ef</code>.</li>
+                        <li>If migrations fail, double-check your connection string and that the project builds
+                            successfully before running <code>dotnet ef migrations add InitialCreate</code>.</li>
+                        <li>If the database file isn't created, ensure you've run <code>dotnet ef database update</code>
+                            with the correct startup project selected.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it Section -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Define the User model:</strong>
+                    Add <code>Models/User.cs</code> with the properties shown above (Id, Email, PasswordHash,
+                    DisplayName, Role).
+                </li>
+                <li>
+                    <strong>Create AppDbContext:</strong>
+                    Add <code>Data/AppDbContext.cs</code> that inherits from <code>DbContext</code> and exposes
+                    <code>DbSet&lt;User&gt; Users</code>.
+                </li>
+                <li>
+                    <strong>Configure EF Core:</strong>
+                    Add an <code>AppDbContext</code> connection string to <code>appsettings.json</code> and register the
+                    context in <code>Program.cs</code> using <code>AddDbContext&lt;AppDbContext&gt;</code>.
+                </li>
+                <li>
+                    <strong>Run your first migration:</strong>
+                    Use <code>dotnet ef migrations add InitialCreate</code> and then
+                    <code>dotnet ef database update</code> to create the database.
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Here's what the <code>User</code> model and database setup looks like:
+            </p>
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">User Entity Structure</h3>
+
+                    <div class="bg-gray-50 rounded-lg border border-gray-200 p-4 mb-6">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-sm font-mono text-purple-600">public class</span>
+                            <span class="text-sm font-mono font-bold text-gray-900">User</span>
+                        </div>
+                        <div class="space-y-2 ml-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-mono text-blue-600">int</span>
+                                <span class="text-xs font-mono text-gray-900">Id</span>
+                                <span class="text-xs text-gray-500">→ Primary key</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-mono text-blue-600">string</span>
+                                <span class="text-xs font-mono text-gray-900">Email</span>
+                                <span class="text-xs text-gray-500">→ Unique login identifier</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-mono text-blue-600">string</span>
+                                <span class="text-xs font-mono text-gray-900">PasswordHash</span>
+                                <span class="text-xs text-gray-500">→ Hashed password</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-mono text-blue-600">string?</span>
+                                <span class="text-xs font-mono text-gray-900">Role</span>
+                                <span class="text-xs text-gray-500">→ e.g., "Admin", "User"</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Sample Users Table:</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-blue-50">
+                                <tr>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Id</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Email</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">PasswordHash</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Role</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-2 font-mono text-gray-900">1</td>
+                                    <td class="px-3 py-2 text-gray-700">admin@example.com</td>
+                                    <td class="px-3 py-2 font-mono text-xs text-gray-500">$2a$11$abc...</td>
+                                    <td class="px-3 py-2">
+                                        <span
+                                            class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-[10px] font-medium">Admin</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-2 font-mono text-gray-900">2</td>
+                                    <td class="px-3 py-2 text-gray-700">user@example.com</td>
+                                    <td class="px-3 py-2 font-mono text-xs text-gray-500">$2a$11$xyz...</td>
+                                    <td class="px-3 py-2">
+                                        <span
+                                            class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">User</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
+                    <p class="text-xs text-gray-600">
+                        💡 <strong>Foundation set:</strong> This simple User model and AppDbContext setup is all you
+                        need to start building auth flows in the next steps.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 2?</h3>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning
+                        progress.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    Nice work! With your auth model and DbContext in place, you're ready to build the sign up and sign
+                    in pages that rely on this data.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/admin-dashboard-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step1"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 1</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step3"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 3</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

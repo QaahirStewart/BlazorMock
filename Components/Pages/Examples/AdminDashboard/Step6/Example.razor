@@ -1,0 +1,396 @@
+@page "/admin-dashboard-examples/step6"
+@rendermode InteractiveServer
+@inherits ExampleBase
+
+<PageTitle>Admin Dashboard Step 6: Basic Analytics Model - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/admin-dashboard-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Admin Dashboard Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            📊 Step 6: Basic Analytics Model
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Introduce a simple analytics model so your Admin Dashboard can record key user actions (like sign in and
+            profile updates) for later visualization.
+        </p>
+
+        <!-- What You'll Learn -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                In this step, you'll add a lightweight analytics entity to your existing <code>AppDbContext</code> so
+                you can record important events (like user logins and profile edits) in a way that's easy to query and
+                chart later.
+            </p>
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Designing a simple <code>Activity</code> entity for analytics events.</li>
+                <li>Adding the analytics entity to <code>AppDbContext</code> and running a new migration.</li>
+                <li>Recording events from key user actions like sign in and profile updates.</li>
+                <li>Keeping analytics data queryable without over-complicating the schema.</li>
+            </ul>
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> event/analytics tables, EF Core migrations, recording user
+                    actions.
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#blazor-+-ef-core-basics"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Blazor
+                        + EF Core basics</a>
+                    <a href="/tips#c#-logging-patterns"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">C#
+                        logging patterns</a>
+                    <a href="/tips#blazor-analytics-events"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Blazor
+                        analytics events</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Model Section -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Model: Activity.cs</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                This example adds a simple <code>Activity</code> entity that records what happened, who did it, and
+                when. Later you'll use this table to power the <code>/analytics</code> page.
+            </p>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Models/Activity.cs</div>
+                <p class="text-xs text-gray-600 mb-2">Lightweight analytics event model designed to be easy to query.
+                </p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Records a <code>Type</code> like <code>"UserLogin"</code> or <code>"ProfileUpdated"</code>.</li>
+                    <li>Stores the <code>UserId</code> so you can group events by user later.</li>
+                    <li>Includes a <code>Metadata</code> column for extra JSON details when needed.</li>
+                </ul>
+                <pre data-code-title="Models/Activity.cs"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">namespace BlazorMock.Models;
+
+public class Activity
+{
+    public int Id { get; set; }
+
+    public int? UserId { get; set; }
+
+    public string Type { get; set; } = string.Empty; // e.g. "UserLogin", "ProfileUpdated"
+
+    public DateTime OccurredAt { get; set; } = DateTime.UtcNow;
+
+    public string? Metadata { get; set; } // optional JSON/details for later analytics
+}</pre>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Data/AppDbContext.cs (snippet)</div>
+                <p class="text-xs text-gray-600 mb-2">Add an <code>Activities</code> set so EF Core can create and
+                    query analytics events.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Extends your existing <code>AppDbContext</code> from earlier steps.</li>
+                    <li>Makes analytics events first-class citizens in your data model.</li>
+                    <li>Sets you up to write queries in the <code>/analytics</code> page later.</li>
+                </ul>
+                <pre data-code-title="Data/AppDbContext.cs (snippet)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using BlazorMock.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace BlazorMock.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) : base(options)
+    {
+    }
+
+    public DbSet&lt;User&gt; Users =&gt; Set&lt;User&gt;();
+
+    public DbSet&lt;Activity&gt; Activities =&gt; Set&lt;Activity&gt;();
+}</pre>
+            </div>
+
+            <!-- Step-by-step breakdown -->
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Step-by-step breakdown</h3>
+            <div class="grid gap-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">1. Keep the analytics model simple</div>
+                    <p class="text-xs text-gray-600 mb-2">You don't need a perfect schema to start capturing useful
+                        events. Start with just the basics and evolve later.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Use a single <code>Type</code> string instead of a complex enum hierarchy.</li>
+                        <li>Include <code>UserId</code> so you can filter and group events per user.</li>
+                        <li>Add a <code>Metadata</code> column for optional extra details when needed.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">public class Activity
+{
+    public int Id { get; set; }
+    public int? UserId { get; set; }
+    public string Type { get; set; } = string.Empty;
+    public DateTime OccurredAt { get; set; } = DateTime.UtcNow;
+    public string? Metadata { get; set; }
+}</pre>
+                </div>
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <div class="text-xs text-gray-500 mb-1">2. Extend AppDbContext to include Activities</div>
+                    <p class="text-xs text-gray-600 mb-2">Adding a <code>DbSet&lt;Activity&gt;</code> is all you need
+                        for
+                        EF Core to create the table and let you query it.</p>
+                    <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Reuse the same <code>AppDbContext</code> registration from Step 2.</li>
+                        <li>Let migrations handle the new <code>Activities</code> table for you.</li>
+                        <li>Keep analytics tables in the same database for this tutorial.</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">public class AppDbContext : DbContext
+{
+    public DbSet&lt;User&gt; Users =&gt; Set&lt;User&gt;();
+    public DbSet&lt;Activity&gt; Activities =&gt; Set&lt;Activity&gt;();
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+            <div class="space-y-3">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Start with a minimal event schema</p>
+                            <p class="text-xs text-blue-800">It's better to start logging a few well-defined event
+                                types than to over-design a perfect analytics model. You can always add columns or new
+                                event types later with migrations.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Treat analytics as an append-only log
+                            </p>
+                            <p class="text-xs text-blue-800">Most analytics tables work best as append-only data. You
+                                rarely need to update or delete events; instead, you aggregate and query them.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>If your migration fails, double-check that <code>Activity</code> is in the same namespace
+                            as your other models and that <code>AppDbContext</code> builds cleanly.</li>
+                        <li>If the <code>Activities</code> table is missing, make sure you've run
+                            <code>dotnet ef migrations add AddActivities</code> and
+                            <code>dotnet ef database update</code>
+                            after adding the new <code>DbSet</code>.
+                        </li>
+                        <li>If you're logging too many events, you can prune or filter them later when you build the
+                            <code>/analytics</code> UI.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700">
+                <li>
+                    <strong>Create the Activity entity:</strong>
+                    Add <code>Models/Activity.cs</code> with the properties shown above, keeping the model intentionally
+                    simple.
+                </li>
+                <li>
+                    <strong>Extend AppDbContext:</strong>
+                    Add a <code>DbSet&lt;Activity&gt; Activities</code> property to <code>AppDbContext</code> so EF Core
+                    can create the new table.
+                </li>
+                <li>
+                    <strong>Run a new migration:</strong>
+                    Use <code>dotnet ef migrations add AddActivities</code> followed by
+                    <code>dotnet ef database update</code> to apply the schema change.
+                </li>
+                <li>
+                    <strong>Plan where to log events:</strong>
+                    Make a short list of the actions you want to track first (for example, successful sign-ins and
+                    profile updates) so you're ready to hook into them in later steps.
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Here's what the <code>Activity</code> model and database integration looks like in action:
+            </p>
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                <!-- Mock Activity Model Visualization -->
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Activity Entity Structure</h3>
+                    
+                    <!-- Visual representation of the Activity entity -->
+                    <div class="bg-gray-50 rounded-lg border border-gray-200 p-4 mb-6">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-sm font-mono text-purple-600">public class</span>
+                            <span class="text-sm font-mono font-bold text-gray-900">Activity</span>
+                        </div>
+                        <div class="space-y-2 ml-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-mono text-blue-600">int</span>
+                                <span class="text-xs font-mono text-gray-900">Id</span>
+                                <span class="text-xs text-gray-500">→ Primary key</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-mono text-blue-600">int?</span>
+                                <span class="text-xs font-mono text-gray-900">UserId</span>
+                                <span class="text-xs text-gray-500">→ Optional user reference</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-mono text-blue-600">string</span>
+                                <span class="text-xs font-mono text-gray-900">Type</span>
+                                <span class="text-xs text-gray-500">→ e.g., "UserLogin", "ProfileUpdated"</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-mono text-blue-600">DateTime</span>
+                                <span class="text-xs font-mono text-gray-900">OccurredAt</span>
+                                <span class="text-xs text-gray-500">→ When the event happened</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-mono text-blue-600">string?</span>
+                                <span class="text-xs font-mono text-gray-900">Metadata</span>
+                                <span class="text-xs text-gray-500">→ Optional JSON data</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sample data visualization -->
+                    <h4 class="text-sm font-semibold text-gray-700 mb-3">Sample Activities Table Data:</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-blue-50">
+                                <tr>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Id</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">UserId</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Type</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">OccurredAt</th>
+                                    <th class="px-3 py-2 text-left font-semibold text-gray-700">Metadata</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-2 font-mono text-gray-900">1</td>
+                                    <td class="px-3 py-2 font-mono text-gray-600">5</td>
+                                    <td class="px-3 py-2">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-[10px] font-medium">UserLogin</span>
+                                    </td>
+                                    <td class="px-3 py-2 text-gray-600">2025-11-18 14:32:18</td>
+                                    <td class="px-3 py-2 text-gray-400 italic">null</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-2 font-mono text-gray-900">2</td>
+                                    <td class="px-3 py-2 font-mono text-gray-600">3</td>
+                                    <td class="px-3 py-2">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">ProfileUpdated</span>
+                                    </td>
+                                    <td class="px-3 py-2 text-gray-600">2025-11-18 13:15:42</td>
+                                    <td class="px-3 py-2 font-mono text-[10px] text-gray-500">{"field":"Email"}</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-2 font-mono text-gray-900">3</td>
+                                    <td class="px-3 py-2 font-mono text-gray-600">7</td>
+                                    <td class="px-3 py-2">
+                                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-[10px] font-medium">UserLogin</span>
+                                    </td>
+                                    <td class="px-3 py-2 text-gray-600">2025-11-18 12:08:33</td>
+                                    <td class="px-3 py-2 text-gray-400 italic">null</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-3 py-2 font-mono text-gray-900">4</td>
+                                    <td class="px-3 py-2 font-mono text-gray-600">5</td>
+                                    <td class="px-3 py-2">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">ProfileUpdated</span>
+                                    </td>
+                                    <td class="px-3 py-2 text-gray-600">2025-11-18 11:47:21</td>
+                                    <td class="px-3 py-2 font-mono text-[10px] text-gray-500">{"field":"Bio"}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
+                    <p class="text-xs text-gray-600 mb-2">
+                        💡 <strong>What's happening:</strong> Each row represents a user action tracked in your app. The <code>Type</code> column categorizes the event, <code>OccurredAt</code> timestamps it, and <code>Metadata</code> can store extra details as JSON.
+                    </p>
+                    <p class="text-xs text-gray-600">
+                        <strong>Next step:</strong> In Step 7, you'll query this table to build analytics dashboards showing counts, trends, and recent activity.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mark Complete Section -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 6?</h3>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning
+                        progress.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                            Reset
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    With your analytics model in place, you're ready to start logging real events and visualizing them
+                    on the <code>/analytics</code> page in Step 7.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/admin-dashboard-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step5"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 5</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step7"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 7</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

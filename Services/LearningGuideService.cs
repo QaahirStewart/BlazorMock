@@ -18,7 +18,7 @@ public interface ILearningGuideService
 public class LearningGuideService : ILearningGuideService
 {
     private static readonly List<Phase> Phases = new()
-    {
+    { // Trucking Schedule phases (projectKey = "trucking")
         new Phase(
             Id: "phase-1",
             Title: "Phase 1: Entry-Level",
@@ -70,30 +70,30 @@ public class LearningGuideService : ILearningGuideService
             ProjectKey: "pokemon"
         ),
 
-        // Admin SaaS Dashboard phases (projectKey = "admin")
+        // Admin Dashboard phases (projectKey = "admin-dashboard")
         new Phase(
-            Id: "admin-phase-1",
-            Title: "Phase 1: Layout & Tiles",
-            Subtitle: "Project setup + shell pieces",
-            Description: "Environment setup, create a new clean project, then build the layout, reusable stat cards, and status badges.",
-            StepNumbers: new[] { 0, 1, 2, 3 },
-            ProjectKey: "admin"
+            Id: "admin-dashboard-phase-1",
+            Title: "Phase 1: Project & Auth Basics",
+            Subtitle: "Clean project + sign in",
+            Description: "Create a clean Blazor project, set up EF Core for users, and add basic sign-in/sign-up pages.",
+            StepNumbers: new[] { 1, 2, 3, 4 },
+            ProjectKey: "admin-dashboard"
         ),
         new Phase(
-            Id: "admin-phase-2",
-            Title: "Phase 2: Roles & Locking",
-            Subtitle: "Auth, roles, locked UI",
-            Description: "Add a mock auth service, role toggle, lock patterns, and access explanation banners.",
-            StepNumbers: new[] { 4, 5, 6, 7 },
-            ProjectKey: "admin"
+            Id: "admin-dashboard-phase-2",
+            Title: "Phase 2: Profile, Analytics & Layout",
+            Subtitle: "User insights and dashboard shell",
+            Description: "Implement the profile page, simple analytics, and the main admin dashboard layout.",
+            StepNumbers: new[] { 5, 6, 7, 8, 9 },
+            ProjectKey: "admin-dashboard"
         ),
         new Phase(
-            Id: "admin-phase-3",
-            Title: "Phase 3: Panels & Final Dashboard",
-            Subtitle: "Subscriptions, billing, profile",
-            Description: "Build subscription, billing, and profile panels and compose them into the final /admin/dashboard experience.",
-            StepNumbers: new[] { 8, 9, 10 },
-            ProjectKey: "admin"
+            Id: "admin-dashboard-phase-3",
+            Title: "Phase 3: Route Protection & Navigation",
+            Subtitle: "Lock things down",
+            Description: "Protect routes, wire in desktop and mobile navigation, and polish the experience.",
+            StepNumbers: new[] { 10, 11, 12 },
+            ProjectKey: "admin-dashboard"
         )
     };
 
