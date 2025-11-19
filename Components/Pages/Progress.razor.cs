@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +23,19 @@ public partial class ProgressBase : ComponentBase
 
     protected List<StepProgress>? adminSteps;
     protected int adminCompletedCount;
+
+    protected int ProjectCount => new[] { truckingSteps, pokemonSteps, adminSteps }
+        .Count(list => list?.Count > 0);
+
+    protected int TotalSteps => (truckingSteps?.Count ?? 0)
+                               + (pokemonSteps?.Count ?? 0)
+                               + (adminSteps?.Count ?? 0);
+
+    protected int TotalCompleted => truckingCompletedCount + pokemonCompletedCount + adminCompletedCount;
+
+    protected double TotalCompletionPercent => TotalSteps > 0
+        ? Math.Round((double)TotalCompleted / TotalSteps * 100, 1)
+        : 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,4 +74,9 @@ public partial class ProgressBase : ComponentBase
             await LoadProgressAsync();
         }
     }
+
+    protected double GetPercent(int completedCount, List<StepProgress>? steps)
+        => steps?.Count > 0
+            ? Math.Round((double)completedCount / steps.Count * 100, 0)
+            : 0;
 }

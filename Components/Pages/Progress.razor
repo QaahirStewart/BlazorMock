@@ -4,187 +4,260 @@
 
 <PageTitle>Learning Progress</PageTitle>
 
-<div class="min-h-screen py-8">
-    <div class="w-full mx-auto px-4 max-w-6xl">
-        <!-- Header -->
-        <div class="text-center mb-12">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 break-words">
-                📊 Your Learning Progress
-            </h1>
-            <p class="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed break-words">
-                Track your journey across all learning projects
-            </p>
-        </div>
-
-        <!-- Trucking Project Progress -->
-        <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
-            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200">
-                <div class="flex flex-col gap-2 mb-4">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-3xl" aria-hidden="true">🚚</span>
-                        <span
-                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">Project
-                            1</span>
-                    </div>
-                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">Trucking Schedule App</h2>
-                    <p class="text-xs sm:text-sm text-gray-500 break-words">Focus: CRUD, EF Core, forms</p>
-                    <p class="text-sm sm:text-base text-gray-600 break-words">Progress: @truckingCompletedCount /
-                        @(truckingSteps?.Count ?? 0) steps complete</p>
-                </div>
-
-                <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
-                    <div class="bg-blue-500 h-3 rounded-full transition-all duration-300"
-                        style="width: @((truckingSteps?.Count > 0 ? (truckingCompletedCount / (double)truckingSteps.Count) * 100 : 0))%">
+<div class="min-h-screen py-10 bg-gradient-to-b from-gray-50 via-white to-white">
+    <div class="w-full mx-auto px-4 max-w-6xl space-y-10">
+        <section class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-3xl p-6 sm:p-8 border border-indigo-100 shadow-inner text-gray-900">
+            <div class="flex flex-col lg:flex-row items-start gap-8">
+                <div class="flex-1">
+                    <p class="text-xs uppercase tracking-[0.25em] text-indigo-600 font-semibold mb-3">Learning tracker</p>
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-4 break-words">📊 Your Progress Across Every Project</h1>
+                    <p class="text-base sm:text-lg text-slate-700 leading-relaxed max-w-2xl break-words">
+                        Keep trucking through CRUD work, build out API-driven UI, and master secure admin dashboards. This page mirrors the rest of the learning hub so you always know what to tackle next.
+                    </p>
+                    <div class="flex flex-wrap gap-3 mt-6">
+                        <a href="/guide"
+                           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold shadow hover:bg-blue-700 transition-colors">
+                            <span>←</span>
+                            Back to Learning Hub
+                        </a>
+                        <a href="/tips"
+                           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/80 text-blue-700 text-sm font-semibold border border-blue-100 hover:bg-white transition-colors">
+                            <span>💡</span>
+                            Explore Tips
+                        </a>
                     </div>
                 </div>
 
-                <div class="space-y-3">
-                    @if (truckingSteps != null)
-                    {
-                        @foreach (var step in truckingSteps)
-                        {
-                            <div
-                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    @if (step.IsComplete)
-                                    {
-                                        <span
-                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
-                                    }
-                                    else
-                                    {
-                                        <span
-                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
-                                    }
-                                    <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
-                                </div>
-                                <button @onclick="@(async () => await ToggleStep(TruckingProjectKey, step.StepNumber))"
-                                    class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-blue-600 text-white hover:bg-blue-700")">
-                                    @(step.IsComplete ? "Mark incomplete" : "Mark complete")
-                                </button>
-                            </div>
-                        }
-                    }
+                <div class="bg-white/85 backdrop-blur rounded-2xl border border-white/70 shadow-sm p-5 w-full lg:w-80">
+                    <p class="text-xs uppercase tracking-widest text-gray-500 mb-3">Snapshot</p>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Overall completion</p>
+                            <div class="text-4xl font-bold text-gray-900">@TotalCompletionPercent.ToString("0.#")%</div>
+                            <p class="text-xs text-gray-500">@TotalCompleted of @TotalSteps steps complete</p>
+                        </div>
+                        <div class="border-t border-gray-100 pt-3 flex items-center justify-between text-sm text-gray-600">
+                            <span>Projects tracked</span>
+                            <span class="font-semibold text-gray-900">@ProjectCount</span>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 -mt-8">
+            <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-wide text-gray-500 mb-1">Project 1 · Trucking</p>
+                    <p class="text-base font-semibold text-gray-900">@truckingCompletedCount / @(truckingSteps?.Count ?? 0) steps</p>
+                </div>
+                <span class="text-2xl font-bold text-blue-600">@GetPercent(truckingCompletedCount, truckingSteps).ToString("0")%</span>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-wide text-gray-500 mb-1">Project 2 · Pokémon</p>
+                    <p class="text-base font-semibold text-gray-900">@pokemonCompletedCount / @(pokemonSteps?.Count ?? 0) steps</p>
+                </div>
+                <span class="text-2xl font-bold text-yellow-600">@GetPercent(pokemonCompletedCount, pokemonSteps).ToString("0")%</span>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-wide text-gray-500 mb-1">Project 3 · Admin</p>
+                    <p class="text-base font-semibold text-gray-900">@adminCompletedCount / @(adminSteps?.Count ?? 0) steps</p>
+                </div>
+                <span class="text-2xl font-bold text-emerald-600">@GetPercent(adminCompletedCount, adminSteps).ToString("0")%</span>
             </div>
         </div>
 
-        <!-- Pokemon Project Progress -->
-        <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
-            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200">
-                <div class="flex flex-col gap-2 mb-4">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
-                             alt="Pikachu" class="w-12 h-12 object-contain" />
-                        <span
-                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 border border-yellow-200">Project
-                            2</span>
-                    </div>
-                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">Pokemon Collector</h2>
-                    <p class="text-xs sm:text-sm text-gray-500 break-words">Focus: HTTP APIs, state, UI patterns</p>
-                    <p class="text-sm sm:text-base text-gray-600 break-words">Progress: @pokemonCompletedCount /
-                        @(pokemonSteps?.Count ?? 0) steps complete</p>
+        <section class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-gray-500 font-semibold">Project breakdown</p>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">Deep dive into each learning path</h2>
+                    <p class="text-sm sm:text-base text-gray-600 mt-2">Stay consistent by marking steps complete as you finish them. Each card mirrors the patterns from the Guide Hub.</p>
                 </div>
+                <a href="/progress" class="text-sm text-blue-600 hover:text-blue-700 font-semibold">Refresh data ↻</a>
+            </div>
 
-                <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
-                    <div class="bg-yellow-500 h-3 rounded-full transition-all duration-300"
-                        style="width: @((pokemonSteps?.Count > 0 ? (pokemonCompletedCount / (double)pokemonSteps.Count) * 100 : 0))%">
-                    </div>
-                </div>
-
-                <div class="space-y-3">
-                    @if (pokemonSteps != null)
-                    {
-                        @foreach (var step in pokemonSteps)
-                        {
-                            <div
-                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    @if (step.IsComplete)
-                                    {
-                                        <span
-                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
-                                    }
-                                    else
-                                    {
-                                        <span
-                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
-                                    }
-                                    <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
-                                </div>
-                                <button @onclick="@(async () => await ToggleStep(PokemonProjectKey, step.StepNumber))"
-                                    class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-yellow-600 text-white hover:bg-yellow-700")">
-                                    @(step.IsComplete ? "Mark incomplete" : "Mark complete")
-                                </button>
+            <div class="space-y-8">
+                <!-- Trucking Project -->
+                <div class="bg-white/90 backdrop-blur rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="text-4xl" aria-hidden="true">🚚</div>
+                            <div>
+                                <div class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 mb-2">Project 1</div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Trucking Schedule App</h3>
+                                <p class="text-xs text-gray-500">Focus: CRUD, EF Core, forms</p>
                             </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs uppercase tracking-wide text-gray-500">Progress</p>
+                            <p class="text-3xl font-bold text-blue-600">@GetPercent(truckingCompletedCount, truckingSteps).ToString("0")%</p>
+                            <p class="text-xs text-gray-500">@truckingCompletedCount / @(truckingSteps?.Count ?? 0) steps</p>
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                        <div class="bg-blue-500 h-3 rounded-full transition-all duration-300"
+                             style="width: @((truckingSteps?.Count > 0 ? (truckingCompletedCount / (double)truckingSteps.Count) * 100 : 0))%">
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        @if (truckingSteps != null)
+                        {
+                            @foreach (var step in truckingSteps)
+                            {
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-gray-100 rounded-xl bg-white px-4 py-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        @if (step.IsComplete)
+                                        {
+                                            <span class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700 text-sm font-semibold">@step.StepNumber</span>
+                                        }
+                                        <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
+                                    </div>
+                                    <button @onclick="@(async () => await ToggleStep(TruckingProjectKey, step.StepNumber))"
+                                            class="px-3.5 py-1.5 text-xs sm:text-sm rounded-xl font-medium transition-colors @(step.IsComplete ? "border border-gray-300 text-gray-700 hover:bg-gray-50" : "bg-blue-600 text-white hover:bg-blue-700")">
+                                        @(step.IsComplete ? "Mark incomplete" : "Mark complete")
+                                    </button>
+                                </div>
+                            }
                         }
-                    }
+                    </div>
+                </div>
+
+                <!-- Pokemon Project -->
+                <div class="bg-white/90 backdrop-blur rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-4">
+                        <div class="flex items-center gap-4">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+                                 alt="Pikachu" class="w-14 h-14 object-contain" />
+                            <div>
+                                <div class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-700 border border-yellow-200 mb-2">Project 2</div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Pokémon Collector</h3>
+                                <p class="text-xs text-gray-500">Focus: HTTP APIs, state, UI patterns</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs uppercase tracking-wide text-gray-500">Progress</p>
+                            <p class="text-3xl font-bold text-yellow-600">@GetPercent(pokemonCompletedCount, pokemonSteps).ToString("0")%</p>
+                            <p class="text-xs text-gray-500">@pokemonCompletedCount / @(pokemonSteps?.Count ?? 0) steps</p>
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                        <div class="bg-yellow-500 h-3 rounded-full transition-all duration-300"
+                             style="width: @((pokemonSteps?.Count > 0 ? (pokemonCompletedCount / (double)pokemonSteps.Count) * 100 : 0))%">
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        @if (pokemonSteps != null)
+                        {
+                            @foreach (var step in pokemonSteps)
+                            {
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-gray-100 rounded-xl bg-white px-4 py-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        @if (step.IsComplete)
+                                        {
+                                            <span class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-yellow-50 text-yellow-700 text-sm font-semibold">@step.StepNumber</span>
+                                        }
+                                        <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
+                                    </div>
+                                    <button @onclick="@(async () => await ToggleStep(PokemonProjectKey, step.StepNumber))"
+                                            class="px-3.5 py-1.5 text-xs sm:text-sm rounded-xl font-medium transition-colors @(step.IsComplete ? "border border-gray-300 text-gray-700 hover:bg-gray-50" : "bg-yellow-500 text-white hover:bg-yellow-600")">
+                                        @(step.IsComplete ? "Mark incomplete" : "Mark complete")
+                                    </button>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!-- Admin Project -->
+                <div class="bg-white/90 backdrop-blur rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="text-4xl" aria-hidden="true">🛡️</div>
+                            <div>
+                                <div class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">Project 3</div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-900">Admin Dashboard</h3>
+                                <p class="text-xs text-gray-500">Focus: auth, roles, analytics, dashboard layout</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs uppercase tracking-wide text-gray-500">Progress</p>
+                            <p class="text-3xl font-bold text-emerald-600">@GetPercent(adminCompletedCount, adminSteps).ToString("0")%</p>
+                            <p class="text-xs text-gray-500">@adminCompletedCount / @(adminSteps?.Count ?? 0) steps</p>
+                        </div>
+                    </div>
+
+                    <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                        <div class="bg-emerald-500 h-3 rounded-full transition-all duration-300"
+                             style="width: @((adminSteps?.Count > 0 ? (adminCompletedCount / (double)adminSteps.Count) * 100 : 0))%">
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        @if (adminSteps != null)
+                        {
+                            @foreach (var step in adminSteps)
+                            {
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-gray-100 rounded-xl bg-white px-4 py-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        @if (step.IsComplete)
+                                        {
+                                            <span class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 text-sm font-semibold">@step.StepNumber</span>
+                                        }
+                                        <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
+                                    </div>
+                                    <button @onclick="@(async () => await ToggleStep(AdminProjectKey, step.StepNumber))"
+                                            class="px-3.5 py-1.5 text-xs sm:text-sm rounded-xl font-medium transition-colors @(step.IsComplete ? "border border-gray-300 text-gray-700 hover:bg-gray-50" : "bg-emerald-600 text-white hover:bg-emerald-700")">
+                                        @(step.IsComplete ? "Mark incomplete" : "Mark complete")
+                                    </button>
+                                </div>
+                            }
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Admin Project Progress -->
-        <div class="bg-black/3 rounded-2xl p-5 sm:p-6 mb-8">
-            <div class="bg-white rounded-xl p-5 sm:p-6 border border-gray-200">
-                <div class="flex flex-col gap-2 mb-4">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-3xl" aria-hidden="true">🛡️</span>
-                        <span
-                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Project
-                            3</span>
-                    </div>
-                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 break-words">Admin Dashboard</h2>
-                    <p class="text-xs sm:text-sm text-gray-500 break-words">Focus: auth, roles, analytics, dashboard
-                        layout</p>
-                    <p class="text-sm sm:text-base text-gray-600 break-words">Progress: @adminCompletedCount /
-                        @(adminSteps?.Count ?? 0) steps complete</p>
+        <section class="bg-black/90 rounded-3xl text-white p-6 sm:p-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div>
+                    <p class="text-sm uppercase tracking-[0.3em] text-gray-400 mb-2">Need a refresher?</p>
+                    <h2 class="text-2xl font-semibold mb-3">Revisit the guides or demos whenever you stall.</h2>
+                    <p class="text-sm text-gray-300 max-w-2xl">Jump back into the guide hub, launch the demos, or skim the tips library to unblock your next step. Everything shares the same UI language so you always feel oriented.</p>
                 </div>
-
-                <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
-                    <div class="bg-emerald-500 h-3 rounded-full transition-all duration-300"
-                        style="width: @((adminSteps?.Count > 0 ? (adminCompletedCount / (double)adminSteps.Count) * 100 : 0))%">
-                    </div>
-                </div>
-
-                <div class="space-y-3">
-                    @if (adminSteps != null)
-                    {
-                        @foreach (var step in adminSteps)
-                        {
-                            <div
-                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-gray-50 rounded-lg p-3">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    @if (step.IsComplete)
-                                    {
-                                        <span
-                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-sm">&#10003;</span>
-                                    }
-                                    else
-                                    {
-                                        <span
-                                            class="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 text-gray-700 text-sm font-semibold">@step.StepNumber</span>
-                                    }
-                                    <span class="text-sm sm:text-base text-gray-900 break-words">@step.Title</span>
-                                </div>
-                                <button @onclick="@(async () => await ToggleStep(AdminProjectKey, step.StepNumber))"
-                                    class="px-3 py-1 text-xs sm:text-sm rounded-lg whitespace-nowrap @(step.IsComplete ? "border border-gray-300 hover:bg-gray-100" : "bg-emerald-600 text-white hover:bg-emerald-700")">
-                                    @(step.IsComplete ? "Mark incomplete" : "Mark complete")
-                                </button>
-                            </div>
-                        }
-                    }
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto">
+                    <a href="/trucking-guide" class="bg-white/10 hover:bg-white/20 rounded-2xl p-4 text-center transition-colors">
+                        <p class="text-lg">🚚</p>
+                        <p class="text-sm font-semibold">Trucking Guide</p>
+                    </a>
+                    <a href="/pokemon-guide" class="bg-white/10 hover:bg-white/20 rounded-2xl p-4 text-center transition-colors">
+                        <p class="text-lg">⚡</p>
+                        <p class="text-sm font-semibold">Pokémon Guide</p>
+                    </a>
+                    <a href="/admin-dashboard-guide" class="bg-white/10 hover:bg-white/20 rounded-2xl p-4 text-center transition-colors">
+                        <p class="text-lg">🛡️</p>
+                        <p class="text-sm font-semibold">Admin Guide</p>
+                    </a>
                 </div>
             </div>
-        </div>
-
-
-        <!-- Back to Home -->
-        <div class="mt-8 text-center">
-            <a href="/guide"
-                class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                <span>←</span>
-                Back to Learning Hub
-            </a>
-        </div>
+        </section>
     </div>
 </div>
