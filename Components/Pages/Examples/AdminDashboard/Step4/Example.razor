@@ -69,7 +69,7 @@
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignIn.razor"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/signin"
 @@rendermode InteractiveServer
-@@using BlazorMock.Components.Pages.Auth
+@@using AdminDashboard.Components.Pages.Auth
 @@inherits SignInBase
 
 &lt;PageTitle&gt;Sign In&lt;/PageTitle&gt;
@@ -240,9 +240,9 @@
                 <p class="text-xs text-gray-600 mb-2">Shared code-behind that injects <code>IUserAuthService</code> and handles all sign-in logic, including the passkey simulator.</p>
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignIn.razor.cs"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
-using BlazorMock.Services;
+using AdminDashboard.Services;
 
-namespace BlazorMock.Components.Pages.Auth;
+namespace AdminDashboard.Components.Pages.Auth;
 
 public partial class SignInBase : ComponentBase
 {
@@ -317,7 +317,7 @@ public partial class SignInBase : ComponentBase
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
                 <li><strong>Create the file:</strong> Add <code>Components/Pages/Demo/DashboardDemo/Auth/SignIn.razor</code> (or the equivalent in your app) and paste in the markup above.</li>
-                <li><strong>Reference the shared base:</strong> Use <code>@@using BlazorMock.Components.Pages.Auth</code> and <code>@@inherits SignInBase</code> so you get the shared auth helpers.</li>
+                    <li><strong>Reference the shared base:</strong> Use <code>@@using AdminDashboard.Components.Pages.Auth</code> and <code>@@inherits SignInBase</code> so you get the shared auth helpers.</li>
                 <li><strong>Wire two-way binding:</strong> Bind the email and password inputs to the backing fields declared in <code>SignInBase</code>.</li>
                 <li><strong>Surface errors:</strong> Render the inline red alert whenever <code>errorMessage</code> has a value so learners see identical messaging.</li>
                 <li><strong>Hook up buttons:</strong> Point the primary CTA at <code>HandleSignIn</code> and the secondary CTA at <code>HandlePasskeySignIn</code>.</li>

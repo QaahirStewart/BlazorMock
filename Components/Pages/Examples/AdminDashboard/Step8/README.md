@@ -29,7 +29,7 @@ This step teaches how the production `/analytics` page gets its visual punch—i
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step8` namespace.
+- Tutorial page inherits `ExampleBase` in the `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step8` namespace.
 - Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `8`.
 - References the same markup + helper classes that live in `Components/Pages/Demo/DashboardDemo/Analytics.razor`.
 

@@ -71,7 +71,7 @@
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/signup"
 @@rendermode InteractiveServer
-@@using BlazorMock.Components.Pages.Auth
+@@using AdminDashboard.Components.Pages.Auth
 @@inherits SignUpBase
 
 &lt;PageTitle&gt;Sign Up&lt;/PageTitle&gt;
@@ -223,9 +223,9 @@
                 <p class="text-xs text-gray-600 mb-2">Code-behind base class that injects <code>IUserAuthService</code> and handles <code>HandleSignUp</code>.</p>
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor.cs"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
-using BlazorMock.Services;
+using AdminDashboard.Services;
 
-namespace BlazorMock.Components.Pages.Auth;
+namespace AdminDashboard.Components.Pages.Auth;
 
 public partial class SignUpBase : ComponentBase
 {
@@ -272,7 +272,7 @@ public partial class SignUpBase : ComponentBase
                 <li>
                     <strong>Set up the route and base class:</strong>
                     Use <code>@@page &quot;/signup&quot;</code>, <code>@@rendermode InteractiveServer</code>, import
-                    <code>BlazorMock.Components.Pages.Auth</code>, and inherit from <code>SignUpBase</code>.
+                    <code>AdminDashboard.Components.Pages.Auth</code>, and inherit from <code>SignUpBase</code>.
                 </li>
                 <li>
                     <strong>Review the code-behind:</strong>

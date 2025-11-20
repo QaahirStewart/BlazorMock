@@ -29,7 +29,7 @@ Replace the placeholder dashboard shell with the exact admin experience that shi
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` within `BlazorMock.Components.Pages.Examples.AdminDashboard.Step9`.
+- Tutorial page inherits `ExampleBase` within `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step9`.
 - Uses `ILearningProgressService` to mark `admin-dashboard` step `9` complete.
 - Samples are HTML-encoded copies of `DashboardDemo/AdminDashboard.razor` and `.razor.cs`.
 

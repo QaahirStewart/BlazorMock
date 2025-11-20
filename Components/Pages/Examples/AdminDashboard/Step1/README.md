@@ -29,7 +29,7 @@ This step walks you through creating a brand new Blazor Server project for the A
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step1` namespace.
+- Tutorial page inherits `ExampleBase` in the `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step1` namespace.
 - Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `1`.
 - Uses `IJSRuntime` to load `codeblocks.js` and enhance `<pre class="code-block">` elements.
 

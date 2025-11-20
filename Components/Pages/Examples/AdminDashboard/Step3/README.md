@@ -29,7 +29,7 @@ This step guides students through building a simple `/signup` page so new users 
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step3` namespace.
+- Tutorial page inherits `ExampleBase` in the `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step3` namespace.
 - Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `3`.
 - Uses the `AppDbContext` and `User` entity introduced in Step 2.
 

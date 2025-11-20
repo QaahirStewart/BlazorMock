@@ -29,7 +29,7 @@ This step adds a `/profile` page where the currently signed-in user can view and
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step5` namespace.
+- Tutorial page inherits `ExampleBase` in the `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step5` namespace.
 - Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `5`.
 - Relies on the auth model and login from Steps 2–4.
 

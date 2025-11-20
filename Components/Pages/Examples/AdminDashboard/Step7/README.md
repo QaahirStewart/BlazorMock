@@ -29,7 +29,7 @@ Step 7 syncs the tutorial with the real `/analytics` experience from `DashboardD
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step7` namespace.
+- Tutorial page inherits `ExampleBase` in the `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step7` namespace.
 - Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `7`.
 - References the same markup + helpers that live in `Components/Pages/Demo/DashboardDemo/Analytics.razor`.
 

@@ -33,7 +33,7 @@ with the shipping experience.
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step11` namespace.
+- Tutorial page inherits `ExampleBase` in the `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step11` namespace.
 - `ExampleBase` tracks completion for `admin-dashboard` step `11`, loads the `codeblocks.js` helper, and exposes
   `NavFrameSrc` + `Launch*Demo` helpers for the live preview.
 - Content references the actual layout at `Components/Layout/MainLayout.razor` so the navigation story stays canonical.

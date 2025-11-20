@@ -29,7 +29,7 @@ This step introduces a simple analytics model so the app can record key user act
 
 ## Architecture
 
-- Tutorial page inherits `ExampleBase` in the `BlazorMock.Components.Pages.Examples.AdminDashboard.Step6` namespace.
+- Tutorial page inherits `ExampleBase` in the `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step6` namespace.
 - Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `6`.
 - Extends the existing `AppDbContext` from previous steps.
 
