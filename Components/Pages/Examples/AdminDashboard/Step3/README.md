@@ -4,6 +4,18 @@
 
 This step guides students through building a simple `/signup` page so new users can register for the Admin Dashboard.
 
+## Quick Start (Copy/Paste Friendly)
+
+Follow this checklist so a brand-new `dotnet new blazorserver` app can compile immediately after you paste the Step 3 files:
+
+1. **Align the namespace** – Match every `AdminDashboard.*` namespace in the snippets to your project's root namespace (or set `&lt;RootNamespace&gt;YourAppName&lt;/RootNamespace&gt;` in the `.csproj`).
+2. **Finish Step 2 first** – You need the `User` entity, `AppDbContext`, EF Core packages, and the initial migration in place.
+3. **Add `Services/IUserAuthService.cs`** – Create the interface exactly as shown in the Step 3 example so `SignUpBase` can inject it.
+4. **Add `Services/DemoUserAuthService.cs`** – Implement `IUserAuthService` with the demo logic that uses `AppDbContext` to create users.
+5. **Register the service** – In `Program.cs`, add `using AdminDashboard.Services;` and call `builder.Services.AddScoped<IUserAuthService, DemoUserAuthService>();` after the `AddDbContext` call.
+
+If any of these steps are skipped you'll see errors like `AdminDashboard.Services does not exist` or `IUserAuthService` not found.
+
 ## Files in This Folder
 
 - `Example.razor` — Tutorial page explaining the `/signup` form and flow.
@@ -50,6 +62,8 @@ This step guides students through building a simple `/signup` page so new users 
 
 ## Common Issues & Solutions
 
+- **`AdminDashboard.Services` not found**: Add the `Services` folder with `IUserAuthService` and `DemoUserAuthService` files, and ensure the namespaces match your project.
+- **Dependency injection errors**: Confirm you've registered `builder.Services.AddScoped<IUserAuthService, DemoUserAuthService>();` (or your own implementation) in `Program.cs`.
 - **Validation not triggering**: Ensure `EditForm`, `DataAnnotationsValidator`, and `ValidationSummary` are correctly configured.
 - **Users not saving**: Check that `SaveChangesAsync` is called and no exceptions are being swallowed.
 - **Duplicate emails**: Add a uniqueness constraint or manual check to avoid duplicates.
