@@ -31,7 +31,7 @@ else
             </div>
 
             @* Special Step 0 callout (keeps original style) *@
-            @if (phase.StepNumbers.Contains(0))
+                @if (phase.StepNumbers.Contains(0))
             {
                 <div class="bg-black/3 rounded-2xl p-6 mb-8">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
@@ -92,6 +92,42 @@ else
                     </a>
                 }
             </div>
+
+            <!-- Phase navigation -->
+
+            <!-- Phase navigation -->
+            @if (phases is not null)
+            {
+                <div class="bg-black/3 rounded-2xl mt-8">
+                    <div class="bg-black/90 rounded-2xl p-5 sm:p-6 text-white">
+                        <p class="text-lg sm:text-xl font-semibold mb-4 text-center break-words">🧭 Phase Navigation</p>
+                        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            @{
+                                var phaseIndex = 1;
+                            }
+                            @foreach (var ph in phases)
+                            {
+                                var progress = steps.Count(s => s.IsComplete && ph.StepNumbers.Contains(s.StepNumber));
+                                var isActive = phase?.Id == ph.Id;
+                                <a href=@($"/pokemon-guide/phase/{ph.Id}") class=@($"rounded-xl bg-white/5 hover:bg-white/15 transition-all p-4 text-white h-full {PhaseHoverBorder(ph.Id)} {(isActive ? "ring-0 ring-white/80" : string.Empty)}")>
+                                    <div class="flex items-center gap-3 h-full max-h-[100px]">
+                                        <span class=@($"text-2xl flex-shrink-0 bg-white/5 flex-none rounded-full flex justify-center                                items-center size-10 {(isActive ? PhaseRingColor(ph.Id) :
+                                                                              string.Empty)}")>@phaseIndex</span>
+                                        <div class="min-w-0">
+                                            <div class="text-sm sm:text-base font-semibold break-words">@ph.Title</div>
+
+                                            <div class="text-[11px] text-gray-400 mt-1">Progress: @progress/@ph.StepNumbers.Length
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                phaseIndex++;
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
         </div>
     </div>
 }

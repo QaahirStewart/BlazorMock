@@ -16,13 +16,15 @@
         </h1>
 
         <p class="text-xl text-gray-600 mb-8">
-            Copy the real <code>/profile</code> experience from <code>DashboardDemo</code> so learners can manage their name, profile photo, and plan status using the shared <code>IUserAuthService</code>.
+            Build the full <code>/profile</code> experience so learners can manage their name, profile photo, and plan
+            status using the shared <code>IUserAuthService</code> inside a brand-new Blazor app.
         </p>
 
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Gate the page with <code>ProfileBase</code> so unauthenticated users get redirected to <code>/signin</code>.</li>
+                <li>Gate the page with <code>ProfileBase</code> so unauthenticated users get redirected to
+                    <code>/signin</code>.</li>
                 <li>Bind directly to the properties exposed on <code>IUserAuthService.CurrentUser</code>.</li>
                 <li>Implement profile photo updates plus optimistic success messaging.</li>
                 <li>Surface account stats (member since, last login, role) from the canonical data model.</li>
@@ -30,16 +32,20 @@
             </ul>
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Auth-gated pages, shared service state, optimistic UI updates, and Tailwind layout polish.
+                    <strong>💡 Key Concepts:</strong> Auth-gated pages, shared service state, optimistic UI updates, and
+                    Tailwind layout polish.
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
                     <a href="/tips#auth-service"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth Service</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth
+                        Service</a>
                     <a href="/tips#layout-state"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Layout State</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Layout
+                        State</a>
                     <a href="/tips#tailwind"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind Layouts</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind
+                        Layouts</a>
                 </div>
             </div>
         </div>
@@ -47,15 +53,19 @@
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: Profile.razor (/profile)</h2>
             <p class="text-sm text-gray-600 mb-4">
-                Drop in the exact markup from the demo so your tutorial stays pixel-perfect with the canonical profile page.
+                Drop in the exact markup from the demo so your tutorial stays pixel-perfect with the canonical profile
+                page.
             </p>
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Profile.razor</div>
-                <p class="text-xs text-gray-600 mb-2">Auth-gated profile editor that uses <code>ProfileBase</code> plus <code>IUserAuthService</code> helpers.</p>
+                <p class="text-xs text-gray-600 mb-2">Auth-gated profile editor that uses <code>ProfileBase</code> plus
+                    <code>IUserAuthService</code> helpers.</p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
                     <li>Redirects to <code>/signin</code> if no user is present.</li>
-                    <li>Includes profile photo upload-by-URL, name editing, save/upgrade CTA, and account stats grid.</li>
-                    <li>All interactivity funnels through the shared auth service so no EF Core code lives in the page.</li>
+                    <li>Includes profile photo upload-by-URL, name editing, save/upgrade CTA, and account stats grid.
+                    </li>
+                    <li>All interactivity funnels through the shared auth service so no EF Core code lives in the page.
+                    </li>
                 </ul>
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Profile.razor"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/profile"
@@ -174,12 +184,14 @@ else
 </pre>
             </div>
             <p class="text-xs text-gray-600">
-                Just like the real app, this version keeps all profile logic in the shared auth service. There’s no EF Core or direct database access inside the page.
+                Just like the real app, this version keeps all profile logic in the shared auth service. There’s no EF
+                Core or direct database access inside the page.
             </p>
 
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mt-6">
                 <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Profile.razor.cs</div>
-                <p class="text-xs text-gray-600 mb-2">Code-behind that injects <code>IUserAuthService</code>, handles redirects, profile edits, upgrades, and sign out.</p>
+                <p class="text-xs text-gray-600 mb-2">Code-behind that injects <code>IUserAuthService</code>, handles
+                    redirects, profile edits, upgrades, and sign out.</p>
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Profile.razor.cs"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -266,17 +278,220 @@ public partial class ProfileBase : ComponentBase
 }
 </pre>
             </div>
+
+            <div class="mt-6 space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900">Profile-ready data &amp; auth plumbing</h3>
+                <p class="text-xs text-gray-600">If you started the tutorial before this update, replace these files so
+                    `/profile` compiles in a fresh Blazor app.</p>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Models/User.cs</div>
+                    <pre data-code-title="Models/User.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">namespace AdminDashboard.Models;
+
+public class User
+{
+    public int Id { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public string FullName { get; set; } = "New User";
+    public string Role { get; set; } = "Free";
+    public string? ProfilePictureUrl { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime LastLoginAt { get; set; } = DateTime.UtcNow;
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Services/IUserAuthService.cs</div>
+                    <pre data-code-title="Services/IUserAuthService.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using AdminDashboard.Models;
+
+namespace AdminDashboard.Services;
+
+public interface IUserAuthService
+{
+    User? CurrentUser { get; }
+    bool SignUp(string email, string password, string fullName);
+    bool SignIn(string email, string password);
+    void SignOut();
+    void UpdateProfile(string fullName, string? profilePictureUrl);
+    void UpgradeToRole(string role);
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Services/DemoUserAuthService.cs</div>
+                    <p class="text-xs text-gray-600 mb-2">Same EF Core service from Steps 3–4, now returning
+                        <code>CurrentUser</code> state for the profile page.</p>
+                    <pre data-code-title="Services/DemoUserAuthService.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using System;
+using System.Linq;
+using AdminDashboard.Data;
+using AdminDashboard.Models;
+
+namespace AdminDashboard.Services;
+
+public class DemoUserAuthService : IUserAuthService
+{
+    private readonly AppDbContext _db;
+    private User? _currentUser;
+
+    public DemoUserAuthService(AppDbContext db)
+    {
+        _db = db;
+    }
+
+    public User? CurrentUser =&gt; _currentUser;
+
+    public bool SignUp(string email, string password, string fullName)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+
+        if (_db.Users.Any(u =&gt; u.Email == normalizedEmail))
+        {
+            return false;
+        }
+
+        var user = new User
+        {
+            Email = normalizedEmail,
+            PasswordHash = password,
+            FullName = string.IsNullOrWhiteSpace(fullName) ? "New User" : fullName.Trim(),
+            Role = "Free",
+            CreatedAt = DateTime.UtcNow,
+            LastLoginAt = DateTime.UtcNow
+        };
+
+        _db.Users.Add(user);
+        _db.SaveChanges();
+        _currentUser = user;
+        return true;
+    }
+
+    public bool SignIn(string email, string password)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Email == normalizedEmail && u.PasswordHash == password);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        user.LastLoginAt = DateTime.UtcNow;
+        _db.SaveChanges();
+        _currentUser = user;
+        return true;
+    }
+
+    public void SignOut() =&gt; _currentUser = null;
+
+    public void UpdateProfile(string fullName, string? profilePictureUrl)
+    {
+        if (_currentUser == null)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Id == _currentUser.Id);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.FullName = string.IsNullOrWhiteSpace(fullName) ? user.FullName : fullName.Trim();
+        user.ProfilePictureUrl = string.IsNullOrWhiteSpace(profilePictureUrl) ? null : profilePictureUrl.Trim();
+        _db.SaveChanges();
+        _currentUser = user;
+    }
+
+    public void UpgradeToRole(string role)
+    {
+        if (_currentUser == null)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Id == _currentUser.Id);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.Role = role;
+        _db.SaveChanges();
+        _currentUser = user;
+    }
+}</pre>
+                    <p class="text-[11px] text-gray-600 mt-2">🔐 Hash passwords and use Identity for production apps;
+                        plain text storage keeps the tutorial focused.</p>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Program.cs (DI registration)</div>
+                    <pre data-code-title="Program.cs (snippet)"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using AdminDashboard.Services;
+
+builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Add the migration for new fields</div>
+                    <pre data-code-title="Terminal"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">dotnet ef migrations add AddProfileFields
+dotnet ef database update</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes &amp; Tips</h2>
+
+            <div class="space-y-3">
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">Update your data + service before pasting</h3>
+                    <p class="text-xs sm:text-sm text-yellow-900 mb-3">The profile page expects `CurrentUser`, profile
+                        update helpers, and the new columns on `User`. Replace the files using the snippets above and
+                        rerun the migration commands or you'll see `CS1061` errors for `CurrentUser`, `UpdateProfile`,
+                        and `UpgradeToRole`.</p>
+                    <ul class="list-disc ml-5 text-xs sm:text-sm text-yellow-900 space-y-1">
+                        <li>Set the `&lt;RootNamespace&gt;` or update namespaces to match your project.</li>
+                        <li>Install/restore EF Core tools if `dotnet ef` fails.</li>
+                        <li>Re-run `dotnet ef database update` after adding the new migration.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-2">Profile UX reminders</h3>
+                    <ul class="list-disc ml-5 text-xs sm:text-sm text-blue-900 space-y-1">
+                        <li>Use the optimistic `saveMessage` banner to confirm actions.</li>
+                        <li>The role upgrade button calls `UpgradeToPaid` which just flips the `Role` field for now.
+                        </li>
+                        <li>Redirect unauthenticated visitors by checking `Auth.CurrentUser` before rendering the
+                            layout.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
-                <li><strong>Create the page + base:</strong> Add <code>Profile.razor</code>, set <code>@@inherits ProfileBase</code>, and ensure <code>ProfileBase</code> lives in <code>Components/Pages/Demo/DashboardDemo/Profile.razor.cs</code>.</li>
-                <li><strong>Redirect unauthenticated users:</strong> Check <code>Auth.CurrentUser</code> at the top of the component and call <code>Nav.NavigateTo("/signin")</code> if null.</li>
-                <li><strong>Bind fields to state:</strong> Use <code>fullName</code> and <code>profilePictureUrl</code> fields defined in the base class, and set their initial values in <code>OnInitialized</code>.</li>
-                <li><strong>Reuse service helpers:</strong> Hook Save, Update Photo, Upgrade, and Sign Out buttons to <code>HandleSave</code>, <code>UpdateProfilePicture</code>, <code>UpgradeToPaid</code>, and <code>HandleSignOut</code>.</li>
-                <li><strong>Show account stats:</strong> Pull <code>CreatedAt</code>, <code>LastLoginAt</code>, and <code>Role</code> straight from <code>Auth.CurrentUser</code> so the UI matches the live demo.</li>
-                <li><strong>Give feedback:</strong> Display <code>saveMessage</code> when actions succeed to mirror the optimistic banners in the real page.</li>
+                <li><strong>Create the page + base:</strong> Add <code>Profile.razor</code>, set
+                    <code>@@inherits ProfileBase</code>, and ensure <code>ProfileBase</code> lives in
+                    <code>Components/Pages/Demo/DashboardDemo/Profile.razor.cs</code>.</li>
+                <li><strong>Redirect unauthenticated users:</strong> Check <code>Auth.CurrentUser</code> at the top of
+                    the component and call <code>Nav.NavigateTo("/signin")</code> if null.</li>
+                <li><strong>Bind fields to state:</strong> Use <code>fullName</code> and <code>profilePictureUrl</code>
+                    fields defined in the base class, and set their initial values in <code>OnInitialized</code>.</li>
+                <li><strong>Reuse service helpers:</strong> Hook Save, Update Photo, Upgrade, and Sign Out buttons to
+                    <code>HandleSave</code>, <code>UpdateProfilePicture</code>, <code>UpgradeToPaid</code>, and
+                    <code>HandleSignOut</code>.</li>
+                <li><strong>Show account stats:</strong> Pull <code>CreatedAt</code>, <code>LastLoginAt</code>, and
+                    <code>Role</code> straight from <code>Auth.CurrentUser</code> so the UI matches the live demo.</li>
+                <li><strong>Give feedback:</strong> Display <code>saveMessage</code> when actions succeed to mirror the
+                    optimistic banners in the real page.</li>
             </ol>
         </div>
 
@@ -293,8 +508,12 @@ public partial class ProfileBase : ComponentBase
                     </div>
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 text-center">
-                            <div class="h-24 w-24 mx-auto rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold text-gray-500 mb-4">JD</div>
-                            <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">Update Photo</button>
+                            <div
+                                class="h-24 w-24 mx-auto rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold text-gray-500 mb-4">
+                                JD</div>
+                            <button
+                                class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">Update
+                                Photo</button>
                         </div>
                         <div class="space-y-4">
                             <div>
@@ -308,8 +527,12 @@ public partial class ProfileBase : ComponentBase
                                     class="w-full px-4 py-2 border border-gray-200 bg-gray-50 rounded-lg text-gray-500" />
                             </div>
                             <div class="flex gap-3">
-                                <button class="w-full py-2 bg-white border border-gray-300 text-gray-900 rounded-lg font-semibold hover:bg-green-500 hover:text-white transition">Save Changes</button>
-                                <button class="w-full py-2 bg-black text-white rounded-lg font-semibold hover:bg-gray-900 transition">Sign Out</button>
+                                <button
+                                    class="w-full py-2 bg-white border border-gray-300 text-gray-900 rounded-lg font-semibold hover:bg-green-500 hover:text-white transition">Save
+                                    Changes</button>
+                                <button
+                                    class="w-full py-2 bg-black text-white rounded-lg font-semibold hover:bg-gray-900 transition">Sign
+                                    Out</button>
                             </div>
                         </div>
                     </div>
@@ -326,7 +549,9 @@ public partial class ProfileBase : ComponentBase
                 </div>
                 <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
                     <p class="text-xs text-gray-600">
-                        💡 <strong>Try it live:</strong> <a href="/profile" class="text-blue-600 hover:text-blue-700 font-medium">Open /profile →</a> after signing in to see the real component.
+                        💡 <strong>Try it live:</strong> <a href="/profile"
+                            class="text-blue-600 hover:text-blue-700 font-medium">Open /profile →</a> after signing in
+                        to see the real component.
                     </p>
                 </div>
             </div>
@@ -336,7 +561,8 @@ public partial class ProfileBase : ComponentBase
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 5?</h3>
-                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning progress.</p>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning
+                        progress.</p>
                 </div>
                 @if (isComplete)
                 {
@@ -360,7 +586,8 @@ public partial class ProfileBase : ComponentBase
             <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
                 <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
                 <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
-                    Auth is locked in. Step 6 moves into analytics so keep the same fidelity while mirroring the demo cards and charts.
+                    Auth is locked in. Step 6 moves into analytics so keep the same fidelity while mirroring the demo
+                    cards and charts.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <a href="/admin-dashboard-guide"

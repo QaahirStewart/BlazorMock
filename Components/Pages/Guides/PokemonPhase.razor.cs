@@ -16,9 +16,11 @@ public partial class PokemonPhaseBase : ComponentBase
     protected Phase? phase;
     protected List<StepProgress> steps = new();
     protected int completedInPhase;
+    protected IReadOnlyList<Phase>? phases;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        phases ??= GuideService.GetPhases("pokemon");
         phase = GuideService.GetPhaseById("pokemon", Id);
         steps = await ProgressService.GetAllStepsAsync("pokemon");
         completedInPhase = phase is null
@@ -27,6 +29,14 @@ public partial class PokemonPhaseBase : ComponentBase
     }
 
     protected string StepHref(int n) => n == 0 ? "/pokemon-examples/step0" : $"/pokemon-examples/step{n}";
+
+    protected static string PhaseHoverBorder(string id) => id switch
+    {
+        "pokemon-phase-1" => "hover:border-yellow-400",
+        "pokemon-phase-2" => "hover:border-blue-400",
+        "pokemon-phase-3" => "hover:border-emerald-400",
+        _ => "hover:border-gray-300"
+    };
 
     protected static string PhasePillColors(string id) => id switch
     {
@@ -42,5 +52,13 @@ public partial class PokemonPhaseBase : ComponentBase
         "pokemon-phase-2" => "bg-gradient-to-r from-blue-100 via-sky-100 to-sky-200",
         "pokemon-phase-3" => "bg-gradient-to-r from-emerald-100 via-teal-100 to-teal-200",
         _ => "bg-gradient-to-r from-gray-100 to-blue-100"
+    };
+
+    protected static string PhaseRingColor(string id) => id switch
+    {
+        "pokemon-phase-1" => "ring-1 ring-yellow-300/70",
+        "pokemon-phase-2" => "ring-1 ring-blue-300/70",
+        "pokemon-phase-3" => "ring-1 ring-emerald-300/70",
+        _ => "ring-1 ring-white/70"
     };
 }

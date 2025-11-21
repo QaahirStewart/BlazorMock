@@ -4,6 +4,17 @@
 
 This step walks students through building a `/signin` page that lets existing users log into the Admin Dashboard.
 
+## Quick Start (Copy/Paste Friendly)
+
+1. **Match your namespace** – Replace `AdminDashboard.*` with your project's root namespace (or set `&lt;RootNamespace&gt;YourApp&lt;/RootNamespace&gt;` in the `.csproj`).
+2. **Have Steps 2 & 3 ready** – You need the `User` model, `AppDbContext`, EF Core packages, and the `/signup` flow so accounts exist to log in with.
+3. **Update `IUserAuthService`** – Add a `SignIn(string email, string password)` method to the interface (or copy the full snippet from this step) so both `/signup` and `/signin` compile.
+4. **Update the service implementation** – Ensure your `DemoUserAuthService` (or equivalent) implements both `SignUp` and `SignIn`, comparing credentials against the `Users` table.
+5. **Register the service** – In `Program.cs`, reference `AdminDashboard.Services` and call `builder.Services.AddScoped<IUserAuthService, DemoUserAuthService>();` after `AddDbContext`.
+	Demo account cards only auto-fill the inputs—you must actually create those users (either via the `/signup` page or a quick seed) or you'll get “Invalid email or password.”
+
+> 💡 **Copy/paste tip:** the tutorial components render code blocks inside Razor, so the source file in GitHub shows `@@` to escape `@`. If you copy directly from the repo, run a quick find/replace (`@@` → `@`) after pasting.
+
 ## Files in This Folder
 
 - `Example.razor` — Tutorial page explaining the `/signin` form and login flow.
@@ -51,6 +62,9 @@ This step walks students through building a `/signin` page that lets existing us
 
 ## Common Issues & Solutions
 
+- **`@@bind` / `@@onclick` showing up in your pasted file**: Replace every `@@` with `@`. The double symbol only exists so the tutorial page can render Razor syntax.
+- **Demo cards still fail**: Create matching records (e.g., `admin@demo.com`) by signing up those users first, or update the demo card emails to accounts you actually have.
+- **`IUserAuthService.SignIn` missing**: Update the interface/service files from Step 3 to include a `SignIn` method and recompile.
 - **Login always failing**: Double-check password comparison logic and queries.
 - **User identity not persisting**: Ensure the auth mechanism (cookie/session) is correctly configured.
 - **No clear error message**: Add a dedicated area on the page to show errors when login fails.

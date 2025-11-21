@@ -182,7 +182,7 @@ private static string PhasePillColors(string id) => id switch
 
 ## 5. Phase Detail Page Layout
 
-**Reference**: `Guides/PhaseDetails.razor` (trucking) and `PokemonPhase.razor`.
+**Reference**: `TruckingPhase.razor` (trucking) and `PokemonPhase.razor`.
 
 ### Back link
 

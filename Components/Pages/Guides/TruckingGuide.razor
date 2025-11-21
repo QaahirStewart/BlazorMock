@@ -53,7 +53,7 @@
         </div>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 my-10 max-w-6xl mx-auto animate-fade-in">
-            @foreach (var ph in GuideService.GetPhases())
+            @foreach (var ph in phases)
             {
                 var count = steps.Count(s => s.IsComplete && ph.StepNumbers.Contains(s.StepNumber));
                 var isComplete = count == ph.StepNumbers.Length;
@@ -89,7 +89,7 @@
 
         <!-- Quick Links Section -->
         <div class="bg-black/90 rounded-2xl p-5 sm:p-6 text-white animate-fade-in">
-            <h2 class="text-lg sm:text-xl font-semibold mb-4 text-center">📚 Learning Resources</h2>
+            <h2 class="text-lg text-white sm:text-xl font-semibold mb-4 text-center">📚 Learning Resources</h2>
 
             <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                 <a href="/demo/trucking-schedule"
@@ -146,5 +146,7 @@
                 }
             </div>
         </div>
+
+
     </div>
 </div>

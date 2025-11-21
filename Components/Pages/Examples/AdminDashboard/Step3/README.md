@@ -16,6 +16,8 @@ Follow this checklist so a brand-new `dotnet new blazorserver` app can compile i
 
 If any of these steps are skipped you'll see errors like `AdminDashboard.Services does not exist` or `IUserAuthService` not found.
 
+> 💡 **Copy/paste tip:** The tutorial component renders Razor code blocks, so the GitHub source shows `@@` to escape `@`. If you copy directly from the repo, run a quick find/replace (`@@` → `@`) right after pasting.
+
 ## Files in This Folder
 
 - `Example.razor` — Tutorial page explaining the `/signup` form and flow.

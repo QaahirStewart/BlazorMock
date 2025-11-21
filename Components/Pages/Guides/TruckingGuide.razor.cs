@@ -13,11 +13,13 @@ public partial class TruckingGuideBase : ComponentBase
 
     protected List<StepProgress> steps = new();
     protected int completedCount;
+    protected IReadOnlyList<Phase> phases = new List<Phase>();
 
     protected override async Task OnInitializedAsync()
     {
         steps = (await ProgressService.GetAllStepsAsync()).ToList();
         completedCount = await ProgressService.GetCompletedCountAsync();
+        phases = GuideService.GetPhases();
     }
 
     protected static string PhaseHoverBorder(string id) => id switch

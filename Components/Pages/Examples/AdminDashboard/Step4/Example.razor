@@ -11,6 +11,7 @@
             class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
             <span>←</span> Back to Admin Dashboard Guide
         </a>
+        EnsureDemoUsers();
 
         <!-- Title -->
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
@@ -19,7 +20,8 @@
 
         <!-- Description -->
         <p class="text-xl text-gray-600 mb-8">
-            Recreate the exact <code>/signin</code> page that ships with the Admin Dashboard demo so returning users get the real two-column layout, passkey CTA, and auto-fill demo accounts they see in <code>DashboardDemo</code>.
+            Build the real <code>/signin</code> page for this learning project so returning users get the same
+            two-column layout, passkey CTA, and auto-fill helper cards they saw when creating an account in Step 3.
         </p>
 
         <!-- What You'll Learn Section -->
@@ -27,44 +29,86 @@
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
 
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Mirror the polished two-column layout from <code>DashboardDemo/Auth/SignIn.razor</code>.</li>
+                <li>Mirror the polished two-column layout used throughout this tutorial.</li>
                 <li>Bind inputs directly to component fields with <code>@@bind</code> and show inline errors.</li>
-                <li>Call the shared <code>IUserAuthService</code> from <code>SignInBase</code> instead of touching EF or <code>AppDbContext</code> in the page.</li>
+                <li>Call the shared <code>IUserAuthService</code> from <code>SignInBase</code> instead of touching EF or
+                    <code>AppDbContext</code> in the page.
+                </li>
                 <li>Add the "Sign in with Passkey" button that simulates FIDO-style auth.</li>
                 <li>Use clickable demo account cards to auto-fill credentials via <code>SetDemoUser</code>.</li>
             </ul>
 
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Two-way binding, calling shared services, optimistic navigation, and demo-friendly UX chips.
+                    <strong>💡 Key Concepts:</strong> Two-way binding, calling shared services, optimistic navigation,
+                    and demo-friendly UX chips.
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
                     <a href="/tips#data-annotations"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Data Annotations</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Data
+                        Annotations</a>
                     <a href="/tips#editform-+-validation"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">EditForm + Validation</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">EditForm
+                        + Validation</a>
                     <a href="/tips#auth-service"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth Service</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth
+                        Service</a>
                 </div>
             </div>
         </div>
+
+        private void EnsureDemoUsers()
+        {
+        var demoUsers = new[]
+        {
+        new User { Email = "admin@demo.com", PasswordHash = "admin123", FullName = "Admin User", Role = "Admin" },
+        new User { Email = "paid@demo.com", PasswordHash = "paid123", FullName = "Paid User", Role = "Paid" },
+        new User { Email = "user@demo.com", PasswordHash = "user123", FullName = "Free User", Role = "Free" }
+        };
+
+        var addedAny = false;
+
+        foreach (var demo in demoUsers)
+        {
+        var normalizedEmail = demo.Email.Trim().ToLowerInvariant();
+        if (_db.Users.Any(u => u.Email == normalizedEmail))
+        {
+        continue;
+        }
+
+        demo.Email = normalizedEmail;
+        demo.CreatedAt = DateTime.UtcNow;
+        demo.LastLoginAt = DateTime.UtcNow;
+        _db.Users.Add(demo);
+        addedAny = true;
+        }
+
+        if (addedAny)
+        {
+        _db.SaveChanges();
+        }
+        }
 
         <!-- Sign In Form Example -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: SignIn.razor (/signin)</h2>
 
             <p class="text-sm text-gray-600 mb-4">
-                Copy the real <code>SignIn.razor</code> file from the demo to guarantee your tutorial matches what learners see live.
+                Copy this <code>SignIn.razor</code> sample into your new Blazor app to match the walkthrough, no prior
+                project required.
             </p>
 
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Auth/SignIn.razor</div>
-                <p class="text-xs text-gray-600 mb-2">Blazor sign in page with passkey CTA, inline errors, and demo cards wired to <code>SignInBase</code>.</p>
+                <p class="text-xs text-gray-600 mb-2">Blazor sign in page with passkey CTA, inline errors, and helper
+                    cards wired to <code>SignInBase</code>.</p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
                     <li>Uses simple inputs with <code>@@bind</code> plus manual validation messages.</li>
-                    <li>Calls <code>HandleSignIn</code> / <code>HandlePasskeySignIn</code> implemented in the shared base class.</li>
+                    <li>Call <code>HandleSignIn</code> / <code>HandlePasskeySignIn</code> implemented in the shared base
+                        class.</li>
                     <li>Includes the clickable demo account list hooked to <code>SetDemoUser</code>.</li>
+                    <li>Ships with seeded demo users so copy/paste projects can log in instantly.</li>
                 </ul>
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignIn.razor"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/signin"
@@ -232,12 +276,14 @@
 &lt;/div&gt;</pre>
             </div>
             <p class="text-xs text-gray-600">
-                This is still a demo-only auth flow. A production build should hash passwords, use ASP.NET Core Identity, and authenticate against a persistent data store.
+                This is a teaching-only auth flow. A production build should hash passwords, use ASP.NET Core Identity,
+                and authenticate against a persistent data store.
             </p>
 
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mt-6">
                 <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Auth/SignIn.razor.cs</div>
-                <p class="text-xs text-gray-600 mb-2">Shared code-behind that injects <code>IUserAuthService</code> and handles all sign-in logic, including the passkey simulator.</p>
+                <p class="text-xs text-gray-600 mb-2">Shared code-behind that injects <code>IUserAuthService</code> and
+                    handles all sign-in logic, including the passkey simulator.</p>
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignIn.razor.cs"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
 using AdminDashboard.Services;
@@ -310,20 +356,248 @@ public partial class SignInBase : ComponentBase
 }
 </pre>
             </div>
+
+            <div class="mt-6 space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900">Auth service + DI updates</h3>
+                <p class="text-xs text-gray-600">Update your Step 3 service files so this page compiles in a brand-new
+                    Blazor app.</p>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Services/IUserAuthService.cs</div>
+                    <pre data-code-title="Services/IUserAuthService.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using AdminDashboard.Models;
+
+namespace AdminDashboard.Services;
+
+public interface IUserAuthService
+{
+    User? CurrentUser { get; }
+    bool SignUp(string email, string password, string fullName);
+    bool SignIn(string email, string password);
+    void SignOut();
+    void UpdateProfile(string fullName, string? profilePictureUrl);
+    void UpgradeToRole(string role);
+}</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Services/DemoUserAuthService.cs</div>
+                    <p class="text-xs text-gray-600 mb-2">Simple EF Core implementation that supports both sign up and
+                        sign in for the tutorial and pre-seeds the three demo accounts.</p>
+                    <pre data-code-title="Services/DemoUserAuthService.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using System;
+using System.Linq;
+using AdminDashboard.Data;
+using AdminDashboard.Models;
+
+namespace AdminDashboard.Services;
+
+public class DemoUserAuthService : IUserAuthService
+{
+    private readonly AppDbContext _db;
+    private User? _currentUser;
+
+    public DemoUserAuthService(AppDbContext db)
+    {
+        _db = db;
+        EnsureDemoUsers();
+    }
+
+    public User? CurrentUser => _currentUser;
+
+    public bool SignUp(string email, string password, string fullName)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+
+        if (_db.Users.Any(u =&gt; u.Email == normalizedEmail))
+        {
+            return false;
+        }
+
+        var user = new User
+        {
+            Email = normalizedEmail,
+            PasswordHash = password,
+            FullName = string.IsNullOrWhiteSpace(fullName) ? "New User" : fullName.Trim(),
+            Role = "Free",
+            CreatedAt = DateTime.UtcNow,
+            LastLoginAt = DateTime.UtcNow
+        };
+
+        _db.Users.Add(user);
+        _db.SaveChanges();
+        _currentUser = user;
+        return true;
+    }
+
+    private void EnsureDemoUsers()
+    {
+        var demoUsers = new[]
+        {
+            new User { Email = "admin@demo.com", PasswordHash = "admin123", FullName = "Admin User", Role = "Admin" },
+            new User { Email = "paid@demo.com", PasswordHash = "paid123", FullName = "Paid User", Role = "Paid" },
+            new User { Email = "user@demo.com", PasswordHash = "user123", FullName = "Free User", Role = "Free" }
+        };
+
+        var addedAny = false;
+
+        foreach (var demo in demoUsers)
+        {
+            var normalizedEmail = demo.Email.Trim().ToLowerInvariant();
+            if (_db.Users.Any(u => u.Email == normalizedEmail))
+            {
+                continue;
+            }
+
+            demo.Email = normalizedEmail;
+            demo.CreatedAt = DateTime.UtcNow;
+            demo.LastLoginAt = DateTime.UtcNow;
+            _db.Users.Add(demo);
+            addedAny = true;
+        }
+
+        if (addedAny)
+        {
+            _db.SaveChanges();
+        }
+    }
+
+    public bool SignIn(string email, string password)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Email == normalizedEmail && u.PasswordHash == password);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        user.LastLoginAt = DateTime.UtcNow;
+        _db.SaveChanges();
+        _currentUser = user;
+        return true;
+    }
+
+    public void SignOut()
+    {
+        _currentUser = null;
+    }
+
+    public void UpdateProfile(string fullName, string? profilePictureUrl)
+    {
+        if (_currentUser == null)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Id == _currentUser.Id);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.FullName = string.IsNullOrWhiteSpace(fullName) ? user.FullName : fullName.Trim();
+        user.ProfilePictureUrl = string.IsNullOrWhiteSpace(profilePictureUrl) ? null : profilePictureUrl.Trim();
+        _db.SaveChanges();
+        _currentUser = user;
+    }
+
+    public void UpgradeToRole(string role)
+    {
+        if (_currentUser == null)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Id == _currentUser.Id);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.Role = role;
+        _db.SaveChanges();
+        _currentUser = user;
+    }
+}</pre>
+                    <p class="text-[11px] text-gray-600 mt-2">🔐 Hash passwords and use Identity in
+                        production—plain-text storage is for teaching only.</p>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Program.cs (DI registration)</div>
+                    <p class="text-xs text-gray-600 mb-2">Keep this after <code>AddDbContext&lt;AppDbContext&gt;</code>
+                        so both pages can inject the service.</p>
+                    <pre data-code-title="Program.cs (snippet)"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using AdminDashboard.Services;
+
+builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips Section -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes &amp; Tips</h2>
+
+            <div class="space-y-3">
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">Update the auth service before pasting</h3>
+                    <p class="text-xs sm:text-sm text-yellow-900 mb-3">This step calls
+                        <code>IUserAuthService.SignIn</code>. Add the method to both the interface and implementation
+                        (see snippets above) or you'll get <code>CS1061</code> build errors.
+                    </p>
+                    <ul class="list-disc ml-5 text-xs sm:text-sm text-yellow-900 space-y-1">
+                        <li>Replace <code>AdminDashboard</code> namespaces with your project root or set
+                            <code>&lt;RootNamespace&gt;</code> in the `.csproj`.
+                        </li>
+                        <li>Confirm EF Core packages, DbContext, and migrations from Step 2 are already in place.</li>
+                        <li>Re-run <code>dotnet ef database update</code> if you've made new migrations since Step 2.
+                        </li>
+                        <li>Copying straight from GitHub shows `@@` because the docs escape Razor syntax—replace `@@`
+                            with a single <code>&#64;</code> if you paste from the raw file instead of the running site.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-2">Sign-in UX reminders</h3>
+                    <ul class="list-disc ml-5 text-xs sm:text-sm text-blue-900 space-y-1">
+                        <li>Keep the inline error banner so learners know why a login failed.</li>
+                        <li>The passkey button simply simulates a delay—no extra backend code is required.</li>
+                        <li>Demo account cards now just work because <code>DemoUserAuthService</code> seeds those
+                            users; tweak <code>EnsureDemoUsers</code> if you want different credentials.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <!-- How to do it (Gradient Banner) -->
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
-                <li><strong>Create the file:</strong> Add <code>Components/Pages/Demo/DashboardDemo/Auth/SignIn.razor</code> (or the equivalent in your app) and paste in the markup above.</li>
-                    <li><strong>Reference the shared base:</strong> Use <code>@@using AdminDashboard.Components.Pages.Auth</code> and <code>@@inherits SignInBase</code> so you get the shared auth helpers.</li>
-                <li><strong>Wire two-way binding:</strong> Bind the email and password inputs to the backing fields declared in <code>SignInBase</code>.</li>
-                <li><strong>Surface errors:</strong> Render the inline red alert whenever <code>errorMessage</code> has a value so learners see identical messaging.</li>
-                <li><strong>Hook up buttons:</strong> Point the primary CTA at <code>HandleSignIn</code> and the secondary CTA at <code>HandlePasskeySignIn</code>.</li>
-                <li><strong>Implement passkey UX:</strong> Keep the spinner/disabled state by toggling <code>isPasskeyAuthenticating</code> exactly like the demo.</li>
-                <li><strong>Auto-fill demo users:</strong> Use <code>SetDemoUser</code> so each card updates the email/password fields and the passkey defaults.</li>
-                <li><strong>Test loop:</strong> Sign up in Step 3, then sign in here and confirm you're redirected to <code>/profile</code>.</li>
+                <li><strong>Create the file:</strong> Add
+                    <code>Components/Pages/Demo/DashboardDemo/Auth/SignIn.razor</code> (or the equivalent in your app)
+                    and paste in the markup above.
+                </li>
+                <li><strong>Reference the shared base:</strong> Use
+                    <code>@@using AdminDashboard.Components.Pages.Auth</code> and <code>@@inherits SignInBase</code> so
+                    you get the shared auth helpers.
+                </li>
+                <li><strong>Wire two-way binding:</strong> Bind the email and password inputs to the backing fields
+                    declared in <code>SignInBase</code>.</li>
+                <li><strong>Surface errors:</strong> Render the inline red alert whenever <code>errorMessage</code> has
+                    a value so learners see identical messaging.</li>
+                <li><strong>Hook up buttons:</strong> Point the primary CTA at <code>HandleSignIn</code> and the
+                    secondary CTA at <code>HandlePasskeySignIn</code>.</li>
+                <li><strong>Implement passkey UX:</strong> Keep the spinner/disabled state by toggling
+                    <code>isPasskeyAuthenticating</code> exactly like the demo.
+                </li>
+                <li><strong>Auto-fill demo users:</strong> Use <code>SetDemoUser</code> so each card updates the
+                    email/password fields and the passkey defaults.</li>
+                <li><strong>Test loop:</strong> Sign up in Step 3, then sign in here and confirm you're redirected to
+                    <code>/profile</code>.
+                </li>
             </ol>
         </div>
 
@@ -379,7 +653,8 @@ public partial class SignInBase : ComponentBase
                 <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
                     <p class="text-xs text-gray-600">
                         💡 <strong>Try it live:</strong> <a href="/signin"
-                            class="text-blue-600 hover:text-blue-700 font-medium">Open /signin →</a> to auto-fill demo accounts and verify redirect behavior.
+                            class="text-blue-600 hover:text-blue-700 font-medium">Open /signin →</a> to auto-fill demo
+                        accounts and verify redirect behavior.
                     </p>
                 </div>
             </div>
@@ -390,7 +665,8 @@ public partial class SignInBase : ComponentBase
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 4?</h3>
-                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning progress.</p>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning
+                        progress.</p>
                 </div>
                 @if (isComplete)
                 {
@@ -415,7 +691,8 @@ public partial class SignInBase : ComponentBase
             <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
                 <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
                 <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
-                    With <code>/signin</code> mirrored, move on to Step 5 to rebuild the <code>/profile</code> page exactly like the demo.
+                    With <code>/signin</code> mirrored, move on to Step 5 to rebuild the <code>/profile</code> page
+                    exactly like the demo.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <a href="/admin-dashboard-guide"

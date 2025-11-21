@@ -4,6 +4,19 @@
 
 This step adds a `/profile` page where the currently signed-in user can view and update their information.
 
+## Quick Start (Copy/Paste Friendly)
+
+1. **Match your namespace** – Replace `AdminDashboard.*` with your project's root namespace (or set `&lt;RootNamespace&gt;YourApp&lt;/RootNamespace&gt;` in the `.csproj`).
+2. **Bring Steps 2–4 along** – You need the `User` model, DbContext, EF Core packages, and working `/signup` + `/signin` pages before tackling `/profile`.
+3. **Update `Models/User.cs`** – Add the `FullName`, `ProfilePictureUrl`, `CreatedAt`, and `LastLoginAt` properties (snippet in this step) so profile data exists. Run:
+   ```pwsh
+   dotnet ef migrations add AddProfileFields
+   dotnet ef database update
+   ```
+4. **Extend `IUserAuthService`** – Ensure the interface exposes `User? CurrentUser`, plus `SignOut`, `UpdateProfile`, and `UpgradeToRole`. Replace the file with the provided snippet if needed.
+5. **Replace the service implementation** – Use the updated `DemoUserAuthService` shown here so the new methods and `CurrentUser` state compile in a clean Blazor app.
+6. **DI registration unchanged** – `Program.cs` still needs `builder.Services.AddScoped<IUserAuthService, DemoUserAuthService>();` after `AddDbContext`.
+
 ## Files in This Folder
 
 - `Example.razor` — Tutorial page explaining the `/profile` UI and logic.
@@ -48,6 +61,7 @@ This step adds a `/profile` page where the currently signed-in user can view and
 
 ## Common Issues & Solutions
 
+- **`CurrentUser`/`UpdateProfile` missing**: Update `IUserAuthService` and `DemoUserAuthService` with the versions in this step; older copies from Step 3 lacked these members.
 - **Profile not loading**: Confirm there is a signed-in user and that their ID is available.
 - **Changes not saving**: Check EF Core tracking and ensure `SaveChangesAsync` is called.
 - **Unauthorized access**: Add a simple guard to redirect users who are not signed in.

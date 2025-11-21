@@ -271,7 +271,7 @@ public DbSet<RouteModel> Routes { get; set; }
 - Shows progress for each phase
 - Displays overall completion count
 
-✅ **PhaseDetails.razor** (`/guide/phase/{id}`)
+✅ **TruckingPhase.razor** (`/guide/phase/{id}`)
 
 - Phase 1: Shows Steps 0-6
 - Phase 2: Shows Steps 7-9

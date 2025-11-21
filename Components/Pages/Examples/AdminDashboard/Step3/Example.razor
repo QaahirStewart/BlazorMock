@@ -19,7 +19,8 @@
 
         <!-- Description -->
         <p class="text-xl text-gray-600 mb-8">
-            Build the real <code>/signup</code> page from the Admin Dashboard demo so new users can create an account using the same layout, styling, and behavior as the finished experience.
+            Build the real <code>/signup</code> page from the Admin Dashboard demo so new users can create an account
+            using the same layout, styling, and behavior as the finished experience.
         </p>
 
         <!-- What You'll Learn Section -->
@@ -29,13 +30,16 @@
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
                 <li>Create a friendly two-column sign up layout with Tailwind CSS.</li>
                 <li>Bind input fields directly to component state with <code>@@bind</code>.</li>
-                <li>Call a shared <code>IUserAuthService</code> to create accounts instead of using <code>AppDbContext</code> in the page.</li>
+                <li>Call a shared <code>IUserAuthService</code> to create accounts instead of using
+                    <code>AppDbContext</code> in the page.
+                </li>
                 <li>Show clear error messages when sign up fails and navigate to <code>/profile</code> on success.</li>
             </ul>
 
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Blazor two-way binding, calling a shared auth service from a page, simple error handling, and navigation.
+                    <strong>💡 Key Concepts:</strong> Blazor two-way binding, calling a shared auth service from a page,
+                    simple error handling, and navigation.
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
@@ -56,17 +60,20 @@
             <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: SignUp.razor (/signup)</h2>
 
             <p class="text-sm text-gray-600 mb-4">
-                This is the exact <code>SignUp.razor</code> file used by the Admin Dashboard demo. You can copy and paste it into your own app to get the same experience.
+                This is the exact <code>SignUp.razor</code> file used by the Admin Dashboard demo. You can copy and
+                paste it into your own app to get the same experience.
             </p>
 
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor</div>
-                <p class="text-xs text-gray-600 mb-2">Blazor sign up page with a two-column layout and demo accounts sidebar, wired to the shared auth service.</p>
+                <p class="text-xs text-gray-600 mb-2">Blazor sign up page with a two-column layout and demo accounts
+                    sidebar, wired to the shared auth service.</p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
                     <li>Uses basic inputs with <code>@@bind</code> instead of <code>EditForm</code> for simplicity.</li>
                     <li>Calls into <code>IUserAuthService</code> to perform the actual sign up.</li>
                     <li>Shows an inline error message when something goes wrong.</li>
                     <li>Highlights the three demo accounts your learners can use.</li>
+                    <li>Automatically seeds those demo accounts so they exist the moment you run a new project.</li>
                 </ul>
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/signup"
@@ -102,20 +109,20 @@
                 &lt;div class=&quot;space-y-4&quot;&gt;
                     &lt;div&gt;
                         &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;Full Name&lt;/label&gt;
-                        &lt;input type=&quot;text&quot; bind=&quot;fullName&quot;
+                        &lt;input type=&quot;text&quot; @@bind=&quot;fullName&quot;
                             class=&quot;w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500&quot;
                             placeholder=&quot;John Doe&quot; /&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
                         &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;Email&lt;/label&gt;
-                        &lt;input type=&quot;email&quot; bind=&quot;email&quot;
+                        &lt;input type=&quot;email&quot; @@bind=&quot;email&quot;
                             class=&quot;w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500&quot;
                             placeholder=&quot;you@example.com&quot; /&gt;
                     &lt;/div&gt;
                     &lt;div&gt;
                         &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;Password&lt;/label&gt;
-                        &lt;input type=&quot;password&quot; bind=&quot;password&quot;
-                            onkeydown=&quot;(e =&gt; { if (e.Key == 'Enter') HandleSignUp(); })&quot;
+                        &lt;input type=&quot;password&quot; @@bind=&quot;password&quot;
+                            @@onkeydown=&quot;@@(e =&gt; { if (e.Key == &quot;Enter&quot;) HandleSignUp(); })&quot;
                             class=&quot;w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500&quot;
                             placeholder=&quot;Create a password&quot; /&gt;
                     &lt;/div&gt;
@@ -215,12 +222,14 @@
 &lt;/div&gt;</pre>
             </div>
             <p class="text-xs text-gray-600">
-                This is a demo-only implementation. In a real app, you would hash passwords, use a proper identity system, and store users in a real database.
+                This is a demo-only implementation. In a real app, you would hash passwords, use a proper identity
+                system, and store users in a real database.
             </p>
 
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mt-6">
                 <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor.cs</div>
-                <p class="text-xs text-gray-600 mb-2">Code-behind base class that injects <code>IUserAuthService</code> and handles <code>HandleSignUp</code>.</p>
+                <p class="text-xs text-gray-600 mb-2">Code-behind base class that injects <code>IUserAuthService</code>
+                    and handles <code>HandleSignUp</code>.</p>
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor.cs"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
 using AdminDashboard.Services;
@@ -262,7 +271,8 @@ public partial class SignUpBase : ComponentBase
 
             <div class="mt-6 space-y-4">
                 <h3 class="text-lg font-semibold text-gray-900">Auth service + DI setup</h3>
-                <p class="text-xs text-gray-600">These files unblock the <code>AdminDashboard.Services</code> namespace and keep the demo self-contained.</p>
+                <p class="text-xs text-gray-600">These files unblock the <code>AdminDashboard.Services</code> namespace
+                    and keep the demo self-contained.</p>
 
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
                     <div class="text-xs text-gray-500 mb-1">Services/IUserAuthService.cs</div>
@@ -272,12 +282,15 @@ public partial class SignUpBase : ComponentBase
 public interface IUserAuthService
 {
     bool SignUp(string email, string password, string fullName);
+    bool SignIn(string email, string password);
 }</pre>
                 </div>
 
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
                     <div class="text-xs text-gray-500 mb-1">Services/DemoUserAuthService.cs</div>
-                    <p class="text-xs text-gray-600 mb-2">EF Core-backed implementation that writes to the <code>Users</code> table created in Step 2.</p>
+                    <p class="text-xs text-gray-600 mb-2">EF Core-backed implementation that writes to the
+                        <code>Users</code> table created in Step 2 and seeds the three demo accounts automatically.
+                    </p>
                     <pre data-code-title="Services/DemoUserAuthService.cs"
                         class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using System.Linq;
 using AdminDashboard.Data;
@@ -292,6 +305,7 @@ public class DemoUserAuthService : IUserAuthService
     public DemoUserAuthService(AppDbContext db)
     {
         _db = db;
+        EnsureDemoUsers();
     }
 
     public bool SignUp(string email, string password, string fullName)
@@ -307,7 +321,7 @@ public class DemoUserAuthService : IUserAuthService
         {
             Email = normalizedEmail,
             PasswordHash = password,
-            DisplayName = string.IsNullOrWhiteSpace(fullName) ? "New User" : fullName.Trim(),
+            FullName = string.IsNullOrWhiteSpace(fullName) ? "New User" : fullName.Trim(),
             Role = "Viewer"
         };
 
@@ -315,12 +329,50 @@ public class DemoUserAuthService : IUserAuthService
         _db.SaveChanges();
         return true;
     }
+
+    public bool SignIn(string email, string password)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Email == normalizedEmail);
+        return user is not null && user.PasswordHash == password;
+    }
+
+    private void EnsureDemoUsers()
+    {
+        var demoUsers = new[]
+        {
+            new User { Email = "admin@demo.com", PasswordHash = "admin123", FullName = "Admin User", Role = "Admin" },
+            new User { Email = "paid@demo.com", PasswordHash = "paid123", FullName = "Paid User", Role = "Paid" },
+            new User { Email = "user@demo.com", PasswordHash = "user123", FullName = "Free User", Role = "Free" }
+        };
+
+        var addedAny = false;
+
+        foreach (var demo in demoUsers)
+        {
+            var normalizedEmail = demo.Email.Trim().ToLowerInvariant();
+            if (_db.Users.Any(u =&gt; u.Email == normalizedEmail))
+            {
+                continue;
+            }
+
+            demo.Email = normalizedEmail;
+            _db.Users.Add(demo);
+            addedAny = true;
+        }
+
+        if (addedAny)
+        {
+            _db.SaveChanges();
+        }
+    }
 }</pre>
                 </div>
-
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
                     <div class="text-xs text-gray-500 mb-1">Program.cs (DI registration)</div>
-                    <p class="text-xs text-gray-600 mb-2">Add this after the existing <code>AddDbContext&lt;AppDbContext&gt;</code> call.</p>
+                    <p class="text-xs text-gray-600 mb-2">Add this after the existing
+                        <code>AddDbContext&lt;AppDbContext&gt;</code> call.
+                    </p>
                     <pre data-code-title="Program.cs (snippet)"
                         class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using AdminDashboard.Services;
 
@@ -337,14 +389,19 @@ builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</pre>
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                     <h3 class="text-sm font-bold text-yellow-900 mb-2">Set up the auth service before pasting</h3>
                     <p class="text-xs sm:text-sm text-yellow-900 mb-3">
-                        The <code>SignUp</code> component injects <code>IUserAuthService</code> from <code>AdminDashboard.Services</code>. Create the service files and register them in DI first, otherwise you'll hit <code>CS0234</code>/<code>CS0246</code> errors.
+                        The <code>SignUp</code> component injects <code>IUserAuthService</code> from
+                        <code>AdminDashboard.Services</code>. Create the service files and register them in DI first,
+                        otherwise you'll hit <code>CS0234</code>/<code>CS0246</code> errors.
                     </p>
                     <ul class="list-disc ml-5 text-xs sm:text-sm text-yellow-900 space-y-1">
                         <li>Add <code>Services/IUserAuthService.cs</code> (interface).</li>
                         <li>Add <code>Services/DemoUserAuthService.cs</code> (EF-backed implementation).</li>
-                        <li>Update <code>Program.cs</code>: <code>builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</code>.</li>
+                        <li>Update <code>Program.cs</code>:
+                            <code>builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</code>.
+                        </li>
                     </ul>
-                    <p class="text-xs text-yellow-900 mt-3">Full snippets are in the "Auth service + DI setup" card above.</p>
+                    <p class="text-xs text-yellow-900 mt-3">Full snippets are in the "Auth service + DI setup" card
+                        above.</p>
                 </div>
 
                 <!-- Existing/general tips placeholder if needed -->
@@ -353,7 +410,11 @@ builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</pre>
                     <ul class="list-disc ml-5 text-xs sm:text-sm text-blue-900 space-y-1">
                         <li>Stick with the namespace from your project (`AdminDashboard` is just a placeholder).</li>
                         <li>Keep using the Step 2 `AppDbContext`/`User` classes so the sample service compiles.</li>
-                        <li>Once things build, run `dotnet ef database update` again if you've added new migrations.</li>
+                        <li>Once things build, run `dotnet ef database update` again if you've added new migrations.
+                        </li>
+                        <li>Copying straight from GitHub shows `@@` because the docs escape Razor syntax—replace `@@`
+                            with a single <code>&#64;</code> if you paste from the raw file instead of the running site.
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -365,7 +426,8 @@ builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</pre>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
                 <li>
                     <strong>Create the folder and file:</strong>
-                    Add <code>Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor</code> to your project (or the equivalent path in your app).
+                    Add <code>Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor</code> to your project (or the
+                    equivalent path in your app).
                 </li>
                 <li>
                     <strong>Set up the route and base class:</strong>

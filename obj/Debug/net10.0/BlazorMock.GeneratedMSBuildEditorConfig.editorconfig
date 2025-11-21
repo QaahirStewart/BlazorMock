@@ -38,14 +38,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xHcmVldGluZ0NhcmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/AdminDashboardGuide.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pbkRhc2hib2FyZEd1aWRlLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/AdminDashboardPhase.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pbkRhc2hib2FyZFBoYXNlLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [D:/BlazorMock/Components/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -74,8 +66,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXERhc2hib2FyZERlbW9cUHJvZmlsZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Demo/PokemonCollectorDemo.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXFBva2Vtb25Db2xsZWN0b3JEZW1vLnJhem9y
+[D:/BlazorMock/Components/Pages/Demo/PokemonDemo/PokemonCollectorDemo.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXFBva2Vtb25EZW1vXFBva2Vtb25Db2xsZWN0b3JEZW1vLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/Demo/TruckingDemo/DriverManagement.razor]
@@ -86,12 +78,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXFRydWNraW5nRGVtb1xSb3V0ZU1hbmFnZW1lbnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Demo/TruckingDemo/TruckManagement.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXFRydWNraW5nRGVtb1xUcnVja01hbmFnZW1lbnQucmF6b3I=
+[D:/BlazorMock/Components/Pages/Demo/TruckingDemo/TruckingScheduleDemo.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXFRydWNraW5nRGVtb1xUcnVja2luZ1NjaGVkdWxlRGVtby5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Demo/TruckingScheduleDemo.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXFRydWNraW5nU2NoZWR1bGVEZW1vLnJhem9y
+[D:/BlazorMock/Components/Pages/Demo/TruckingDemo/TruckManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEZW1vXFRydWNraW5nRGVtb1xUcnVja01hbmFnZW1lbnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/DriverForm.razor]
@@ -262,6 +254,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZUh1Yi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/BlazorMock/Components/Pages/Guides/AdminDashboardGuide.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcQWRtaW5EYXNoYm9hcmRHdWlkZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Guides/AdminDashboardPhase.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcQWRtaW5EYXNoYm9hcmRQaGFzZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/BlazorMock/Components/Pages/Guides/Demos.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcRGVtb3MucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -270,8 +270,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcRnVsbEd1aWRlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Guides/PhaseDetails.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcUGhhc2VEZXRhaWxzLnJhem9y
+[D:/BlazorMock/Components/Pages/Guides/PokemonGuide.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcUG9rZW1vbkd1aWRlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Guides/PokemonPhase.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcUG9rZW1vblBoYXNlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Guides/TruckingGuide.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcVHJ1Y2tpbmdHdWlkZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/BlazorMock/Components/Pages/Guides/TruckingPhase.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHdWlkZXNcVHJ1Y2tpbmdQaGFzZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Pages/Home.razor]
@@ -282,24 +294,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOb3RGb3VuZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/PokemonGuide.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQb2tlbW9uR3VpZGUucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/PokemonPhase.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQb2tlbW9uUGhhc2UucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
 [D:/BlazorMock/Components/Pages/Progress.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQcm9ncmVzcy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/BlazorMock/Components/Pages/Tips.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUaXBzLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[D:/BlazorMock/Components/Pages/TruckingGuide.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUcnVja2luZ0d1aWRlLnJhem9y
+[D:/BlazorMock/Components/Pages/Tips/Tips.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUaXBzXFRpcHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/BlazorMock/Components/Routes.razor]

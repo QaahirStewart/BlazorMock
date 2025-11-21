@@ -75,8 +75,10 @@
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
                     <li><code>Id</code> is the primary key.</li>
                     <li><code>Email</code> is required and should be unique.</li>
-                    <li><code>DisplayName</code> is what you show in the UI.</li>
+                    <li><code>FullName</code> (or display name) is what you show in the UI.</li>
                     <li><code>Role</code> keeps the door open for admin/user roles later.</li>
+                    <li><code>ProfilePictureUrl</code>, <code>CreatedAt</code>, and <code>LastLoginAt</code> power later
+                        steps like the profile page.</li>
                 </ul>
                 <pre data-code-title="Models/User.cs"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">namespace AdminDashboard.Models;
@@ -87,8 +89,11 @@ public class User
     public int Id { get; set; }
     public string Email { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
-    public string DisplayName { get; set; } = string.Empty;
-    public string Role { get; set; } = "User";
+    public string FullName { get; set; } = "New User";
+    public string Role { get; set; } = "Free";
+    public string? ProfilePictureUrl { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime LastLoginAt { get; set; } = DateTime.UtcNow;
 }</pre>
             </div>
 
@@ -172,8 +177,10 @@ builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                     <h3 class="text-sm font-bold text-yellow-900 mb-2">Install EF Core packages first</h3>
                     <p class="text-xs sm:text-sm text-yellow-900 mb-3">
-                        Run these commands once per project before pasting the code snippets. They add the EF Core runtime,
-                        SQLite provider, and CLI tooling so types like <code>DbContext</code> and <code>DbSet</code> resolve.
+                        Run these commands once per project before pasting the code snippets. They add the EF Core
+                        runtime,
+                        SQLite provider, and CLI tooling so types like <code>DbContext</code> and <code>DbSet</code>
+                        resolve.
                     </p>
                     <pre data-code-title="Install EF Core"
                         class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">dotnet add package Microsoft.EntityFrameworkCore
@@ -181,7 +188,8 @@ dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 dotnet add package Microsoft.EntityFrameworkCore.Tools
 dotnet tool install --global dotnet-ef</pre>
                     <p class="text-xs text-yellow-900 mt-3">
-                        You'll see errors like <code>CS0234</code> or <code>CS0246</code> ("EntityFrameworkCore does not exist")
+                        You'll see errors like <code>CS0234</code> or <code>CS0246</code> ("EntityFrameworkCore does not
+                        exist")
                         if these packages are missing.
                     </p>
                 </div>
@@ -227,7 +235,8 @@ dotnet tool install --global dotnet-ef</pre>
                             with the correct startup project selected.</li>
                         <li><strong>Provider not configured:</strong> Install the matching provider package (e.g.,
                             <code>Microsoft.EntityFrameworkCore.Sqlite</code>) and call <code>UseSqlite</code> or
-                            <code>UseSqlServer</code> accordingly.</li>
+                            <code>UseSqlServer</code> accordingly.
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -353,18 +362,18 @@ dotnet tool install --global dotnet-ef</pre>
                 </div>
                 @if (isComplete)
                 {
-                        <div class="flex items-center gap-3">
-                            <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
-                            <button @onclick="ResetStep"
-                                class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
-                        </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
                 }
                 else
                 {
-                        <button @onclick="MarkComplete"
-                            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-                            Mark as Complete
-                        </button>
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
                 }
             </div>
         </div>
