@@ -428,12 +428,13 @@ builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</pre>
                 </li>
                 <li>
                     <strong>Set up the basics:</strong>
-                    Add <code>@page "/signup"</code> at the top so people can visit your sign-up page, and use
-                    <code>@rendermode InteractiveServer</code> to make it interactive.
+                    Add <code>@@page "/signup"</code> at the top so people can visit your sign-up page, and use
+                    <code>@@rendermode InteractiveServer</code> to make it interactive.
                 </li>
                 <li>
                     <strong>Create the form inputs:</strong>
-                    Add input fields for name, email, and password. Use <code>@bind</code> to automatically connect them
+                    Add input fields for name, email, and password. Use <code>@@bind</code> to automatically connect
+                    them
                     to your component's code.
                 </li>
                 <li>

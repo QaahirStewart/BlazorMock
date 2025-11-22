@@ -57,122 +57,153 @@
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Your Navigation Bar Code</h2>
             <p class="text-sm text-gray-600 mb-4">
-                Here's the HTML for your navigation bar. Copy this into a new file called
-                `Components/Layout/AdminNav.razor`
-                in your AdminDashboard project. Don't worry about the hamburger button at the bottom—we'll make it work
-                for mobile
-                phones in Step 12!
+                Here's the complete HTML for your navigation bar. Copy this entire file into
+                `Components/Layout/AdminNav.razor` in your AdminDashboard project. This has the black background styling
+                like the main app, with desktop navigation and a hamburger button (we'll make the mobile menu work in
+                Step 12!).
             </p>
             <div class="space-y-3">
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
                     <div class="text-xs text-gray-500 mb-2">AdminDashboard/Components/Layout/AdminNav.razor</div>
-                    <pre data-code-title="AdminNav.razor (markup only)"
-                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;header class="py-6 bg-slate-950 text-white"&gt;
+                    <pre data-code-title="AdminNav.razor"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;header class="py-6"&gt;
     &lt;div class="max-w-6xl mx-auto px-4"&gt;
-        &lt;div class="flex items-center justify-between gap-3"&gt;
-            &lt;a href="/"
-               class="flex items-center gap-2 md:flex-initial flex-1 md:justify-start justify-center md:order-1 order-2"&gt;
-                &lt;span class="text-base font-semibold tracking-wide"&gt;AdminDashboard&lt;/span&gt;
-            &lt;/a&gt;
+        &lt;nav class="bg-black/85 text-white rounded-2xl px-4 md:py-6 py-4 shadow-md"&gt;
+            &lt;div class="flex items-center justify-between"&gt;
+                &lt;!-- Brand --&gt;
+                &lt;a href="/"
+                   class="flex items-center gap-2 md:flex-initial flex-1 md:justify-start justify-center md:order-1 order-2"&gt;
+                    &lt;span class="text-sm sm:text-base font-semibold tracking-wide"&gt;AdminDashboard&lt;/span&gt;
+                &lt;/a&gt;
 
-            &lt;ul class="hidden md:flex items-center justify-center gap-5 text-sm text-white/80 order-2"&gt;
-                &lt;li&gt;
-                    &lt;NavLink href="/" Match="NavLinkMatch.All"
-                             class="hover:text-white transition-colors"
-                             ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Overview&lt;/NavLink&gt;
-                &lt;/li&gt;
-                &lt;li&gt;
-                    &lt;NavLink href="/profile" class="hover:text-white transition-colors"
-                             ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Profile&lt;/NavLink&gt;
-                &lt;/li&gt;
-                &lt;li&gt;
-                    &lt;NavLink href="/analytics" class="hover:text-white transition-colors"
-                             ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Analytics&lt;/NavLink&gt;
-                &lt;/li&gt;
-                @@if (Auth.IsAuthenticated && Auth.CurrentUser?.Role == "Admin")
-                {
-                    &lt;li&gt;
-                        &lt;NavLink href="/admin/dashboard" class="hover:text-white transition-colors"
-                                 ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Admin Dashboard&lt;/NavLink&gt;
-                    &lt;/li&gt;
-                }
-            &lt;/ul&gt;
-
-            &lt;div class="hidden md:block order-3"&gt;
-                @@if (Auth.IsAuthenticated && Auth.CurrentUser != null)
-                {
-                    &lt;button type="button" @@onclick="ToggleProfileMenu"
-                            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"&gt;
-                        @@if (!string.IsNullOrEmpty(Auth.CurrentUser.ProfilePictureUrl))
+                &lt;!-- Hamburger button (mobile only) --&gt;
+                &lt;button type="button" @@onclick="ToggleMobileMenu"
+                        class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30 order-1 transition-transform duration-200 @@(isMobileMenuOpen ? "rotate-90" : string.Empty)"
+                        aria-label="Toggle navigation" aria-expanded="@@isMobileMenuOpen"&gt;
+                    &lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         class="h-6 w-6 transition-all duration-300"&gt;
+                        @@if (isMobileMenuOpen)
                         {
-                            &lt;img src="@@Auth.CurrentUser.ProfilePictureUrl" alt="@@Auth.CurrentUser.FullName"
-                                 class="h-9 w-9 rounded-full object-cover border-2 border-white/30" /&gt;
+                            &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M6 18L18 6M6 6l12 12" /&gt;
                         }
                         else
                         {
-                            &lt;div class="h-9 w-9 rounded-full @@GetUserAvatarColor() flex items-center justify-center text-white text-xs font-semibold border-2 border-white/30"&gt;
-                                @@GetUserInitials()
-                            &lt;/div&gt;
+                            &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M4 6h16M4 12h16M4 18h16" /&gt;
                         }
-                        &lt;span class="text-sm font-medium"&gt;@@Auth.CurrentUser.FullName&lt;/span&gt;
-                        &lt;svg class="w-4 h-4 transition-transform @@(isProfileMenuOpen ? "rotate-180" : string.Empty)"&gt;...&lt;/svg&gt;
-                    &lt;/button&gt;
+                    &lt;/svg&gt;
+                &lt;/button&gt;
 
-                    @@if (isProfileMenuOpen)
+                &lt;!-- Desktop nav links --&gt;
+                &lt;ul class="hidden md:flex items-center justify-center gap-4 lg:gap-6 text-sm text-gray-200 order-2 absolute left-1/2 -translate-x-1/2"&gt;
+                    &lt;li&gt;
+                        &lt;NavLink href="/" Match="NavLinkMatch.All"
+                                 class="hover:text-white transition-colors"
+                                 ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Overview&lt;/NavLink&gt;
+                    &lt;/li&gt;
+                    &lt;li&gt;
+                        &lt;NavLink href="/profile" class="hover:text-white transition-colors"
+                                 ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Profile&lt;/NavLink&gt;
+                    &lt;/li&gt;
+                    &lt;li&gt;
+                        &lt;NavLink href="/analytics" class="hover:text-white transition-colors"
+                                 ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Analytics&lt;/NavLink&gt;
+                    &lt;/li&gt;
+                    @@if (Auth.IsAuthenticated && Auth.CurrentUser?.Role == "Admin")
                     {
-                        &lt;div class="mt-2 bg-white text-slate-900 rounded-lg shadow-xl border border-slate-100 w-48 py-1"&gt;
-                            &lt;a href="/profile" class="block px-4 py-2 text-sm hover:bg-slate-50"&gt;My Profile&lt;/a&gt;
-                            &lt;a href="/analytics" class="block px-4 py-2 text-sm hover:bg-slate-50"&gt;Analytics&lt;/a&gt;
-                            @@if (Auth.CurrentUser.Role == "Admin")
+                        &lt;li&gt;
+                            &lt;NavLink href="/admin/dashboard" class="hover:text-white transition-colors"
+                                     ActiveClass="text-white font-semibold underline underline-offset-4"&gt;Admin Dashboard&lt;/NavLink&gt;
+                        &lt;/li&gt;
+                    }
+                &lt;/ul&gt;
+
+                &lt;!-- User Profile Icon / Sign In (desktop) --&gt;
+                &lt;div class="hidden md:block order-3"&gt;
+                    @@if (Auth.IsAuthenticated && Auth.CurrentUser != null)
+                    {
+                        &lt;div class="relative"&gt;
+                            &lt;button @@onclick="ToggleProfileMenu"
+                                    class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"&gt;
+                                @@if (!string.IsNullOrEmpty(Auth.CurrentUser.ProfilePictureUrl))
+                                {
+                                    &lt;img src="@@Auth.CurrentUser.ProfilePictureUrl" alt="@@Auth.CurrentUser.FullName"
+                                         class="h-8 w-8 rounded-full object-cover border-2 border-white/30" /&gt;
+                                }
+                                else
+                                {
+                                    &lt;div class="h-8 w-8 rounded-full @@GetUserAvatarColor() flex items-center justify-center text-white text-xs font-semibold border-2 border-white/30"&gt;
+                                        @@GetUserInitials()
+                                    &lt;/div&gt;
+                                }
+                                &lt;span class="text-sm font-medium"&gt;@@Auth.CurrentUser.FullName&lt;/span&gt;
+                                &lt;svg class="w-4 h-4 transition-transform @@(isProfileMenuOpen ? "rotate-180" : string.Empty)"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;
+                                    &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M19 9l-7 7-7-7" /&gt;
+                                &lt;/svg&gt;
+                            &lt;/button&gt;
+
+                            @@if (isProfileMenuOpen)
                             {
-                                &lt;a href="/admin/dashboard" class="block px-4 py-2 text-sm hover:bg-slate-50"&gt;Admin Dashboard&lt;/a&gt;
+                                &lt;div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50"&gt;
+                                    &lt;a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"&gt;My Profile&lt;/a&gt;
+                                    &lt;a href="/analytics" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"&gt;Analytics&lt;/a&gt;
+                                    @@if (Auth.CurrentUser.Role == "Admin")
+                                    {
+                                        &lt;a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"&gt;Admin Dashboard&lt;/a&gt;
+                                    }
+                                    &lt;div class="border-t border-gray-200 my-1"&gt;&lt;/div&gt;
+                                    &lt;button type="button" @@onclick="HandleSignOut"
+                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"&gt;Sign Out&lt;/button&gt;
+                                &lt;/div&gt;
                             }
-                            &lt;div class="border-t border-slate-100 my-1"&gt;&lt;/div&gt;
-                            &lt;button type="button" @@onclick="HandleSignOut"
-                                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"&gt;Sign Out&lt;/button&gt;
                         &lt;/div&gt;
                     }
-                }
-                else
-                {
-                    &lt;div class="flex items-center gap-2"&gt;
-                        &lt;a href="/signin" class="px-4 py-2 text-sm font-medium hover:bg-white/10 rounded-lg"&gt;Sign In&lt;/a&gt;
-                        &lt;a href="/signup"
-                           class="px-4 py-2 text-sm font-medium bg-white text-slate-950 rounded-lg hover:bg-slate-100"&gt;Sign Up&lt;/a&gt;
-                    &lt;/div&gt;
-                }
+                    else
+                    {
+                        &lt;div class="flex items-center gap-2"&gt;
+                            &lt;a href="/signin" class="px-4 py-2 text-sm font-medium hover:bg-white/10 rounded-lg"&gt;Sign In&lt;/a&gt;
+                            &lt;a href="/signup"
+                               class="px-4 py-2 text-sm font-medium bg-white text-black rounded-lg hover:bg-gray-100"&gt;Sign Up&lt;/a&gt;
+                        &lt;/div&gt;
+                    }
+                &lt;/div&gt;
+
+                &lt;!-- Spacer for mobile to keep logo centered --&gt;
+                &lt;div class="md:hidden w-10 order-3"&gt;&lt;/div&gt;
             &lt;/div&gt;
 
-            &lt;button type="button" @@onclick="ToggleMobileMenu"
-                    class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg hover:bg-white/10 order-1 transition-transform duration-200 @@(isMobileMenuOpen ? "rotate-90" : string.Empty)"
-                    aria-label="Toggle navigation" aria-expanded="@@isMobileMenuOpen"&gt;
-                &lt;svg ...&gt;...&lt;/svg&gt;
-            &lt;/button&gt;
-        &lt;/div&gt;
-
-        &lt;!-- Step 12 adds the md:hidden drawer below this row --&gt;
+            &lt;!-- ============================================================ --&gt;
+            &lt;!-- STEP 12: Mobile Menu Panel --&gt;
+            &lt;!-- The collapsible drawer for phones goes right here, inside the &lt;nav&gt; tag --&gt;
+            &lt;!-- It will slide down from under the header when someone taps the hamburger button --&gt;
+            &lt;!-- ============================================================ --&gt;
+        &lt;/nav&gt;
     &lt;/div&gt;
 &lt;/header&gt;</pre>
                 </div>
             </div>
+        </div>
 
-            <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">🔌 Connect It to Your App</h2>
-                <p class="text-sm text-gray-600 mb-4">
-                    Now let's add your new navigation bar to every page in your app. Open your `MainLayout.razor` file
-                    and
-                    add the <code>&lt;AdminNav /&gt;</code> component at the top. The extra code below helps with
-                    testing
-                    (you can skip that part if you want—your nav will still work!).
-                </p>
-                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                    <div class="text-xs text-gray-500 mb-2">AdminDashboard/Components/Layout/MainLayout.razor</div>
-                    <pre data-code-title="MainLayout.razor (excerpt)"
-                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@inherits LayoutComponentBase
-@@using AdminDashboard.Components.Layout
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🔌 Connect It to Your App</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Now let's add your new navigation bar to every page in your app. Open your `MainLayout.razor` file
+                and
+                add the <code>&lt;AdminNav /&gt;</code> component at the top. The extra code below helps with
+                testing
+                (you can skip that part if you want—your nav will still work!).
+            </p>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                <div class="text-xs text-gray-500 mb-2">AdminDashboard/Components/Layout/MainLayout.razor</div>
+                <pre data-code-title="MainLayout.razor (excerpt)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@inherits LayoutComponentBase
+
 @@inject NavigationManager Nav
 
-&lt;div class="min-h-screen bg-slate-950/95"&gt;
+&lt;div class="min-h-screen"&gt;
     &lt;AdminNav /&gt;
 
     @@if (!isNavPreview)
@@ -194,23 +225,24 @@
     }
 }
 </pre>
-                </div>
             </div>
+        </div>
 
-            <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">⚙️ The Behind-the-Scenes Code</h2>
-                <p class="text-sm text-gray-600 mb-4">
-                    Every component needs some C# code to make it interactive. Create a file called `AdminNav.razor.cs`
-                    right
-                    next to your `AdminNav.razor` file. This code handles things like opening the profile menu, signing
-                    out,
-                    and keeping the nav updated when someone logs in.
-                </p>
-                <div class="space-y-3">
-                    <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                        <div class="text-xs text-gray-500 mb-2">AdminDashboard/Components/Layout/AdminNav.razor.cs</div>
-                        <pre data-code-title="AdminNav.razor.cs"
-                            class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">⚙️ The Behind-the-Scenes Code</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Every component needs some C# code to make it interactive. Create a file called `AdminNav.razor.cs`
+                right
+                next to your `AdminNav.razor` file. This code handles things like opening the profile menu, signing
+                out,
+                and keeping the nav updated when someone logs in.
+            </p>
+            <div class="space-y-3">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-2">AdminDashboard/Components/Layout/AdminNav.razor.cs</div>
+                    <pre data-code-title="AdminNav.razor.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
+                            using AdminDashboard.Services;
 
 namespace AdminDashboard.Components.Layout;
 
@@ -267,26 +299,26 @@ public partial class AdminNav : ComponentBase, IDisposable
         return colors[Math.Abs(Auth.CurrentUser.Email.GetHashCode()) % colors.Length];
     }
 }</pre>
-                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">🧾 One Quick Fix for Your Auth Service</h2>
-                <p class="text-sm text-gray-600 mb-4">
-                    Your navigation needs to know when someone signs in or out. To make that work, we need to add two
-                    small
-                    pieces to your auth service: a property called `IsAuthenticated` and an event called `OnChange`.
-                    Don't
-                    worry if this sounds technical—just copy the code below and your nav will automatically update
-                    whenever
-                    someone logs in or out!
-                </p>
-                <div class="space-y-4">
-                    <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                        <div class="text-xs text-gray-500 mb-2">AdminDashboard/Services/IUserAuthService.cs</div>
-                        <pre data-code-title="IUserAuthService.cs"
-                            class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using System;
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧾 One Quick Fix for Your Auth Service</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Your navigation needs to know when someone signs in or out. To make that work, we need to add two
+                small
+                pieces to your auth service: a property called `IsAuthenticated` and an event called `OnChange`.
+                Don't
+                worry if this sounds technical—just copy the code below and your nav will automatically update
+                whenever
+                someone logs in or out!
+            </p>
+            <div class="space-y-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-2">AdminDashboard/Services/IUserAuthService.cs</div>
+                    <pre data-code-title="IUserAuthService.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using System;
     using System.Collections.Generic;
     using AdminDashboard.Models;
 
@@ -309,227 +341,392 @@ public partial class AdminNav : ComponentBase, IDisposable
         void AdminUpdateUserRole(int userId, string newRole);
         void AdminDeleteUser(int userId);
     }</pre>
+                </div>
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-2">AdminDashboard/Services/DemoUserAuthService.cs (complete
+                        file)
                     </div>
-                    <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                        <div class="text-xs text-gray-500 mb-2">AdminDashboard/Services/DemoUserAuthService.cs (excerpt)
-                        </div>
-                        <pre data-code-title="DemoUserAuthService.cs"
-                            class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using AdminDashboard.Data;
-    using AdminDashboard.Models;
-    using AdminDashboard.Services;
+                    <pre data-code-title="DemoUserAuthService.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using System;
+using System.Collections.Generic;
+using System.Linq;
+using AdminDashboard.Data;
+using AdminDashboard.Models;
 
-    namespace AdminDashboard.Services;
+namespace AdminDashboard.Services;
 
-    public class DemoUserAuthService : IUserAuthService
+public class DemoUserAuthService : IUserAuthService
+{
+    private readonly AppDbContext _db;
+    private User? _currentUser;
+
+    public DemoUserAuthService(AppDbContext db)
     {
-        private readonly AppDbContext _db;
-        private User? _currentUser;
+        _db = db;
+        EnsureDemoUsers();
+    }
 
-        public User? CurrentUser =&gt; _currentUser;
-        public bool IsAuthenticated =&gt; _currentUser != null;
-        public IReadOnlyList&lt;User&gt; AllUsers =&gt; _db.Users.OrderBy(u =&gt; u.Id).ToList();
-        public bool IsAdmin =&gt; _currentUser?.Role == "Admin";
-        public event Action? OnChange;
+    public User? CurrentUser =&gt; _currentUser;
+    public bool IsAuthenticated =&gt; _currentUser != null;
+    public IReadOnlyList&lt;User&gt; AllUsers =&gt; _db.Users.OrderBy(u =&gt; u.Id).ToList();
+    public bool IsAdmin =&gt; _currentUser?.Role == "Admin";
+    public event Action? OnChange;
 
-        public bool SignIn(string email, string password)
+    public bool SignUp(string email, string password, string fullName)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+
+        if (_db.Users.Any(u =&gt; u.Email == normalizedEmail))
         {
-            var normalizedEmail = email.Trim().ToLowerInvariant();
-            var user = _db.Users.FirstOrDefault(u =&gt; u.Email == normalizedEmail &amp;&amp; u.PasswordHash == password);
-            if (user == null) return false;
+            return false;
+        }
 
-            user.LastLoginAt = DateTime.UtcNow;
-            _db.SaveChanges();
+        var user = new User
+        {
+            Email = normalizedEmail,
+            PasswordHash = password,
+            FullName = string.IsNullOrWhiteSpace(fullName) ? "New User" : fullName.Trim(),
+            Role = "Free",
+            CreatedAt = DateTime.UtcNow,
+            LastLoginAt = DateTime.UtcNow
+        };
+
+        _db.Users.Add(user);
+        _db.SaveChanges();
+        _currentUser = user;
+        NotifyStateChanged();
+        return true;
+    }
+
+    public bool SignIn(string email, string password)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Email == normalizedEmail &amp;&amp; u.PasswordHash == password);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        user.LastLoginAt = DateTime.UtcNow;
+        _db.SaveChanges();
+        _currentUser = user;
+        NotifyStateChanged();
+        return true;
+    }
+
+    public bool SignInByEmail(string email)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Email == normalizedEmail);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        user.LastLoginAt = DateTime.UtcNow;
+        _db.SaveChanges();
+        _currentUser = user;
+        NotifyStateChanged();
+        return true;
+    }
+
+    public void SignOut()
+    {
+        _currentUser = null;
+        NotifyStateChanged();
+    }
+
+    public void UpdateProfile(string fullName, string? profilePictureUrl)
+    {
+        if (_currentUser == null)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Id == _currentUser.Id);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.FullName = string.IsNullOrWhiteSpace(fullName) ? user.FullName : fullName.Trim();
+        user.ProfilePictureUrl = string.IsNullOrWhiteSpace(profilePictureUrl) ? null : profilePictureUrl.Trim();
+        _db.SaveChanges();
+        _currentUser = user;
+        NotifyStateChanged();
+    }
+
+    public void UpgradeToRole(string role)
+    {
+        if (_currentUser == null)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Id == _currentUser.Id);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.Role = role;
+        _db.SaveChanges();
+        _currentUser = user;
+        NotifyStateChanged();
+    }
+
+    public void AdminUpdateUserRole(int userId, string newRole)
+    {
+        if (!IsAdmin)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Id == userId);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.Role = newRole;
+
+        if (_currentUser?.Id == user.Id)
+        {
             _currentUser = user;
-            NotifyStateChanged();
-            return true;
         }
 
-        public void SignOut()
+        _db.SaveChanges();
+        NotifyStateChanged();
+    }
+
+    public void AdminDeleteUser(int userId)
+    {
+        if (!IsAdmin)
         {
-            if (_currentUser == null) return;
-            _currentUser = null;
-            NotifyStateChanged();
+            return;
         }
 
-        // ...all other mutations also call NotifyStateChanged();
+        var user = _db.Users.FirstOrDefault(u =&gt; u.Id == userId);
 
-        private void NotifyStateChanged() =&gt; OnChange?.Invoke();
-    }</pre>
-                    </div>
+        if (user == null || (_currentUser?.Id == user.Id))
+        {
+            return;
+        }
+
+        _db.Users.Remove(user);
+        _db.SaveChanges();
+        NotifyStateChanged();
+    }
+
+    private void EnsureDemoUsers()
+    {
+        var demoUsers = new[]
+        {
+            new User { Email = "admin@demo.com", PasswordHash = "admin123", FullName = "Admin User", Role = "Admin" },
+            new User { Email = "paid@demo.com", PasswordHash = "paid123", FullName = "Paid User", Role = "Paid" },
+            new User { Email = "user@demo.com", PasswordHash = "user123", FullName = "Free User", Role = "Free" }
+        };
+
+        var addedAny = false;
+
+        foreach (var demo in demoUsers)
+        {
+            var normalizedEmail = demo.Email.Trim().ToLowerInvariant();
+            if (_db.Users.Any(u =&gt; u.Email == normalizedEmail))
+            {
+                continue;
+            }
+
+            demo.Email = normalizedEmail;
+            demo.CreatedAt = DateTime.UtcNow;
+            demo.LastLoginAt = DateTime.UtcNow;
+            _db.Users.Add(demo);
+            addedAny = true;
+        }
+
+        if (addedAny)
+        {
+            _db.SaveChanges();
+        }
+    }
+
+    private void NotifyStateChanged() =&gt; OnChange?.Invoke();
+}</pre>
                 </div>
             </div>
+        </div>
 
-            <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-                <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Notes, Tips &amp; Troubleshooting
-                </h2>
-                <div class="space-y-3">
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <p class="text-sm font-semibold text-blue-900 mb-1">Keep it simple</p>
-                                <p class="text-xs text-blue-800">Only add links to pages that actually exist in your
-                                    app.
-                                    Start with the basics and add more as you go!</p>
-                            </div>
-                            <div>
-                                <p class="text-sm font-semibold text-blue-900 mb-1">Test with different users</p>
-                                <p class="text-xs text-blue-800">Sign in as a regular user, then as an admin. Watch how
-                                    the
-                                    navigation changes to show or hide the Admin Dashboard link.</p>
-                            </div>
-                            <div>
-                                <p class="text-sm font-semibold text-blue-900 mb-1">The magic of OnChange</p>
-                                <p class="text-xs text-blue-800">That `Auth.OnChange` event is what makes your nav
-                                    update
-                                    instantly when someone signs in—pretty cool!</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Common Issues</h3>
-                        <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
-                            <li>Links not working? Double-check that your `href` attributes match your actual page
-                                routes.</li>
-                            <li>Profile menu won't close? Make sure you copied all the code from `AdminNav.razor.cs`
-                                above.</li>
-                            <li>Nav doesn't update when you sign in? Check that you added the `IsAuthenticated` and
-                                `OnChange`
-                                parts to your auth service.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ Step-by-Step Guide</h2>
-                <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
-                    <li><strong>Create the markup file:</strong> Make a new file at `Components/Layout/AdminNav.razor`
-                        and
-                        paste in the navigation HTML from above.</li>
-                    <li><strong>Add the C# code:</strong> Create `AdminNav.razor.cs` right next to it and paste the
-                        code-behind
-                        from the section above.</li>
-                    <li><strong>Update your auth service:</strong> Add the `IsAuthenticated` property and `OnChange`
-                        event
-                        to make sure your nav can detect sign-ins.</li>
-                    <li><strong>Connect it to your layout:</strong> Add `&lt;AdminNav /&gt;` to your `MainLayout.razor`
-                        file so
-                        it appears on every page.</li>
-                    <li><strong>Test it out:</strong> Run your app, sign in with different users (regular user and
-                        admin),
-                        and watch the navigation change!</li>
-                </ol>
-            </div>
-
-            <div class="bg-black/3 rounded-2xl p-6 mb-6">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 See It In Action</h2>
-                <p class="text-sm text-gray-600 mb-4">
-                    Here's a working preview of what your navigation will look like! Try clicking around to see how it
-                    behaves.
-                    When you build this in your own app, it'll work exactly the same way.
-                </p>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6">
-                        <div class="flex items-center justify-between gap-3 mb-3">
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900">Embedded header</h3>
-                                <p class="text-xs text-gray-500">Loads `/?embed=nav`. Mirror the same query toggle in
-                                    your
-                                    clean layout so QA can isolate the nav there too.</p>
-                            </div>
-                            <button @onclick="RefreshNavFrame"
-                                class="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                                <span>↻</span>
-                                <span>Refresh preview</span>
-                            </button>
-                        </div>
-                        <div class="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-inner">
-                            <iframe src="@NavFrameSrc" title="Navigation live preview" loading="lazy" class="w-full"
-                                style="min-height: 420px; border: 0;"></iframe>
-                        </div>
-                        <p class="text-[11px] text-gray-500 mt-3">
-                            After signing in on another tab, click “Refresh preview” so the iframe picks up your current
-                            auth
-                            cookie.
-                        </p>
-                    </div>
-                    <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6 flex flex-col gap-4">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Notes, Tips &amp; Troubleshooting
+            </h2>
+            <div class="space-y-3">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Testing Your Navigation</h3>
-                            <ol class="list-decimal ml-5 text-sm text-gray-700 space-y-2">
-                                <li>Start your AdminDashboard app and open it in your browser.</li>
-                                <li>Try signing in with different demo accounts: `user@demo.com` (regular user),
-                                    `paid@demo.com` (paid user),
-                                    and `admin@demo.com` (admin).</li>
-                                <li>Refresh this iframe and your local embed to confirm CTAs and active states stay
-                                    aligned.</li>
-                                <li>Sign out and ensure the header collapses back to Sign In / Sign Up in both places.
-                                </li>
-                            </ol>
+                            <p class="text-sm font-semibold text-blue-900 mb-1">Keep it simple</p>
+                            <p class="text-xs text-blue-800">Only add links to pages that actually exist in your
+                                app.
+                                Start with the basics and add more as you go!</p>
                         </div>
-                        <div
-                            class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 text-xs text-gray-600">
-                            Tracking multiple personas? Keep each role signed in inside its own browser profile and
-                            refresh
-                            the embeds as you flip between them.
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-1">Test with different users</p>
+                            <p class="text-xs text-blue-800">Sign in as a regular user, then as an admin. Watch how
+                                the
+                                navigation changes to show or hide the Admin Dashboard link.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-1">The magic of OnChange</p>
+                            <p class="text-xs text-blue-800">That `Auth.OnChange` event is what makes your nav
+                                update
+                                instantly when someone signs in—pretty cool!</p>
                         </div>
                     </div>
                 </div>
-                <p class="text-xs text-gray-600 mt-4 text-center">Once the desktop nav feels right, Step 12 bolts on the
-                    mobile drawer.</p>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Common Issues</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li>Links not working? Double-check that your `href` attributes match your actual page
+                            routes.</li>
+                        <li>Profile menu won't close? Make sure you copied all the code from `AdminNav.razor.cs`
+                            above.</li>
+                        <li>Nav doesn't update when you sign in? Check that you added the `IsAuthenticated` and
+                            `OnChange`
+                            parts to your auth service.</li>
+                    </ul>
+                </div>
             </div>
+        </div>
 
-            <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 11?</h3>
-                        <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard
-                            progress.</p>
-                    </div>
-                    @if (isComplete)
-                    {
-                        <div class="flex items-center gap-3">
-                            <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
-                            <button @onclick="ResetStep"
-                                class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                                Reset
-                            </button>
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ Step-by-Step Guide</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li><strong>Create the markup file:</strong> Make a new file at `Components/Layout/AdminNav.razor`
+                    and
+                    paste in the navigation HTML from above.</li>
+                <li><strong>Add the C# code:</strong> Create `AdminNav.razor.cs` right next to it and paste the
+                    code-behind
+                    from the section above.</li>
+                <li><strong>Update your auth service:</strong> Add the `IsAuthenticated` property and `OnChange`
+                    event
+                    to make sure your nav can detect sign-ins.</li>
+                <li><strong>Connect it to your layout:</strong> Add `&lt;AdminNav /&gt;` to your `MainLayout.razor`
+                    file so
+                    it appears on every page.</li>
+                <li><strong>Test it out:</strong> Run your app, sign in with different users (regular user and
+                    admin),
+                    and watch the navigation change!</li>
+            </ol>
+        </div>
+
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 See It In Action</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Here's a working preview of what your navigation will look like! Try clicking around to see how it
+                behaves.
+                When you build this in your own app, it'll work exactly the same way.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Embedded header</h3>
+                            <p class="text-xs text-gray-500">Loads `/?embed=nav`. Mirror the same query toggle in
+                                your
+                                clean layout so QA can isolate the nav there too.</p>
                         </div>
-                    }
-                    else
-                    {
-                        <button @onclick="MarkComplete"
-                            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-                            Mark as Complete
+                        <button @onclick="RefreshNavFrame"
+                            class="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            <span>↻</span>
+                            <span>Refresh preview</span>
                         </button>
-                    }
+                    </div>
+                    <div class="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-inner">
+                        <iframe src="@NavFrameSrc" title="Navigation live preview" loading="lazy" class="w-full"
+                            style="min-height: 420px; border: 0;"></iframe>
+                    </div>
+                    <p class="text-[11px] text-gray-500 mt-3">
+                        After signing in on another tab, click “Refresh preview” so the iframe picks up your current
+                        auth
+                        cookie.
+                    </p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6 flex flex-col gap-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Testing Your Navigation</h3>
+                        <ol class="list-decimal ml-5 text-sm text-gray-700 space-y-2">
+                            <li>Start your AdminDashboard app and open it in your browser.</li>
+                            <li>Try signing in with different demo accounts: `user@demo.com` (regular user),
+                                `paid@demo.com` (paid user),
+                                and `admin@demo.com` (admin).</li>
+                            <li>Refresh this iframe and your local embed to confirm CTAs and active states stay
+                                aligned.</li>
+                            <li>Sign out and ensure the header collapses back to Sign In / Sign Up in both places.
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 text-xs text-gray-600">
+                        Tracking multiple personas? Keep each role signed in inside its own browser profile and
+                        refresh
+                        the embeds as you flip between them.
+                    </div>
                 </div>
             </div>
+            <p class="text-xs text-gray-600 mt-4 text-center">Once the desktop nav feels right, Step 12 bolts on the
+                mobile drawer.</p>
+        </div>
 
-            <div class="mt-8">
-                <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
-                    <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
-                    <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
-                        With the desktop nav done, you're ready to add the mobile drawer and polish the full layout.
-                    </p>
-                    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-                        <a href="/admin-dashboard-guide"
-                            class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
-                            <span class="text-lg">←</span>
-                            <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
-                        </a>
-                        <a href="/admin-dashboard-examples/step10"
-                            class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
-                            <span class="text-lg">←</span>
-                            <span class="text-sm sm:text-base font-semibold">Previous: Step 10</span>
-                        </a>
-                        <a href="/admin-dashboard-examples/step12"
-                            class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
-                            <span class="text-sm sm:text-base font-semibold">Next: Step 12</span>
-                            <span class="text-lg">→</span>
-                        </a>
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 11?</h3>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard
+                        progress.</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                            Reset
+                        </button>
                     </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        Mark as Complete
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    With the desktop nav done, you're ready to add the mobile drawer and polish the full layout.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/admin-dashboard-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step10"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 10</span>
+                    </a>
+                    <a href="/admin-dashboard-examples/step12"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">Next: Step 12</span>
+                        <span class="text-lg">→</span>
+                    </a>
                 </div>
             </div>
         </div>

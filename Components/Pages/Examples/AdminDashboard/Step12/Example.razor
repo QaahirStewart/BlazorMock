@@ -57,162 +57,151 @@
         </div>
 
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Mobile Menu Code (Add to Your Nav)
-            </h2>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">📍 Where to Add the Mobile Menu</h2>
             <p class="text-sm text-gray-600 mb-4">
-                Here's the code for your mobile menu! You'll add this to the same `AdminNav.razor` file from Step 11.
-                The
-                hamburger button is already there—this just makes it actually work. The `AdminNav.razor.cs` file you
-                created
-                in Step 11 already has all the functions you need (like `CloseMobileMenu`), so you don't need to change
-                that
-                file at all.
+                Open your <code>AdminNav.razor</code> file from Step 11. You'll find a comment that says
+                <code>&lt;!-- STEP 12: Mobile Menu Panel --&gt;</code> near the bottom, right before the closing
+                <code>&lt;/nav&gt;</code> tag. Replace those comment lines with the mobile menu code below.
+            </p>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p class="text-sm text-blue-900 font-semibold mb-2">🎯 Quick Find:</p>
+                <p class="text-xs text-blue-800">Look for the section between
+                    <code>&lt;div class="md:hidden w-10 order-3"&gt;&lt;/div&gt;</code> and <code>&lt;/nav&gt;</code>.
+                    That's where this code goes!
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Complete Mobile Menu Code</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Copy this entire block and paste it in your <code>AdminNav.razor</code> file where the Step 12 comments
+                are.
+                This creates the sliding drawer with all your navigation links, user profile info, and sign-in/sign-out
+                buttons.
             </p>
 
             <div class="space-y-5">
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                    <div class="text-xs text-gray-500 mb-1">AdminDashboard/Components/Layout/AdminNav.razor</div>
-                    <p class="text-xs text-gray-600 mb-2">The hamburger button (those three lines) that appears on
-                        phones.
-                        It changes to an X when the menu is open. Pretty neat!</p>
-                    <pre data-code-title="Mobile toggle + header"
-                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class="flex items-center justify-between"&gt;
-    &lt;a href="/" class="flex items-center gap-2 md:flex-initial flex-1 md:justify-start justify-center md:order-1 order-2"&gt;...&lt;/a&gt;
-
-    &lt;button type="button"
-            @@onclick="ToggleMobileMenu"
-            class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30 order-1 transition-transform duration-200 @@(isMobileMenuOpen ? \"rotate-90\" : string.Empty)"
-            aria-label="Toggle navigation"
-            aria-expanded="@@isMobileMenuOpen"&gt;
-        &lt;svg ...&gt;
-            @@if (isMobileMenuOpen)
-            {
-                &lt;path d="M6 18L18 6M6 6l12 12" /&gt;
-            }
-            else
-            {
-                &lt;path d="M4 6h16M4 12h16M4 18h16" /&gt;
-            }
-        &lt;/svg&gt;
-    &lt;/button&gt;
-
-    &lt;div class="hidden md:block order-3"&gt;
-        @@if (Auth.IsAuthenticated && Auth.CurrentUser != null)
-        {
-            &lt;!-- Profile dropdown (Step 11) --&gt;
-        }
-        else
-        {
-            &lt;div class="flex items-center gap-2"&gt;
-                &lt;a href="/signin" class="px-4 py-2 text-sm font-medium hover:bg-white/10 rounded-lg"&gt;Sign In&lt;/a&gt;
-                &lt;a href="/signup" class="px-4 py-2 text-sm font-medium bg-white text-black rounded-lg"&gt;Sign Up&lt;/a&gt;
-            &lt;/div&gt;
-        }
-    &lt;/div&gt;
-
-    &lt;div class="md:hidden w-10 order-3"&gt;&lt;/div&gt;
-&lt;/div&gt;</pre>
-                </div>
-
-                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                    <div class="text-xs text-gray-500 mb-1">AdminDashboard/Components/Layout/AdminNav.razor</div>
-                    <p class="text-xs text-gray-600 mb-2">The sliding menu that appears when you tap the hamburger
-                        button.
-                        It shows all your navigation links, and automatically closes when someone picks a page.</p>
-                    <pre data-code-title="Mobile drawer"
-                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class="md:hidden overflow-hidden transition-all duration-300 ease-in-out @@(isMobileMenuOpen ? \"max-h-96 opacity-100\" : \"max-h-0 opacity-0\")"&gt;
-    &lt;div class="mt-3 border-t border-white/10 pt-3"&gt;
+                    <div class="text-xs text-gray-500 mb-2">AdminDashboard/Components/Layout/AdminNav.razor</div>
+                    <p class="text-xs text-gray-600 mb-3 font-semibold">👇 Copy everything below (the entire mobile menu
+                        panel):</p>
+                    <pre data-code-title="Complete Mobile Menu Panel"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;!-- ============================================================ --&gt;
+&lt;!-- Mobile Menu Panel --&gt;
+&lt;!-- ============================================================ --&gt;
+&lt;div class="md:hidden overflow-hidden transition-all duration-300 ease-in-out @@(isMobileMenuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0")"&gt;
+    &lt;div class="mt-4 pt-4 border-t border-white/10 transform transition-transform duration-300 @@(isMobileMenuOpen ? "translate-y-0" : "-translate-y-4")"&gt;
         &lt;nav class="flex flex-col gap-1"&gt;
-            &lt;NavLink href="/" ... @@onclick="CloseMobileMenu"&gt;Overview&lt;/NavLink&gt;
-            &lt;NavLink href="/profile" ... @@onclick="CloseMobileMenu"&gt;Profile&lt;/NavLink&gt;
-            &lt;NavLink href="/analytics" ... @@onclick="CloseMobileMenu"&gt;Analytics&lt;/NavLink&gt;
+            &lt;NavLink href="/" Match="NavLinkMatch.All" @@onclick="CloseMobileMenu"
+                     class="px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                     ActiveClass="bg-white/10 font-semibold"&gt;
+                Overview
+            &lt;/NavLink&gt;
+            &lt;NavLink href="/profile" @@onclick="CloseMobileMenu"
+                     class="px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                     ActiveClass="bg-white/10 font-semibold"&gt;
+                Profile
+            &lt;/NavLink&gt;
+            &lt;NavLink href="/analytics" @@onclick="CloseMobileMenu"
+                     class="px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                     ActiveClass="bg-white/10 font-semibold"&gt;
+                Analytics
+            &lt;/NavLink&gt;
 
             @@if (Auth.IsAuthenticated && Auth.CurrentUser != null)
             {
-                @@if (Auth.CurrentUser.Role == \"Admin\")
+                @@if (Auth.CurrentUser.Role == "Admin")
                 {
-                    &lt;NavLink href="/admin/dashboard" ... @@onclick="CloseMobileMenu"&gt;Admin Dashboard&lt;/NavLink&gt;
+                    &lt;NavLink href="/admin/dashboard" @@onclick="CloseMobileMenu"
+                             class="px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                             ActiveClass="bg-white/10 font-semibold"&gt;
+                        Admin Dashboard
+                    &lt;/NavLink&gt;
                 }
+
                 &lt;div class="border-t border-white/10 my-2"&gt;&lt;/div&gt;
-                &lt;button @@onclick="HandleSignOut" class="w-full text-left px-3 py-2 ... text-red-400"&gt;Sign Out&lt;/button&gt;
+
+                &lt;!-- User info in mobile menu --&gt;
+                &lt;div class="px-3 py-2 flex items-center gap-3 justify-between"&gt;
+                    &lt;div class="flex items-center gap-3"&gt;
+                        @@if (!string.IsNullOrEmpty(Auth.CurrentUser.ProfilePictureUrl))
+                        {
+                            &lt;img src="@@Auth.CurrentUser.ProfilePictureUrl" alt="@@Auth.CurrentUser.FullName"
+                                 class="h-10 w-10 rounded-full object-cover border-2 border-white/30" /&gt;
+                        }
+                        else
+                        {
+                            &lt;div class="h-10 w-10 rounded-full @@GetUserAvatarColor() flex items-center justify-center text-white text-sm font-semibold border-2 border-white/30"&gt;
+                                @@GetUserInitials()
+                            &lt;/div&gt;
+                        }
+                        &lt;div class="flex-1"&gt;
+                            &lt;div class="text-sm font-medium"&gt;@@Auth.CurrentUser.FullName&lt;/div&gt;
+                            &lt;div class="text-xs text-gray-400"&gt;@@Auth.CurrentUser.Email&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+                    &lt;button type="button" @@onclick="HandleSignOut"
+                            class="px-3 py-1.5 text-sm rounded-lg text-red-400 hover:bg-red-500/10 transition-colors whitespace-nowrap"&gt;
+                        Sign Out
+                    &lt;/button&gt;
+                &lt;/div&gt;
             }
             else
             {
                 &lt;div class="border-t border-white/10 my-2"&gt;&lt;/div&gt;
-                &lt;NavLink href="/signin" ... @@onclick="CloseMobileMenu"&gt;Sign In&lt;/NavLink&gt;
-                &lt;NavLink href="/signup" ... @@onclick="CloseMobileMenu"&gt;Sign Up&lt;/NavLink&gt;
+                &lt;div class="flex flex-col gap-2"&gt;
+                    &lt;a href="/signin" @@onclick="CloseMobileMenu"
+                       class="flex-1 text-center px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"&gt;
+                        Sign In
+                    &lt;/a&gt;
+                    &lt;a href="/signup" @@onclick="CloseMobileMenu"
+                       class="flex-1 text-center px-3 py-2 rounded-lg bg-white text-black hover:bg-gray-100 transition-colors font-medium"&gt;
+                        Sign Up
+                    &lt;/a&gt;
+                &lt;/div&gt;
             }
         &lt;/nav&gt;
     &lt;/div&gt;
 &lt;/div&gt;</pre>
                 </div>
 
-                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                    <div class="text-xs text-gray-500 mb-1">AdminDashboard/Components/Layout/AdminNav.razor.cs</div>
-                    <p class="text-xs text-gray-600 mb-2">This is the same C# file from Step 11! All the functions your
-                        mobile menu needs (`ToggleMobileMenu`, `CloseMobileMenu`, etc.) are already in here. That's the
-                        beauty
-                        of keeping your code organized—you write it once and use it everywhere.</p>
-                    <pre data-code-title="AdminNav.razor.cs"
-                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
-
-namespace AdminDashboard.Components.Layout;
-
-public partial class AdminNav : ComponentBase, IDisposable
-{
-    [Inject] private IUserAuthService Auth { get; set; } = default!;
-    [Inject] private NavigationManager Navigation { get; set; } = default!;
-
-    private bool isProfileMenuOpen;
-    private bool isMobileMenuOpen;
-
-    protected override void OnInitialized()
-    {
-        Auth.OnChange += OnAuthStateChanged;
-    }
-
-    public void Dispose()
-    {
-        Auth.OnChange -= OnAuthStateChanged;
-    }
-
-    private void OnAuthStateChanged() => _ = InvokeAsync(StateHasChanged);
-
-    private void ToggleProfileMenu() => isProfileMenuOpen = !isProfileMenuOpen;
-    private void ToggleMobileMenu() => isMobileMenuOpen = !isMobileMenuOpen;
-    private void CloseMobileMenu() => isMobileMenuOpen = false;
-
-    private void HandleSignOut()
-    {
-        Auth.SignOut();
-        isProfileMenuOpen = false;
-        isMobileMenuOpen = false;
-        Navigation.NavigateTo("/", forceLoad: true);
-    }
-
-    private string GetUserInitials()
-    {
-        if (Auth.CurrentUser == null) return "?";
-        var names = Auth.CurrentUser.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (names.Length >= 2)
-        {
-            return $"{names[0][0]}{names[1][0]}".ToUpperInvariant();
-        }
-
-        return Auth.CurrentUser.FullName.Length > 0
-            ? Auth.CurrentUser.FullName[0].ToString().ToUpperInvariant()
-            : "?";
-    }
-
-    private string GetUserAvatarColor()
-    {
-        if (Auth.CurrentUser == null) return "bg-slate-500";
-        var colors = new[] { "bg-indigo-500", "bg-blue-500", "bg-emerald-500", "bg-rose-500", "bg-amber-500" };
-        return colors[Math.Abs(Auth.CurrentUser.Email.GetHashCode()) % colors.Length];
-    }
-}</pre>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-2">✅ What This Code Does:</h3>
+                    <ul class="text-xs text-blue-800 space-y-2 ml-4 list-disc">
+                        <li><strong>Smooth animations:</strong> The menu slides down with <code>max-h-[600px]</code> and
+                            fades in with <code>opacity-100</code></li>
+                        <li><strong>Navigation links:</strong> All your pages (Overview, Profile, Analytics, Admin
+                            Dashboard) in a mobile-friendly layout</li>
+                        <li><strong>User profile section:</strong> Shows avatar/initials, name, email, and Sign Out
+                            button when logged in</li>
+                        <li><strong>Sign In/Up buttons:</strong> Appears when user is not authenticated</li>
+                        <li><strong>Auto-close:</strong> <code>@@onclick="CloseMobileMenu"</code> closes the drawer when
+                            any link is clicked</li>
+                    </ul>
                 </div>
             </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">✅ Verify It Works</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                After pasting the mobile menu code, your <code>AdminNav.razor</code> file should have:
+            </p>
+            <div class="bg-gray-50 border border-gray-300 rounded-lg p-4">
+                <ol class="text-sm text-gray-700 space-y-2 list-decimal ml-5">
+                    <li>The hamburger button (from Step 11)</li>
+                    <li>Desktop navigation links (from Step 11)</li>
+                    <li>Profile dropdown for desktop (from Step 11)</li>
+                    <li><strong class="text-blue-600">The new mobile menu panel (just added!)</strong></li>
+                </ol>
+            </div>
+            <p class="text-sm text-gray-600 mt-4">
+                No changes needed to <code>AdminNav.razor.cs</code> — all the functions (<code>ToggleMobileMenu</code>,
+                <code>CloseMobileMenu</code>, etc.) are already there from Step 11!
+            </p>
         </div>
 
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
