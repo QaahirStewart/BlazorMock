@@ -13,30 +13,29 @@
         </a>
 
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            🔐 Step 10: Route Protection &amp; Roles (Real App Edition)
+            🔐 Step 10: Protecting Your Pages (Who Can See What)
         </h1>
 
         <p class="text-xl text-gray-600 mb-8">
-            Copy the exact guard flow the live demo uses: <code>/profile</code> and <code>/analytics</code> kick
-            anonymous users back to <code>/signin</code>, free users see upgrade prompts, and admins unlock the entire
-            dashboard surface powered by <code>IUserAuthService</code>.
+            Not everyone should see everything in your app! In this step, you'll add "guards" (think of them as friendly
+            bouncers) that check if someone is signed in and has the right permissions before showing them certain pages.
+            Regular users get basic features, paid users get more, and admins see everything.
         </p>
 
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Protect</h2>
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Redirect signed-out visitors the moment they hit <code>/profile</code> or <code>/analytics</code>.
-                </li>
-                <li>Use the shared auth service (<code>Auth.CurrentUser</code>, <code>IsPaidOrAdmin</code>,
-                    <code>IsAdmin</code>) instead of duplicating role math.
-                </li>
-                <li>Show the real limited-access card free users see in <code>Analytics.razor</code>.</li>
-                <li>Keep the admin-only KPIs and user-management shell behind the same guard as Step 9.</li>
+                <li>Send people to the sign-in page if they try to visit Profile or Analytics without being logged in</li>
+                <li>Show different content based on who's signed in: free users see "upgrade" messages, paid users see full
+                    features, admins see everything</li>
+                <li>Use your auth service to check permissions (no need to write complicated if-statements everywhere!)</li>
+                <li>Keep the admin dashboard locked to admins only—regular users get a friendly "you need admin access"
+                    message</li>
             </ul>
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> deterministic redirects, friendly lockouts, role-based content
-                    branches, and avoiding hidden EF queries by reusing <code>IUserAuthService</code>.
+                    <strong>💡 What You'll Practice:</strong> Protecting pages, checking user permissions, and showing different
+                    content to different types of users.
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
@@ -54,17 +53,17 @@
         </div>
 
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Canonical Guard Patterns</h2>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 How to Protect Your Pages</h2>
             <p class="text-sm text-gray-600 mb-4">
-                These snippets are lifted directly from the files that power the live demo. Keep them HTML-encoded so
-                Razor treats them as documentation, and make sure your tutorial screenshots match these states.
+                Here's how to add protection to your pages. These code examples show you the pattern—check if someone is
+                signed in, and if not, send them to the sign-in page. Then check their role to decide what they can see.
             </p>
 
             <div class="space-y-5">
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
                     <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Profile.razor</div>
-                    <p class="text-xs text-gray-600 mb-2">Signed-out visitors are bounced to <code>/signin</code>
-                        before any profile UI renders.</p>
+                    <p class="text-xs text-gray-600 mb-2">This checks if someone is signed in. If not, it sends them to
+                        the sign-in page before showing any profile info.</p>
                     <pre data-code-title="Profile.razor — redirect guard"
                         class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/profile"
 @@rendermode InteractiveServer
@@ -86,8 +85,8 @@ else
 
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
                     <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Analytics.razor</div>
-                    <p class="text-xs text-gray-600 mb-2">After the same redirect guard, the page branches into free
-                        vs. paid/admin layouts and tacks on an admin-only KPI bar.</p>
+                    <p class="text-xs text-gray-600 mb-2">First checks if signed in (same as Profile), then shows different
+                        content based on whether they're a free user, paid user, or admin.</p>
                     <pre data-code-title="Analytics.razor — auth + role branches"
                         class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/analytics"
 @@rendermode InteractiveServer
@@ -169,58 +168,57 @@ else
                     <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
                     <div class="space-y-4">
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Guard ASAP</p>
-                            <p class="text-xs text-blue-800">Run the <code>Auth.CurrentUser == null</code> check at the
-                                top of the Razor file so protected markup never flashes for logged-out visitors.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Check early, check often</p>
+                            <p class="text-xs text-blue-800">Put your "are they signed in?" check at the very top of your
+                                page. That way, protected content never flashes on screen for people who shouldn't see it.</p>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Reuse service helpers</p>
-                            <p class="text-xs text-blue-800"><code>IsPaidOrAdmin</code> and <code>IsAdmin</code> live in
-                                <code>AnalyticsBase</code>; keep role math there so Razor stays readable.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Let the service do the work</p>
+                            <p class="text-xs text-blue-800">Your auth service already knows if someone is paid or an admin.
+                                Just use `IsPaidOrAdmin` and `IsAdmin` instead of writing the same checks over and over.</p>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Friendly fallback states</p>
-                            <p class="text-xs text-blue-800">Every lockout card includes context + CTA (e.g. "Upgrade"
-                                or "Sign in") so QA screenshots match what real users see.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Be friendly when saying no</p>
+                            <p class="text-xs text-blue-800">When someone can't access something, show a nice message with a
+                                button (like "Upgrade to Pro" or "Sign In") so they know what to do next.</p>
                         </div>
                     </div>
                 </div>
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Common Issues</h3>
                     <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
-                        <li>Forgot to inject <code>IUserAuthService</code>? The guard will always treat users as
-                            signed-out.</li>
-                        <li>Role text mismatch ("admin" vs "Admin") keeps admins from seeing KPIs—use the seeded case.
-                        </li>
-                        <li>Upgrade CTA missing? Verify the <code>IsPaidOrAdmin</code> helper covers both Paid + Admin.
-                        </li>
+                        <li>Everyone getting bounced to sign-in? Make sure you've injected your auth service at the top of
+                            the page.</li>
+                        <li>Admins not seeing admin features? Check that your user's role is exactly "Admin" (with a capital
+                            A)—spelling and capitalization matter!</li>
+                        <li>Free users not seeing upgrade messages? Double-check that your `IsPaidOrAdmin` helper checks for
+                            both "Paid" and "Admin" users.</li>
                     </ul>
                 </div>
             </div>
         </div>
 
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ Step-by-Step Guide</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
-                <li><strong>Inject once:</strong> Pages inherit <code>ProfileBase</code> / <code>AnalyticsBase</code>,
-                    so <code>IUserAuthService</code> and <code>NavigationManager</code> are already available—just use
-                    them.</li>
-                <li><strong>Redirect fast:</strong> Call <code>Nav.NavigateTo("/signin")</code> immediately when
-                    <code>Auth.CurrentUser</code> is null.</li>
-                <li><strong>Branch by role:</strong> Use <code>IsPaidOrAdmin</code> for feature unlocks and
-                    <code>IsAdmin</code> for the final KPI layer.</li>
-                <li><strong>Keep CTAs in sync:</strong> The upgrade card links back to <code>/profile</code> (the real
-                    upgrade button), and the admin lockout links to <code>/signin</code>.</li>
-                <li><strong>Test every persona:</strong> Use the seeded Free/Paid/Admin accounts to make sure each route
-                    matches the screenshots below.</li>
+                <li><strong>Add the sign-in check:</strong> At the top of your Profile and Analytics pages, check if
+                    `Auth.CurrentUser` is null. If it is, redirect them to `/signin`.</li>
+                <li><strong>Show different content by role:</strong> Use `IsPaidOrAdmin` to show full features to paid
+                    users and admins, and show "upgrade" messages to free users.</li>
+                <li><strong>Protect the admin dashboard:</strong> Use `IsAdmin` to check if someone is an admin. If not,
+                    show them a friendly "admin access required" message.</li>
+                <li><strong>Keep buttons helpful:</strong> When someone can't access something, give them a clear button
+                    like "Upgrade" or "Sign In" so they know what to do.</li>
+                <li><strong>Test with different users:</strong> Try signing in as a free user, paid user, and admin to
+                    make sure everyone sees the right stuff!</li>
             </ol>
         </div>
 
         <div class="bg-black/3 rounded-2xl p-6 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Try It Out with Different Users</h2>
             <p class="text-sm text-gray-600 mb-4">
-                Launch the seeded accounts in new tabs, then hit refresh on the protected routes to watch the guards do
-                their thing. Each button pre-fills <code>/signin</code> with credentials and a redirect.
+                Click these buttons to see how your app treats different types of users. Each button signs you in as a
+                different user type and takes you to a protected page.
             </p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <a href="/signin?demo=free&redirect=%2Fprofile" target="_blank" rel="noopener"
@@ -229,8 +227,8 @@ else
                         <h3 class="text-sm font-semibold text-gray-900">Free → /profile</h3>
                         <span class="px-2 py-1 text-[11px] rounded-full bg-gray-100 text-gray-700">Redirect</span>
                     </div>
-                    <p class="text-xs text-gray-600">Opens /signin with <code>demo=free</code>, then navigates back to
-                        /profile. Expect an immediate bounce to sign-in again if you close the tab.</p>
+                    <p class="text-xs text-gray-600">Signs you in as a free user and takes you to the Profile page. Free
+                        users can see their profile but will see "upgrade" prompts on Analytics.</p>
                 </a>
                 <a href="/signin?demo=paid&redirect=%2Fanalytics" target="_blank" rel="noopener"
                     class="bg-white rounded-2xl border border-gray-200 p-4 flex flex-col gap-3 hover:border-purple-400 hover:shadow-lg transition-all duration-200">
@@ -238,8 +236,8 @@ else
                         <h3 class="text-sm font-semibold text-gray-900">Paid → /analytics</h3>
                         <span class="px-2 py-1 text-[11px] rounded-full bg-purple-100 text-purple-800">Paid view</span>
                     </div>
-                    <p class="text-xs text-gray-600">Shows both basic metrics and the purple “Paid Feature” cards, but
-                        skips the admin aggregate panel.</p>
+                    <p class="text-xs text-gray-600">Signs you in as a paid user. You'll see full analytics features
+                        (no upgrade prompts), but not the admin-only statistics at the bottom.</p>
                 </a>
                 <a href="/signin?demo=admin&redirect=%2Fanalytics" target="_blank" rel="noopener"
                     class="bg-white rounded-2xl border border-gray-200 p-4 flex flex-col gap-3 hover:border-red-400 hover:shadow-lg transition-all duration-200">
@@ -247,13 +245,13 @@ else
                         <h3 class="text-sm font-semibold text-gray-900">Admin → everything</h3>
                         <span class="px-2 py-1 text-[11px] rounded-full bg-red-100 text-red-800">Admin</span>
                     </div>
-                    <p class="text-xs text-gray-600">Unlocks the Advanced Analytics grids plus the red admin stats at
-                        the bottom, matching the canonical screenshots.</p>
+                    <p class="text-xs text-gray-600">Signs you in as an admin. You'll see everything—all analytics
+                        features plus the admin statistics panel at the bottom. Admins have access to everything!</p>
                 </a>
             </div>
-            <p class="text-xs text-gray-600 mt-4 text-center">After signing in on those tabs, reload
-                <code>/profile</code>, <code>/analytics</code>, and <code>/admin/dashboard</code> inside your dev server
-                to confirm each guard behaves as described.</p>
+            <p class="text-xs text-gray-600 mt-4 text-center">After trying these demo accounts, sign in with each type of
+                user in your own app and visit different pages to make sure the protection works correctly!
+            </p>
         </div>
 
         <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
@@ -287,7 +285,8 @@ else
             <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
                 <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
                 <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
-                    With the guard rails matching production, Step 11 focuses on navigation polish and session UX.
+                    Great job protecting your pages! Next up: building a navigation bar that works on both desktop and
+                    mobile.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <a href="/admin-dashboard-guide"

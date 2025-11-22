@@ -13,33 +13,37 @@
         </a>
 
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            📊 Step 7: Paid analytics gating + traffic sources
+            🔒 Step 7: Add Premium Features (Paid Analytics)
         </h1>
 
         <p class="text-xl text-gray-600 mb-8">
-            Mirror the paid-only sections of <code>/analytics</code> so learners see the same upgrade CTA, traffic source list, and admin summary grid that ship in <code>DashboardDemo</code>—all powered by <code>IUserAuthService</code>, not EF queries.
+            Let's add special features that only paid and admin users can see. Free users will see an upgrade prompt
+            instead. It's like having a VIP section in your app!
         </p>
 
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Build</h2>
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Use <code>AnalyticsBase</code> helpers (<code>IsPaidOrAdmin</code>/<code>IsAdmin</code>) to flip UI states.</li>
-                <li>Display the curated traffic source list on desktop rows + mobile cards.</li>
-                <li>Show a locked upgrade CTA for Free users that deep-links to <code>/profile</code>.</li>
-                <li>Reuse <code>Auth.AllUsers</code> to surface admin-only totals with zero EF work.</li>
+                <li>Advanced analytics charts that only paid and admin users can see</li>
+                <li>A traffic sources section showing where visitors come from</li>
+                <li>An upgrade prompt for free users with a link to become paid</li>
+                <li>An admin-only summary showing total users across all accounts</li>
             </ul>
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Service-driven feature gating, deterministic sample data, accessibility-friendly locked states.
+                    <strong>💡 What You'll Use:</strong> Role-based access, feature gating, conditional UI, auth service
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
                     <a href="/tips#auth-service"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth Service</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth
+                        Service</a>
                     <a href="/tips#layout-state"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Layout State</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Layout
+                        State</a>
                     <a href="/tips#tailwind"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind Layouts</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind
+                        Layouts</a>
                 </div>
             </div>
         </div>
@@ -47,11 +51,16 @@
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample component: paid + admin sections</h2>
             <p class="text-sm text-gray-600 mb-4">
-                These excerpts are lifted directly from <code>Components/Pages/Demo/DashboardDemo/Analytics.razor</code>. Keep them HTML-encoded (notice every <code>&#64;</code> is written as <code>&#64;&#64;</code>) so the docs render safely.
+                These excerpts are lifted directly from
+                <code>Components/Pages/Demo/DashboardDemo/Analytics.razor</code>. Keep them HTML-encoded (notice every
+                <code>&#64;</code> is written as <code>&#64;&#64;</code>) so the docs render safely. Drop this block
+                exactly where the Step 6 placeholder card lived.
             </p>
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
-                <div class="text-xs text-gray-500 mb-1">Analytics.razor — Paid vs Free toggle</div>
-                <p class="text-xs text-gray-600 mb-2">When <code>IsPaidOrAdmin</code> is false, show the upgrade CTA instead of traffic cards.</p>
+                <div class="text-xs text-gray-500 mb-1">Analytics.razor — Replace the placeholder with this paid vs free
+                    toggle</div>
+                <p class="text-xs text-gray-600 mb-2">When <code>IsPaidOrAdmin</code> is false, show the upgrade CTA
+                    instead of traffic cards.</p>
                 <pre data-code-title="Paid analytics section"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@if (IsPaidOrAdmin)
 {
@@ -107,8 +116,10 @@ else
             </div>
 
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                <div class="text-xs text-gray-500 mb-1">Analytics.razor — Admin summary</div>
-                <p class="text-xs text-gray-600 mb-2">Admins get an extra grid fueled entirely by <code>Auth.AllUsers</code>.</p>
+                <div class="text-xs text-gray-500 mb-1">Analytics.razor — Admin summary (append below the premium block)
+                </div>
+                <p class="text-xs text-gray-600 mb-2">Admins get an extra grid fueled entirely by
+                    <code>Auth.AllUsers</code>.</p>
                 <pre data-code-title="Admin-only metrics"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@if (IsAdmin)
 {
@@ -140,28 +151,55 @@ else
             </div>
 
             <p class="text-xs text-gray-600 mt-4">
-                Important: the real demo keeps these cards static because the focus is on teaching Blazor layouts, not on wiring live analytics services. Stick to the shared <code>trafficSources</code> list and <code>IUserAuthService</code> data so documentation screenshots always match the running app.
+                Important: the real demo keeps these cards static because the focus is on teaching Blazor layouts, not
+                on wiring live analytics services. Stick to the shared <code>trafficSources</code> list and
+                <code>IUserAuthService</code> data so documentation screenshots always match the running app.
             </p>
 
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mt-6">
                 <div class="text-xs text-gray-500 mb-1">Analytics.razor.cs — helper state</div>
-                <p class="text-xs text-gray-600 mb-2">All gating logic lives in the code-behind—no EF, no extra services.</p>
+                <p class="text-xs text-gray-600 mb-2">Add these members to the same <code>AnalyticsBase</code> from Step
+                    6 so the markup can branch without touching EF.</p>
                 <pre data-code-title="AnalyticsBase helpers"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">public partial class AnalyticsBase : ComponentBase
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using AdminDashboard.Services;
+
+namespace AdminDashboard.Components.Pages;
+
+public partial class AnalyticsBase : ComponentBase
 {
     [Inject] protected IUserAuthService Auth { get; set; } = default!;
     [Inject] protected NavigationManager Nav { get; set; } = default!;
+    [Inject] protected IJSRuntime JS { get; set; } = default!;
 
-    protected bool IsPaidOrAdmin => Auth.CurrentUser?.Role == &quot;Paid&quot; || Auth.CurrentUser?.Role == &quot;Admin&quot;;
-    protected bool IsAdmin => Auth.CurrentUser?.Role == &quot;Admin&quot;;
+    protected bool IsPaidOrAdmin =&gt; Auth.CurrentUser?.Role == "Paid" || Auth.CurrentUser?.Role == "Admin";
+    protected bool IsAdmin =&gt; Auth.CurrentUser?.Role == "Admin";
 
     protected List&lt;TrafficSource&gt; trafficSources = new()
     {
-        new TrafficSource { Icon = &quot;🔍&quot;, Name = &quot;Google Search&quot;, Visitors = 1234, Percentage = 42 },
-        new TrafficSource { Icon = &quot;📱&quot;, Name = &quot;Social Media&quot;, Visitors = 892, Percentage = 30 },
-        new TrafficSource { Icon = &quot;📧&quot;, Name = &quot;Email Campaign&quot;, Visitors = 567, Percentage = 19 },
-        new TrafficSource { Icon = &quot;🔗&quot;, Name = &quot;Direct&quot;, Visitors = 234, Percentage = 9 }
+        new TrafficSource { Icon = "🔍", Name = "Google Search", Visitors = 1234, Percentage = 42 },
+        new TrafficSource { Icon = "📱", Name = "Social Media", Visitors = 892, Percentage = 30 },
+        new TrafficSource { Icon = "📧", Name = "Email Campaign", Visitors = 567, Percentage = 19 },
+        new TrafficSource { Icon = "🔗", Name = "Direct", Visitors = 234, Percentage = 9 }
     };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || Auth.CurrentUser != null)
+        {
+            return;
+        }
+
+        var storedEmail = await JS.InvokeAsync&lt;string&gt;("localStorage.getItem", "currentUserEmail");
+        if (!string.IsNullOrEmpty(storedEmail) && Auth.SignInByEmail(storedEmail))
+        {
+            StateHasChanged();
+            return;
+        }
+
+        Nav.NavigateTo("/signin");
+    }
 
     protected class TrafficSource
     {
@@ -177,24 +215,32 @@ else
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
-                <li><strong>Inherit <code>AnalyticsBase</code>:</strong> Keep markup lean by putting gating booleans + traffic data in the partial class just like the demo.</li>
-                <li><strong>Branch on plan:</strong> Wrap premium cards + traffic list in <code>&#64;&#64;if (IsPaidOrAdmin)</code> and always supply a helpful locked state for Free accounts.</li>
-                <li><strong>Reuse sample data:</strong> Traffic rows come from a simple list so the docs never drift. Resist adding random datasets per tutorial.</li>
-                <li><strong>Surface admin context:</strong> Use <code>Auth.AllUsers</code> for totals instead of duplicating EF queries—admins already loaded that data when they signed in.</li>
-                <li><strong>Link upgrades to /profile:</strong> Send users to the existing plan upgrade flow so the experience stays consistent across steps.</li>
+                <li><strong>Start from Step 6:</strong> Keep the guard/hero/KPI stack unchanged and focus only on the
+                    placeholder + footer area.</li>
+                <li><strong>Replace the placeholder:</strong> Drop the `&#64;&#64;if (IsPaidOrAdmin)` block in place of
+                    the dashed card so Free users keep a friendly upgrade CTA while Paid/Admin see the premium
+                    analytics.</li>
+                <li><strong>Append the admin grid:</strong> Paste the `IsAdmin` block directly under the paid section so
+                    totals appear only when the signed-in role warrants it.</li>
+                <li><strong>Reuse shared data:</strong> Keep the deterministic `trafficSources` list and `Auth.AllUsers`
+                    lookups—no EF or per-step variants.</li>
+                <li><strong>Link upgrades to /profile:</strong> Send users to the existing plan upgrade flow so the
+                    experience stays consistent across steps.</li>
             </ol>
         </div>
 
         <div class="bg-black/3 rounded-2xl p-6 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
             <p class="text-sm text-gray-600 mb-4">
-                Toggle between Free and Paid demo accounts on <code>/signin</code> to watch the analytics view switch between the locked CTA, premium charts, and the admin summary grid.
+                Toggle between Free and Paid demo accounts on <code>/signin</code> to watch the analytics view switch
+                between the locked CTA, premium charts, and the admin summary grid.
             </p>
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
                 <div class="max-w-3xl mx-auto p-8 space-y-6">
                     <div class="text-center">
                         <h2 class="text-3xl font-bold text-gray-900 mb-2">Advanced Analytics</h2>
-                        <p class="text-gray-600">Paid plans see conversion rate, revenue/user, CLTV, and traffic sources at a glance.</p>
+                        <p class="text-gray-600">Paid plans see conversion rate, revenue/user, CLTV, and traffic sources
+                            at a glance.</p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="bg-white border border-gray-200 rounded-2xl p-5 text-center">
@@ -212,16 +258,22 @@ else
                     </div>
                     <div class="bg-purple-50 border border-purple-100 rounded-2xl p-6 text-center">
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Free plan view</h3>
-                        <p class="text-sm text-gray-600 mb-4">Free users get a friendly upgrade panel that links over to <code>/profile</code> for plan changes.</p>
+                        <p class="text-sm text-gray-600 mb-4">Free users get a friendly upgrade panel that links over to
+                            <code>/profile</code> for plan changes.</p>
                         <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                            <a href="/profile" class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition">Upgrade Now</a>
-                            <button class="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition">Learn More</button>
+                            <a href="/profile"
+                                class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition">Upgrade
+                                Now</a>
+                            <button
+                                class="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition">Learn
+                                More</button>
                         </div>
                     </div>
                 </div>
                 <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
                     <p class="text-xs text-gray-600">
-                        💡 <strong>Reminder:</strong> These cards are intentionally hard-coded so the guide stays screenshot-stable. When you need real analytics, layer them on in a separate tutorial.
+                        💡 <strong>Reminder:</strong> These cards are intentionally hard-coded so the guide stays
+                        screenshot-stable. When you need real analytics, layer them on in a separate tutorial.
                     </p>
                 </div>
             </div>

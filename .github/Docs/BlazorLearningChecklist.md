@@ -145,7 +145,7 @@ This checklist version allows you to track your progress through each step. Chec
 
 - **Home, Guide, Progress, Counter, DriverForm, Tips, MainLayout, GreetingCard, Example pages**
 - Responsive text: `text-sm sm:text-base`, `text-xl sm:text-2xl`
-- Proper wrapping: `break-words`, `min-w-0`, `flex-shrink-0`
+- Proper wrapping: `break-words`, `min-w-0`, `shrink-0`
 - Mobile layouts: `flex-col sm:flex-row`, `grid sm:grid-cols-2`
 
 #### 💡 ELI5 Tips System

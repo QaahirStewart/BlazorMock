@@ -1,8 +1,8 @@
-# Admin Dashboard Step 7 — Analytics Page (/analytics): Paid Feature Gating
+# Admin Dashboard Step 7 — Layer Paid + Admin Sections (/analytics)
 
 ## Overview
 
-Step 7 syncs the tutorial with the real `/analytics` experience from `DashboardDemo`. Learners swap the EF-driven table mockups for the production markup that shows baseline metrics to everyone, premium cards + traffic sources to paid accounts, and an admin-only totals grid.
+Extend the Step 6 baseline. Replace the dashed placeholder inside `Analytics.razor` with the real paid-only cards, traffic source list, and locked upgrade CTA. Then append the admin summary grid beneath the KPI stack. Everything stays powered by `IUserAuthService`, so you only touch markup and the shared `AnalyticsBase` helpers.
 
 ## Files in This Folder
 
@@ -15,10 +15,10 @@ Step 7 syncs the tutorial with the real `/analytics` experience from `DashboardD
 
 ## What Students Learn
 
-1. How `AnalyticsBase` and `IUserAuthService` work together to redirect anonymous visitors and expose helper booleans.
-2. How to wrap premium UI in `IsPaidOrAdmin` checks and present a graceful locked state for Free plans.
+1. How to evolve the Step 6 page by swapping a placeholder block for the paid/locked layout without re-copying the whole component.
+2. How `AnalyticsBase` exposes `IsPaidOrAdmin`/`IsAdmin` so markup can branch between premium content and upgrade CTAs.
 3. How to reuse the deterministic `trafficSources` list so screenshots always match the shipped demo.
-4. How to surface admin-only totals from `Auth.AllUsers` without duplicating EF queries.
+4. How to surface admin-only totals from `Auth.AllUsers` while keeping EF out of the component.
 
 ## Key Concepts
 
@@ -31,7 +31,7 @@ Step 7 syncs the tutorial with the real `/analytics` experience from `DashboardD
 
 - Tutorial page inherits `ExampleBase` in the `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step7` namespace.
 - Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `7`.
-- References the same markup + helpers that live in `Components/Pages/Demo/DashboardDemo/Analytics.razor`.
+- Reuses the Step 6 layout (guard + hero + KPI cards) and only adds the premium/admin fragments highlighted below.
 
 ## Prerequisites
 
@@ -40,12 +40,12 @@ Step 7 syncs the tutorial with the real `/analytics` experience from `DashboardD
 
 ## Next Steps
 
-- Proceed to Step 8 to explain how the same page uses CSS-only micro-visuals (bars, progress indicators) without chart libraries.
+- Proceed to Step 8 to polish the visuals (micro-bars, gradients, responsive tweaks) without reworking the logic.
 
 ## Code Structure
 
 - `ExampleBase` handles completion tracking and JS enhancements.
-- The tutorial page highlights markup excerpts for premium cards, traffic sources, and admin totals, plus the `AnalyticsBase` helper class.
+- The tutorial page highlights the exact sections you paste: the paid/locked block that replaces the Step 6 placeholder, the admin summary grid appended below the KPIs, and the helper members you add to `AnalyticsBase`.
 
 ## Common Issues & Solutions
 

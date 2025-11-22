@@ -1,8 +1,8 @@
-# Admin Dashboard Step 6 — Basic Analytics Model
+# Admin Dashboard Step 6 — Analytics Foundations (/analytics)
 
 ## Overview
 
-This step introduces a simple analytics model so the app can record key user actions for later visualization.
+Stand up the first version of `/analytics`: a session-restoring guard plus the baseline metrics every plan can see. You copy the hero, skeleton state, and four core KPI cards from the production demo so later steps can layer paid-only visuals on top.
 
 ## Files in This Folder
 
@@ -15,17 +15,17 @@ This step introduces a simple analytics model so the app can record key user act
 
 ## What Students Learn
 
-1. How to define a simple `Activity` or `Event` entity (e.g., `UserLogin`, `ProfileUpdated`).
-2. How to add the analytics entity to `AppDbContext` and run a new migration.
-3. How to write analytics events when users perform actions (login, profile updates, dashboard views).
-4. How to design analytics data that is easy to query.
+1. Restoring sessions on `/analytics` using `localStorage` + `Auth.SignInByEmail` before redirecting to `/signin`.
+2. Rendering the shared hero + four core KPI cards that every plan can access.
+3. Keeping the component service-driven (reads `IUserAuthService` only) so later steps toggle UI without touching EF.
+4. Preparing placeholders for paid/admin sections that Steps 7–8 will append.
 
 ## Key Concepts
 
-- Designing simple event/analytics tables
-- EF Core migrations for evolving schema
-- Recording events from key user actions
-- Queryability versus over-normalization
+- Session restoration in Blazor Server
+- Auth-aware page guards
+- Deterministic sample data for tutorials
+- Incremental component layering
 
 ## Architecture
 
@@ -39,19 +39,20 @@ This step introduces a simple analytics model so the app can record key user act
 
 ## Next Steps
 
-- Proceed to Step 7 to start displaying analytics data in `/analytics` using tables and summary counts.
+- Proceed to Step 7 to add paid gating, the traffic sources list, and the admin-only summary grid.
 
 ## Code Structure
 
 - `ExampleBase` handles completion tracking and JS enhancements.
-- The tutorial page focuses on the new analytics entity and where to write events.
+- The tutorial page focuses on the baseline `/analytics` markup and the guard logic.
 
 ## Common Issues & Solutions
 
-- **Migration issues**: Ensure the previous migrations have been applied and the database is up-to-date.
-- **Too many events**: Add simple filters or throttling if needed for demo purposes.
+- **Blank screen**: Confirm the session restore block runs before redirecting—`AnalyticsBase` should only navigate once it fails to find a stored email.
+- **Paid cards already visible**: That content now belongs to Step 7. Keep only the hero + four KPIs in this step.
+- **Auth service null**: Make sure `IUserAuthService` is registered (from Step 5) and seeded demo accounts still exist.
 
 ## Related Resources
 
-- EF Core migrations and schema evolution
-- Basic analytics/event modeling patterns
+- `Components/Pages/Demo/DashboardDemo/Analytics.razor`
+- Step 7 and Step 8 example pages for the additive sections

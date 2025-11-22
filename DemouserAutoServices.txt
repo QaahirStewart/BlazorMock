@@ -1,0 +1,212 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using AdminDashboard.Data;
+using AdminDashboard.Models;
+
+namespace AdminDashboard.Services;
+
+public class DemoUserAuthService : IUserAuthService
+{
+    private readonly AppDbContext _db;
+    private User? _currentUser;
+
+    public DemoUserAuthService(AppDbContext db)
+    {
+        _db = db;
+        EnsureDemoUsers();
+    }
+
+    public User? CurrentUser => _currentUser;
+    public bool IsAuthenticated => _currentUser != null;
+    public IReadOnlyList<User> AllUsers => _db.Users.OrderBy(u => u.Id).ToList();
+    public bool IsAdmin => _currentUser?.Role == "Admin";
+    public event Action? OnChange;
+
+    public bool SignUp(string email, string password, string fullName)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+
+        if (_db.Users.Any(u => u.Email == normalizedEmail))
+        {
+            return false;
+        }
+
+        var user = new User
+        {
+            Email = normalizedEmail,
+            PasswordHash = password,
+            FullName = string.IsNullOrWhiteSpace(fullName) ? "New User" : fullName.Trim(),
+            Role = "Free",
+            CreatedAt = DateTime.UtcNow,
+            LastLoginAt = DateTime.UtcNow
+        };
+
+        _db.Users.Add(user);
+        _db.SaveChanges();
+        _currentUser = user;
+        NotifyStateChanged();
+        return true;
+    }
+
+    public bool SignIn(string email, string password)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = _db.Users.FirstOrDefault(u => u.Email == normalizedEmail && u.PasswordHash == password);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        user.LastLoginAt = DateTime.UtcNow;
+        _db.SaveChanges();
+        _currentUser = user;
+        NotifyStateChanged();
+        return true;
+    }
+
+    public bool SignInByEmail(string email)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = _db.Users.FirstOrDefault(u => u.Email == normalizedEmail);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        user.LastLoginAt = DateTime.UtcNow;
+        _db.SaveChanges();
+        _currentUser = user;
+        NotifyStateChanged();
+        return true;
+    }
+
+    public void SignOut()
+    {
+        if (_currentUser == null)
+        {
+            return;
+        }
+
+        _currentUser = null;
+        NotifyStateChanged();
+    }
+
+    public void UpdateProfile(string fullName, string? profilePictureUrl)
+    {
+        if (_currentUser == null)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u => u.Id == _currentUser.Id);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.FullName = string.IsNullOrWhiteSpace(fullName) ? user.FullName : fullName.Trim();
+        user.ProfilePictureUrl = string.IsNullOrWhiteSpace(profilePictureUrl) ? null : profilePictureUrl.Trim();
+        _db.SaveChanges();
+        _currentUser = user;
+        NotifyStateChanged();
+    }
+
+    public void UpgradeToRole(string role)
+    {
+        if (_currentUser == null)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u => u.Id == _currentUser.Id);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.Role = role;
+        _db.SaveChanges();
+        _currentUser = user;
+        NotifyStateChanged();
+    }
+
+    public void AdminUpdateUserRole(int userId, string newRole)
+    {
+        if (!IsAdmin)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+        if (user == null)
+        {
+            return;
+        }
+
+        user.Role = newRole;
+
+        if (_currentUser?.Id == user.Id)
+        {
+            _currentUser = user;
+        }
+
+        _db.SaveChanges();
+        NotifyStateChanged();
+    }
+
+    public void AdminDeleteUser(int userId)
+    {
+        if (!IsAdmin)
+        {
+            return;
+        }
+
+        var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (user == null || (_currentUser?.Id == user.Id))
+        {
+            return;
+        }
+
+        _db.Users.Remove(user);
+        _db.SaveChanges();
+        NotifyStateChanged();
+    }
+
+    private void EnsureDemoUsers()
+    {
+        var demoUsers = new[]
+        {
+            new User { Email = "admin@demo.com", PasswordHash = "admin123", FullName = "Admin User", Role = "Admin" },
+            new User { Email = "paid@demo.com", PasswordHash = "paid123", FullName = "Paid User", Role = "Paid" },
+            new User { Email = "user@demo.com", PasswordHash = "user123", FullName = "Free User", Role = "Free" }
+        };
+
+        var addedAny = false;
+
+        foreach (var demo in demoUsers)
+        {
+            var normalizedEmail = demo.Email.Trim().ToLowerInvariant();
+            if (_db.Users.Any(u => u.Email == normalizedEmail))
+            {
+                continue;
+            }
+
+            demo.Email = normalizedEmail;
+            demo.CreatedAt = DateTime.UtcNow;
+            demo.LastLoginAt = DateTime.UtcNow;
+            _db.Users.Add(demo);
+            addedAny = true;
+        }
+
+        if (addedAny)
+        {
+            _db.SaveChanges();
+        }
+    }
+
+    private void NotifyStateChanged() => OnChange?.Invoke();
+}

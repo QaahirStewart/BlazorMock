@@ -148,8 +148,6 @@ D:\BlazorMock\obj\Release\net10.0\compressed\gsmh2u9fd1-{0}-ht7m7dl4ng-ht7m7dl4n
 D:\BlazorMock\obj\Release\net10.0\compressed\xllhbke8ux-{0}-13ja33weya-13ja33weya.gz
 D:\BlazorMock\obj\Release\net10.0\compressed\4x8r1evkwi-{0}-911ktl676v-911ktl676v.gz
 D:\BlazorMock\obj\Release\net10.0\compressed\o361oar9ib-{0}-txnlep1bxc-txnlep1bxc.gz
-D:\BlazorMock\obj\Release\net10.0\compressed\nu1bq6c1i8-{0}-wrzktrlbxx-wrzktrlbxx.gz
-D:\BlazorMock\obj\Release\net10.0\compressed\x1qqiv6elq-{0}-wrzktrlbxx-wrzktrlbxx.gz
 D:\BlazorMock\obj\Release\net10.0\staticwebassets.build.json
 D:\BlazorMock\obj\Release\net10.0\staticwebassets.build.json.cache
 D:\BlazorMock\obj\Release\net10.0\staticwebassets.development.json
@@ -161,4 +159,6 @@ D:\BlazorMock\obj\Release\net10.0\refint\BlazorMock.dll
 D:\BlazorMock\obj\Release\net10.0\BlazorMock.pdb
 D:\BlazorMock\obj\Release\net10.0\BlazorMock.genruntimeconfig.cache
 D:\BlazorMock\obj\Release\net10.0\ref\BlazorMock.dll
-D:\BlazorMock\obj\Release\net10.0\compressed\gcy26kcw0l-{0}-jh7asvawe6-jh7asvawe6.gz
+D:\BlazorMock\obj\Release\net10.0\compressed\gcy26kcw0l-{0}-why8r0o1sk-why8r0o1sk.gz
+D:\BlazorMock\obj\Release\net10.0\compressed\nu1bq6c1i8-{0}-0tuox0i5a8-0tuox0i5a8.gz
+D:\BlazorMock\obj\Release\net10.0\compressed\x1qqiv6elq-{0}-0tuox0i5a8-0tuox0i5a8.gz

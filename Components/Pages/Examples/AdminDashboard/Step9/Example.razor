@@ -13,33 +13,26 @@
         </a>
 
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            🔐 Step 9: Admin-only /admin/dashboard (real user management)
+            🚪 Step 9: Build the Admin Control Center
         </h1>
 
         <p class="text-xl text-gray-600 mb-8">
-            Mirror the production admin dashboard from <code>DashboardDemo</code>: block non-admins up front, surface
-            org-wide
-            stats from <code>IUserAuthService</code>, and reuse the responsive user-management UI (mobile cards +
-            desktop table)
-            so the tutorial screenshots match the live experience.
+            Create a special dashboard page that only admins can access. Here they can see all users, manage their
+            roles, and view important organization stats. It's like the command center of your app!
         </p>
 
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Build</h2>
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Guard <code>/admin/dashboard</code> with the same <code>IUserAuthService</code> role check the demo
-                    uses.</li>
-                <li>Drive KPI tiles, cards, and tables from <code>Auth.AllUsers</code> so no extra EF queries are
-                    required.</li>
-                <li>Render both the mobile card stack (<code>md:hidden</code>) and the desktop data table
-                    (<code>hidden md:block</code>).</li>
-                <li>Hook the role dropdown + delete button into <code>Auth.AdminUpdateUserRole</code> /
-                    <code>Auth.AdminDeleteUser</code>.</li>
+                <li>A protected <code>/admin/dashboard</code> page that only admins can see</li>
+                <li>Organization-wide statistics showing total users, paid accounts, and activity</li>
+                <li>A user management table where admins can view all users</li>
+                <li>Role management controls to upgrade/downgrade users or delete accounts</li>
             </ul>
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Role-gated routes, deterministic sample data, responsive admin
-                    layouts, and service-backed actions.
+                    <strong>💡 What You'll Use:</strong> Admin-only routes, role protection, user management, responsive
+                    tables
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
@@ -59,160 +52,269 @@
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample component: AdminDashboard.razor</h2>
             <p class="text-sm text-gray-600 mb-4">
-                These snippets are copied directly from
-                <code>Components/Pages/Demo/DashboardDemo/AdminDashboard.razor</code>.
-                Keep them HTML-encoded (double <code>&#64;</code>, <code>&lt;</code> entities) so Razor doesn’t parse
-                them inside the docs.
+                This is the exact <code>Components/Pages/Admin/AdminDashboard.razor</code> file you add to your clean
+                tutorial project. Keep it HTML-encoded (double <code>&#64;</code>, <code>&lt;</code> entities) so Razor
+                doesn’t parse it inside the docs, then run a quick find/replace (<code>&#64;&#64;</code> →
+                <code>&#64;</code>)
+                after pasting.
             </p>
 
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
-                <div class="text-xs text-gray-500 mb-1">Role gate + lockout panel</div>
-                <p class="text-xs text-gray-600 mb-2">Non-admins immediately see this card with CTAs.</p>
-                <pre data-code-title="AdminDashboard.razor — guard"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@if (Auth.CurrentUser is null || Auth.CurrentUser.Role != &quot;Admin&quot;)
+                <div class="text-xs text-gray-500 mb-1">Components/Pages/Admin/AdminDashboard.razor</div>
+                <p class="text-xs text-gray-600 mb-2">Paste this entire file into your blank AdminDashboard app so
+                    the guard, KPIs, mobile cards, and desktop table light up instantly.</p>
+                <pre data-code-title="AdminDashboard.razor (full file)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page &quot;/admin/dashboard&quot;
+@@rendermode InteractiveServer
+
+&lt;PageTitle&gt;Admin Dashboard&lt;/PageTitle&gt;
+
+@@if (Auth.CurrentUser is null || Auth.CurrentUser.Role != &quot;Admin&quot;)
 {
     &lt;div class=&quot;bg-gray-50 py-12 rounded-3xl&quot;&gt;
         &lt;div class=&quot;max-w-md mx-auto px-4&quot;&gt;
             &lt;div class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-8 text-center&quot;&gt;
                 &lt;div class=&quot;h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4&quot;&gt;
-                    &lt;svg class=&quot;w-8 h-8 text-red-600&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;...&lt;/svg&gt;
+                    &lt;svg class=&quot;w-8 h-8 text-red-600&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;
+                        &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot;
+                            d=&quot;M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z&quot; /&gt;
+                    &lt;/svg&gt;
                 &lt;/div&gt;
                 &lt;h2 class=&quot;text-2xl font-bold text-gray-900 mb-2&quot;&gt;Admin Access Required&lt;/h2&gt;
                 &lt;p class=&quot;text-gray-600 mb-6&quot;&gt;You need admin privileges to access this page.&lt;/p&gt;
-                &lt;a href=&quot;/signin&quot; class=&quot;block w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg&quot;&gt;Sign In&lt;/a&gt;
-                &lt;a href=&quot;/&quot; class=&quot;block w-full px-6 py-3 bg-white border-2 border-gray-200 rounded-lg&quot;&gt;Go Home&lt;/a&gt;
+                &lt;div class=&quot;space-y-3&quot;&gt;
+                    &lt;a href=&quot;/signin&quot;
+                        class=&quot;block w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-center&quot;&gt;
+                        Sign In
+                    &lt;/a&gt;
+                    &lt;a href=&quot;/&quot;
+                        class=&quot;block w-full px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium border-2 border-gray-200 rounded-lg transition-colors text-center&quot;&gt;
+                        Go Home
+                    &lt;/a&gt;
+                &lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 }
 else
 {
-    &lt;!-- Admin shell --&gt;
+    &lt;div class=&quot;min-h-screen bg-gray-50 py-12&quot;&gt;
+        &lt;div class=&quot;max-w-7xl mx-auto px-4 sm:px-6 lg:px-8&quot;&gt;
+            &lt;!-- Header --&gt;
+            &lt;div class=&quot;text-center mb-8&quot;&gt;
+                &lt;h1 class=&quot;text-4xl font-bold text-gray-900 mb-2&quot;&gt;Admin Dashboard&lt;/h1&gt;
+                &lt;p class=&quot;text-lg text-gray-600&quot;&gt;Manage all user accounts and system settings&lt;/p&gt;
+            &lt;/div&gt;
+
+            &lt;!-- Stats Cards --&gt;
+            &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8&quot;&gt;
+                &lt;!-- Total Users --&gt;
+                &lt;div class=&quot;bg-white rounded-xl border border-gray-200 p-6&quot;&gt;
+                    &lt;div class=&quot;text-sm font-medium text-gray-500 uppercase tracking-wide mb-2&quot;&gt;TOTAL USERS&lt;/div&gt;
+                    &lt;div class=&quot;text-3xl font-bold text-gray-900&quot;&gt;@@Auth.AllUsers.Count&lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Free Users --&gt;
+                &lt;div class=&quot;bg-white rounded-xl border border-gray-200 p-6&quot;&gt;
+                    &lt;div class=&quot;text-sm font-medium text-gray-500 uppercase tracking-wide mb-2&quot;&gt;FREE USERS&lt;/div&gt;
+                    &lt;div class=&quot;text-3xl font-bold text-gray-900&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Free&quot;)&lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Paid Users --&gt;
+                &lt;div class=&quot;bg-white rounded-xl border border-gray-200 p-6&quot;&gt;
+                    &lt;div class=&quot;text-sm font-medium text-gray-500 uppercase tracking-wide mb-2&quot;&gt;PAID USERS&lt;/div&gt;
+                    &lt;div class=&quot;text-3xl font-bold text-purple-600&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Paid&quot;)&lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Admins --&gt;
+                &lt;div class=&quot;bg-white rounded-xl border border-gray-200 p-6&quot;&gt;
+                    &lt;div class=&quot;text-sm font-medium text-gray-500 uppercase tracking-wide mb-2&quot;&gt;ADMINS&lt;/div&gt;
+                    &lt;div class=&quot;text-3xl font-bold text-red-600&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Admin&quot;)&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;!-- Users Section --&gt;
+            &lt;div class=&quot;mb-6&quot;&gt;
+                &lt;h2 class=&quot;text-2xl font-bold text-gray-900 mb-4&quot;&gt;All Users&lt;/h2&gt;
+            &lt;/div&gt;
+
+            &lt;!-- Mobile: Card list --&gt;
+            &lt;div class=&quot;space-y-3 md:hidden mb-8&quot;&gt;
+                @@foreach (var user in Auth.AllUsers.OrderBy(u =&gt; u.Id))
+                {
+                    &lt;div
+                        class=&quot;border-2 border-gray-200 bg-white rounded-lg overflow-hidden hover:border-blue-400 hover:shadow-lg transition-all duration-200&quot;&gt;
+                        &lt;!-- Header --&gt;
+                        &lt;div class=&quot;px-4 pt-4 pb-3 border-b border-gray-100&quot;&gt;
+                            &lt;div class=&quot;flex items-center gap-3 mb-2&quot;&gt;
+                                &lt;div class=&quot;h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center shrink-0&quot;&gt;
+                                    &lt;svg class=&quot;h-6 w-6 text-gray-400&quot; fill=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;
+                                        &lt;path
+                                            d=&quot;M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z&quot; /&gt;
+                                    &lt;/svg&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;min-w-0&quot;&gt;
+                                    &lt;div class=&quot;text-base font-medium text-gray-900&quot;&gt;@@user.FullName&lt;/div&gt;
+                                    &lt;div class=&quot;text-xs text-gray-500 truncate&quot;&gt;@@user.Email&lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+
+                        &lt;!-- Details --&gt;
+                        &lt;div class=&quot;px-4 py-3 bg-gray-50 space-y-2&quot;&gt;
+                            &lt;div class=&quot;flex items-center gap-2 text-xs&quot;&gt;
+                                &lt;span class=&quot;text-gray-500 w-20&quot;&gt;Created&lt;/span&gt;
+                                &lt;span class=&quot;text-gray-900 font-medium&quot;&gt;@@user.CreatedAt.ToString(&quot;MMM dd, yyyy&quot;)&lt;/span&gt;
+                            &lt;/div&gt;
+                            &lt;div class=&quot;flex items-center gap-2 text-xs&quot;&gt;
+                                &lt;span class=&quot;text-gray-500 w-20&quot;&gt;Last Login&lt;/span&gt;
+                                &lt;span class=&quot;text-gray-900 font-medium&quot;&gt;@@user.LastLoginAt.ToString(&quot;MMM dd, h:mm tt&quot;)&lt;/span&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+
+                        &lt;!-- Actions --&gt;
+                        &lt;div class=&quot;px-4 py-3 flex flex-col gap-2&quot;&gt;
+                            &lt;select @@onchange=&quot;@@(e =&gt; UpdateUserRole(user.Id, e.Value?.ToString() ?? &quot;Free&quot;))&quot;
+                                class=&quot;@@GetRoleSelectClass(user.Role) text-sm font-medium px-3 py-2 rounded-md focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer w-full&quot;&gt;
+                                &lt;option value=&quot;Paid&quot; selected=&quot;@@(user.Role == &quot;Paid&quot;)&quot; class=&quot;bg-white text-purple-700&quot;&gt;Paid
+                                &lt;/option&gt;
+                                &lt;option value=&quot;Free&quot; selected=&quot;@@(user.Role == &quot;Free&quot;)&quot; class=&quot;bg-white text-gray-700&quot;&gt;Free
+                                &lt;/option&gt;
+                                &lt;option value=&quot;Admin&quot; selected=&quot;@@(user.Role == &quot;Admin&quot;)&quot; class=&quot;bg-white text-red-700&quot;&gt;Admin
+                                &lt;/option&gt;
+                            &lt;/select&gt;
+                            @@if (user.Id == Auth.CurrentUser.Id)
+                            {
+                                &lt;span class=&quot;text-gray-500 font-medium text-sm text-center py-2&quot;&gt;You&lt;/span&gt;
+                            }
+                            else
+                            {
+                                &lt;button @@onclick=&quot;@@(() =&gt; DeleteUser(user.Id))&quot;
+                                    class=&quot;w-full px-4 py-2 text-sm font-medium bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors&quot;&gt;
+                                    Delete
+                                &lt;/button&gt;
+                            }
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                }
+            &lt;/div&gt;
+
+            &lt;!-- Desktop/tablet: Table --&gt;
+            &lt;div
+                class=&quot;overflow-x-auto border-2 border-gray-200 bg-white rounded-lg hidden md:block   transition-all duration-200&quot;&gt;
+                &lt;table class=&quot;w-full&quot;&gt;
+                    &lt;thead class=&quot;bg-gray-50&quot;&gt;
+                        &lt;tr&gt;
+                            &lt;th class=&quot;px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider&quot;&gt;
+                                USER&lt;/th&gt;
+                            &lt;th class=&quot;px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider&quot;&gt;
+                                EMAIL&lt;/th&gt;
+                            &lt;th class=&quot;px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider&quot;&gt;
+                                ROLE&lt;/th&gt;
+                            &lt;th class=&quot;px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider&quot;&gt;
+                                CREATED&lt;/th&gt;
+                            &lt;th class=&quot;px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider&quot;&gt;
+                                LAST LOGIN&lt;/th&gt;
+                            &lt;th class=&quot;px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider&quot;&gt;
+                                ACTIONS&lt;/th&gt;
+                        &lt;/tr&gt;
+                    &lt;/thead&gt;
+                    &lt;tbody class=&quot;bg-white divide-y divide-gray-100&quot;&gt;
+                        @@foreach (var user in Auth.AllUsers.OrderBy(u =&gt; u.Id))
+                        {
+                            &lt;tr class=&quot;hover:bg-gray-50 transition-colors&quot;&gt;
+                                &lt;!-- User Avatar and Name --&gt;
+                                &lt;td class=&quot;px-6 py-4 whitespace-nowrap&quot;&gt;
+                                    &lt;div class=&quot;flex items-center&quot;&gt;
+                                        &lt;div class=&quot;h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center&quot;&gt;
+                                            &lt;svg class=&quot;h-6 w-6 text-gray-400&quot; fill=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;
+                                                &lt;path
+                                                    d=&quot;M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z&quot; /&gt;
+                                            &lt;/svg&gt;
+                                        &lt;/div&gt;
+                                        &lt;div class=&quot;ml-3&quot;&gt;
+                                            &lt;div class=&quot;text-sm font-medium text-gray-900&quot;&gt;@@user.FullName&lt;/div&gt;
+                                        &lt;/div&gt;
+                                    &lt;/div&gt;
+                                &lt;/td&gt;
+
+                                &lt;!-- Email --&gt;
+                                &lt;td class=&quot;px-6 py-4 whitespace-nowrap&quot;&gt;
+                                    &lt;div class=&quot;text-sm text-gray-900&quot;&gt;@@user.Email&lt;/div&gt;
+                                &lt;/td&gt;
+
+                                &lt;!-- Role Dropdown --&gt;
+                                &lt;td class=&quot;px-6 py-4 whitespace-nowrap&quot;&gt;
+                                    &lt;select @@onchange=&quot;@@(e =&gt; UpdateUserRole(user.Id, e.Value?.ToString() ?? &quot;Free&quot;))&quot;
+                                        class=&quot;@@GetRoleSelectClass(user.Role) text-sm font-medium px-3 py-1.5 rounded-md  cursor-pointer&quot;&gt;
+                                        &lt;option value=&quot;Paid&quot; selected=&quot;@@(user.Role == &quot;Paid&quot;)&quot; class=&quot;bg-white text-purple-700&quot;&gt;
+                                            Paid&lt;/option&gt;
+                                        &lt;option value=&quot;Free&quot; selected=&quot;@@(user.Role == &quot;Free&quot;)&quot; class=&quot;bg-white text-gray-700&quot;&gt;
+                                            Free&lt;/option&gt;
+                                        &lt;option value=&quot;Admin&quot; selected=&quot;@@(user.Role == &quot;Admin&quot;)&quot; class=&quot;bg-white text-red-700&quot;&gt;
+                                            Admin&lt;/option&gt;
+                                    &lt;/select&gt;
+                                &lt;/td&gt;
+
+                                &lt;!-- Created Date --&gt;
+                                &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-sm text-gray-900&quot;&gt;
+                                    @@user.CreatedAt.ToString(&quot;MMM dd, yyyy&quot;)
+                                &lt;/td&gt;
+
+                                &lt;!-- Last Login --&gt;
+                                &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-sm text-gray-900&quot;&gt;
+                                    @@user.LastLoginAt.ToString(&quot;MMM dd, h:mm tt&quot;)
+                                &lt;/td&gt;
+
+                                &lt;!-- Actions --&gt;
+                                &lt;td class=&quot;px-6 py-4 whitespace-nowrap text-sm&quot;&gt;
+                                    @@if (user.Id == Auth.CurrentUser.Id)
+                                    {
+                                        &lt;span class=&quot;text-gray-500 font-medium&quot;&gt;You&lt;/span&gt;
+                                    }
+                                    else
+                                    {
+                                        &lt;button @@onclick=&quot;@@(() =&gt; DeleteUser(user.Id))&quot;
+                                            class=&quot;bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition-colors&quot;&gt;
+                                            Delete
+                                        &lt;/button&gt;
+                                    }
+                                &lt;/td&gt;
+                            &lt;/tr&gt;
+                        }
+                    &lt;/tbody&gt;
+                &lt;/table&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
 }</pre>
             </div>
 
-            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
-                <div class="text-xs text-gray-500 mb-1">Header + KPI tiles</div>
-                <p class="text-xs text-gray-600 mb-2">All stats come from <code>Auth.AllUsers</code>.</p>
-                <pre data-code-title="AdminDashboard.razor — stats"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;text-center mb-8&quot;&gt;
-    &lt;h1 class=&quot;text-4xl font-bold text-gray-900 mb-2&quot;&gt;Admin Dashboard&lt;/h1&gt;
-    &lt;p class=&quot;text-lg text-gray-600&quot;&gt;Manage all user accounts and system settings&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8&quot;&gt;
-    &lt;div class=&quot;bg-white rounded-xl border border-gray-200 p-6&quot;&gt;
-        &lt;div class=&quot;text-sm font-medium text-gray-500 uppercase tracking-wide mb-2&quot;&gt;TOTAL USERS&lt;/div&gt;
-        &lt;div class=&quot;text-3xl font-bold text-gray-900&quot;&gt;@@Auth.AllUsers.Count&lt;/div&gt;
-    &lt;/div&gt;
-    &lt;div class=&quot;bg-white rounded-xl border border-gray-200 p-6&quot;&gt;
-        &lt;div class=&quot;text-sm font-medium text-gray-500 uppercase mb-2&quot;&gt;FREE USERS&lt;/div&gt;
-        &lt;div class=&quot;text-3xl font-bold text-gray-900&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Free&quot;)&lt;/div&gt;
-    &lt;/div&gt;
-    &lt;div class=&quot;bg-white rounded-xl border border-gray-200 p-6&quot;&gt;
-        &lt;div class=&quot;text-sm font-medium text-gray-500 uppercase mb-2&quot;&gt;PAID USERS&lt;/div&gt;
-        &lt;div class=&quot;text-3xl font-bold text-purple-600&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Paid&quot;)&lt;/div&gt;
-    &lt;/div&gt;
-    &lt;div class=&quot;bg-white rounded-xl border border-gray-200 p-6&quot;&gt;
-        &lt;div class=&quot;text-sm font-medium text-gray-500 uppercase mb-2&quot;&gt;ADMINS&lt;/div&gt;
-        &lt;div class=&quot;text-3xl font-bold text-red-600&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Admin&quot;)&lt;/div&gt;
-    &lt;/div&gt;
-&lt;/div&gt;</pre>
-            </div>
-
-            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
-                <div class="text-xs text-gray-500 mb-1">Mobile cards</div>
-                <p class="text-xs text-gray-600 mb-2">Shown while the desktop table is hidden.</p>
-                <pre data-code-title="AdminDashboard.razor — md:hidden list"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;space-y-3 md:hidden mb-8&quot;&gt;
-    @@foreach (var user in Auth.AllUsers.OrderBy(u =&gt; u.Id))
-    {
-        &lt;div class=&quot;border-2 border-gray-200 bg-white rounded-lg overflow-hidden&quot;&gt;
-            &lt;div class=&quot;px-4 pt-4 pb-3 border-b border-gray-100&quot;&gt;
-                &lt;div class=&quot;flex items-center gap-3 mb-2&quot;&gt;
-                    &lt;div class=&quot;h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center&quot;&gt;...&lt;/div&gt;
-                    &lt;div&gt;
-                        &lt;div class=&quot;text-base font-medium text-gray-900&quot;&gt;@@user.FullName&lt;/div&gt;
-                        &lt;div class=&quot;text-xs text-gray-500 truncate&quot;&gt;@@user.Email&lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-            &lt;div class=&quot;px-4 py-3 bg-gray-50 space-y-2 text-xs&quot;&gt;... created + last login ...&lt;/div&gt;
-            &lt;div class=&quot;px-4 py-3 flex flex-col gap-2&quot;&gt;
-                &lt;select @@onchange=&quot;@@(e =&gt; UpdateUserRole(user.Id, e.Value?.ToString() ?? &quot;Free&quot;))&quot;
-                    class=&quot;@@GetRoleSelectClass(user.Role) text-sm font-medium px-3 py-2 rounded-md&quot;&gt;...&lt;/select&gt;
-                @@if (user.Id == Auth.CurrentUser.Id)
-                {
-                    &lt;span class=&quot;text-gray-500 font-medium text-sm text-center&quot;&gt;You&lt;/span&gt;
-                }
-                else
-                {
-                    &lt;button @@onclick=&quot;@@(() =&gt; DeleteUser(user.Id))&quot;
-                            class=&quot;w-full px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg&quot;&gt;Delete&lt;/button&gt;
-                }
-            &lt;/div&gt;
-        &lt;/div&gt;
-    }
-&lt;/div&gt;</pre>
-            </div>
-
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                <div class="text-xs text-gray-500 mb-1">Desktop/tablet table</div>
-                <p class="text-xs text-gray-600 mb-2">Exact markup used in the demo.</p>
-                <pre data-code-title="AdminDashboard.razor — hidden md:block table"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class=&quot;overflow-x-auto border-2 border-gray-200 bg-white rounded-lg hidden md:block&quot;&gt;
-    &lt;table class=&quot;w-full&quot;&gt;
-        &lt;thead class=&quot;bg-gray-50&quot;&gt;... headings ...&lt;/thead&gt;
-        &lt;tbody class=&quot;bg-white divide-y divide-gray-100&quot;&gt;
-            @@foreach (var user in Auth.AllUsers.OrderBy(u =&gt; u.Id))
-            {
-                &lt;tr class=&quot;hover:bg-gray-50 transition-colors&quot;&gt;
-                    &lt;td class=&quot;px-6 py-4&quot;&gt;... avatar + @@user.FullName ...&lt;/td&gt;
-                    &lt;td class=&quot;px-6 py-4&quot;&gt;@@user.Email&lt;/td&gt;
-                    &lt;td class=&quot;px-6 py-4&quot;&gt;
-                        &lt;select @@onchange=&quot;@@(e =&gt; UpdateUserRole(user.Id, e.Value?.ToString() ?? &quot;Free&quot;))&quot;
-                                class=&quot;@@GetRoleSelectClass(user.Role) text-sm font-medium px-3 py-1.5 rounded-md&quot;&gt;...&lt;/select&gt;
-                    &lt;/td&gt;
-                    &lt;td class=&quot;px-6 py-4 text-sm text-gray-900&quot;&gt;@@user.CreatedAt.ToString(&quot;MMM dd, yyyy&quot;)&lt;/td&gt;
-                    &lt;td class=&quot;px-6 py-4 text-sm text-gray-900&quot;&gt;@@user.LastLoginAt.ToString(&quot;MMM dd, h:mm tt&quot;)&lt;/td&gt;
-                    &lt;td class=&quot;px-6 py-4 text-sm&quot;&gt;
-                        @@if (user.Id == Auth.CurrentUser.Id)
-                        {
-                            &lt;span class=&quot;text-gray-500 font-medium&quot;&gt;You&lt;/span&gt;
-                        }
-                        else
-                        {
-                            &lt;button @@onclick=&quot;@@(() =&gt; DeleteUser(user.Id))&quot;
-                                    class=&quot;bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg&quot;&gt;Delete&lt;/button&gt;
-                        }
-                    &lt;/td&gt;
-                &lt;/tr&gt;
-            }
-        &lt;/tbody&gt;
-    &lt;/table&gt;
-&lt;/div&gt;</pre>
-            </div>
+                <div class="text-xs text-gray-500 mb-1">Components/Pages/Admin/AdminDashboard.razor.cs
+                </div>
+                <p class="text-xs text-gray-600 mb-2">Bring the full code-behind so the selects and delete button call
+                    the right service methods.</p>
+                <pre data-code-title="AdminDashboard.razor.cs (full file)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
+using AdminDashboard.Services;
 
-            <p class="text-xs text-gray-600 mt-4">
-                All data comes from seeded accounts so docs, QA, and the live demo stay perfectly in sync—don’t
-                introduce random datasets here.
-            </p>
+namespace AdminDashboard.Components.Pages.Admin;
 
-            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mt-6">
-                <div class="text-xs text-gray-500 mb-1">AdminDashboard.razor.cs — helper methods</div>
-                <p class="text-xs text-gray-600 mb-2">Role updates/deletes live in <code>IUserAuthService</code>.</p>
-                <pre data-code-title="Code-behind"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">public partial class AdminDashboard
+public partial class AdminDashboard
 {
     [Inject] private IUserAuthService Auth { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
 
-    private string GetRoleSelectClass(string role) => role switch
+    private string GetRoleSelectClass(string role)
     {
-        &quot;Admin&quot; =&gt; &quot;bg-gray-100 text-red-700 border border-gray-300&quot;,
-        &quot;Paid&quot; =&gt; &quot;bg-gray-100 text-purple-700 border border-gray-300&quot;,
-        _ =&gt; &quot;bg-gray-100 text-gray-800 border border-gray-300&quot;
-    };
+        return role switch
+        {
+            &quot;Admin&quot; =&gt; &quot;bg-gray-100 text-red-700 border border-gray-300&quot;,
+            &quot;Paid&quot; =&gt; &quot;bg-gray-100 text-purple-700 border border-gray-300&quot;,
+            _ =&gt; &quot;bg-gray-100 text-gray-800 border border-gray-300&quot;
+        };
+    }
 
     private void UpdateUserRole(int userId, string newRole)
     {
@@ -226,6 +328,274 @@ else
         StateHasChanged();
     }
 }</pre>
+                <p class="text-[11px] text-gray-600 mt-2">⚠️ Update the <code>AdminDashboard</code> namespace and make
+                    sure every shared <code>@@using</code> points at the root via
+                    <code>global::YourRootNamespace...</code>
+                    so Razor never confuses the namespace with the <code>AdminDashboard</code> component under
+                    <code>AdminDashboard.Components.Pages.Admin</code>. This prevents the CS0138/CS0426 collision that
+                    shows up in clean apps.
+                </p>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-3 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Components/_Imports.razor</div>
+                    <p class="text-[11px] text-gray-600 mb-2">Keep the shared imports qualified exactly like this (swap
+                        <code>AdminDashboard</code> for your actual root namespace—inside this repo it is
+                        <code>BlazorMock</code>):
+                    </p>
+                    <pre data-code-title="Shared imports"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@using System.Net.Http
+@@using System.Net.Http.Json
+@@using Microsoft.AspNetCore.Components.Forms
+@@using Microsoft.AspNetCore.Components.Routing
+@@using Microsoft.AspNetCore.Components.Web
+@@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@@using Microsoft.AspNetCore.Components.Web.Virtualization
+@@using Microsoft.JSInterop
+@@using global::AdminDashboard
+@@using global::AdminDashboard.Components
+@@using global::AdminDashboard.Components.Layout
+@@using global::AdminDashboard.Services
+@@using global::AdminDashboard.Models
+@@using System.ComponentModel.DataAnnotations</pre>
+                    <p class="text-[11px] text-gray-600 mt-2">Only the <code>global::</code> prefix is required—the
+                        namespace segment should match your project name.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🧱 Auth service updates for Step 9</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Step 5 introduced the EF-backed <code>DemoUserAuthService</code>. Extend it with the admin helpers
+                before
+                compiling <code>AdminDashboard.razor</code> so the guard, KPI tiles, and table can read from
+                <code>Auth.AllUsers</code> and call <code>AdminUpdateUserRole</code> / <code>AdminDeleteUser</code>.
+            </p>
+
+            <div class="space-y-4">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Services/IUserAuthService.cs</div>
+                    <pre data-code-title="IUserAuthService.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using System.Collections.Generic;
+            using AdminDashboard.Models;
+
+            namespace AdminDashboard.Services;
+
+            public interface IUserAuthService
+            {
+                User? CurrentUser { get; }
+                IReadOnlyList&lt;User&gt; AllUsers { get; }
+                bool IsAdmin { get; }
+                bool SignUp(string email, string password, string fullName);
+                bool SignIn(string email, string password);
+                bool SignInByEmail(string email);
+                void SignOut();
+                void UpdateProfile(string fullName, string? profilePictureUrl);
+                void UpgradeToRole(string role);
+                void AdminUpdateUserRole(int userId, string newRole);
+                void AdminDeleteUser(int userId);
+            }</pre>
+                </div>
+
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                    <div class="text-xs text-gray-500 mb-1">Services/DemoUserAuthService.cs</div>
+                    <p class="text-xs text-gray-600 mb-2">EF Core implementation that now exposes seeded users and
+                        admin helpers. Replace your Step 8 version with this file if you need the new methods.</p>
+                    <pre data-code-title="DemoUserAuthService.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using System;
+            using System.Collections.Generic;
+            using System.Linq;
+            using AdminDashboard.Data;
+            using AdminDashboard.Models;
+
+            namespace AdminDashboard.Services;
+
+            public class DemoUserAuthService : IUserAuthService
+            {
+                private readonly AppDbContext _db;
+                private User? _currentUser;
+
+                public DemoUserAuthService(AppDbContext db)
+                {
+                    _db = db;
+                    EnsureDemoUsers();
+                }
+
+                public User? CurrentUser =&gt; _currentUser;
+                public IReadOnlyList&lt;User&gt; AllUsers =&gt; _db.Users.OrderBy(u =&gt; u.Id).ToList();
+                public bool IsAdmin =&gt; _currentUser?.Role == "Admin";
+
+                public bool SignUp(string email, string password, string fullName)
+                {
+                    var normalizedEmail = email.Trim().ToLowerInvariant();
+
+                    if (_db.Users.Any(u =&gt; u.Email == normalizedEmail))
+                    {
+                        return false;
+                    }
+
+                    var user = new User
+                    {
+                        Email = normalizedEmail,
+                        PasswordHash = password,
+                        FullName = string.IsNullOrWhiteSpace(fullName) ? "New User" : fullName.Trim(),
+                        Role = "Free",
+                        CreatedAt = DateTime.UtcNow,
+                        LastLoginAt = DateTime.UtcNow
+                    };
+
+                    _db.Users.Add(user);
+                    _db.SaveChanges();
+                    _currentUser = user;
+                    return true;
+                }
+
+                public bool SignIn(string email, string password)
+                {
+                    var normalizedEmail = email.Trim().ToLowerInvariant();
+                    var user = _db.Users.FirstOrDefault(u =&gt; u.Email == normalizedEmail && u.PasswordHash == password);
+
+                    if (user == null)
+                    {
+                        return false;
+                    }
+
+                    user.LastLoginAt = DateTime.UtcNow;
+                    _db.SaveChanges();
+                    _currentUser = user;
+                    return true;
+                }
+
+                public bool SignInByEmail(string email)
+                {
+                    var normalizedEmail = email.Trim().ToLowerInvariant();
+                    var user = _db.Users.FirstOrDefault(u =&gt; u.Email == normalizedEmail);
+
+                    if (user == null)
+                    {
+                        return false;
+                    }
+
+                    user.LastLoginAt = DateTime.UtcNow;
+                    _db.SaveChanges();
+                    _currentUser = user;
+                    return true;
+                }
+
+                public void SignOut() =&gt; _currentUser = null;
+
+                public void UpdateProfile(string fullName, string? profilePictureUrl)
+                {
+                    if (_currentUser == null)
+                    {
+                        return;
+                    }
+
+                    var user = _db.Users.FirstOrDefault(u =&gt; u.Id == _currentUser.Id);
+                    if (user == null)
+                    {
+                        return;
+                    }
+
+                    user.FullName = string.IsNullOrWhiteSpace(fullName) ? user.FullName : fullName.Trim();
+                    user.ProfilePictureUrl = string.IsNullOrWhiteSpace(profilePictureUrl) ? null : profilePictureUrl.Trim();
+                    _db.SaveChanges();
+                    _currentUser = user;
+                }
+
+                public void UpgradeToRole(string role)
+                {
+                    if (_currentUser == null)
+                    {
+                        return;
+                    }
+
+                    var user = _db.Users.FirstOrDefault(u =&gt; u.Id == _currentUser.Id);
+                    if (user == null)
+                    {
+                        return;
+                    }
+
+                    user.Role = role;
+                    _db.SaveChanges();
+                    _currentUser = user;
+                }
+
+                public void AdminUpdateUserRole(int userId, string newRole)
+                {
+                    if (!IsAdmin)
+                    {
+                        return;
+                    }
+
+                    var user = _db.Users.FirstOrDefault(u =&gt; u.Id == userId);
+                    if (user == null)
+                    {
+                        return;
+                    }
+
+                    user.Role = newRole;
+
+                    if (_currentUser?.Id == user.Id)
+                    {
+                        _currentUser = user;
+                    }
+
+                    _db.SaveChanges();
+                }
+
+                public void AdminDeleteUser(int userId)
+                {
+                    if (!IsAdmin)
+                    {
+                        return;
+                    }
+
+                    var user = _db.Users.FirstOrDefault(u =&gt; u.Id == userId);
+
+                    if (user == null || (_currentUser?.Id == user.Id))
+                    {
+                        return;
+                    }
+
+                    _db.Users.Remove(user);
+                    _db.SaveChanges();
+                }
+
+                private void EnsureDemoUsers()
+                {
+                    var demoUsers = new[]
+                    {
+                        new User { Email = "admin@demo.com", PasswordHash = "admin123", FullName = "Admin User", Role = "Admin" },
+                        new User { Email = "paid@demo.com", PasswordHash = "paid123", FullName = "Paid User", Role = "Paid" },
+                        new User { Email = "user@demo.com", PasswordHash = "user123", FullName = "Free User", Role = "Free" }
+                    };
+
+                    var addedAny = false;
+
+                    foreach (var demo in demoUsers)
+                    {
+                        var normalizedEmail = demo.Email.Trim().ToLowerInvariant();
+                        if (_db.Users.Any(u =&gt; u.Email == normalizedEmail))
+                        {
+                            continue;
+                        }
+
+                        demo.Email = normalizedEmail;
+                        demo.CreatedAt = DateTime.UtcNow;
+                        demo.LastLoginAt = DateTime.UtcNow;
+                        _db.Users.Add(demo);
+                        addedAny = true;
+                    }
+
+                    if (addedAny)
+                    {
+                        _db.SaveChanges();
+                    }
+                }
+            }</pre>
+                    <p class="text-[11px] text-gray-600 mt-2">🔐 Production apps should hash passwords and enforce
+                        authorization policies—the plain EF service keeps this tutorial copy/paste friendly.</p>
+                </div>
             </div>
         </div>
 
@@ -249,7 +619,8 @@ else
                             <p class="text-sm font-semibold text-blue-900 mb-2">Match responsive behavior</p>
                             <p class="text-xs text-blue-800">Always keep the
                                 <code>md:hidden</code>/<code>hidden md:block</code> pairing so cards and tables swap
-                                correctly.</p>
+                                correctly.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -257,7 +628,8 @@ else
                     <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
                     <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
                         <li>Lockout showing for Admin? Double-check your seeded account still has
-                            <code>Role == "Admin"</code>.</li>
+                            <code>Role == "Admin"</code>.
+                        </li>
                         <li>Dropdown styling missing? Ensure <code>@@GetRoleSelectClass</code> is used on both selects
                             (mobile + desktop).</li>
                         <li>Delete button showing for yourself? Keep the <code>user.Id == Auth.CurrentUser.Id</code>
@@ -270,16 +642,21 @@ else
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
-                <li><strong>Copy the canonical file:</strong> Start from <code>DashboardDemo/AdminDashboard.razor</code>
-                    so markup, classes, and layout match.</li>
+                <li><strong>Copy the canonical file:</strong> Drop the provided
+                    <code>Components/Pages/Admin/AdminDashboard.razor</code> file into your clean project so markup,
+                    classes, and layout match the live demo.
+                </li>
                 <li><strong>Add the guard first:</strong> Keep the unauthorized card exactly as-is before the
-                    <code>else</code> containing the dashboard.</li>
+                    <code>else</code> containing the dashboard.
+                </li>
                 <li><strong>Wire up statistics:</strong> Use <code>Auth.AllUsers</code> counts for the KPI grid—never
                     hard-code numbers.</li>
                 <li><strong>Bring both user views:</strong> Maintain the <code>md:hidden</code> cards +
-                    <code>hidden md:block</code> table pair for responsive parity.</li>
+                    <code>hidden md:block</code> table pair for responsive parity.
+                </li>
                 <li><strong>Reuse code-behind helpers:</strong> Call <code>Auth.AdminUpdateUserRole</code> /
-                    <code>Auth.AdminDeleteUser</code> and finish with <code>StateHasChanged()</code>.</li>
+                    <code>Auth.AdminDeleteUser</code> and finish with <code>StateHasChanged()</code>.
+                </li>
             </ol>
         </div>
 

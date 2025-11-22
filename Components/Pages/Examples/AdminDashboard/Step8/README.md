@@ -2,7 +2,7 @@
 
 ## Overview
 
-This step teaches how the production `/analytics` page gets its visual punch—inline width bars, responsive traffic rows, and gradient CTAs—without pulling in any chart libraries. The tutorial page now quotes the exact markup from `DashboardDemo` so screenshots and copy stay in lockstep with the live demo.
+Keep the Step 7 layout exactly as-is and focus on the CSS-only touches that make the paid analytics stack feel alive: inline width bars, responsive traffic rows, and the gradient upgrade CTA. You edit the existing sections in `Analytics.razor`; no new data or markup layers are introduced.
 
 ## Files in This Folder
 
@@ -15,10 +15,10 @@ This step teaches how the production `/analytics` page gets its visual punch—i
 
 ## What Students Learn
 
-1. How to map static percentage values to inline `style="width: 48%"` bars while keeping everything else in Tailwind classes.
-2. How the shared `trafficSources` list from `AnalyticsBase` powers both the desktop rows (`hidden sm:block`) and mobile cards (`sm:hidden`).
-3. How to keep visuals accessible with labels, emoji icons, and textual deltas.
-4. How to leave the locked gradient CTA in place for Free users so the visuals reinforce the upgrade path.
+1. How to convert the Step 7 premium cards into inline-width bar tiles using literal percentage strings.
+2. How the shared `trafficSources` list drives both the desktop rows (`hidden sm:block`) and mobile cards (`sm:hidden`) with matching bars.
+3. How to keep visuals accessible with labels, emoji icons, and textual deltas while staying deterministic.
+4. How to reuse the same locked gradient CTA for Free users so UI polish reinforces the upgrade path.
 
 ## Key Concepts
 
@@ -31,7 +31,7 @@ This step teaches how the production `/analytics` page gets its visual punch—i
 
 - Tutorial page inherits `ExampleBase` in the `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step8` namespace.
 - Uses `ILearningProgressService` to track completion for the `admin-dashboard` domain, step `8`.
-- References the same markup + helper classes that live in `Components/Pages/Demo/DashboardDemo/Analytics.razor`.
+- Reuses the Step 7 markup (paid cards + traffic list + locked CTA) and simply calls out the CSS adjustments that keep it visually rich without JS libraries.
 
 ## Prerequisites
 
@@ -45,7 +45,7 @@ This step teaches how the production `/analytics` page gets its visual punch—i
 ## Code Structure
 
 - `ExampleBase` handles completion tracking and JS enhancements.
-- `Example.razor` focuses on two HTML-encoded snippets (advanced cards + traffic list) plus implementation notes and live demo screenshots.
+- `Example.razor` zooms in on the sections you already pasted in Step 7 (advanced cards, traffic list, locked CTA) and explains which Tailwind classes + inline styles create the visuals.
 
 ## Common Issues & Solutions
 

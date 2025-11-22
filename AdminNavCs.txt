@@ -1,0 +1,58 @@
+using Microsoft.AspNetCore.Components;
+using AdminDashboard.Services;
+
+namespace AdminDashboard.Components.Layout;
+
+public partial class AdminNav : ComponentBase, IDisposable
+{
+    [Inject] private IUserAuthService Auth { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private bool isProfileMenuOpen;
+    private bool isMobileMenuOpen;
+
+    protected override void OnInitialized()
+    {
+        Auth.OnChange += OnAuthStateChanged;
+    }
+
+    public void Dispose()
+    {
+        Auth.OnChange -= OnAuthStateChanged;
+    }
+
+    private void OnAuthStateChanged() => _ = InvokeAsync(StateHasChanged);
+
+    private void ToggleProfileMenu() => isProfileMenuOpen = !isProfileMenuOpen;
+    private void ToggleMobileMenu() => isMobileMenuOpen = !isMobileMenuOpen;
+    private void CloseMobileMenu() => isMobileMenuOpen = false;
+
+    private void HandleSignOut()
+    {
+        Auth.SignOut();
+        isProfileMenuOpen = false;
+        isMobileMenuOpen = false;
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+
+    private string GetUserInitials()
+    {
+        if (Auth.CurrentUser == null) return "?";
+        var names = Auth.CurrentUser.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (names.Length >= 2)
+        {
+            return $"{names[0][0]}{names[1][0]}".ToUpperInvariant();
+        }
+
+        return Auth.CurrentUser.FullName.Length > 0
+            ? Auth.CurrentUser.FullName[0].ToString().ToUpperInvariant()
+            : "?";
+    }
+
+    private string GetUserAvatarColor()
+    {
+        if (Auth.CurrentUser == null) return "bg-slate-500";
+        var colors = new[] { "bg-indigo-500", "bg-blue-500", "bg-emerald-500", "bg-rose-500", "bg-amber-500" };
+        return colors[Math.Abs(Auth.CurrentUser.Email.GetHashCode()) % colors.Length];
+    }
+}

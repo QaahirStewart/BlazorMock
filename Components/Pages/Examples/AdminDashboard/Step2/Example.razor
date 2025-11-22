@@ -14,34 +14,34 @@
 
         <!-- Title -->
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            🎯 Step 2: Minimal Auth Model &amp; DbContext
+            📦 Step 2: Store User Accounts in a Database
         </h1>
 
         <!-- Description -->
         <p class="text-xl text-gray-600 mb-8">
-            Define a teaching-only <code>User</code> entity and <code>AppDbContext</code> so your Admin Dashboard can
-            persist users with Entity Framework Core.
+            Let's set up a simple database to store user information. Think of it like creating a filing cabinet where
+            your app can save and find user accounts.
         </p>
 
-        <!-- What You'll Learn Section (Shared gradient) -->
+        <!-- What You'll Build Section (Shared gradient) -->
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Build</h2>
 
             <p class="text-gray-700 mb-4 text-sm sm:text-base">
-                In this step you model the core <code>User</code> concept for the Admin Dashboard and wire up a minimal
-                <code>AppDbContext</code> using EF Core so later steps can create, query, and update users.
+                In this step, you'll create a simple <code>User</code> model and connect it to a database so your app
+                can save and retrieve user information.
             </p>
 
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Create a simple <code>User</code> entity tailored for the tutorial.</li>
-                <li>Define an <code>AppDbContext</code> with a <code>DbSet&lt;User&gt;</code>.</li>
-                <li>Configure EF Core with a connection string in <code>appsettings.json</code>.</li>
-                <li>Add and apply the first migration to create the database schema.</li>
+                <li>A <code>User</code> class with all the fields you need (email, name, role, etc.)</li>
+                <li>A database setup that can store your users</li>
+                <li>Connection between your app and the database</li>
+                <li>Your first database migration (like a blueprint for your data)</li>
             </ul>
 
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> EF Core DbContext, DbSet&lt;T&gt;, connection strings, migrations
+                    <strong>💡 What You'll Use:</strong> Entity Framework Core (database tool), SQLite (simple database file)
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
@@ -199,72 +199,74 @@ dotnet tool install --global dotnet-ef</pre>
                     <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
                     <div class="space-y-4">
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Keep the User model focused</p>
-                            <p class="text-xs text-blue-800">For a teaching app, you don't need every possible field.
-                                Start with just what the early steps require (email, password hash, display name,
-                                role). You can always extend the model in later steps as the dashboard grows.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Start simple with your User model</p>
+                            <p class="text-xs text-blue-800">You don't need to add every possible field right now. Just
+                                include what the early steps need: email, password, name, and role. You can always add
+                                more fields later as your dashboard grows!</p>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Use a separate teaching database</p>
-                            <p class="text-xs text-blue-800">Point your connection string at a database dedicated to
-                                this tutorial (like <code>AdminDashboardDb</code>). That way you can drop and recreate
-                                it freely without affecting any real data on your machine.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use a practice database</p>
+                            <p class="text-xs text-blue-800">Give your database a special name like
+                                <code>AdminDashboard.db</code> so it's separate from anything else on your computer. That
+                                way you can delete it and start fresh anytime without worrying about losing real data.</p>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Let EF Core handle the schema</p>
-                            <p class="text-xs text-blue-800">Instead of manually creating tables, lean on migrations to
-                                keep your schema in sync with your C# models. It keeps the mental model simpler:
-                                "change the class, make a migration, update the database."</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Let the tools do the heavy lifting</p>
+                            <p class="text-xs text-blue-800">Instead of manually creating database tables, migrations
+                                handle it for you. Just change your C# class, create a migration, and update the database.
+                                It's like having an assistant who keeps your database in sync!</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Troubleshooting (Yellow) -->
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Common Issues</h3>
                     <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
-                        <li><strong>CS0246 namespace errors:</strong> Replace every <code>AdminDashboard</code>
-                            namespace with your project's namespace or set the <code>&lt;RootNamespace&gt;</code> in the
-                            `.csproj` to <code>AdminDashboard</code>.</li>
-                        <li>If EF Core tools are missing, install them via
-                            <code>dotnet tool install --global dotnet-ef</code>.
+                        <li><strong>Seeing namespace errors?</strong> Replace <code>AdminDashboard</code> in the code with
+                            your actual project name, or change your project's namespace to <code>AdminDashboard</code> in
+                            the .csproj file.</li>
+                        <li><strong>Missing EF Core tools?</strong> Run
+                            <code>dotnet tool install --global dotnet-ef</code> to install them.
                         </li>
-                        <li>If migrations fail, double-check your connection string and that the project builds
-                            successfully before running <code>dotnet ef migrations add InitialCreate</code>.</li>
-                        <li>If the database file isn't created, ensure you've run <code>dotnet ef database update</code>
-                            with the correct startup project selected.</li>
-                        <li><strong>Provider not configured:</strong> Install the matching provider package (e.g.,
-                            <code>Microsoft.EntityFrameworkCore.Sqlite</code>) and call <code>UseSqlite</code> or
-                            <code>UseSqlServer</code> accordingly.
+                        <li><strong>Migration command failing?</strong> Make sure your project builds successfully first
+                            (no red squiggles!), and double-check your connection string in appsettings.json.</li>
+                        <li><strong>Database file not created?</strong> Make sure you ran both commands:
+                            <code>dotnet ef migrations add InitialCreate</code> AND
+                            <code>dotnet ef database update</code>.
+                        </li>
+                        <li><strong>"Provider not configured" error?</strong> Install
+                            <code>Microsoft.EntityFrameworkCore.Sqlite</code> and make sure you called
+                            <code>UseSqlite</code> in Program.cs.
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- How to do it Section -->
+        <!-- Step-by-Step Guide Section -->
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ Step-by-Step Guide</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
                 <li>
-                    <strong>Define the User model:</strong>
-                    Add <code>Models/User.cs</code> with the properties shown above (Id, Email, PasswordHash,
-                    DisplayName, Role).
+                    <strong>Create your User class:</strong>
+                    Make a new file <code>Models/User.cs</code> with the properties shown above. This is like creating a
+                    form that defines what info you want to store about each user.
                 </li>
                 <li>
-                    <strong>Create AppDbContext:</strong>
-                    Add <code>Data/AppDbContext.cs</code> that inherits from <code>DbContext</code> and exposes
-                    <code>DbSet&lt;User&gt; Users</code>.
+                    <strong>Set up the database connection:</strong>
+                    Create <code>Data/AppDbContext.cs</code> - this is the bridge between your C# code and the database.
+                    Copy the code shown above.
                 </li>
                 <li>
-                    <strong>Configure EF Core:</strong>
-                    Add an <code>AppDbContext</code> connection string to <code>appsettings.json</code> and register the
-                    context in <code>Program.cs</code> using <code>AddDbContext&lt;AppDbContext&gt;</code>.
+                    <strong>Tell your app where the database lives:</strong>
+                    Add the connection string to <code>appsettings.json</code> and register it in <code>Program.cs</code>.
+                    This lets your app find and use the database.
                 </li>
                 <li>
-                    <strong>Run your first migration:</strong>
-                    Use <code>dotnet ef migrations add InitialCreate</code> and then
-                    <code>dotnet ef database update</code> to create the database.
+                    <strong>Create your database:</strong>
+                    Run <code>dotnet ef migrations add InitialCreate</code> (creates the plan) then
+                    <code>dotnet ef database update</code> (actually creates the database). You only do this once!
                 </li>
             </ol>
         </div>

@@ -2,16 +2,17 @@
 
 ## Overview
 
-Step 11 mirrors the real desktop header that already lives in `Components/Layout/MainLayout.razor`. Students document the
-same markup, explain how `NavLink` is styled, and show how the header reacts to auth changes so the guide stays aligned
-with the shipping experience.
+Step 11 no longer copies the nav that ships in this repo. Instead, you author a dedicated header for the fresh
+AdminDashboard app you built in Steps 1–10. The lesson walks through creating `Components/Layout/AdminNav.razor`, wiring
+it into your clean solution’s layout, and aligning every link with the routes you’ve implemented so far (`/`,
+`/signin`, `/signup`, `/profile`, `/analytics`, `/admin/dashboard`).
 
 ## Files in This Folder
 
-- `Example.razor` — Tutorial page that embeds the production header, shows HTML-encoded snippets, and links back to the
-  canonical layout file.
-- `Example.razor.cs` — Code-behind for progress tracking, code-block JS, and the live demo helpers (iframe refresh + demo
-  launch buttons).
+- `Example.razor` — Documentation page that details the new nav component, highlights the desktop UX, and shows
+  HTML-encoded snippets learners can paste into their clean project.
+- `Example.razor.cs` — Code-behind for progress tracking, code-block JS, and the live preview helpers (unchanged from
+  earlier steps).
 
 ## Routes
 
@@ -19,52 +20,59 @@ with the shipping experience.
 
 ## What Students Learn
 
-1. How the centered desktop rail in `MainLayout.razor` is built with `NavLink` + custom `ActiveClass` styling.
-2. How the right-hand column swaps between Sign In/Sign Up CTAs and the profile dropdown wired to `IUserAuthService`.
-3. Why the layout subscribes to `Auth.OnChange` so the nav responds instantly to sign in/out.
-4. How to test each persona (Free, Paid, Admin) using the quick-launch buttons and the embedded iframe.
+1. How to create a reusable `AdminNav` component with a centered desktop rail for the AdminDashboard routes.
+2. How to swap the right-hand column between CTA buttons and the persona-aware profile dropdown using
+   `IUserAuthService`.
+3. How to keep docs and the fresh project in sync by sourcing snippets from the same component file.
+4. How to update `IUserAuthService`/`DemoUserAuthService` so `IsAuthenticated` and `OnChange` exist for the nav.
+5. How to light up deterministic auth previews (via `?embed=nav`) without touching the legacy BlazorMock
+   `MainLayout.razor`.
 
 ## Key Concepts
 
-- Layout-level navigation patterns
-- `NavLink` active styling vs. `Match="NavLinkMatch.All"`
-- Auth-driven UI updates via `IUserAuthService`
-- Doc/demo parity (snippets taken directly from the real file)
+- Component-scoped navigation (no longer tied to BlazorMock’s layout)
+- `NavLink` active styling + route parity across desktop and mobile sections
+- Auth-driven UI updates through `IUserAuthService.OnChange`
+- Service contract updates (bool `IsAuthenticated`, `Action? OnChange`) so components compile cleanly
+- Documentation-first workflow: author once in `AdminNav.razor`, mirror it in the tutorial
 
 ## Architecture
 
 - Tutorial page inherits `ExampleBase` in the `AdminDashboard.Components.Pages.Examples.AdminDashboard.Step11` namespace.
-- `ExampleBase` tracks completion for `admin-dashboard` step `11`, loads the `codeblocks.js` helper, and exposes
-  `NavFrameSrc` + `Launch*Demo` helpers for the live preview.
-- Content references the actual layout at `Components/Layout/MainLayout.razor` so the navigation story stays canonical.
-- `MainLayout.razor` inspects the `?embed=nav` query string and hides the usual header/body wrappers so the Step 11
-  iframe can display only the navigation chrome.
+- Students create `Components/Layout/AdminNav.razor` plus the matching `AdminNav.razor.cs` partial class inside their
+  clean solution.
+- Their `MainLayout.razor` (in the fresh app) simply renders `<AdminNav />` and keeps the optional `?embed=nav` toggle so
+  the doc iframe can isolate the header.
+- The guidance does **not** modify this repo’s `Components/Layout/MainLayout.razor`; everything is scoped to the clean
+  AdminDashboard project.
 
 ## Prerequisites
 
-- Steps 0–10 completed (route protection from Step 10 ensures the nav links stay accurate).
+- Steps 0–10 completed (guards from Step 10 ensure `/profile`, `/analytics`, and `/admin/dashboard` respect auth state).
 
 ## Next Steps
 
-- Step 12 takes the same layout and focuses on the mobile drawer/hamburger experience.
+- Step 12 extends the same component with the mobile drawer/hamburger UX and runs the final nav polish lap.
 
 ## Code Structure
 
-- `Example.razor` — Layout-focused tutorial with HTML-encoded snippets, notes, how-to checklist, and the iframe + quick
-  launch demo block.
-- `Example.razor.cs` — Progress tracking, JS interop bootstrapping, iframe refresh logic, and helper methods that open
-  `/signin?demo=...` in a new tab.
+- `Example.razor` — Shows the `AdminNav.razor` desktop markup, embeds the live preview, and outlines the desk-only test
+  checklist.
+- `Example.razor.cs` — Handles completion state, JS enhancements, and the iframe refresh button.
 
 ## Common Issues & Solutions
 
-- **Active state missing** — Ensure the `href` matches the canonical route and only `Guide` uses
-  `Match="NavLinkMatch.All"`.
-- **Nav never re-renders** — Subscribe/unsubscribe to `Auth.OnChange` inside the layout (as shown in the snippet) so the
-  UI reacts to sign in/out.
-- **Admin link hidden for admins** — Confirm the seeded account still has `Role == "Admin"` and the dropdown includes the
-  conditional link.
+- **Missing members on `IUserAuthService`** — Add `bool IsAuthenticated { get; }` and `event Action? OnChange` to the
+  interface, then raise the event in your demo service after sign-in/out, profile edits, and admin actions.
+- **Links don’t match your app** — Double-check the `NavLink` list uses `/`, `/profile`, `/analytics`, and
+  `/admin/dashboard` (not the BlazorMock demo routes).
+- **Nav never re-renders after sign-in** — Ensure the component subscribes/unsubscribes to `Auth.OnChange` and calls
+  `InvokeAsync(StateHasChanged)` just like earlier auth-aware components.
+- **Admin link missing for admins** — Confirm your seeded admin user still has `Role == "Admin"` inside your fresh
+  database seed.
 
 ## Related Resources
 
-- `MainLayout.razor` (canonical header implementation)
-- Tips: `#blazor-navlink`, `#layout-state`, `#auth-service`
+- Step 10 (guards) — proves the routes you link to already enforce auth.
+- Step 12 — finishes the mobile drawer for the same component.
+- Tips: `#auth-service`, `#layout-state`, `#blazor-navlink`

@@ -14,32 +14,30 @@
 
         <!-- Title -->
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            📝 Step 3: Build the /signup page (SignUp.razor)
+            ✍️ Step 3: Let Users Create Accounts (Sign Up Page)
         </h1>
 
         <!-- Description -->
         <p class="text-xl text-gray-600 mb-8">
-            Build the real <code>/signup</code> page from the Admin Dashboard demo so new users can create an account
-            using the same layout, styling, and behavior as the finished experience.
+            Build a sign-up page where people can create their accounts. It's like setting up the front door of your
+            app where new users can walk in!
         </p>
 
-        <!-- What You'll Learn Section -->
+        <!-- What You'll Build Section -->
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Build</h2>
 
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Create a friendly two-column sign up layout with Tailwind CSS.</li>
-                <li>Bind input fields directly to component state with <code>@@bind</code>.</li>
-                <li>Call a shared <code>IUserAuthService</code> to create accounts instead of using
-                    <code>AppDbContext</code> in the page.
-                </li>
-                <li>Show clear error messages when sign up fails and navigate to <code>/profile</code> on success.</li>
+                <li>A friendly sign-up form with inputs for name, email, and password</li>
+                <li>Two-way data binding so your code automatically updates when users type</li>
+                <li>A service that handles all the account creation behind the scenes</li>
+                <li>Helpful error messages when something goes wrong, and automatic navigation to the profile page when
+                    sign-up succeeds</li>
             </ul>
 
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Blazor two-way binding, calling a shared auth service from a page,
-                    simple error handling, and navigation.
+                    <strong>💡 What You'll Use:</strong> Blazor data binding, auth service, navigation, error handling
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
@@ -152,7 +150,7 @@
                     &lt;div class=&quot;w-full p-4 bg-white border-2 border-gray-200 rounded-xl&quot;&gt;
                         &lt;div class=&quot;flex items-center justify-center gap-3&quot;&gt;
                             &lt;div
-                                class=&quot;h-10 w-10 rounded-full bg-red-600 flex items-center justify-center text-white font-semibold flex-shrink-0&quot;&gt;
+                                class=&quot;h-10 w-10 rounded-full bg-red-600 flex items-center justify-center text-white font-semibold shrink-0&quot;&gt;
                                 AD
                             &lt;/div&gt;
                             &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
@@ -171,7 +169,7 @@
                     &lt;div class=&quot;w-full p-4 bg-white border-2 border-gray-200 rounded-xl&quot;&gt;
                         &lt;div class=&quot;flex items-center justify-center gap-3&quot;&gt;
                             &lt;div
-                                class=&quot;h-10 w-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold flex-shrink-0&quot;&gt;
+                                class=&quot;h-10 w-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold shrink-0&quot;&gt;
                                 PU
                             &lt;/div&gt;
                             &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
@@ -190,7 +188,7 @@
                     &lt;div class=&quot;w-full p-4 bg-white border-2 border-gray-200 rounded-xl&quot;&gt;
                         &lt;div class=&quot;flex items-center justify-center gap-3&quot;&gt;
                             &lt;div
-                                class=&quot;h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white font-semibold flex-shrink-0&quot;&gt;
+                                class=&quot;h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white font-semibold shrink-0&quot;&gt;
                                 FU
                             &lt;/div&gt;
                             &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
@@ -420,35 +418,33 @@ builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</pre>
             </div>
         </div>
 
-        <!-- How to do it (Gradient Banner) -->
+        <!-- Step-by-Step Guide (Gradient Banner) -->
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ Step-by-Step Guide</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
                 <li>
-                    <strong>Create the folder and file:</strong>
-                    Add <code>Components/Pages/Demo/DashboardDemo/Auth/SignUp.razor</code> to your project (or the
-                    equivalent path in your app).
+                    <strong>Create your sign-up page:</strong>
+                    Add a new file <code>Components/Pages/SignUp.razor</code> (or wherever makes sense in your project).
                 </li>
                 <li>
-                    <strong>Set up the route and base class:</strong>
-                    Use <code>@@page &quot;/signup&quot;</code>, <code>@@rendermode InteractiveServer</code>, import
-                    <code>AdminDashboard.Components.Pages.Auth</code>, and inherit from <code>SignUpBase</code>.
+                    <strong>Set up the basics:</strong>
+                    Add <code>@page "/signup"</code> at the top so people can visit your sign-up page, and use
+                    <code>@rendermode InteractiveServer</code> to make it interactive.
                 </li>
                 <li>
-                    <strong>Review the code-behind:</strong>
-                    Open the <code>SignUp.razor.cs</code> file to see how <code>SignUpBase</code> injects
-                    <code>IUserAuthService</code> and <code>NavigationManager</code>, and implements
-                    <code>HandleSignUp</code>.
+                    <strong>Create the form inputs:</strong>
+                    Add input fields for name, email, and password. Use <code>@bind</code> to automatically connect them
+                    to your component's code.
                 </li>
                 <li>
-                    <strong>Build the form UI:</strong>
-                    Use regular <code>&lt;input&gt;</code> elements with <code>@@bind</code> to capture the full name,
-                    email, and password.
+                    <strong>Add the sign-up button:</strong>
+                    Create a button that calls your <code>HandleSignUp</code> method when clicked. This is where the
+                    magic happens!
                 </li>
                 <li>
-                    <strong>Wire up sign up:</strong>
-                    Ensure the <code>Create Account</code> button calls <code>HandleSignUp</code> which delegates to
-                    <code>IUserAuthService</code>. Show an error message when sign up fails.
+                    <strong>Connect the auth service:</strong>
+                    Inject <code>IUserAuthService</code> in your code-behind file and call it to actually create the
+                    account. If it succeeds, navigate to <code>/profile</code>. If not, show an error message.
                 </li>
                 <li>
                     <strong>Link to sign in:</strong>

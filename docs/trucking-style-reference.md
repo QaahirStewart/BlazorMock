@@ -248,7 +248,7 @@ This mirrors the trucking phase card feel while allowing per-project text.
 - **Title**: centered line `"📚 Learning Resources"`.
 - **Grid of links**: 2–3 cards for demos, progress page, tips, or hub.
   - Card: `bg-white/10.hover:bg-white/20.rounded-xl.p-4.transition-colors`.
-  - Icon: `span.text-2xl.flex-shrink-0`.
+  - Icon: `span.text-2xl.shrink-0`.
   - Title: `div.text-sm.sm:text-base.font-semibold`.
   - Description: `div.text-xs.sm:text-sm.text-gray-300`.
 - **Footer progress line**:

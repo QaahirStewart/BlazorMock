@@ -1,0 +1,24 @@
+@inherits LayoutComponentBase
+@inject NavigationManager Nav
+
+<div class="min-h-screen max-w-6xl mx-auto px-4">
+    <AdminNav />
+
+    @if (!isNavPreview)
+    {
+        <main class="max-w-6xl mx-auto px-4 pb-12">
+            @Body
+        </main>
+    }
+</div>
+
+@code {
+    private bool isNavPreview;
+
+    protected override void OnParametersSet()
+    {
+        var uri = Nav.ToAbsoluteUri(Nav.Uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        isNavPreview = query.TryGetValue("embed", out var embedValue) && embedValue == "nav";
+    }
+}

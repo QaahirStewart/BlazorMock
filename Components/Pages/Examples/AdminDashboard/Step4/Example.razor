@@ -11,37 +11,33 @@
             class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
             <span>←</span> Back to Admin Dashboard Guide
         </a>
-        EnsureDemoUsers();
 
         <!-- Title -->
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            🔐 Step 4: Build the /signin page (SignIn.razor)
+            🔐 Step 4: Let Users Sign In (Sign In Page)
         </h1>
 
         <!-- Description -->
         <p class="text-xl text-gray-600 mb-8">
-            Build the real <code>/signin</code> page for this learning project so returning users get the same
-            two-column layout, passkey CTA, and auto-fill helper cards they saw when creating an account in Step 3.
+            Build a sign-in page so people who already have accounts can log back in. It's like the welcome mat for
+            returning visitors!
         </p>
 
-        <!-- What You'll Learn Section -->
+        <!-- What You'll Build Section -->
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Build</h2>
 
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Mirror the polished two-column layout used throughout this tutorial.</li>
-                <li>Bind inputs directly to component fields with <code>@@bind</code> and show inline errors.</li>
-                <li>Call the shared <code>IUserAuthService</code> from <code>SignInBase</code> instead of touching EF or
-                    <code>AppDbContext</code> in the page.
-                </li>
-                <li>Add the "Sign in with Passkey" button that simulates FIDO-style auth.</li>
-                <li>Use clickable demo account cards to auto-fill credentials via <code>SetDemoUser</code>.</li>
+                <li>A friendly sign-in form where users can enter their email and password</li>
+                <li>Helpful demo account buttons that automatically fill in credentials for testing</li>
+                <li>A "Sign in with Passkey" button (for modern fingerprint/face ID authentication)</li>
+                <li>Session persistence so users stay logged in when they navigate between pages</li>
+                <li>Error messages when login fails</li>
             </ul>
 
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Two-way binding, calling shared services, optimistic navigation,
-                    and demo-friendly UX chips.
+                    <strong>💡 What You'll Use:</strong> Data binding, auth service, localStorage (browser storage), navigation
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
@@ -58,23 +54,28 @@
             </div>
         </div>
 
-        private void EnsureDemoUsers()
-        {
-        var demoUsers = new[]
-        {
+        <details class="bg-gray-100 border border-gray-200 rounded-xl p-4 mb-6">
+            <summary class="text-sm sm:text-base font-semibold text-gray-800 cursor-pointer">Show code (EnsureDemoUsers
+                helper)</summary>
+            <p class="text-xs text-gray-600 mt-3 mb-3">This helper seeds the three demo accounts so the clickable cards
+                work instantly. Drop it inside <code>DemoUserAuthService</code> and call it from the constructor.</p>
+            <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">private void EnsureDemoUsers()
+{
+    var demoUsers = new[]
+    {
         new User { Email = "admin@demo.com", PasswordHash = "admin123", FullName = "Admin User", Role = "Admin" },
         new User { Email = "paid@demo.com", PasswordHash = "paid123", FullName = "Paid User", Role = "Paid" },
         new User { Email = "user@demo.com", PasswordHash = "user123", FullName = "Free User", Role = "Free" }
-        };
+    };
 
-        var addedAny = false;
+    var addedAny = false;
 
-        foreach (var demo in demoUsers)
-        {
+    foreach (var demo in demoUsers)
+    {
         var normalizedEmail = demo.Email.Trim().ToLowerInvariant();
         if (_db.Users.Any(u => u.Email == normalizedEmail))
         {
-        continue;
+            continue;
         }
 
         demo.Email = normalizedEmail;
@@ -82,13 +83,15 @@
         demo.LastLoginAt = DateTime.UtcNow;
         _db.Users.Add(demo);
         addedAny = true;
-        }
+    }
 
-        if (addedAny)
-        {
+    if (addedAny)
+    {
         _db.SaveChanges();
-        }
-        }
+    }
+}
+</pre>
+        </details>
 
         <!-- Sign In Form Example -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
@@ -151,7 +154,7 @@
                     &lt;div&gt;
                         &lt;label class=&quot;block text-sm font-medium text-gray-700 mb-2&quot;&gt;Password&lt;/label&gt;
                         &lt;input type=&quot;password&quot; @@bind=&quot;password&quot;
-                            @@onkeydown=&quot;@@(e =&gt; { if (e.Key == &quot;Enter&quot;) HandleSignIn(); })&quot;
+                            @@onkeydown=&quot;@@(async e =&gt; { if (e.Key == &quot;Enter&quot;) await HandleSignIn(); })&quot;
                             class=&quot;w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500&quot;
                             placeholder=&quot;Enter your password&quot; /&gt;
                     &lt;/div&gt;
@@ -215,7 +218,7 @@
                         class=&quot;w-full text-left p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-red-400 hover:shadow-lg transition-all duration-200&quot;&gt;
                         &lt;div class=&quot;flex items-center justify-center gap-3&quot;&gt;
                             &lt;div
-                                class=&quot;h-10 w-10 rounded-full bg-red-600 flex items-center justify-center text-white font-semibold flex-shrink-0&quot;&gt;
+                                class=&quot;h-10 w-10 rounded-full bg-red-600 flex items-center justify-center text-white font-semibold shrink-0&quot;&gt;
                                 AD
                             &lt;/div&gt;
                             &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
@@ -235,7 +238,7 @@
                         class=&quot;w-full text-left p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-purple-400 hover:shadow-lg transition-all duration-200&quot;&gt;
                         &lt;div class=&quot;flex items-center justify-center gap-3&quot;&gt;
                             &lt;div
-                                class=&quot;h-10 w-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold flex-shrink-0&quot;&gt;
+                                class=&quot;h-10 w-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold shrink-0&quot;&gt;
                                 PU
                             &lt;/div&gt;
                             &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
@@ -255,7 +258,7 @@
                         class=&quot;w-full text-left p-4 bg-white border-2 border-gray-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition-all duration-200&quot;&gt;
                         &lt;div class=&quot;flex items-center justify-center gap-3&quot;&gt;
                             &lt;div
-                                class=&quot;h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white font-semibold flex-shrink-0&quot;&gt;
+                                class=&quot;h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white font-semibold shrink-0&quot;&gt;
                                 FU
                             &lt;/div&gt;
                             &lt;div class=&quot;flex-1 min-w-0&quot;&gt;
@@ -286,6 +289,7 @@
                     handles all sign-in logic, including the passkey simulator.</p>
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Auth/SignIn.razor.cs"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using AdminDashboard.Services;
 
 namespace AdminDashboard.Components.Pages.Auth;
@@ -294,6 +298,7 @@ public partial class SignInBase : ComponentBase
 {
     [Inject] protected IUserAuthService Auth { get; set; } = default!;
     [Inject] protected NavigationManager Nav { get; set; } = default!;
+    [Inject] protected IJSRuntime JS { get; set; } = default!;
 
     protected string email = string.Empty;
     protected string password = string.Empty;
@@ -302,7 +307,7 @@ public partial class SignInBase : ComponentBase
     protected string passkeyEmail = "admin@demo.com";
     protected string passkeyPassword = "admin123";
 
-    protected void HandleSignIn()
+    protected async Task HandleSignIn()
     {
         errorMessage = string.Empty;
 
@@ -314,6 +319,7 @@ public partial class SignInBase : ComponentBase
 
         if (Auth.SignIn(email, password))
         {
+            await JS.InvokeVoidAsync("localStorage.setItem", "currentUserEmail", email);
             Nav.NavigateTo("/profile");
         }
         else
@@ -334,6 +340,7 @@ public partial class SignInBase : ComponentBase
         // Use the selected passkey user
         if (Auth.SignIn(passkeyEmail, passkeyPassword))
         {
+            await JS.InvokeVoidAsync("localStorage.setItem", "currentUserEmail", passkeyEmail);
             Nav.NavigateTo("/profile");
         }
         else
@@ -374,6 +381,7 @@ public interface IUserAuthService
     User? CurrentUser { get; }
     bool SignUp(string email, string password, string fullName);
     bool SignIn(string email, string password);
+    bool SignInByEmail(string email);
     void SignOut();
     void UpdateProfile(string fullName, string? profilePictureUrl);
     void UpgradeToRole(string role);
@@ -478,6 +486,22 @@ public class DemoUserAuthService : IUserAuthService
         return true;
     }
 
+    public bool SignInByEmail(string email)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = _db.Users.FirstOrDefault(u => u.Email == normalizedEmail);
+
+        if (user == null)
+        {
+            return false;
+        }
+
+        user.LastLoginAt = DateTime.UtcNow;
+        _db.SaveChanges();
+        _currentUser = user;
+        return true;
+    }
+
     public void SignOut()
     {
         _currentUser = null;
@@ -564,6 +588,9 @@ builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</pre>
                     <h3 class="text-sm font-bold text-blue-900 mb-2">Sign-in UX reminders</h3>
                     <ul class="list-disc ml-5 text-xs sm:text-sm text-blue-900 space-y-1">
                         <li>Keep the inline error banner so learners know why a login failed.</li>
+                        <li>Leave the <code>localStorage</code> write in <code>SignInBase</code> so
+                            <code>SignInByEmail</code> can restore sessions on other pages.
+                        </li>
                         <li>The passkey button simply simulates a delay—no extra backend code is required.</li>
                         <li>Demo account cards now just work because <code>DemoUserAuthService</code> seeds those
                             users; tweak <code>EnsureDemoUsers</code> if you want different credentials.</li>
@@ -590,6 +617,9 @@ builder.Services.AddScoped&lt;IUserAuthService, DemoUserAuthService&gt;();</pre>
                     a value so learners see identical messaging.</li>
                 <li><strong>Hook up buttons:</strong> Point the primary CTA at <code>HandleSignIn</code> and the
                     secondary CTA at <code>HandlePasskeySignIn</code>.</li>
+                <li><strong>Persist sessions:</strong> Keep the <code>IJSRuntime</code> call that writes the signed-in
+                    email to <code>localStorage</code> so <code>ProfileBase</code> and <code>AnalyticsBase</code> can
+                    restore the user with <code>SignInByEmail</code>.</li>
                 <li><strong>Implement passkey UX:</strong> Keep the spinner/disabled state by toggling
                     <code>isPasskeyAuthenticating</code> exactly like the demo.
                 </li>

@@ -161,4 +161,4 @@ D:\BlazorMock\obj\Debug\net10.0\BlazorMock.genruntimeconfig.cache
 D:\BlazorMock\obj\Debug\net10.0\ref\BlazorMock.dll
 D:\BlazorMock\obj\Debug\net10.0\compressed\nu1bq6c1i8-{0}-0tuox0i5a8-0tuox0i5a8.gz
 D:\BlazorMock\obj\Debug\net10.0\compressed\x1qqiv6elq-{0}-0tuox0i5a8-0tuox0i5a8.gz
-D:\BlazorMock\obj\Debug\net10.0\compressed\gcy26kcw0l-{0}-acf7pwp0ob-acf7pwp0ob.gz
+D:\BlazorMock\obj\Debug\net10.0\compressed\gcy26kcw0l-{0}-xwyokssxa1-xwyokssxa1.gz

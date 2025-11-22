@@ -12,33 +12,37 @@
         </a>
 
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            📊 Step 6: Build the /analytics page (Analytics.razor)
+            📊 Step 6: Show Basic Analytics (Stats Page)
         </h1>
 
         <p class="text-xl text-gray-600 mb-8">
-            Swap the tutorial mockups for the real analytics dashboard from <code>DashboardDemo</code>, including paid-only cards, locked states for free users, and the admin metrics grid.
+            Build an analytics page that shows important numbers and stats. This is where users can see how they're
+            doing at a glance. We'll add more advanced features in the next steps!
         </p>
 
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Build</h2>
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>Guard <code>/analytics</code> by redirecting unauthenticated visitors to <code>/signin</code>.</li>
-                <li>Reuse <code>AnalyticsBase</code> helpers (<code>IsPaidOrAdmin</code>, <code>IsAdmin</code>) to toggle sections.</li>
-                <li>Render the canonical metric cards, traffic sources list, and locked upgrade CTA.</li>
-                <li>Show the admin-only totals using <code>IUserAuthService.AllUsers</code> just like the demo.</li>
+                <li>A protected page that requires users to be signed in</li>
+                <li>A hero section welcoming users to their analytics dashboard</li>
+                <li>Four key stat cards showing important numbers (visitors, revenue, signups, etc.)</li>
+                <li>A placeholder where we'll add premium features in Step 7</li>
             </ul>
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Auth-gated analytics, paid feature toggles, shared data sources, and Tailwind layout polish.
+                    <strong>💡 What You'll Use:</strong> Protected pages, auth service for user data, Tailwind card layouts
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
                     <a href="/tips#auth-service"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth Service</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth
+                        Service</a>
                     <a href="/tips#layout-state"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Layout State</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Layout
+                        State</a>
                     <a href="/tips#tailwind"
-                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind Layouts</a>
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind
+                        Layouts</a>
                 </div>
             </div>
         </div>
@@ -46,17 +50,14 @@
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: Analytics.razor (/analytics)</h2>
             <p class="text-sm text-gray-600 mb-4">
-                Paste the exact markup from the demo so your tutorial matches the live dashboard, including the paid + admin segmentation.
+                Paste the baseline markup (guard + hero + KPI cards) so your tutorial matches the canonical starting
+                point before paid/admin layers show up in later steps.
             </p>
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Analytics.razor</div>
-                <p class="text-xs text-gray-600 mb-2">Auth-gated analytics page driven entirely by <code>AnalyticsBase</code> and <code>IUserAuthService</code>.</p>
-                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
-                    <li>Redirects immediately if <code>Auth.CurrentUser</code> is missing.</li>
-                    <li>Shows baseline metrics to everyone, paid-only charts behind <code>IsPaidOrAdmin</code>, and admin totals via <code>IsAdmin</code>.</li>
-                    <li>Traffic sources are sourced from a simple list so the UI stays deterministic for docs.</li>
-                </ul>
-                <pre data-code-title="Components/Pages/Demo/DashboardDemo/Analytics.razor"
+                <p class="text-xs text-gray-600 mb-2">Baseline `/analytics` view: loading guard + universal KPI cards.
+                    Paid and admin sections are added in later steps.</p>
+                <pre data-code-title="Analytics.razor (baseline layout)"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/analytics"
 @@rendermode InteractiveServer
 @@inherits AnalyticsBase
@@ -65,19 +66,25 @@
 
 @@if (Auth.CurrentUser == null)
 {
-    Nav.NavigateTo("/signin");
+    &lt;div class=&quot;py-24 bg-gray-50 rounded-3xl&quot;&gt;
+        &lt;div class=&quot;max-w-md mx-auto text-center space-y-4 px-4&quot;&gt;
+            &lt;div class=&quot;w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto&quot;&gt;&lt;/div&gt;
+            &lt;h2 class=&quot;text-2xl font-semibold text-gray-900&quot;&gt;Restoring your analytics...&lt;/h2&gt;
+            &lt;p class=&quot;text-sm text-gray-600&quot;&gt;If no saved email is found you'll be redirected to &lt;code&gt;/signin&lt;/code&gt; automatically.&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
 }
 else
 {
     &lt;div class=&quot;py-8 bg-gray-50&quot;&gt;
-        &lt;div class=&quot;max-w-7xl mx-auto px-4 space-y-6&quot;&gt;
-            &lt;div class=&quot;text-center mb-8&quot;&gt;
+        &lt;div class=&quot;max-w-5xl mx-auto px-4 space-y-8&quot;&gt;
+            &lt;div class=&quot;text-center&quot;&gt;
                 &lt;h1 class=&quot;text-3xl sm:text-4xl font-bold text-gray-900 mb-2&quot;&gt;Analytics Dashboard&lt;/h1&gt;
-                &lt;p class=&quot;text-base text-gray-600&quot;&gt;Insights and metrics for your account&lt;/p&gt;
+                &lt;p class=&quot;text-base text-gray-600&quot;&gt;Baseline insights for every plan&lt;/p&gt;
             &lt;/div&gt;
 
             &lt;div class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8&quot;&gt;
-                &lt;h2 class=&quot;text-xl font-bold text-gray-900 mb-4&quot;&gt;Basic Metrics&lt;/h2&gt;
+                &lt;h2 class=&quot;text-xl font-bold text-gray-900 mb-4&quot;&gt;Key Metrics&lt;/h2&gt;
                 &lt;div class=&quot;grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4&quot;&gt;
                     &lt;div class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-200&quot;&gt;
                         &lt;p class=&quot;text-xs font-medium text-gray-500 uppercase mb-2&quot;&gt;Page Views&lt;/p&gt;
@@ -102,196 +109,26 @@ else
                 &lt;/div&gt;
             &lt;/div&gt;
 
-            @@if (IsPaidOrAdmin)
-            {
-                &lt;div class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8&quot;&gt;
-                    &lt;div class=&quot;flex items-center justify-between mb-4&quot;&gt;
-                        &lt;h2 class=&quot;text-xl font-bold text-gray-900&quot;&gt;Advanced Analytics&lt;/h2&gt;
-                        &lt;span class=&quot;px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded&quot;&gt;Paid Feature&lt;/span&gt;
-                    &lt;/div&gt;
-                    &lt;div class=&quot;grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4&quot;&gt;
-                        &lt;div class=&quot;border-2 border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-lg transition-all duration-200&quot;&gt;
-                            &lt;p class=&quot;text-sm font-medium text-gray-700&quot;&gt;Conversion Rate&lt;/p&gt;
-                            &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-2&quot;&gt;4.8%&lt;/p&gt;
-                            &lt;div class=&quot;mt-3 h-2 bg-gray-200 rounded-full overflow-hidden&quot;&gt;
-                                &lt;div class=&quot;h-full bg-emerald-500&quot; style=&quot;width: 48%&quot;&gt;&lt;/div&gt;
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                        &lt;div class=&quot;border-2 border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-lg transition-all duration-200&quot;&gt;
-                            &lt;p class=&quot;text-sm font-medium text-gray-700&quot;&gt;Revenue per User&lt;/p&gt;
-                            &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-2&quot;&gt;$24.50&lt;/p&gt;
-                            &lt;p class=&quot;text-xs text-emerald-600 mt-1&quot;&gt;↑ $2.30 vs last month&lt;/p&gt;
-                        &lt;/div&gt;
-                        &lt;div class=&quot;border-2 border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-lg transition-all duration-200&quot;&gt;
-                            &lt;p class=&quot;text-sm font-medium text-gray-700&quot;&gt;Customer Lifetime Value&lt;/p&gt;
-                            &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-2&quot;&gt;$892&lt;/p&gt;
-                            &lt;p class=&quot;text-xs text-blue-600 mt-1&quot;&gt;↑ 18% growth&lt;/p&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-
-                &lt;div class=&quot;bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8&quot;&gt;
-                    &lt;h2 class=&quot;text-xl font-bold text-gray-900 mb-4&quot;&gt;Traffic Sources&lt;/h2&gt;
-                    &lt;div class=&quot;hidden sm:block space-y-0 divide-y divide-gray-200&quot;&gt;
-                        @@foreach (var source in trafficSources)
-                        {
-                            &lt;div class=&quot;flex items-center justify-between py-4 first:pt-0 last:pb-0&quot;&gt;
-                                &lt;div class=&quot;flex items-center gap-3&quot;&gt;
-                                    &lt;span class=&quot;text-2xl&quot;&gt;@@source.Icon&lt;/span&gt;
-                                    &lt;div&gt;
-                                        &lt;p class=&quot;text-sm font-medium text-gray-900&quot;&gt;@@source.Name&lt;/p&gt;
-                                        &lt;p class=&quot;text-xs text-gray-500&quot;&gt;@@source.Visitors visitors&lt;/p&gt;
-                                    &lt;/div&gt;
-                                &lt;/div&gt;
-                                &lt;div class=&quot;text-right&quot;&gt;
-                                    &lt;p class=&quot;text-sm font-semibold text-gray-900&quot;&gt;@@source.Percentage%&lt;/p&gt;
-                                    &lt;div class=&quot;w-24 h-2 bg-gray-200 rounded-full overflow-hidden mt-1&quot;&gt;
-                                        &lt;div class=&quot;h-full bg-blue-500&quot; style=&quot;width: @@(source.Percentage)%&quot;&gt;&lt;/div&gt;
-                                    &lt;/div&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                        }
-                    &lt;/div&gt;
-
-                    &lt;div class=&quot;grid grid-cols-1 gap-3 sm:hidden&quot;&gt;
-                        @@foreach (var source in trafficSources)
-                        {
-                            &lt;div class=&quot;border-2 border-gray-200 rounded-xl p-4 hover:border-gray-300 hover:shadow-lg transition-all duration-200&quot;&gt;
-                                &lt;div class=&quot;flex items-center gap-3 mb-3&quot;&gt;
-                                    &lt;span class=&quot;text-2xl&quot;&gt;@@source.Icon&lt;/span&gt;
-                                    &lt;div class=&quot;flex-1&quot;&gt;
-                                        &lt;p class=&quot;text-sm font-medium text-gray-900&quot;&gt;@@source.Name&lt;/p&gt;
-                                        &lt;p class=&quot;text-xs text-gray-500&quot;&gt;@@source.Visitors visitors&lt;/p&gt;
-                                    &lt;/div&gt;
-                                    &lt;p class=&quot;text-sm font-semibold text-gray-900&quot;&gt;@@source.Percentage%&lt;/p&gt;
-                                &lt;/div&gt;
-                                &lt;div class=&quot;w-full h-2 bg-gray-200 rounded-full overflow-hidden&quot;&gt;
-                                    &lt;div class=&quot;h-full bg-blue-500&quot; style=&quot;width: @@(source.Percentage)%&quot;&gt;&lt;/div&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                        }
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            }
-            else
-            {
-                &lt;div class=&quot;bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border-2 border-purple-200 p-8&quot;&gt;
-                    &lt;div class=&quot;text-center max-w-md mx-auto&quot;&gt;
-                        &lt;div class=&quot;h-16 w-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4&quot;&gt;
-                            &lt;svg class=&quot;w-8 h-8 text-white&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;
-                                &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot;
-                                    d=&quot;M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z&quot; /&gt;
-                            &lt;/svg&gt;
-                        &lt;/div&gt;
-                        &lt;h3 class=&quot;text-2xl font-bold text-gray-900 mb-2&quot;&gt;Unlock Advanced Analytics&lt;/h3&gt;
-                        &lt;p class=&quot;text-gray-600 mb-6&quot;&gt;
-                            Upgrade to a Paid account to access conversion tracking, revenue metrics, traffic sources, and more.
-                        &lt;/p&gt;
-                        &lt;div class=&quot;flex flex-wrap justify-center gap-3&quot;&gt;
-                            &lt;a href=&quot;/profile&quot;
-                                class=&quot;px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors&quot;&gt;
-                                Upgrade Now
-                            &lt;/a&gt;
-                            &lt;button
-                                class=&quot;px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium border border-gray-300 rounded-lg transition-colors&quot;&gt;
-                                Learn More
-                            &lt;/button&gt;
-                        &lt;/div&gt;
-                        &lt;div class=&quot;mt-8 grid grid-cols-2 gap-4 text-left&quot;&gt;
-                            &lt;div class=&quot;flex items-start gap-2&quot;&gt;
-                                &lt;svg class=&quot;w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5&quot; fill=&quot;currentColor&quot;
-                                    viewBox=&quot;0 0 20 20&quot;&gt;
-                                    &lt;path fill-rule=&quot;evenodd&quot;
-                                        d=&quot;M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z&quot; /&gt;
-                                &lt;/svg&gt;
-                                &lt;div&gt;
-                                    &lt;p class=&quot;text-sm font-medium text-gray-900&quot;&gt;Revenue Tracking&lt;/p&gt;
-                                    &lt;p class=&quot;text-xs text-gray-600&quot;&gt;Monitor earnings&lt;/p&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class=&quot;flex items-start gap-2&quot;&gt;
-                                &lt;svg class=&quot;w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5&quot; fill=&quot;currentColor&quot;
-                                    viewBox=&quot;0 0 20 20&quot;&gt;
-                                    &lt;path fill-rule=&quot;evenodd&quot;
-                                        d=&quot;M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z&quot; /&gt;
-                                &lt;/svg&gt;
-                                &lt;div&gt;
-                                    &lt;p class=&quot;text-sm font-medium text-gray-900&quot;&gt;Traffic Sources&lt;/p&gt;
-                                    &lt;p class=&quot;text-xs text-gray-600&quot;&gt;See where users come from&lt;/p&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class=&quot;flex items-start gap-2&quot;&gt;
-                                &lt;svg class=&quot;w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5&quot; fill=&quot;currentColor&quot;
-                                    viewBox=&quot;0 0 20 20&quot;&gt;
-                                    &lt;path fill-rule=&quot;evenodd&quot;
-                                        d=&quot;M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z&quot; /&gt;
-                                &lt;/svg&gt;
-                                &lt;div&gt;
-                                    &lt;p class=&quot;text-sm font-medium text-gray-900&quot;&gt;Custom Reports&lt;/p&gt;
-                                    &lt;p class=&quot;text-xs text-gray-600&quot;&gt;Build your own views&lt;/p&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class=&quot;flex items-start gap-2&quot;&gt;
-                                &lt;svg class=&quot;w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5&quot; fill=&quot;currentColor&quot;
-                                    viewBox=&quot;0 0 20 20&quot;&gt;
-                                    &lt;path fill-rule=&quot;evenodd&quot;
-                                        d=&quot;M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z&quot; /&gt;
-                                &lt;/svg&gt;
-                                &lt;div&gt;
-                                    &lt;p class=&quot;text-sm font-medium text-gray-900&quot;&gt;Priority Support&lt;/p&gt;
-                                    &lt;p class=&quot;text-xs text-gray-600&quot;&gt;Get help faster&lt;/p&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            }
-
-            @@if (IsAdmin)
-            {
-                &lt;div class=&quot;bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border-2 border-red-200 p-6 sm:p-8&quot;&gt;
-                    &lt;div class=&quot;flex items-center gap-2 mb-4&quot;&gt;
-                        &lt;svg class=&quot;w-6 h-6 text-red-600&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;
-                            &lt;path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot;
-                                d=&quot;M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z&quot; /&gt;
-                        &lt;/svg&gt;
-                        &lt;h2 class=&quot;text-xl font-bold text-red-900&quot;&gt;Admin Analytics&lt;/h2&gt;
-                        &lt;span class=&quot;px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded&quot;&gt;Admin Only&lt;/span&gt;
-                    &lt;/div&gt;
-                    &lt;div class=&quot;grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4&quot;&gt;
-                        &lt;div class=&quot;bg-white rounded-lg p-4 border-2 border-red-200&quot;&gt;
-                            &lt;p class=&quot;text-xs font-medium text-red-600 uppercase&quot;&gt;Total Users&lt;/p&gt;
-                            &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-1&quot;&gt;@@Auth.AllUsers.Count&lt;/p&gt;
-                        &lt;/div&gt;
-                        &lt;div class=&quot;bg-white rounded-lg p-4 border-2 border-red-200&quot;&gt;
-                            &lt;p class=&quot;text-xs font-medium text-red-600 uppercase&quot;&gt;Free Accounts&lt;/p&gt;
-                            &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-1&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Free&quot;)&lt;/p&gt;
-                        &lt;/div&gt;
-                        &lt;div class=&quot;bg-white rounded-lg p-4 border-2 border-red-200&quot;&gt;
-                            &lt;p class=&quot;text-xs font-medium text-red-600 uppercase&quot;&gt;Paid Accounts&lt;/p&gt;
-                            &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-1&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Paid&quot;)&lt;/p&gt;
-                        &lt;/div&gt;
-                        &lt;div class=&quot;bg-white rounded-lg p-4 border-2 border-red-200&quot;&gt;
-                            &lt;p class=&quot;text-xs font-medium text-red-600 uppercase&quot;&gt;Admins&lt;/p&gt;
-                            &lt;p class=&quot;text-2xl font-bold text-gray-900 mt-1&quot;&gt;@@Auth.AllUsers.Count(u =&gt; u.Role == &quot;Admin&quot;)&lt;/p&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            }
+            &lt;div class=&quot;border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center bg-white/50&quot;&gt;
+                &lt;p class=&quot;text-sm text-gray-600&quot;&gt;Steps 7–8 add paid analytics, traffic sources, and the admin summary grid right here.&lt;/p&gt;
+            &lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 }
 </pre>
             </div>
             <p class="text-xs text-gray-600">
-                The real analytics page never hits EF or third-party SDKs inside the component—it simply reads <code>IUserAuthService</code> and displays curated sample data so your tutorial stays lightweight.
+                The real analytics page never hits EF or third-party SDKs inside the component—it simply reads
+                <code>IUserAuthService</code> and displays curated sample data so your tutorial stays lightweight.
             </p>
 
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mt-6">
                 <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/DashboardDemo/Analytics.razor.cs</div>
-                <p class="text-xs text-gray-600 mb-2">Code-behind that injects auth + navigation, exposes paid/admin helpers, and seeds the traffic list.</p>
+                <p class="text-xs text-gray-600 mb-2">Baseline code-behind: inject auth/nav/JS, restore the session
+                    once, and redirect if no email is saved. Step 7 adds the paid/admin helpers.</p>
                 <pre data-code-title="Components/Pages/Demo/DashboardDemo/Analytics.razor.cs"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using AdminDashboard.Services;
 
 namespace AdminDashboard.Components.Pages;
@@ -300,24 +137,23 @@ public partial class AnalyticsBase : ComponentBase
 {
     [Inject] protected IUserAuthService Auth { get; set; } = default!;
     [Inject] protected NavigationManager Nav { get; set; } = default!;
+    [Inject] protected IJSRuntime JS { get; set; } = default!;
 
-    protected bool IsPaidOrAdmin => Auth.CurrentUser?.Role == "Paid" || Auth.CurrentUser?.Role == "Admin";
-    protected bool IsAdmin => Auth.CurrentUser?.Role == "Admin";
-
-    protected List&lt;TrafficSource&gt; trafficSources = new()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        new TrafficSource { Icon = "🔍", Name = "Google Search", Visitors = 1234, Percentage = 42 },
-        new TrafficSource { Icon = "📱", Name = "Social Media", Visitors = 892, Percentage = 30 },
-        new TrafficSource { Icon = "📧", Name = "Email Campaign", Visitors = 567, Percentage = 19 },
-        new TrafficSource { Icon = "🔗", Name = "Direct", Visitors = 234, Percentage = 9 }
-    };
+        if (!firstRender || Auth.CurrentUser != null)
+        {
+            return;
+        }
 
-    protected class TrafficSource
-    {
-        public string Icon { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
-        public int Visitors { get; set; }
-        public int Percentage { get; set; }
+        var storedEmail = await JS.InvokeAsync&lt;string&gt;("localStorage.getItem", "currentUserEmail");
+        if (!string.IsNullOrEmpty(storedEmail) && Auth.SignInByEmail(storedEmail))
+        {
+            StateHasChanged();
+            return;
+        }
+
+        Nav.NavigateTo("/signin");
     }
 }
 </pre>
@@ -327,24 +163,33 @@ public partial class AnalyticsBase : ComponentBase
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
-                <li><strong>Create the page + base:</strong> Add <code>Analytics.razor</code>, set <code>@@inherits AnalyticsBase</code>, and keep the base class beside it like the demo.</li>
-                <li><strong>Redirect early:</strong> Use the same <code>@@if (Auth.CurrentUser == null)</code> guard so visitors bounce back to <code>/signin</code> before any UI renders.</li>
-                <li><strong>Mirror the canonical layout:</strong> Copy the metric cards, paid feature grid, locked promo, and admin summary exactly to avoid drift.</li>
-                <li><strong>Reuse shared data:</strong> Drive paid/admin toggles from <code>IUserAuthService</code> and keep the traffic source list in C# for deterministic docs.</li>
-                <li><strong>Keep logic minimal:</strong> The component should only read service state—save real querying for future data layers.</li>
+                <li><strong>Create the page + base:</strong> Add <code>Analytics.razor</code>, set
+                    <code>@@inherits AnalyticsBase</code>, and keep the base class beside it like the demo.</li>
+                <li><strong>Restore before redirecting:</strong> Keep the loading guard visible while
+                    <code>AnalyticsBase</code> runs <code>SignInByEmail</code> via <code>OnAfterRenderAsync</code>,
+                    then let the base class navigate to <code>/signin</code> if no saved email exists.
+                </li>
+                <li><strong>Mirror the canonical baseline:</strong> Copy the hero and four KPI tiles exactly so
+                    screenshots, docs, and the live demo stay in sync.</li>
+                <li><strong>Add an explicit placeholder:</strong> Drop a dashed card that says Steps 7–8 will fill in
+                    paid analytics, traffic sources, and admin totals.</li>
+                <li><strong>Keep logic minimal:</strong> The component should only read service state—save real querying
+                    for future data layers.</li>
             </ol>
         </div>
 
         <div class="bg-black/3 rounded-2xl p-6 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
             <p class="text-sm text-gray-600 mb-4">
-                The canonical analytics hero + card stack your learners will actually use inside <code>DashboardDemo</code>:
+                The canonical baseline layout (guard + hero + KPIs + placeholder) your learners will actually use inside
+                <code>DashboardDemo</code>:
             </p>
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
                 <div class="max-w-3xl mx-auto p-8 space-y-6">
                     <div class="text-center">
                         <h2 class="text-3xl font-bold text-gray-900 mb-2">Analytics Dashboard</h2>
-                        <p class="text-gray-600">Baseline metrics for every plan, upgrades for paid insights.</p>
+                        <p class="text-gray-600">Baseline metrics for every plan; paid/admin visuals land in Steps 7–8.
+                        </p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 text-center">
@@ -358,18 +203,16 @@ public partial class AnalyticsBase : ComponentBase
                             <p class="text-xs text-gray-500 mt-1">↑ 8% this week</p>
                         </div>
                     </div>
-                    <div class="bg-purple-50 border border-purple-100 rounded-2xl p-6 text-center">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Unlock Advanced Analytics</h3>
-                        <p class="text-sm text-gray-600 mb-4">Paid users see conversion, revenue, and traffic breakdowns plus admin-only stats.</p>
-                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                            <a href="/profile" class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition">Upgrade Now</a>
-                            <button class="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition">Learn More</button>
-                        </div>
+                    <div class="border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center bg-white">
+                        <p class="text-sm text-gray-600">Placeholder: Steps 7–8 drop paid conversion cards, the traffic
+                            list, and the admin summary grid in this section.</p>
                     </div>
                 </div>
                 <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
                     <p class="text-xs text-gray-600">
-                        💡 <strong>Try it live:</strong> <a href="/analytics" class="text-blue-600 hover:text-blue-700 font-medium">Open /analytics →</a> after signing in as Free vs Paid to see the locked state flip.
+                        💡 <strong>Try it live:</strong> <a href="/analytics"
+                            class="text-blue-600 hover:text-blue-700 font-medium">Open /analytics →</a> after signing in
+                        as Free vs Paid to see the locked state flip.
                     </p>
                 </div>
             </div>
@@ -379,7 +222,8 @@ public partial class AnalyticsBase : ComponentBase
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 6?</h3>
-                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning progress.</p>
+                    <p class="text-sm text-gray-600">Mark this step as complete to track your Admin Dashboard learning
+                        progress.</p>
                 </div>
                 @if (isComplete)
                 {
@@ -405,7 +249,8 @@ public partial class AnalyticsBase : ComponentBase
             <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
                 <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
                 <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
-                    Step 7 teaches you to summarize recent activity and trend lines using the same <code>IUserAuthService</code> primitives—stay synced with the canonical implementation.
+                    Step 7 teaches you to summarize recent activity and trend lines using the same
+                    <code>IUserAuthService</code> primitives—stay synced with the canonical implementation.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <a href="/admin-dashboard-guide"

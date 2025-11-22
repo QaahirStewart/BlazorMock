@@ -348,7 +348,7 @@ Body Text:
 - Used `break-all` for code blocks and long strings
 - Applied `whitespace-nowrap` to buttons and badges
 - Implemented `min-w-0` on flex children for proper shrinking
-- Added `flex-shrink-0` to icons and fixed-size elements
+- Added `shrink-0` to icons and fixed-size elements
 
 ### Layout Improvements
 

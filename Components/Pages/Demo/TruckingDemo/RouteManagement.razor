@@ -1,6 +1,5 @@
 @page "/demo/trucking/routes"
 @using BlazorMock.Data
-@using BlazorMock.Models
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.EntityFrameworkCore
@@ -19,7 +18,8 @@
 
         <!-- Back to Demo Link -->
         <div class="mb-6">
-            <a href="/demo/trucking-schedule" class="text-sm text-blue-600 hover:text-blue-700">← Back to Schedule Demo</a>
+            <a href="/demo/trucking-schedule" class="text-sm text-blue-600 hover:text-blue-700">← Back to Schedule
+                Demo</a>
         </div>
 
         <!-- Add Route Section -->
@@ -41,7 +41,8 @@
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Type</label>
-                        <InputSelect class="w-full rounded border border-gray-300 p-2 text-sm" @bind-Value="newRoute.Type">
+                        <InputSelect class="w-full rounded border border-gray-300 p-2 text-sm"
+                            @bind-Value="newRoute.Type">
                             @foreach (RouteType t in Enum.GetValues(typeof(RouteType)))
                             {
                                 <option value="@t">@t</option>
@@ -50,7 +51,8 @@
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Origin</label>
-                        <InputText class="w-full rounded border border-gray-300 p-2 text-sm" @bind-Value="newRoute.Origin" />
+                        <InputText class="w-full rounded border border-gray-300 p-2 text-sm"
+                            @bind-Value="newRoute.Origin" />
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Destination</label>
@@ -69,7 +71,8 @@
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Driver</label>
-                        <InputSelect class="w-full rounded border border-gray-300 p-2 text-sm" @bind-Value="newRoute.DriverId">
+                        <InputSelect class="w-full rounded border border-gray-300 p-2 text-sm"
+                            @bind-Value="newRoute.DriverId">
                             <option value="">-- select --</option>
                             @foreach (var d in drivers)
                             {
@@ -79,7 +82,8 @@
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Truck</label>
-                        <InputSelect class="w-full rounded border border-gray-300 p-2 text-sm" @bind-Value="newRoute.TruckId">
+                        <InputSelect class="w-full rounded border border-gray-300 p-2 text-sm"
+                            @bind-Value="newRoute.TruckId">
                             <option value="">-- select --</option>
                             @foreach (var t in trucks)
                             {
@@ -121,7 +125,8 @@
                     @foreach (var r in routes)
                     {
                         var isEditing = editRoute?.Id == r.Id;
-                        <div class="rounded border-2 border-gray-200 hover:border-blue-400 transition-all duration-200 bg-white p-4">
+                        <div
+                            class="rounded border-2 border-gray-200 hover:border-blue-400 transition-all duration-200 bg-white p-4">
                             @if (isEditing)
                             {
                                 <div class="space-y-2 mb-3">
@@ -315,11 +320,13 @@
                                         {
                                             <button class="px-3 py-1 text-xs rounded bg-blue-600 text-white mr-1 hover:bg-blue-700"
                                                 @onclick="() => SaveEditAsync(r.Id)">Save</button>
-                                            <button class="px-3 py-1 text-xs rounded border border-gray-300 hover:bg-gray-50" @onclick="CancelEdit">Cancel</button>
+                                            <button class="px-3 py-1 text-xs rounded border border-gray-300 hover:bg-gray-50"
+                                                @onclick="CancelEdit">Cancel</button>
                                         }
                                         else
                                         {
-                                            <button class="px-3 py-1 text-xs rounded border border-gray-300 mr-1 hover:bg-gray-50" @onclick="() => BeginEdit(r)">Edit</button>
+                                            <button class="px-3 py-1 text-xs rounded border border-gray-300 mr-1 hover:bg-gray-50"
+                                                @onclick="() => BeginEdit(r)">Edit</button>
                                             <button class="px-3 py-1 text-xs rounded border border-gray-300 hover:bg-gray-50"
                                                 @onclick="() => DeleteRouteAsync(r.Id)">Delete</button>
                                         }
@@ -339,11 +346,11 @@
     private List<Driver> drivers = new();
     private List<Truck> trucks = new();
     private Route newRoute = new()
-        {
-            Type = RouteType.Standard,
-            ScheduledStartDate = DateTime.Now,
-            Status = RouteStatus.Scheduled
-        };
+    {
+        Type = RouteType.Standard,
+        ScheduledStartDate = DateTime.Now,
+        Status = RouteStatus.Scheduled
+    };
     private Route? editRoute;
 
     protected override async Task OnInitializedAsync()
@@ -388,25 +395,25 @@
     private void BeginEdit(Route r)
     {
         editRoute = new Route
-            {
-                Id = r.Id,
-                RouteNumber = r.RouteNumber,
-                Type = r.Type,
-                Origin = r.Origin,
-                Destination = r.Destination,
-                DistanceMiles = r.DistanceMiles,
-                DriverId = r.DriverId,
-                TruckId = r.TruckId,
-                ScheduledStartDate = r.ScheduledStartDate,
-                Status = r.Status,
-                EstimatedEndDate = r.EstimatedEndDate,
-                ActualStartDate = r.ActualStartDate,
-                ActualEndDate = r.ActualEndDate,
-                EstimatedFuelCost = r.EstimatedFuelCost,
-                DriverPay = r.DriverPay,
-                Revenue = r.Revenue,
-                Notes = r.Notes
-            };
+        {
+            Id = r.Id,
+            RouteNumber = r.RouteNumber,
+            Type = r.Type,
+            Origin = r.Origin,
+            Destination = r.Destination,
+            DistanceMiles = r.DistanceMiles,
+            DriverId = r.DriverId,
+            TruckId = r.TruckId,
+            ScheduledStartDate = r.ScheduledStartDate,
+            Status = r.Status,
+            EstimatedEndDate = r.EstimatedEndDate,
+            ActualStartDate = r.ActualStartDate,
+            ActualEndDate = r.ActualEndDate,
+            EstimatedFuelCost = r.EstimatedFuelCost,
+            DriverPay = r.DriverPay,
+            Revenue = r.Revenue,
+            Notes = r.Notes
+        };
     }
 
     private void CancelEdit() => editRoute = null;

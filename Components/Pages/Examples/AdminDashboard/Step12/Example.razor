@@ -8,65 +8,73 @@
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
         <a href="/admin-dashboard-guide"
-           class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
             <span>←</span> Back to Admin Dashboard Guide
         </a>
 
         <h1 class="text-4xl font-bold text-gray-900 mb-4">
-            📱 Step 12: Mobile Navigation &amp; Final Polish
+            📱 Step 12: Add Mobile Navigation (Phone-Friendly Menu)
         </h1>
 
         <p class="text-xl text-gray-600 mb-8">
-            Ship the same navigation experience on phones that you already nailed on desktop. This step copies the
-            mobile-only pieces of <code>MainLayout.razor</code>, locks in the hamburger/drawer behavior, and walks
-            through the final QA pass for auth + nav UX.
+            Your navigation bar works great on computers, but what about phones? In this step, you'll add a collapsible
+            menu (called a "drawer") that slides open when someone taps the hamburger button. Same links, same features—
+            just perfect for smaller screens!
         </p>
 
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
-            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Add</h2>
             <p class="text-gray-700 mb-4 text-sm sm:text-base">
-                Keep the tutorial perfectly in sync with the production layout by lifting the real hamburger button,
-                drawer markup, and code-behind helpers straight from <code>MainLayout.razor</code>.
+                You'll extend the navigation component you built in Step 11 so it works beautifully on phones and
+                tablets.
             </p>
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
-                <li>How the live nav swaps between desktop links and the mobile drawer via <code>md:hidden</code></li>
-                <li>Exactly which routes, CTAs, and admin links appear when authenticated vs signed out</li>
-                <li>How <code>ToggleMobileMenu</code>, <code>CloseMobileMenu</code>, and the auth callback keep state in
-                    sync</li>
-                <li>How to QA the nav in device emulation so nothing overlaps critical content</li>
+                <li>A slide-out menu that appears when you tap the hamburger icon (those three lines)</li>
+                <li>All the same links and features from your desktop nav, but organized for small screens</li>
+                <li>Smart behavior that automatically closes the menu when someone picks a page</li>
+                <li>Testing tricks to make sure everything looks good on different phone sizes
+                </li>
             </ul>
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> single-source layouts, responsive breakpoints, event-driven auth
-                    updates, handset QA.
+                    <strong>💡 What You'll Practice:</strong> Responsive design (making things work on different screen
+                    sizes),
+                    animations, and keeping your code organized.
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
                     <a href="/tips#auth-service"
-                       class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Auth
                         Service</a>
                     <a href="/tips#layout-state"
-                       class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Layout
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Layout
                         State</a>
                     <a href="/tips#tailwind"
-                       class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind
                         Layouts</a>
                 </div>
             </div>
         </div>
 
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Canonical Mobile Header (from MainLayout)</h2>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Mobile Menu Code (Add to Your Nav)
+            </h2>
             <p class="text-sm text-gray-600 mb-4">
-                This is the exact markup that ships today. Keep it HTML-encoded so docs stay honest, and screenshot this
-                layout whenever the header changes.
+                Here's the code for your mobile menu! You'll add this to the same `AdminNav.razor` file from Step 11.
+                The
+                hamburger button is already there—this just makes it actually work. The `AdminNav.razor.cs` file you
+                created
+                in Step 11 already has all the functions you need (like `CloseMobileMenu`), so you don't need to change
+                that
+                file at all.
             </p>
 
             <div class="space-y-5">
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                    <div class="text-xs text-gray-500 mb-1">Components/Layout/MainLayout.razor — header row</div>
-                    <p class="text-xs text-gray-600 mb-2">Hamburger on the left, centered brand, and desktop CTAs on
-                        the right. Mobile hides the desktop section entirely.</p>
+                    <div class="text-xs text-gray-500 mb-1">AdminDashboard/Components/Layout/AdminNav.razor</div>
+                    <p class="text-xs text-gray-600 mb-2">The hamburger button (those three lines) that appears on
+                        phones.
+                        It changes to an X when the menu is open. Pretty neat!</p>
                     <pre data-code-title="Mobile toggle + header"
                         class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class="flex items-center justify-between"&gt;
     &lt;a href="/" class="flex items-center gap-2 md:flex-initial flex-1 md:justify-start justify-center md:order-1 order-2"&gt;...&lt;/a&gt;
@@ -107,24 +115,20 @@
                 </div>
 
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                    <div class="text-xs text-gray-500 mb-1">Components/Layout/MainLayout.razor — drawer</div>
-                    <p class="text-xs text-gray-600 mb-2">The drawer is a single <code>md:hidden</code> block with
-                        animated height. Signed-in users see profile/analytics/admin links plus the CTA stack.</p>
+                    <div class="text-xs text-gray-500 mb-1">AdminDashboard/Components/Layout/AdminNav.razor</div>
+                    <p class="text-xs text-gray-600 mb-2">The sliding menu that appears when you tap the hamburger
+                        button.
+                        It shows all your navigation links, and automatically closes when someone picks a page.</p>
                     <pre data-code-title="Mobile drawer"
                         class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;div class="md:hidden overflow-hidden transition-all duration-300 ease-in-out @@(isMobileMenuOpen ? \"max-h-96 opacity-100\" : \"max-h-0 opacity-0\")"&gt;
     &lt;div class="mt-3 border-t border-white/10 pt-3"&gt;
         &lt;nav class="flex flex-col gap-1"&gt;
-            &lt;NavLink href="/" ... @@onclick="CloseMobileMenu"&gt;Home&lt;/NavLink&gt;
-            &lt;NavLink href="/guide" ... @@onclick="CloseMobileMenu"&gt;Guide&lt;/NavLink&gt;
-            &lt;NavLink href="/tips" ... @@onclick="CloseMobileMenu"&gt;Tips&lt;/NavLink&gt;
-            &lt;NavLink href="/demo/trucking-schedule" ... @@onclick="CloseMobileMenu"&gt;Demo&lt;/NavLink&gt;
-            &lt;NavLink href="/progress" ... @@onclick="CloseMobileMenu"&gt;Progress&lt;/NavLink&gt;
+            &lt;NavLink href="/" ... @@onclick="CloseMobileMenu"&gt;Overview&lt;/NavLink&gt;
+            &lt;NavLink href="/profile" ... @@onclick="CloseMobileMenu"&gt;Profile&lt;/NavLink&gt;
+            &lt;NavLink href="/analytics" ... @@onclick="CloseMobileMenu"&gt;Analytics&lt;/NavLink&gt;
 
             @@if (Auth.IsAuthenticated && Auth.CurrentUser != null)
             {
-                &lt;div class="border-t border-white/10 my-2"&gt;&lt;/div&gt;
-                &lt;NavLink href="/profile" ... @@onclick="CloseMobileMenu"&gt;My Profile&lt;/NavLink&gt;
-                &lt;NavLink href="/analytics" ... @@onclick="CloseMobileMenu"&gt;Analytics&lt;/NavLink&gt;
                 @@if (Auth.CurrentUser.Role == \"Admin\")
                 {
                     &lt;NavLink href="/admin/dashboard" ... @@onclick="CloseMobileMenu"&gt;Admin Dashboard&lt;/NavLink&gt;
@@ -144,11 +148,22 @@
                 </div>
 
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
-                    <div class="text-xs text-gray-500 mb-1">Components/Layout/MainLayout.razor — code-behind glue</div>
-                    <p class="text-xs text-gray-600 mb-2">Event wiring keeps the drawer and auth state aligned across
-                        tabs.</p>
-                    <pre data-code-title="@@code block"
-                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@code {
+                    <div class="text-xs text-gray-500 mb-1">AdminDashboard/Components/Layout/AdminNav.razor.cs</div>
+                    <p class="text-xs text-gray-600 mb-2">This is the same C# file from Step 11! All the functions your
+                        mobile menu needs (`ToggleMobileMenu`, `CloseMobileMenu`, etc.) are already in here. That's the
+                        beauty
+                        of keeping your code organized—you write it once and use it everywhere.</p>
+                    <pre data-code-title="AdminNav.razor.cs"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
+
+namespace AdminDashboard.Components.Layout;
+
+public partial class AdminNav : ComponentBase, IDisposable
+{
+    [Inject] private IUserAuthService Auth { get; set; } = default!;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private bool isProfileMenuOpen;
     private bool isMobileMenuOpen;
 
     protected override void OnInitialized()
@@ -161,9 +176,11 @@
         Auth.OnChange -= OnAuthStateChanged;
     }
 
-    private void ToggleMobileMenu() =&gt; isMobileMenuOpen = !isMobileMenuOpen;
+    private void OnAuthStateChanged() => _ = InvokeAsync(StateHasChanged);
 
-    private void CloseMobileMenu() =&gt; isMobileMenuOpen = false;
+    private void ToggleProfileMenu() => isProfileMenuOpen = !isProfileMenuOpen;
+    private void ToggleMobileMenu() => isMobileMenuOpen = !isMobileMenuOpen;
+    private void CloseMobileMenu() => isMobileMenuOpen = false;
 
     private void HandleSignOut()
     {
@@ -173,9 +190,25 @@
         Navigation.NavigateTo("/", forceLoad: true);
     }
 
-    private void OnAuthStateChanged()
+    private string GetUserInitials()
     {
-        _ = InvokeAsync(StateHasChanged);
+        if (Auth.CurrentUser == null) return "?";
+        var names = Auth.CurrentUser.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (names.Length >= 2)
+        {
+            return $"{names[0][0]}{names[1][0]}".ToUpperInvariant();
+        }
+
+        return Auth.CurrentUser.FullName.Length > 0
+            ? Auth.CurrentUser.FullName[0].ToString().ToUpperInvariant()
+            : "?";
+    }
+
+    private string GetUserAvatarColor()
+    {
+        if (Auth.CurrentUser == null) return "bg-slate-500";
+        var colors = new[] { "bg-indigo-500", "bg-blue-500", "bg-emerald-500", "bg-rose-500", "bg-amber-500" };
+        return colors[Math.Abs(Auth.CurrentUser.Email.GetHashCode()) % colors.Length];
     }
 }</pre>
                 </div>
@@ -189,81 +222,96 @@
                     <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
                     <div class="space-y-4">
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Drive everything from one layout</p>
-                            <p class="text-xs text-blue-800">If marketing asks for a copy change, paste the updated
-                                snippet here immediately so QA never compares stale docs.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">One component, two layouts</p>
+                            <p class="text-xs text-blue-800">Your navigation bar now works on both desktop and mobile
+                                using
+                                the same file. When you make changes later, they'll automatically work everywhere!</p>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Close the drawer on route change</p>
-                            <p class="text-xs text-blue-800">Call <code>CloseMobileMenu()</code> from every
-                                <code>NavLink</code> click so the next page loads with a clean slate.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Auto-close is your friend</p>
+                            <p class="text-xs text-blue-800">Notice how the menu closes automatically when someone picks
+                                a
+                                page? That `CloseMobileMenu()` function keeps the experience smooth.</p>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Force-load on sign-out</p>
-                            <p class="text-xs text-blue-800">The layout uses <code>Navigation.NavigateTo("/",
-                                forceLoad: true)</code> so cached components don't leak stale auth state.</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Test on your phone</p>
+                            <p class="text-xs text-blue-800">Use your browser's device toolbar (press F12, then click
+                                the phone
+                                icon) to see how your nav looks on different phone sizes. It's fun to watch it resize!
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Same auth magic</p>
+                            <p class="text-xs text-blue-800">Your mobile menu uses the same auth service from Step 11,
+                                so it
+                                automatically shows the right links for different users.</p>
                         </div>
                     </div>
                 </div>
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Common Issues</h3>
                     <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
-                        <li>Drawer stuck open? Verify every call path resets <code>isMobileMenuOpen</code>.</li>
-                        <li>Links not updating active state? Confirm <code>NavLink</code> uses
-                            <code>ActiveClass="bg-white/10 text-white"</code> like the production layout.</li>
-                        <li>Profile links missing? Ensure <code>Auth.OnChange</code> is still wired after copy/paste.
-                        </li>
+                        <li>Menu won't close? Check that you added `@@onclick="CloseMobileMenu"` to each link in the
+                            drawer.</li>
+                        <li>Hamburger button doesn't do anything? Make sure you copied all the mobile menu code from
+                            above.</li>
+                        <li>Links look weird? The active link styling should match your desktop nav—check that the
+                            `ActiveClass` is the same for both.</li>
                     </ul>
                 </div>
             </div>
         </div>
 
         <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ Step-by-Step Guide</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
-                <li><strong>Recycle the shipping layout:</strong> Copy the entire mobile drawer block (including
-                    <code>md:hidden</code> container) instead of designing a new component.</li>
-                <li><strong>Keep handlers nearby:</strong> Store <code>ToggleMobileMenu</code>,
-                    <code>CloseMobileMenu</code>, and <code>HandleSignOut</code> in the same file so future edits don't
-                    forget to reset flags.</li>
-                <li><strong>Verify personas:</strong> Sign in as Free/Paid/Admin and make sure the drawer swaps CTAs and
-                    the admin link exactly like desktop.</li>
-                <li><strong>Do the polish lap:</strong> Clear auth state, reload, and confirm empty/error states from
-                    Steps 9–11 still look intentional on a narrow screen.</li>
+                <li><strong>Open your navigation file:</strong> Find the `AdminNav.razor` file you created in Step 11.
+                </li>
+                <li><strong>Add the mobile menu:</strong> Copy the drawer code from above and paste it right after the
+                    closing tag of your desktop navigation (look for the comment about Step 12).</li>
+                <li><strong>Test the hamburger:</strong> Shrink your browser window really narrow (or press F12 and
+                    click the
+                    phone icon) and click that hamburger button. Your menu should slide open!</li>
+                <li><strong>Try different users:</strong> Sign in as a regular user and an admin to make sure the menu
+                    shows
+                    the right links for each.</li>
+                <li><strong>Check it on your phone:</strong> If you can, open your app on your actual phone and make
+                    sure
+                    everything works smoothly!</li>
             </ol>
         </div>
 
         <div class="bg-black/3 rounded-2xl p-6 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Live Demo</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 See It In Action (Mobile View)</h2>
             <p class="text-sm text-gray-600 mb-4">
-                The iframe below hits <code>/?embed=nav</code>. Use your browser’s device toolbar (Ctrl+Shift+M in Edge /
-                Chrome) to clamp it to ~360&nbsp;px wide, then walk through sign-in/sign-out flows in a second tab.
+                Here's a working preview showing your navigation in a phone-sized screen. Try clicking the hamburger
+                button
+                to see the menu slide open!
             </p>
             <div class="grid gap-6 lg:grid-cols-2">
                 <div class="bg-white rounded-2xl border border-gray-200 p-5">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Manual test script</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Testing Checklist</h3>
                     <ol class="list-decimal ml-5 space-y-2 text-sm text-gray-700">
-                        <li>Open <code>/signin</code> in a new tab, sign in as <code>user@demo.com</code>, then refresh
-                            the embed.</li>
-                        <li>Resize to mobile width and toggle the hamburger—drawer should animate and show Profile +
-                            Analytics.</li>
-                        <li>Promote yourself to admin (Seed user <code>admin@demo.com</code>) and confirm the Admin
-                            Dashboard link appears inside the drawer.</li>
-                        <li>Sign out and verify the drawer swaps back to the Sign In / Sign Up CTA stack.</li>
+                        <li>Open your AdminDashboard app and sign in as `user@demo.com`.
+                        </li>
+                        <li>Make your browser window really narrow (or use the phone icon in dev tools).</li>
+                        <li>Click the hamburger button—your menu should slide open with all your navigation links.</li>
+                        <li>Sign in as `admin@demo.com` and check that the Admin Dashboard link appears in the mobile
+                            menu too.</li>
                     </ol>
                 </div>
                 <div class="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col gap-4">
                     <div class="mx-auto border border-gray-200 rounded-[36px] p-3 bg-black/5">
                         <iframe src="@NavFrameSrc" title="Nav preview" class="rounded-[28px] shadow-inner"
-                                style="width:360px;height:520px;background-color:white;"></iframe>
+                            style="width:360px;height:520px;background-color:white;"></iframe>
                     </div>
                     <div class="flex flex-wrap items-center gap-3 justify-center">
                         <button @onclick="RefreshNavFrame"
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                             <span>↻</span> Refresh embed
                         </button>
                         <a href="/?embed=nav" target="_blank" rel="noopener"
-                           class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-600 hover:text-blue-700">
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-600 hover:text-blue-700">
                             <span>Open full tab</span> ↗
                         </a>
                     </div>
@@ -283,7 +331,7 @@
                     <div class="flex items-center gap-3">
                         <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
                         <button @onclick="ResetStep"
-                                class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">
+                            class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">
                             Reset
                         </button>
                     </div>
@@ -291,7 +339,7 @@
                 else
                 {
                     <button @onclick="MarkComplete"
-                            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition-colors">
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition-colors">
                         Mark as Complete
                     </button>
                 }
@@ -309,17 +357,17 @@
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <a href="/admin-dashboard-guide"
-                       class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
                         <span class="text-lg">←</span>
                         <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
                     </a>
                     <a href="/admin-dashboard-examples/step11"
-                       class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
                         <span class="text-lg">←</span>
                         <span class="text-sm sm:text-base font-semibold">Previous: Step 11</span>
                     </a>
                     <a href="/admin-dashboard-examples/step12"
-                       class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
                         <span class="text-sm sm:text-base font-semibold">Replay Step 12</span>
                         <span class="text-lg">↻</span>
                     </a>

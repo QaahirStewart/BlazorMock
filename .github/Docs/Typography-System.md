@@ -79,7 +79,7 @@ The typography system uses Tailwind CSS v4 theming with:
 
 ### MainLayout.razor
 
-- ✅ Brand logo: Responsive sizing with flex-shrink-0
+- ✅ Brand logo: Responsive sizing with shrink-0
 - ✅ Navigation links: Consistent sizing across breakpoints
 - ✅ Mobile menu: Responsive text with sm:text-base
 
@@ -87,7 +87,7 @@ The typography system uses Tailwind CSS v4 theming with:
 
 - ✅ Component title: Responsive lg → xl
 - ✅ Message text: Responsive sm → base
-- ✅ Icon sizes: Consistent with flex-shrink-0
+- ✅ Icon sizes: Consistent with shrink-0
 
 ### Step1Example.razor (and other examples)
 
@@ -134,7 +134,7 @@ xl:  1280px (Desktops and up)
 
 - Use responsive text classes: `text-base sm:text-lg md:text-xl`
 - Add `break-words` to all text content
-- Use `flex-shrink-0` on icons and badges
+- Use `shrink-0` on icons and badges
 - Use `min-w-0` on flex children that should shrink
 - Apply `whitespace-nowrap` to buttons and badges
 - Use `leading-relaxed` for body text readability

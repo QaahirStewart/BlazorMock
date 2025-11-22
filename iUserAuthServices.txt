@@ -1,0 +1,22 @@
+using System;
+using System.Collections.Generic;
+using AdminDashboard.Models;
+
+namespace AdminDashboard.Services;
+
+public interface IUserAuthService
+{
+    User? CurrentUser { get; }
+    bool IsAuthenticated { get; }
+    IReadOnlyList<User> AllUsers { get; }
+    bool IsAdmin { get; }
+    event Action? OnChange;
+    bool SignUp(string email, string password, string fullName);
+    bool SignIn(string email, string password);
+    bool SignInByEmail(string email);
+    void SignOut();
+    void UpdateProfile(string fullName, string? profilePictureUrl);
+    void UpgradeToRole(string role);
+    void AdminUpdateUserRole(int userId, string newRole);
+    void AdminDeleteUser(int userId);
+}
