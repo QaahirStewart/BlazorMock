@@ -1,3 +1,5 @@
+using System.Net.Http;
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using BlazorMock.Services;
@@ -9,6 +11,7 @@ public partial class ExampleBase : ComponentBase, IDisposable
     [Inject] protected ILearningProgressService ProgressService { get; set; } = default!;
     [Inject] protected NavigationManager Navigation { get; set; } = default!;
     [Inject] protected IJSRuntime JS { get; set; } = default!;
+    [Inject] protected IHttpClientFactory HttpClientFactory { get; set; } = default!;
 
     protected bool isComplete;
     protected IJSObjectReference? _copyModule;
@@ -21,10 +24,7 @@ public partial class ExampleBase : ComponentBase, IDisposable
 
         try
         {
-            var client = new HttpClient
-            {
-                BaseAddress = new Uri("https://pokeapi.co/api/v2/")
-            };
+            var client = HttpClientFactory.CreateClient("PokeApi");
 
             var response = await client.GetFromJsonAsync<PokeListDto>("pokemon?limit=8");
 

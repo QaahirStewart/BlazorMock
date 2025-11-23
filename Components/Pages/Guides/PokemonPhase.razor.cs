@@ -28,7 +28,7 @@ public partial class PokemonPhaseBase : ComponentBase
             : steps.Count(s => s.IsComplete && phase.StepNumbers.Contains(s.StepNumber));
     }
 
-    protected string StepHref(int n) => n == 0 ? "/pokemon-examples/step0" : $"/pokemon-examples/step{n}";
+    protected string StepHref(int n) => $"/pokemon-examples/step{n}";
 
     protected static string PhaseHoverBorder(string id) => id switch
     {

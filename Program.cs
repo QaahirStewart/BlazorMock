@@ -15,6 +15,10 @@ builder.Services.AddRazorComponents()
 
 // HTTP clients
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("PokeApi", client =>
+{
+    client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
+});
 
 // Note: Using the new Razor Components model with Interactive Server render mode.
 // Do NOT register AddServerSideBlazor here to avoid conflicts with the Razor Components pipeline.
