@@ -66,7 +66,7 @@ public class LearningGuideService : ILearningGuideService
             Title: "Phase 3: Details & Search",
             Subtitle: "Polish the experience",
             Description: "Build detail views, search, and filtering for your Pokemon collector.",
-            StepNumbers: new[] { 6 },
+            StepNumbers: new[] { 6, 7 },
             ProjectKey: "pokemon"
         ),
 

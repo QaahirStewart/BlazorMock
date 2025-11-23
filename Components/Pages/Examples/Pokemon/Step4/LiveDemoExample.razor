@@ -1,0 +1,137 @@
+@page "/pokemon/loading"
+@inject IHttpClientFactory HttpClientFactory
+@rendermode InteractiveServer
+
+<h3 class="text-xl font-semibold mb-3">Pokemon with Loading States</h3>
+
+@if (isLoading)
+{
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (int i = 0; i < 3; i++)
+        {
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm animate-pulse flex flex-col">
+                <div class="w-full aspect-square bg-slate-100 rounded-xl mb-4"></div>
+                <div class="h-px w-full bg-slate-100 mb-4"></div>
+                <div class="h-3 bg-slate-200 rounded w-1/4 mb-2"></div>
+                <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+            </div>
+        }
+    </div>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-6">
+        <h3 class="text-red-800 font-semibold mb-2">⚠️ Error</h3>
+        <p class="text-red-700">@errorMessage</p>
+        <button @onclick="RetryLoad"
+            class="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 
+                                                                                                       text-white rounded-lg transition-colors">
+            Retry
+        </button>
+    </div>
+}
+else if (allPokemon.Count == 0)
+{
+    <div class="text-center p-12 text-gray-500">
+        <p class="text-lg font-medium">No Pokemon found</p>
+        <p class="text-sm mt-2">Try again later or check your connection.</p>
+    </div>
+}
+else
+{
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach (var pokemon in allPokemon.Take(3))
+        {
+            <div
+                class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                @if (showImages)
+                {
+                    <img src="@GetPokemonImageUrl(pokemon.Url)" alt="@pokemon.Name"
+                        class="w-full aspect-square object-contain mb-4 transition-opacity duration-300 opacity-100"
+                        loading="lazy" />
+                }
+                else
+                {
+                    <div class="w-full aspect-square bg-slate-100 rounded-xl mb-4"></div>
+                }
+                <div class="h-px w-full bg-slate-100 mb-4"></div>
+                <p class="text-xs text-slate-500 mb-1">#@GetPokemonId(pokemon.Url).PadLeft(3, '0')</p>
+                <p class="text-base font-semibold text-sky-900 capitalize">
+                    @pokemon.Name
+                </p>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    protected bool isLoading = true;
+    protected bool showImages = false;
+    protected string? errorMessage;
+    protected List<PokemonItem> allPokemon = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            showImages = false;
+            errorMessage = null; // Clear previous errors
+
+            // Initial delay to demonstrate skeleton loading state
+            await Task.Delay(500);
+
+            var client = HttpClientFactory.CreateClient("PokeApi");
+            var response = await client.GetFromJsonAsync<PokemonListResponse>(
+            "pokemon?limit=151"
+            );
+
+            allPokemon = response?.Results ?? new();
+            isLoading = false; // Names render immediately after data arrives
+
+            // Extra delay before showing images so names appear first
+            await Task.Delay(500);
+            showImages = true;
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"Network error: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load Pokemon: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false; // CRITICAL: Always runs
+        }
+    }
+
+    protected async Task RetryLoad()
+    {
+        await OnInitializedAsync();
+    }
+
+    private string GetPokemonId(string url)
+    {
+        var parts = url.TrimEnd('/').Split('/');
+        return parts[^1];
+    }
+
+    private string GetPokemonImageUrl(string url)
+    {
+        var id = GetPokemonId(url);
+        return $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png";
+    }
+
+    public class PokemonListResponse
+    {
+        public List<PokemonItem> Results { get; set; } = new();
+    }
+
+    public class PokemonItem
+    {
+        public string Name { get; set; } = "";
+        public string Url { get; set; } = "";
+    }
+}

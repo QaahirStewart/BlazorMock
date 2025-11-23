@@ -10,6 +10,7 @@ public partial class PokemonLoadingExampleBase : ComponentBase
 
     // State
     protected bool isLoading = true;
+    protected bool showImages = false;
     protected string? errorMessage;
     protected List<PokemonItem> allPokemon = new();
 
@@ -31,13 +32,22 @@ public partial class PokemonLoadingExampleBase : ComponentBase
         try
         {
             isLoading = true;
+            showImages = false;
             errorMessage = null;
+
+            // Initial delay to show skeleton loading
+            await Task.Delay(500);
 
             var response = await Http.GetFromJsonAsync<PokemonListResponse>(
                 "https://pokeapi.co/api/v2/pokemon?limit=151"
             );
 
             allPokemon = response?.Results ?? new();
+            isLoading = false; // Names render immediately
+
+            // Extra delay before showing images
+            await Task.Delay(500);
+            showImages = true;
         }
         catch (HttpRequestException ex)
         {
@@ -51,6 +61,19 @@ public partial class PokemonLoadingExampleBase : ComponentBase
         {
             isLoading = false;
         }
+    }
+
+    // Helper methods
+    protected string GetPokemonId(string url)
+    {
+        var parts = url.TrimEnd('/').Split('/');
+        return parts[^1];
+    }
+
+    protected string GetPokemonImageUrl(string url)
+    {
+        var id = GetPokemonId(url);
+        return $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png";
     }
 
     // DTOs

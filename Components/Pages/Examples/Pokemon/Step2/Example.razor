@@ -117,7 +117,7 @@
                     <li>This works perfectly! In Step 3, you'll add pagination to handle larger lists</li>
                 </ul>
                 <pre data-code-title="Razor + C# (List.razor)"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/pokemonlist"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/pokemon/list"
 @@inject IHttpClientFactory HttpClientFactory
 
 &lt;h3 class="text-xl font-semibold mb-3"&gt;First 20 Pokemon&lt;/h3&gt;
@@ -176,7 +176,7 @@ else
                         <li><code>@@inject IHttpClientFactory</code> gives you the tool to fetch Pokemon data</li>
                     </ul>
                     <pre
-                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/pokemonlist"
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/pokemon/list"
 @@inject IHttpClientFactory HttpClientFactory</pre>
                 </div>
 
@@ -191,15 +191,17 @@ else
                         <li>You'll use these same models in Step 3 when adding pagination</li>
                     </ul>
                     <pre
-                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">public class PokemonListResponse
-{
-    public List&lt;PokemonItem&gt; Results { get; set; } = new();
-}
+                        class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@code { 
+    public class PokemonListResponse
+    {
+        public List&lt;PokemonItem&gt; Results { get; set; } = new();
+    }
 
-public class PokemonItem
-{
-    public string Name { get; set; } = "";
-    public string Url { get; set; } = "";
+    public class PokemonItem
+    {
+        public string Name { get; set; } = "";
+        public string Url { get; set; } = "";
+    }
 }</pre>
                 </div>
 

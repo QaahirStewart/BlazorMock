@@ -1,0 +1,389 @@
+@page "/pokemon-examples/demo-collector"
+@inherits PokemonCollectorExampleBase
+@rendermode InteractiveServer
+
+<PageTitle>Pokemon Collector - Interactive Demo</PageTitle>
+
+<style>
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+</style>
+
+<div class="min-h-screen py-8 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4">
+        
+        <!-- Header -->
+        <div class="mb-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <span class="text-5xl">🎮</span>
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Pokemon Collector</h1>
+            </div>
+            <p class="text-gray-600 text-lg">Interactive demo with type filtering, search, and rich details</p>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">🔍 Filters</h2>
+            
+            <div class="flex flex-col sm:flex-row gap-4">
+                <!-- Search Input -->
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Search Pokemon</label>
+                    <input 
+                        type="text" 
+                        @bind="searchQuery" 
+                        @bind:event="oninput" 
+                        @bind:after="ApplyFilters"
+                        placeholder="Enter Pokemon name..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                </div>
+
+                <!-- Type Filter -->
+                <div class="sm:w-56">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Filter by Type</label>
+                    <select 
+                        @bind="selectedType" 
+                        @bind:after="ApplyFilters"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">All Types</option>
+                        <option value="normal">Normal</option>
+                        <option value="fire">Fire</option>
+                        <option value="water">Water</option>
+                        <option value="electric">Electric</option>
+                        <option value="grass">Grass</option>
+                        <option value="ice">Ice</option>
+                        <option value="fighting">Fighting</option>
+                        <option value="poison">Poison</option>
+                        <option value="ground">Ground</option>
+                        <option value="flying">Flying</option>
+                        <option value="psychic">Psychic</option>
+                        <option value="bug">Bug</option>
+                        <option value="rock">Rock</option>
+                        <option value="ghost">Ghost</option>
+                        <option value="dragon">Dragon</option>
+                        <option value="dark">Dark</option>
+                        <option value="steel">Steel</option>
+                        <option value="fairy">Fairy</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Active Filters Display -->
+            @if (!string.IsNullOrWhiteSpace(searchQuery) || !string.IsNullOrWhiteSpace(selectedType))
+            {
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-sm text-gray-600">Active filters:</span>
+                        
+                        @if (!string.IsNullOrWhiteSpace(searchQuery))
+                        {
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm flex items-center gap-2">
+                                Search: "@searchQuery"
+                                <button @onclick="() => { searchQuery = string.Empty; ApplyFilters(); }" 
+                                        class="hover:text-blue-900">✕</button>
+                            </span>
+                        }
+                        
+                        @if (!string.IsNullOrWhiteSpace(selectedType))
+                        {
+                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex items-center gap-2 capitalize">
+                                Type: @selectedType
+                                <button @onclick="() => { selectedType = string.Empty; ApplyFilters(); }" 
+                                        class="hover:text-green-900">✕</button>
+                            </span>
+                        }
+                        
+                        <button @onclick="() => { searchQuery = string.Empty; selectedType = string.Empty; ApplyFilters(); }"
+                                class="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 underline">
+                            Clear all
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Loading State -->
+        @if (isLoading && allPokemon.Count == 0)
+        {
+            <div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-600 mb-4"></div>
+                <p class="text-gray-600">Loading Pokemon...</p>
+            </div>
+        }
+
+        <!-- Error State -->
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl">⚠️</span>
+                    <div>
+                        <h3 class="font-semibold text-red-900 mb-1">Error</h3>
+                        <p class="text-red-700 text-sm">@errorMessage</p>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Results Summary -->
+        @if (!isLoading && filteredPokemon.Any())
+        {
+            <div class="mb-4">
+                <p class="text-sm text-gray-600">
+                    Showing <span class="font-semibold text-gray-900">@CurrentPagePokemon.Count</span> of 
+                    <span class="font-semibold text-gray-900">@filteredPokemon.Count</span> Pokemon
+                </p>
+            </div>
+        }
+
+        <!-- Pokemon Grid -->
+        @if (!isLoading && allPokemon.Any())
+        {
+            @if (!filteredPokemon.Any())
+            {
+                <div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
+                    <span class="text-5xl mb-3 block opacity-50">🔍</span>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No Pokemon Found</h3>
+                    <p class="text-gray-500 mb-4">Try adjusting your search or filter</p>
+                    <button @onclick="() => { searchQuery = string.Empty; selectedType = string.Empty; ApplyFilters(); }"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Clear Filters
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-6 fade-in">
+                    @foreach (var pokemon in CurrentPagePokemon)
+                    {
+                        <div @onclick="() => ShowDetails(pokemon.Id)"
+                             class="bg-white rounded-xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer p-4">
+                            
+                            <div class="text-xs font-medium text-gray-400 mb-2">#@pokemon.Id.ToString("D3")</div>
+                            
+                            <div class="aspect-square mb-3 flex items-center justify-center">
+                                <img src="@pokemon.SpriteUrl" 
+                                     alt="@pokemon.Name" 
+                                     class="w-full h-full object-contain" />
+                            </div>
+                            
+                            <h3 class="text-sm font-semibold text-gray-900 capitalize text-center mb-2">
+                                @pokemon.Name
+                            </h3>
+
+                            @if (pokemon.Types != null && pokemon.Types.Any())
+                            {
+                                <div class="flex flex-wrap gap-1 justify-center">
+                                    @foreach (var type in pokemon.Types)
+                                    {
+                                        <span class="@GetTypeBadgeClass(type)">@type</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-between bg-white rounded-xl border border-gray-200 p-4">
+                    <button @onclick="PreviousPage" 
+                            disabled="@(currentPage == 1)"
+                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                        ← Previous
+                    </button>
+                    
+                    <span class="text-sm text-gray-700 font-medium">
+                        Page @currentPage of @totalPages
+                    </span>
+                    
+                    <button @onclick="NextPage" 
+                            disabled="@(currentPage >= totalPages)"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                        Next →
+                    </button>
+                </div>
+            }
+        }
+
+        <!-- Detail Modal -->
+        @if (selectedPokemon != null)
+        {
+            var primaryType = selectedPokemon.Types.FirstOrDefault() ?? "normal";
+            var bgClass = GetTypeBackgroundColor(primaryType);
+
+            <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+                 @onclick="CloseModal">
+                
+                <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden"
+                     @onclick:stopPropagation="true">
+                    
+                    <!-- Colored Header -->
+                    <div class="@bgClass relative px-6 pt-8 pb-32">
+                        <button @onclick="CloseModal"
+                                class="absolute top-4 left-4 w-10 h-10 bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur rounded-full flex items-center justify-center text-white transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+
+                        <div class="flex items-center justify-center">
+                            <img src="@selectedPokemon.SpriteUrl" 
+                                 alt="@selectedPokemon.Name"
+                                 class="w-48 h-48 object-contain drop-shadow-2xl" />
+                        </div>
+                    </div>
+
+                    <!-- White Content Card -->
+                    <div class="bg-white rounded-t-3xl -mt-24 relative z-10 px-6 pt-6 pb-8 overflow-y-auto max-h-[calc(90vh-250px)]">
+                        
+                        <!-- Name & ID -->
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h2 class="text-3xl font-bold text-gray-900 capitalize">@selectedPokemon.Name</h2>
+                                <span class="text-lg font-semibold text-gray-400">#@selectedPokemon.Id.ToString("D3")</span>
+                            </div>
+                            
+                            <!-- Types -->
+                            <div class="flex gap-2 mb-4">
+                                @foreach (var type in selectedPokemon.Types)
+                                {
+                                    <span class="@GetTypeBadgeClass(type)">@type</span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Stats Grid -->
+                        <div class="mb-6">
+                            <h3 class="text-base font-bold text-gray-900 mb-3">Stats</h3>
+                            
+                            <!-- HP -->
+                            <div class="mb-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">HP</span>
+                                    <span class="text-sm text-gray-600">@selectedPokemon.Hp</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full transition-all duration-300"
+                                         style="width: @((selectedPokemon.Hp / 255.0) * 100)%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Attack -->
+                            <div class="mb-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Attack</span>
+                                    <span class="text-sm text-gray-600">@selectedPokemon.Attack</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-red-500 h-2 rounded-full transition-all duration-300"
+                                         style="width: @((selectedPokemon.Attack / 255.0) * 100)%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Defense -->
+                            <div class="mb-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Defense</span>
+                                    <span class="text-sm text-gray-600">@selectedPokemon.Defense</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                         style="width: @((selectedPokemon.Defense / 255.0) * 100)%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Speed -->
+                            <div class="mb-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Speed</span>
+                                    <span class="text-sm text-gray-600">@selectedPokemon.Speed</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full transition-all duration-300"
+                                         style="width: @((selectedPokemon.Speed / 255.0) * 100)%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Physical Info -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <p class="text-xs text-gray-500 mb-1">Height</p>
+                                <p class="text-lg font-semibold text-gray-900">@(selectedPokemon.Height / 10.0)m</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <p class="text-xs text-gray-500 mb-1">Weight</p>
+                                <p class="text-lg font-semibold text-gray-900">@(selectedPokemon.Weight / 10.0)kg</p>
+                            </div>
+                        </div>
+
+                        <!-- Abilities -->
+                        @if (selectedPokemon.Abilities.Any())
+                        {
+                            <div class="mb-6">
+                                <h3 class="text-base font-bold text-gray-900 mb-3">Abilities</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach (var ability in selectedPokemon.Abilities)
+                                    {
+                                        <span class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium capitalize">
+                                            @ability.Replace("-", " ")
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Type Weaknesses -->
+                        @if (selectedPokemon.Types.Any())
+                        {
+                            var weaknesses = GetTypeWeaknesses(selectedPokemon.Types.First());
+                            @if (weaknesses.Any())
+                            {
+                                <div class="mb-6">
+                                    <h3 class="text-base font-bold text-gray-900 mb-3">Weak To</h3>
+                                    <div class="flex flex-wrap gap-2">
+                                        @foreach (var weakness in weaknesses)
+                                        {
+                                            <span class="@GetWeaknessChipClass(weakness)">@weakness</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                        <!-- Evolution Chain -->
+                        @{
+                            var evolutionChain = GetEvolutionChain(selectedPokemon.Id);
+                            @if (evolutionChain.Count > 1)
+                            {
+                                <div>
+                                    <h3 class="text-base font-bold text-gray-900 mb-3">Evolution Chain</h3>
+                                    <div class="flex items-center justify-center gap-3 flex-wrap">
+                                        @foreach (var evoId in evolutionChain)
+                                        {
+                                            <div class="flex items-center gap-3">
+                                                <div @onclick="() => ShowDetails(evoId)"
+                                                     class="cursor-pointer hover:scale-110 transition-transform">
+                                                    <img src="@GetSpriteUrl(evoId)" 
+                                                         alt="Pokemon @evoId"
+                                                         class="w-20 h-20 object-contain" />
+                                                </div>
+                                                @if (evoId != evolutionChain.Last())
+                                                {
+                                                    <span class="text-2xl text-gray-400">→</span>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

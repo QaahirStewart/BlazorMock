@@ -1,0 +1,532 @@
+@page "/pokemon-examples/step7"
+@rendermode InteractiveServer
+@inherits ExampleBase
+
+<PageTitle>Pokemon Step 7: Complete Collector Demo - Example</PageTitle>
+
+<div class="min-h-screen py-8 rounded-4xl bg-gray-50">
+    <div class="w-full mx-auto px-4 max-w-5xl">
+        <!-- Back link -->
+        <a href="/pokemon-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+            <span>←</span> Back to Pokemon Guide
+        </a>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            🎯 Step 7: Complete Collector Demo
+        </h1>
+
+        <!-- Description -->
+        <p class="text-xl text-gray-600 mb-8">
+            Let's bring it all together! Build a fully-featured Pokemon Collector with beautiful detail modals, type
+            filtering, evolution chains, and stats visualization. This is where everything you've learned comes together
+            into one polished app!
+        </p>
+
+        <!-- What You'll Learn (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                This final step combines everything from Steps 1-6 and adds pro-level features like type filtering
+                (NEW!), type badges with
+                color coding, detailed stat displays, evolution chains, and type effectiveness. You'll create a demo
+                that looks and feels like a real Pokemon app!
+            </p>
+
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li><strong>Add type filtering</strong> - filter Pokemon by Fire, Water, Grass, etc. (this is NEW
+                    compared to Step 6!)</li>
+                <li>Create rich detail modals with stats, abilities, and evolution chains</li>
+                <li>Build color-coded type badges that match official Pokemon colors</li>
+                <li>Display visual stat bars showing Pokemon strengths (HP, Attack, Defense, Speed)</li>
+                <li>Show type effectiveness (weaknesses) for strategic battle planning</li>
+                <li>Combine search + type filter + pagination for powerful exploration</li>
+            </ul>
+
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> Modal Design, Color Systems, Data Visualization, Type Systems,
+                    Complete Integration
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ This combines all previous steps!</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Component (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Complete Feature Overview</h2>
+
+            <p class="text-sm text-gray-600 mb-4">
+                The complete Pokemon Collector brings together all the features you've built, plus exciting new
+                additions like <strong>type filtering</strong> (filter by Fire, Water, Grass, etc.), evolution chains,
+                and beautiful stat visualizations. This is a
+                production-ready demo!
+            </p>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-900 mb-2">✨ Core Features</h3>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                        <li>• Search by name (real-time)</li>
+                        <li>• <strong>Filter by type</strong> (NEW! 🔥)</li>
+                        <li>• Combine search + filter together</li>
+                        <li>• Pagination (20 per page)</li>
+                        <li>• Loading & error states</li>
+                        <li>• Responsive grid layout</li>
+                    </ul>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-green-900 mb-2">🎨 Detail Modal</h3>
+                    <ul class="text-sm text-green-800 space-y-1">
+                        <li>• High-quality artwork</li>
+                        <li>• Stats with visual bars</li>
+                        <li>• Type badges (color-coded)</li>
+                        <li>• Abilities list</li>
+                        <li>• Type weaknesses</li>
+                    </ul>
+                </div>
+
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-purple-900 mb-2">🔄 Evolution Chain</h3>
+                    <ul class="text-sm text-purple-800 space-y-1">
+                        <li>• Visual evolution sequence</li>
+                        <li>• Clickable evolution forms</li>
+                        <li>• Shows all stages</li>
+                        <li>• Smooth transitions</li>
+                    </ul>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-yellow-900 mb-2">🎯 Polish & UX</h3>
+                    <ul class="text-sm text-yellow-800 space-y-1">
+                        <li>• Smooth hover effects</li>
+                        <li>• Color-coded types</li>
+                        <li>• Professional layout</li>
+                        <li>• Mobile-friendly design</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Implementation Overview -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 mb-4">
+                <h3 class="text-sm font-semibold text-gray-800 mb-3">📋 What You'll Build</h3>
+                <p class="text-xs text-gray-700 mb-3">
+                    You'll create a complete Pokemon Collector that combines all the techniques from Steps 1-6. The demo
+                    lives at <code class="bg-white px-1 py-0.5 rounded text-xs">/demo/pokemon-collector</code> and
+                    showcases:
+                </p>
+                <ul class="list-disc ml-4 text-xs text-gray-700 space-y-1">
+                    <li><strong>Smart Filtering:</strong> Search by name + filter by type simultaneously</li>
+                    <li><strong>Rich Details:</strong> Click any Pokemon to see full stats, abilities, types, and
+                        weaknesses</li>
+                    <li><strong>Visual Stats:</strong> Progress bars showing HP, Attack, Defense, and Speed</li>
+                    <li><strong>Evolution Display:</strong> See the full evolution chain with clickable sprites</li>
+                    <li><strong>Type System:</strong> Color-coded type badges matching official Pokemon colors</li>
+                    <li><strong>Professional Polish:</strong> Smooth animations, gradient backgrounds, and hover effects
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Key Techniques -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                <h3 class="text-sm font-semibold text-gray-800 mb-3">🔧 Key Techniques Used</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-700 mb-1">C# Switch Expressions</p>
+                        <p class="text-[11px] text-gray-600">Map types to colors dynamically</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-gray-700 mb-1">Gradient Backgrounds</p>
+                        <p class="text-[11px] text-gray-600">Type-based color schemes</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-gray-700 mb-1">Visual Progress Bars</p>
+                        <p class="text-[11px] text-gray-600">Show stats with styled divs</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-gray-700 mb-1">Evolution Logic</p>
+                        <p class="text-[11px] text-gray-600">Pre-defined evolution chains</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Examples Section -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">💻 Key Code Examples</h2>
+
+            <!-- Type Filter UI -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Type Filter Dropdown (NEW! - Not in Step 6)</div>
+                <p class="text-xs text-gray-600 mb-2">Add a dropdown to filter Pokemon by their primary type</p>
+                <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;select @@bind="selectedType" @@bind:after="ApplyFilters"
+        class="w-full px-4 py-2 border rounded-lg"&gt;
+    &lt;option value=""&gt;All Types&lt;/option&gt;
+    &lt;option value="fire"&gt;Fire&lt;/option&gt;
+    &lt;option value="water"&gt;Water&lt;/option&gt;
+    &lt;option value="grass"&gt;Grass&lt;/option&gt;
+    &lt;option value="electric"&gt;Electric&lt;/option&gt;
+    &lt;!-- Add more types --&gt;
+&lt;/select&gt;
+
+// C# field
+private string selectedType = "";</pre>
+            </div>
+
+            <!-- Type Color Mapping -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Type Color Mapping (C# Switch Expression)</div>
+                <p class="text-xs text-gray-600 mb-2">Map Pokemon types to Tailwind CSS classes for consistent,
+                    beautiful styling</p>
+                <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">private string GetTypeBadgeClass(string type) =&gt; type.ToLower() switch
+{
+    "fire" =&gt; "px-2.5 py-1 bg-red-50 text-red-700 border border-red-200 rounded-md text-xs font-medium capitalize",
+    "water" =&gt; "px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-xs font-medium capitalize",
+    "grass" =&gt; "px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-md text-xs font-medium capitalize",
+    "electric" =&gt; "px-2.5 py-1 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-md text-xs font-medium capitalize",
+    _ =&gt; "px-2.5 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-md text-xs font-medium capitalize"
+};</pre>
+            </div>
+
+            <!-- Visual Stat Bars -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Visual Stat Bars (Razor)</div>
+                <p class="text-xs text-gray-600 mb-2">Display stats as progress bars with percentage-based widths</p>
+                <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;!-- HP Stat --&gt;
+&lt;div class="mb-3"&gt;
+    &lt;div class="flex items-center justify-between mb-1"&gt;
+        &lt;span class="text-sm font-medium"&gt;HP&lt;/span&gt;
+        &lt;span class="text-sm text-gray-600"&gt;@@selectedPokemon.Hp&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="w-full bg-gray-200 rounded-full h-2"&gt;
+        &lt;div class="bg-green-500 h-2 rounded-full transition-all duration-300"
+             style="width: @@((selectedPokemon.Hp / 255.0) * 100)%"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+            </div>
+
+            <!-- Type Filtering Logic -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Combined Search & Type Filter (C#)</div>
+                <p class="text-xs text-gray-600 mb-2">Apply multiple filters simultaneously for powerful search</p>
+                <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">private void ApplyFilters()
+{
+    filteredPokemon = allPokemon.Where(p =&gt;
+    {
+        var matchesSearch = string.IsNullOrWhiteSpace(searchTerm) ||
+            p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
+        
+        var matchesType = string.IsNullOrWhiteSpace(selectedType) ||
+            (p.Types?.Contains(selectedType) ?? false);
+        
+        return matchesSearch &amp;&amp; matchesType;
+    }).ToList();
+
+    currentPage = 1;
+    StateHasChanged();
+}</pre>
+            </div>
+
+            <!-- Evolution Chain -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Evolution Chain Display (Razor + C#)</div>
+                <p class="text-xs text-gray-600 mb-2">Show clickable evolution stages with pre-defined chains</p>
+                <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;!-- Evolution Chain Section --&gt;
+&lt;div class="mt-4"&gt;
+    &lt;p class="text-sm font-semibold mb-2"&gt;Evolution Chain:&lt;/p&gt;
+    &lt;div class="flex items-center gap-2 flex-wrap"&gt;
+        @@foreach (var evoId in GetEvolutionChain(selectedPokemon.Id))
+        {
+            &lt;div @@onclick="@@(() =&gt; SelectPokemon(evoId))"
+                 class="cursor-pointer hover:scale-110 transition-transform"&gt;
+                &lt;img src="@@GetPokemonSpriteUrl(evoId)" 
+                     class="w-16 h-16" /&gt;
+            &lt;/div&gt;
+            if (evoId != GetEvolutionChain(selectedPokemon.Id).Last())
+            {
+                &lt;span class="text-2xl text-gray-400"&gt;→&lt;/span&gt;
+            }
+        }
+    &lt;/div&gt;
+&lt;/div&gt;
+
+// C# Method
+private List&lt;int&gt; GetEvolutionChain(int pokemonId) =&gt; pokemonId switch
+{
+    1 =&gt; new List&lt;int&gt; { 1, 2, 3 }, // Bulbasaur → Ivysaur → Venusaur
+    2 =&gt; new List&lt;int&gt; { 1, 2, 3 },
+    3 =&gt; new List&lt;int&gt; { 1, 2, 3 },
+    4 =&gt; new List&lt;int&gt; { 4, 5, 6 }, // Charmander → Charmeleon → Charizard
+    _ =&gt; new List&lt;int&gt; { pokemonId }
+};</pre>
+            </div>
+
+            <!-- Type Weaknesses -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                <div class="text-xs text-gray-500 mb-1">Type Effectiveness (C#)</div>
+                <p class="text-xs text-gray-600 mb-2">Display which types are super effective against each Pokemon type
+                </p>
+                <pre class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">private List&lt;string&gt; GetTypeWeaknesses(string type) =&gt; type.ToLower() switch
+{
+    "grass" =&gt; new List&lt;string&gt; { "Fire", "Ice", "Poison", "Flying", "Bug" },
+    "fire" =&gt; new List&lt;string&gt; { "Water", "Ground", "Rock" },
+    "water" =&gt; new List&lt;string&gt; { "Electric", "Grass" },
+    "electric" =&gt; new List&lt;string&gt; { "Ground" },
+    "normal" =&gt; new List&lt;string&gt; { "Fighting" },
+    _ =&gt; new List&lt;string&gt; { "Fighting" }
+};
+
+// Display in Razor
+&lt;div class="mt-4"&gt;
+    &lt;p class="text-sm font-semibold mb-2"&gt;Weak To:&lt;/p&gt;
+    &lt;div class="flex flex-wrap gap-2"&gt;
+        @@foreach (var weakness in GetTypeWeaknesses(selectedPokemon.Types.First()))
+        {
+            &lt;span class="@@GetWeaknessChipClass(weakness)"&gt;
+                @@weakness
+            &lt;/span&gt;
+        }
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+            </div>
+        </div>
+
+        <!-- Important Notes & Tips (White Card) -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📝 Important Notes & Tips</h2>
+
+            <div class="space-y-3">
+                <!-- Pro Tips (Blue) -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Use switch expressions for type color
+                                mapping</p>
+                            <p class="text-xs text-blue-800">C# switch expressions are perfect for mapping Pokemon types
+                                to Tailwind classes. They're clean, readable, and easy to extend. Create methods like
+                                <code>GetTypeBadgeClass(string type)</code> that return the full Tailwind class string.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Pre-define evolution chains for common
+                                Pokemon</p>
+                            <p class="text-xs text-blue-800">Rather than fetching evolution data from the API (which
+                                requires extra calls), create a simple switch expression with common evolution chains.
+                                For 151 Pokemon, you can manually define the most popular ones like Charmander →
+                                Charmeleon → Charizard.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Create visual stat bars with percentage
+                                widths</p>
+                            <p class="text-xs text-blue-800">Use inline styles or dynamic Tailwind classes to create
+                                progress bars. Calculate percentage: <code>(stat / 255.0) * 100</code> since 255 is the
+                                max base stat. Then use <code>style="width: @@percentage%"</code> on a colored div.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Match official Pokemon type colors</p>
+                            <p class="text-xs text-blue-800">Use Tailwind colors that match the official Pokemon type
+                                colors: Fire=red, Water=blue, Grass=green, Electric=yellow, etc. This makes your app
+                                feel authentic and familiar to Pokemon fans!</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Show type effectiveness (weaknesses) for
+                                strategy</p>
+                            <p class="text-xs text-blue-800">Add a "Weak To" section showing which types are super
+                                effective. This adds educational value and makes your app useful for players planning
+                                their teams. Use a switch expression mapping types to their weaknesses.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting (Yellow) -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
+                    <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
+                        <li><strong>Type filter and search conflict:</strong> Make sure your filter logic checks BOTH
+                            conditions: <code>matchesSearch && matchesType</code>. They should work together, not
+                            override each other.</li>
+                        <li><strong>Evolution chain shows wrong Pokemon:</strong> Check your Pokemon ID mapping.
+                            Evolution chains need to return the correct IDs, and those IDs must match the sprite URLs
+                            you're generating.</li>
+                        <li><strong>Stat bars don't show correctly:</strong> Make sure you're calculating percentages
+                            correctly: <code>(stat / 255.0) * 100</code>. The 255.0 must be a double (notice the .0) or
+                            you'll get integer division!</li>
+                        <li><strong>Type badges have wrong colors:</strong> Verify your switch expression returns the
+                            complete Tailwind class string, not just the color name. Each case should return something
+                            like <code>"px-2 py-1 bg-red-100 text-red-700 rounded"</code>.</li>
+                        <li><strong>Detail modal loads slowly:</strong> You're fetching Pokemon data when they click.
+                            That's expected! Show a loading spinner in the modal while the data fetches so users know
+                            something's happening.</li>
+                        <li><strong>Can't filter by type:</strong> Make sure you're loading Pokemon types. You need to
+                            fetch individual Pokemon details to get their types, since the list endpoint doesn't include
+                            them. Consider loading types for the first page only.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to do it (Gradient Banner) -->
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+            <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Start with your Step 6 code:</strong>
+                    Copy your <code>Search.razor</code> component as a starting point - it already has search,
+                    filtering, and pagination working!
+                </li>
+                <li>
+                    <strong>Add type filtering:</strong>
+                    Create a dropdown to filter by Pokemon type. Load types by fetching a few Pokemon details and
+                    extracting their type data.
+                </li>
+                <li>
+                    <strong>Create type color mapping methods:</strong>
+                    Build switch expressions for <code>GetTypeBadgeClass()</code>,
+                    <code>GetTypeBackgroundColor()</code>, and <code>GetWeaknessChipClass()</code> that map types to
+                    Tailwind classes.
+                </li>
+                <li>
+                    <strong>Enhance the detail modal:</strong>
+                    Add sections for stats (with visual bars), type weaknesses, abilities, and evolution chain.
+                </li>
+                <li>
+                    <strong>Build visual stat bars:</strong>
+                    For each stat (HP, Attack, Defense, Speed), create a progress bar using percentage widths based on
+                    the stat value divided by 255.
+                </li>
+                <li>
+                    <strong>Add type effectiveness display:</strong>
+                    Create a <code>GetTypeWeaknesses()</code> method that returns which types are super effective, then
+                    display them as colored chips.
+                </li>
+                <li>
+                    <strong>Implement evolution chains:</strong>
+                    Create a <code>GetEvolutionChain()</code> method with hardcoded chains for common Pokemon, display
+                    them with clickable sprites.
+                </li>
+                <li>
+                    <strong>Polish the UI:</strong>
+                    Add gradient backgrounds based on Pokemon types, smooth hover effects, and proper spacing to make
+                    everything feel professional.
+                </li>
+                <li>
+                    <strong>Test all features:</strong>
+                    Try searching + filtering together, click through evolutions, verify stat bars display correctly,
+                    and check responsive design on mobile.
+                </li>
+                <li>
+                    <strong>View the demo:</strong>
+                    The complete version is at <code>/demo/pokemon-collector</code> - compare your implementation and
+                    see what you can improve!
+                </li>
+            </ol>
+        </div>
+
+        <!-- Live Demo -->
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Interactive Live Demo</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Try out the complete Pokemon Collector! This demo has everything: search by name, filter by type, see
+                detailed stats with visual bars, explore evolution chains, and view type weaknesses. Click around and
+                see what's possible!
+            </p>
+
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                <div class="flex flex-col items-center justify-center py-8">
+                    <div class="text-6xl mb-4">🎮</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Interactive Pokemon Collector</h3>
+                    <p class="text-sm text-gray-600 mb-6 text-center max-w-md">
+                        Play with the complete demo! Search, filter by type, click Pokemon for full details with stats,
+                        abilities, weaknesses, and evolution chains. This version includes type filtering that wasn't in
+                        Step 6!
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="/pokemon-examples/demo-collector"
+                            class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors inline-flex items-center gap-2">
+                            <span>Try Interactive Demo</span>
+                            <span class="text-xl">🚀</span>
+                        </a>
+                        <a href="/demo/pokemon-collector"
+                            class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors inline-flex items-center gap-2">
+                            <span>Full Site Demo</span>
+                            <span class="text-xl">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-xs text-gray-600 mt-4 text-center">💡 The interactive demo shows all features in action - try
+                filtering by Fire, Water, or Grass types!</p>
+        </div>
+
+        <!-- Mark Complete (Green Card) -->
+        <div class="bg-white rounded-xl p-6 border-2 border-green-200 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 7?</h3>
+                    <p class="text-sm text-gray-600">You've completed the Pokemon Collector tutorial! 🎊</p>
+                </div>
+                @if (isComplete)
+                {
+                    <div class="flex items-center gap-3">
+                        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium">✓ Completed</span>
+                        <button @onclick="ResetStep"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm">Reset</button>
+                    </div>
+                }
+                else
+                {
+                    <button @onclick="MarkComplete"
+                        class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Mark
+                        as Complete</button>
+                }
+            </div>
+        </div>
+
+        <!-- Congratulations Banner -->
+        <div class="bg-gradient-to-r from-yellow-200 to-emerald-200 rounded-2xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">🎉 Congratulations!</h3>
+            <p class="text-gray-700 mb-3">
+                You've built a complete, production-ready Pokemon Collector from scratch! You learned API integration,
+                responsive design, state management, filtering, search, pagination, and advanced UI patterns. These
+                skills transfer to any Blazor project you build next!
+            </p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8">
+            <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
+                <p class="text-lg sm:text-xl font-semibold mb-4">You're a Blazor Master! 🏆</p>
+                <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
+                    You've completed the entire Pokemon Collector tutorial! You now have the skills to build rich,
+                    interactive web apps with Blazor. Check out the full demo or explore other tutorials to keep
+                    learning!
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="/pokemon-guide"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Back to Guide</span>
+                    </a>
+                    <a href="/pokemon-examples/step6"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+                        <span class="text-lg">←</span>
+                        <span class="text-sm sm:text-base font-semibold">Previous: Step 6</span>
+                    </a>
+                    <a href="/demo/pokemon-collector"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
+                        <span class="text-sm sm:text-base font-semibold">View Full Demo</span>
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
