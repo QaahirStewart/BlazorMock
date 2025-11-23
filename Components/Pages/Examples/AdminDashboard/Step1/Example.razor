@@ -137,6 +137,38 @@
                 <pre data-code-title="Components/App.razor (inside &lt;head&gt;)"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;link rel="stylesheet" href="@@Assets["tailwind.css"]" /&gt;</pre>
             </div>
+
+            <!-- Step 1.6: Create a Simple Home Page -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Step 1.6: Create a Simple Home Page</div>
+                <p class="text-xs text-gray-600 mb-2">Create a basic home page to verify your project setup is working
+                    correctly.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Create <code>Home.razor</code> in the <code>Components/Pages/</code> folder</li>
+                    <li><code>@@page "/"</code> makes this the default route for your app</li>
+                    <li>Use Tailwind classes to style a simple welcome message</li>
+                    <li>This confirms both routing and Tailwind CSS are working properly</li>
+                </ul>
+                <pre data-code-title="Components/Pages/Home.razor"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/"
+
+&lt;PageTitle&gt;Home&lt;/PageTitle&gt;
+
+&lt;div class="min-h-screen flex flex-col items-center justify-center bg-gray-50"&gt;
+    &lt;div class="text-center gap-4"&gt;
+      &lt;div class="mb-6"&gt;
+            &lt;p class="text-9xl"&gt;🛡️&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;h1 class="text-4xl font-bold text-gray-900 mb-4"&gt;
+            Admin Dashboard Demo!
+        &lt;/h1&gt;
+        &lt;p class="text-xl text-gray-600"&gt;
+            Your project is set up and ready to build.
+        &lt;/p&gt;
+    &lt;/div&gt;
+    &lt;!-- Add buttons here to navigate to the your project. --&gt;
+&lt;/div&gt;</pre>
+            </div>
         </div>
 
         <!-- Important Notes & Tips Section -->
@@ -149,10 +181,13 @@
                     <h3 class="text-sm font-bold text-blue-900 mb-3">💡 Pro Tips</h3>
                     <div class="space-y-4">
                         <div>
-                            <p class="text-sm font-semibold text-blue-900 mb-2">Leave Tailwind running in the background</p>
+                            <p class="text-sm font-semibold text-blue-900 mb-2">Leave Tailwind running in the background
+                            </p>
                             <p class="text-xs text-blue-800">When you start the Tailwind watch command, it'll keep
-                                running in your terminal. Don't close it! This is what automatically rebuilds your styles
-                                every time you change a Tailwind class in your code. You'll see your changes instantly in
+                                running in your terminal. Don't close it! This is what automatically rebuilds your
+                                styles
+                                every time you change a Tailwind class in your code. You'll see your changes instantly
+                                in
                                 the browser.</p>
                         </div>
                         <div>
@@ -165,7 +200,8 @@
                         <div>
                             <p class="text-sm font-semibold text-blue-900 mb-2">Tailwind v4 is way simpler</p>
                             <p class="text-xs text-blue-800">Good news: Tailwind v4 removed all those complicated
-                                config files! You just need one simple import statement and you're done. The tool figures
+                                config files! You just need one simple import statement and you're done. The tool
+                                figures
                                 out the rest by scanning your Razor files automatically.</p>
                         </div>
                     </div>
@@ -182,9 +218,11 @@
                             <code>App.razor</code> in the <code>&lt;head&gt;</code> section and that Tailwind finished
                             building.
                         </li>
-                        <li><strong>Changes not appearing?</strong> Make sure the Tailwind watch command is still running
+                        <li><strong>Changes not appearing?</strong> Make sure the Tailwind watch command is still
+                            running
                             in your terminal. If you closed it, just run it again!</li>
-                        <li><strong>"Asset not found" error?</strong> Check that <code>tailwind.css</code> was created in
+                        <li><strong>"Asset not found" error?</strong> Check that <code>tailwind.css</code> was created
+                            in
                             the <code>wwwroot/</code> folder after running the build command.
                         </li>
                     </ul>
@@ -208,13 +246,19 @@
                 </li>
                 <li>
                     <strong>Start Tailwind's watch mode:</strong>
-                    Run the command from Step 1.4 and leave it running in your terminal. It'll automatically rebuild your
+                    Run the command from Step 1.4 and leave it running in your terminal. It'll automatically rebuild
+                    your
                     styles whenever you make changes.
                 </li>
                 <li>
                     <strong>Connect the styles:</strong>
                     Open <code>Components/App.razor</code> and add the link tag from Step 1.5. Now your app can use all
                     the Tailwind styles!
+                </li>
+                <li>
+                    <strong>Create your home page:</strong>
+                    In the <code>Components/Pages</code> folder, create <code>Home.razor</code> with a simple welcome
+                    message using Tailwind classes to verify everything works.
                 </li>
             </ol>
         </div>

@@ -7,7 +7,8 @@
 <div class="min-h-screen py-8 rounded-4xl bg-gray-50">
     <div class="w-full mx-auto px-4 max-w-5xl">
         <!-- Back link -->
-        <a href="/trucking-guide" class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
+        <a href="/trucking-guide"
+            class="inline-flex items-center gap-2 text-sm sm:text-base text-blue-600 hover:text-blue-700 mb-4">
             <span>←</span> Back to Trucking Guide
         </a>
 
@@ -18,7 +19,8 @@
 
         <!-- Description -->
         <p class="text-xl text-gray-600 mb-8">
-            Create a new Blazor Server application with interactive rendering mode and set up Tailwind CSS v4 for modern styling.
+            Create a new Blazor Server application with interactive rendering mode and set up Tailwind CSS v4 for modern
+            styling.
         </p>
 
         <!-- What You'll Learn (Gradient Banner) -->
@@ -26,7 +28,9 @@
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
 
             <p class="text-gray-700 mb-4 text-sm sm:text-base">
-                Starting fresh! This step teaches you how to create a clean Blazor Server project from scratch using the .NET CLI, install Tailwind CSS v4 for styling, and configure the asset pipeline. You'll learn essential tooling and setup patterns used throughout the rest of this tutorial.
+                Starting fresh! This step teaches you how to create a clean Blazor Server project from scratch using the
+                .NET CLI, install Tailwind CSS v4 for styling, and configure the asset pipeline. You'll learn essential
+                tooling and setup patterns used throughout the rest of this tutorial.
             </p>
 
             <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
@@ -38,14 +42,23 @@
 
             <div class="mt-2 pt-3 border-t border-blue-200">
                 <p class="text-xs sm:text-sm text-gray-700 mb-2">
-                    <strong>💡 Key Concepts:</strong> Project Setup, Command-Line Tools, CSS Framework Integration, Asset Management
+                    <strong>💡 Key Concepts:</strong> Project Setup, Command-Line Tools, CSS Framework Integration,
+                    Asset Management
                 </p>
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
-                    <a href="/tips#dotnet-cli" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">dotnet CLI</a>
-                    <a href="/tips#npm-packages" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">npm packages</a>
-                    <a href="/tips#tailwind-css" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind CSS</a>
-                    <a href="/tips#net-asset-pipeline" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">.NET Asset Pipeline</a>
+                    <a href="/tips#dotnet-cli"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">dotnet
+                        CLI</a>
+                    <a href="/tips#npm-packages"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">npm
+                        packages</a>
+                    <a href="/tips#tailwind-css"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Tailwind
+                        CSS</a>
+                    <a href="/tips#net-asset-pipeline"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">.NET
+                        Asset Pipeline</a>
                 </div>
             </div>
         </div>
@@ -55,13 +68,15 @@
             <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Project Setup Commands</h2>
 
             <p class="text-sm text-gray-600 mb-4">
-                Follow these steps in order to create your Blazor Server project and configure Tailwind CSS v4 for styling.
+                Follow these steps in order to create your Blazor Server project and configure Tailwind CSS v4 for
+                styling.
             </p>
 
             <!-- Step 1.1: Create Blazor Project -->
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Step 1.1: Create New Blazor Project</div>
-                <p class="text-xs text-gray-600 mb-2">Use the .NET CLI to generate a clean Blazor Server project with interactive rendering.</p>
+                <p class="text-xs text-gray-600 mb-2">Use the .NET CLI to generate a clean Blazor Server project with
+                    interactive rendering.</p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
                     <li><code>-o BlazorAppName</code> sets the output folder and project name</li>
                     <li><code>--interactivity Server</code> enables Blazor Server mode (WebSocket-based)</li>
@@ -75,7 +90,8 @@
             <!-- Step 1.2: Install Tailwind CSS -->
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Step 1.2: Install Tailwind CSS v4</div>
-                <p class="text-xs text-gray-600 mb-2">Use npm to install Tailwind CSS v4 and its command-line interface.</p>
+                <p class="text-xs text-gray-600 mb-2">Use npm to install Tailwind CSS v4 and its command-line interface.
+                </p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
                     <li><code>tailwindcss</code> is the core CSS framework package</li>
                     <li><code>@@tailwindcss/cli</code> is the official CLI tool for building Tailwind</li>
@@ -89,7 +105,8 @@
             <!-- Step 1.3: Create Styles Folder -->
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Step 1.3: Create Styles Folder & input.css</div>
-                <p class="text-xs text-gray-600 mb-2">Create a source CSS file that imports Tailwind - the CLI will process this into the final output.</p>
+                <p class="text-xs text-gray-600 mb-2">Create a source CSS file that imports Tailwind - the CLI will
+                    process this into the final output.</p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
                     <li>Create a <code>Styles</code> folder in your project root</li>
                     <li>Inside it, create <code>input.css</code> with a single import directive</li>
@@ -103,7 +120,8 @@
             <!-- Step 1.4: Build Tailwind CSS -->
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Step 1.4: Build Tailwind CSS with Watch Mode</div>
-                <p class="text-xs text-gray-600 mb-2">Run the Tailwind CLI to process your CSS and watch for changes during development.</p>
+                <p class="text-xs text-gray-600 mb-2">Run the Tailwind CLI to process your CSS and watch for changes
+                    during development.</p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
                     <li><code>npx</code> runs the CLI tool from <code>node_modules</code></li>
                     <li><code>-i ./Styles/input.css</code> specifies the input (source) file</li>
@@ -118,7 +136,8 @@
             <!-- Step 1.5: Link CSS in App.razor -->
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Step 1.5: Link CSS in App.razor</div>
-                <p class="text-xs text-gray-600 mb-2">Add the compiled Tailwind CSS to your app's HTML head using Blazor's asset pipeline.</p>
+                <p class="text-xs text-gray-600 mb-2">Add the compiled Tailwind CSS to your app's HTML head using
+                    Blazor's asset pipeline.</p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
                     <li>Open <code>Components/App.razor</code> and find the <code>&lt;head&gt;</code> section</li>
                     <li><code>@@Assets["tailwind.css"]</code> generates a fingerprinted URL for cache busting</li>
@@ -127,6 +146,35 @@
                 </ul>
                 <pre data-code-title="Razor (Components/App.razor)"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">&lt;link rel="stylesheet" href="@@Assets["tailwind.css"]" /&gt;</pre>
+            </div>
+
+            <!-- Step 1.6: Create a Simple Home Page -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Step 1.6: Create a Simple Home Page</div>
+                <p class="text-xs text-gray-600 mb-2">Create a basic home page component with Tailwind styling to verify
+                    everything works.</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Create <code>Home.razor</code> in <code>Components/Pages/</code> folder</li>
+                    <li><code>@@page "/"</code> directive makes this the root/home route</li>
+                    <li>Use Tailwind utility classes like <code>text-4xl</code>, <code>font-bold</code>,
+                        <code>text-center</code></li>
+                    <li>This verifies both Blazor routing and Tailwind CSS are working correctly</li>
+                </ul>
+                <pre data-code-title="Razor (Components/Pages/Home.razor)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/"
+
+&lt;PageTitle&gt;Home&lt;/PageTitle&gt;
+
+&lt;div class="min-h-screen flex items-center justify-center bg-gray-50"&gt;
+    &lt;div class="text-center"&gt;
+        &lt;h1 class="text-4xl font-bold text-gray-900 mb-4"&gt;
+            Welcome to Blazor! 🚀
+        &lt;/h1&gt;
+        &lt;p class="text-xl text-gray-600"&gt;
+            Your project is ready to go.
+        &lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
             </div>
         </div>
 
@@ -141,15 +189,21 @@
                     <div class="space-y-4">
                         <div>
                             <p class="text-sm font-semibold text-blue-900 mb-1">Keep Tailwind CLI running</p>
-                            <p class="text-xs text-blue-800">The <code>--watch</code> flag is essential during development. It monitors your Razor files for new Tailwind classes and rebuilds the CSS instantly. Without it, you'd need to manually rebuild every time you add a class.</p>
+                            <p class="text-xs text-blue-800">The <code>--watch</code> flag is essential during
+                                development. It monitors your Razor files for new Tailwind classes and rebuilds the CSS
+                                instantly. Without it, you'd need to manually rebuild every time you add a class.</p>
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-blue-900 mb-1">Tailwind v4 simplification</p>
-                            <p class="text-xs text-blue-800">Version 4 removes the need for <code>tailwind.config.js</code>. Just <code>@@import "tailwindcss";</code> and go! This makes setup much faster and cleaner.</p>
+                            <p class="text-xs text-blue-800">Version 4 removes the need for
+                                <code>tailwind.config.js</code>. Just <code>@@import "tailwindcss";</code> and go! This
+                                makes setup much faster and cleaner.</p>
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-blue-900 mb-1">Asset pipeline benefits</p>
-                            <p class="text-xs text-blue-800">Using <code>@@Assets["file.css"]</code> instead of hardcoded paths ensures users always get fresh CSS after deployments. The hash changes when your file changes, forcing browser cache invalidation.</p>
+                            <p class="text-xs text-blue-800">Using <code>@@Assets["file.css"]</code> instead of
+                                hardcoded paths ensures users always get fresh CSS after deployments. The hash changes
+                                when your file changes, forcing browser cache invalidation.</p>
                         </div>
                     </div>
                 </div>
@@ -158,10 +212,14 @@
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                     <h3 class="text-sm font-bold text-yellow-900 mb-2">⚠️ Troubleshooting</h3>
                     <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
-                        <li><strong>Tailwind classes not working?</strong> Make sure the CLI is running with <code>--watch</code> and check that <code>wwwroot/tailwind.css</code> was created.</li>
-                        <li><strong>npm command not found?</strong> Install Node.js from <a href="https://nodejs.org" class="underline">nodejs.org</a> - it includes npm.</li>
-                        <li><strong>Asset pipeline not working?</strong> Verify the CSS file is in <code>wwwroot</code> and the link tag uses <code>@@Assets["tailwind.css"]</code> with correct escaping.</li>
-                        <li><strong>CSS not updating?</strong> Hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R) to bypass cached files.</li>
+                        <li><strong>Tailwind classes not working?</strong> Make sure the CLI is running with
+                            <code>--watch</code> and check that <code>wwwroot/tailwind.css</code> was created.</li>
+                        <li><strong>npm command not found?</strong> Install Node.js from <a href="https://nodejs.org"
+                                class="underline">nodejs.org</a> - it includes npm.</li>
+                        <li><strong>Asset pipeline not working?</strong> Verify the CSS file is in <code>wwwroot</code>
+                            and the link tag uses <code>@@Assets["tailwind.css"]</code> with correct escaping.</li>
+                        <li><strong>CSS not updating?</strong> Hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R)
+                            to bypass cached files.</li>
                     </ul>
                 </div>
             </div>
@@ -173,7 +231,8 @@
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
                 <li>
                     <strong>Create the project:</strong>
-                    Open a terminal and run <code>dotnet new blazor -o TruckingApp --interactivity Server --all-interactive --empty</code>
+                    Open a terminal and run
+                    <code>dotnet new blazor -o TruckingApp --interactivity Server --all-interactive --empty</code>
                 </li>
                 <li>
                     <strong>Navigate to project folder:</strong>
@@ -189,19 +248,28 @@
                 </li>
                 <li>
                     <strong>Create input.css:</strong>
-                    Inside <code>Styles</code>, create <code>input.css</code> with just one line: <code>@@import "tailwindcss";</code>
+                    Inside <code>Styles</code>, create <code>input.css</code> with just one line:
+                    <code>@@import "tailwindcss";</code>
                 </li>
                 <li>
                     <strong>Build CSS with watch:</strong>
-                    Run <code>npx @@tailwindcss/cli -i ./Styles/input.css -o ./wwwroot/tailwind.css --watch</code> and keep this terminal open
+                    Run <code>npx @@tailwindcss/cli -i ./Styles/input.css -o ./wwwroot/tailwind.css --watch</code> and
+                    keep this terminal open
                 </li>
                 <li>
                     <strong>Link CSS in App.razor:</strong>
-                    Open <code>Components/App.razor</code>, find the <code>&lt;head&gt;</code> section, and add <code>&lt;link rel="stylesheet" href="@@Assets["tailwind.css"]" /&gt;</code>
+                    Open <code>Components/App.razor</code>, find the <code>&lt;head&gt;</code> section, and add
+                    <code>&lt;link rel="stylesheet" href="@@Assets["tailwind.css"]" /&gt;</code>
+                </li>
+                <li>
+                    <strong>Create Home.razor:</strong>
+                    In <code>Components/Pages</code>, create <code>Home.razor</code> with the <code>@@page "/"</code>
+                    directive and add a simple welcome message using Tailwind classes
                 </li>
                 <li>
                     <strong>Run your app:</strong>
-                    In a new terminal (keep Tailwind running), execute <code>dotnet run</code> and open the URL shown (usually <code>https://localhost:5001</code>)
+                    In a new terminal (keep Tailwind running), execute <code>dotnet run</code> and open the URL shown
+                    (usually <code>https://localhost:5001</code>)
                 </li>
             </ol>
         </div>
@@ -211,7 +279,8 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 1?</h3>
-                    <p class="text-sm text-gray-600">Mark this step complete to track your progress and unlock the next step.</p>
+                    <p class="text-sm text-gray-600">Mark this step complete to track your progress and unlock the next
+                        step.</p>
                 </div>
                 @if (isComplete)
                 {
