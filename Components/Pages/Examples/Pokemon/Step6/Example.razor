@@ -19,8 +19,8 @@
 
         <!-- Description -->
         <p class="text-xl text-gray-600 mb-8">
-            Let's finish strong! Add search so users can find Pokemon by name, and create a modal to show detailed stats
-            when they click a card. Almost there!
+            Time to level up! Add search so users can find Pokemon by name, and create a modal to show detailed stats
+            when they click a card. You're making great progress!
         </p>
 
         <!-- What You'll Learn (Gradient Banner) -->
@@ -68,27 +68,208 @@
             <h2 class="text-xl font-bold text-gray-900 mb-4">🧩 Sample Component: Search</h2>
 
             <p class="text-sm text-gray-600 mb-4">
-                This is it - the complete Pokemon explorer! It has everything: search that filters in real-time,
+                Your Pokemon explorer is really coming together! This step adds search that filters in real-time,
                 pagination that resets when you search, and a beautiful modal that shows all the Pokemon details when
                 you click a card.
             </p>
 
+            <!-- Search.razor.cs Code Block -->
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Components/Pages/Pokemon/Search.razor.cs</div>
+                <p class="text-xs text-gray-600 mb-2">Code-behind with search logic, API calls, and modal state</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>FilteredPokemon property filters list based on searchQuery</li>
+                    <li>Case-insensitive search with StringComparison.OrdinalIgnoreCase</li>
+                    <li>ShowDetails() fetches detailed Pokemon data from API</li>
+                    <li>OnSearchChanged() resets pagination when search changes</li>
+                    <li>DTO classes for deserializing API responses</li>
+                </ul>
+                <pre data-code-title="C# (Search.razor.cs)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
+
+namespace PokemonCollector.Components.Pages.Pokemon;
+
+public partial class Search : ComponentBase
+{
+    [Inject] protected HttpClient Http { get; set; } = default!;
+
+    protected bool isLoading = true;
+    protected string errorMessage = string.Empty;
+    protected string searchQuery = "";
+    
+    protected List&lt;PokemonListItem&gt; allPokemon = new();
+    protected int currentPage = 1;
+    protected int pageSize = 20;
+    protected int totalPages = 0;
+    
+    protected PokemonDetail? selectedPokemon;
+
+    protected List&lt;PokemonListItem&gt; FilteredPokemon
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery))
+                return allPokemon;
+            
+            return allPokemon
+                .Where(p =&gt; p.Name.Contains(searchQuery, 
+                       StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+
+    protected List&lt;PokemonListItem&gt; CurrentPagePokemon
+    {
+        get
+        {
+            return FilteredPokemon
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPokemonAsync();
+    }
+
+    private async Task LoadPokemonAsync()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var response = await Http.GetFromJsonAsync&lt;PokemonListResponse&gt;(
+                "https://pokeapi.co/api/v2/pokemon?limit=151");
+
+            if (response?.Results != null)
+            {
+                allPokemon = response.Results;
+                UpdatePagination();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load Pokemon: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    protected void OnSearchChanged()
+    {
+        currentPage = 1;
+        UpdatePagination();
+    }
+
+    protected void UpdatePagination()
+    {
+        var filteredCount = FilteredPokemon.Count;
+        totalPages = filteredCount == 0 ? 1 : 
+            (int)Math.Ceiling(filteredCount / (double)pageSize);
+        
+        if (currentPage &gt; totalPages)
+            currentPage = totalPages;
+    }
+
+    protected void PreviousPage()
+    {
+        if (currentPage &gt; 1) currentPage--;
+    }
+
+    protected void NextPage()
+    {
+        if (currentPage &lt; totalPages) currentPage++;
+    }
+
+    protected async Task ShowDetails(int id)
+    {
+        try
+        {
+            selectedPokemon = await Http.GetFromJsonAsync&lt;PokemonDetail&gt;(
+                $"https://pokeapi.co/api/v2/pokemon/{id}");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load details: {ex.Message}";
+        }
+    }
+
+    protected void CloseModal() =&gt; selectedPokemon = null;
+
+    protected static int GetPokemonId(string url)
+    {
+        var parts = url.TrimEnd('/').Split('/');
+        return int.Parse(parts[^1]);
+    }
+
+    protected static string GetSpriteUrl(int id) =&gt;
+        $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png";
+
+    // DTO Classes
+    public class PokemonListResponse
+    {
+        public List&lt;PokemonListItem&gt; Results { get; set; } = new();
+    }
+
+    public class PokemonListItem
+    {
+        public string Name { get; set; } = "";
+        public string Url { get; set; } = "";
+    }
+
+    public class PokemonDetail
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public int Height { get; set; }
+        public int Weight { get; set; }
+        public int Base_Experience { get; set; }
+        public List&lt;PokemonType&gt; Types { get; set; } = new();
+        public List&lt;PokemonAbility&gt; Abilities { get; set; } = new();
+    }
+
+    public class PokemonType
+    {
+        public TypeInfo Type { get; set; } = new();
+    }
+
+    public class TypeInfo
+    {
+        public string Name { get; set; } = "";
+    }
+
+    public class PokemonAbility
+    {
+        public AbilityInfo Ability { get; set; } = new();
+    }
+
+    public class AbilityInfo
+    {
+        public string Name { get; set; } = "";
+    }
+}</pre>
+            </div>
+
+            <!-- Search.razor Code Block -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
                 <div class="text-xs text-gray-500 mb-1">Components/Pages/Pokemon/Search.razor</div>
-                <p class="text-xs text-gray-600 mb-2">Complete search and filter implementation with modal details</p>
+                <p class="text-xs text-gray-600 mb-2">Razor markup with search input, grid, pagination, and modal</p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
                     <li>Search input with @@bind:event="oninput" for real-time filtering</li>
-                    <li>@@bind:after resets pagination when search changes</li>
-                    <li>Case-insensitive Contains() for flexible search</li>
-                    <li>Modal overlay with Pokemon details</li>
-                    <li>@@onclick:stopPropagation prevents modal close on content click</li>
+                    <li>@@bind:after runs OnSearchChanged() after each keystroke</li>
+                    <li>Pokemon grid with clickable cards</li>
+                    <li>Modal overlay with @@onclick:stopPropagation on content</li>
                 </ul>
                 <pre data-code-title="Razor (Search.razor)"
                     class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/pokemon/search"
 @@rendermode InteractiveServer
-@@inherits SearchBase
 
+&lt;div class="max-w-6xl mx-auto p-4"&gt;
 &lt;h3 class="text-xl font-semibold mb-4"&gt;Pokemon Search & Details&lt;/h3&gt;
 
 &lt;!-- Search input --&gt;
@@ -133,7 +314,7 @@ else
                         hover:border-blue-400 hover:shadow-xl 
                         transition-all duration-200 cursor-pointer"&gt;
                 
-                &lt;div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100"&gt;
+                &lt;div class="aspect-square bg-linear-to-br from-gray-50 to-gray-100"&gt;
                     &lt;img src="@@GetSpriteUrl(id)" 
                          class="w-full h-full object-contain p-2
                                 hover:scale-110 transition-transform duration-300" 
@@ -250,7 +431,9 @@ else
             &lt;/button&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-}</pre>
+}
+&lt;/div&gt;
+</pre>
             </div>
 
             <!-- Step-by-step breakdown -->
@@ -596,13 +779,15 @@ public class PokemonDetail
                         {
                             int id = GetPokemonId(pokemon.Url);
 
-                            <div @onclick="@(async () => await ShowDetails(id))" class="border-2 border-gray-200 rounded-xl overflow-hidden 
-                                                        hover:border-blue-400 hover:shadow-xl 
-                                                        transition-all duration-200 cursor-pointer">
+                            <div @onclick="@(async () => await ShowDetails(id))"
+                                class="border-2 border-gray-200 rounded-xl overflow-hidden 
+                                                                                                                                        hover:border-blue-400 hover:shadow-xl 
+                                                                                                                                        transition-all duration-200 cursor-pointer">
 
-                                <div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100">
-                                    <img src="@GetSpriteUrl(id)" class="w-full h-full object-contain p-2
-                                                                hover:scale-110 transition-transform duration-300"
+                                <div class="aspect-square bg-linear-to-br from-gray-50 to-gray-100">
+                                    <img src="@GetSpriteUrl(id)"
+                                        class="w-full h-full object-contain p-2
+                                                                                                                                                hover:scale-110 transition-transform duration-300"
                                         alt="@pokemon.Name" loading="lazy" />
                                 </div>
 
@@ -610,8 +795,9 @@ public class PokemonDetail
                                     <span class="text-xs text-gray-500 font-mono">
                                         #@id.ToString("D3")
                                     </span>
-                                    <p class="font-semibold text-gray-800 capitalize 
-                                                              hover:text-blue-600 transition-colors">
+                                    <p
+                                        class="font-semibold text-gray-800 capitalize 
+                                                                                                                                              hover:text-blue-600 transition-colors">
                                         @pokemon.Name
                                     </p>
                                 </div>
@@ -621,9 +807,10 @@ public class PokemonDetail
 
                     <!-- Pagination -->
                     <div class="flex items-center justify-between mt-6">
-                        <button @onclick="PreviousPage" disabled="@(currentPage == 1)" class="px-4 py-2 bg-blue-600 text-white rounded-lg
-                                               hover:bg-blue-700 transition-colors
-                                               disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button @onclick="PreviousPage" disabled="@(currentPage == 1)"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg
+                                                                                       hover:bg-blue-700 transition-colors
+                                                                                       disabled:opacity-50 disabled:cursor-not-allowed">
                             ← Previous
                         </button>
 
@@ -631,9 +818,10 @@ public class PokemonDetail
                             Page @currentPage of @totalPages
                         </span>
 
-                        <button @onclick="NextPage" disabled="@(currentPage >= totalPages)" class="px-4 py-2 bg-blue-600 text-white rounded-lg
-                                               hover:bg-blue-700 transition-colors
-                                               disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button @onclick="NextPage" disabled="@(currentPage >= totalPages)"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg
+                                                                                       hover:bg-blue-700 transition-colors
+                                                                                       disabled:opacity-50 disabled:cursor-not-allowed">
                             Next →
                         </button>
                     </div>
@@ -681,8 +869,9 @@ public class PokemonDetail
                         <div class="flex gap-2">
                             @foreach (var type in selectedPokemon.Types)
                             {
-                                <span class="px-3 py-1 bg-blue-100 text-blue-700 
-                                                             rounded-full text-sm capitalize">
+                                <span
+                                    class="px-3 py-1 bg-blue-100 text-blue-700 
+                                                                                                                                             rounded-full text-sm capitalize">
                                     @type.Type.Name
                                 </span>
                             }
@@ -695,8 +884,9 @@ public class PokemonDetail
                         <div class="flex flex-wrap gap-2">
                             @foreach (var ability in selectedPokemon.Abilities)
                             {
-                                <span class="px-3 py-1 bg-green-100 text-green-700 
-                                                             rounded-full text-sm capitalize">
+                                <span
+                                    class="px-3 py-1 bg-green-100 text-green-700 
+                                                                                                                                             rounded-full text-sm capitalize">
                                     @ability.Ability.Name
                                 </span>
                             }
@@ -704,8 +894,9 @@ public class PokemonDetail
                     </div>
 
                     <!-- Close button -->
-                    <button @onclick="CloseModal" class="w-full mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 
-                                           text-white rounded-lg transition-colors">
+                    <button @onclick="CloseModal"
+                        class="w-full mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 
+                                                                                   text-white rounded-lg transition-colors">
                         Close
                     </button>
                 </div>
@@ -717,7 +908,7 @@ public class PokemonDetail
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 mb-1">Finished Step 6?</h3>
-                    <p class="text-sm text-gray-600">Great! One more step to go! 🚀</p>
+                    <p class="text-sm text-gray-600">Awesome progress! Keep going! 🚀</p>
                 </div>
                 @if (isComplete)
                 {

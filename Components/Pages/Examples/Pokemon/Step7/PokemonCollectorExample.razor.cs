@@ -1,25 +1,24 @@
 using Microsoft.AspNetCore.Components;
-using System.Text.Json.Serialization;
 
 namespace BlazorMock.Components.Pages.Examples.Pokemon.Step7;
 
-public class PokedexExampleBase : ComponentBase
+public partial class PokemonCollectorExample : ComponentBase
 {
-    [Inject] private IHttpClientFactory HttpClientFactory { get; set; } = default!;
+    [Inject] private HttpClient Http { get; set; } = default!;
 
-    protected bool isLoading = true;
-    protected string errorMessage = string.Empty;
-    protected List<PokemonListItem> allPokemon = new();
-    protected List<PokemonListItem> filteredPokemon = new();
-    protected PokemonDetail? selectedPokemon = null;
-    protected string searchQuery = "";
-    protected string selectedType = "";
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+    private List<PokemonListItem> allPokemon = new();
+    private List<PokemonListItem> filteredPokemon = new();
+    private PokemonDetail? selectedPokemon = null;
+    private string searchQuery = "";
+    private string selectedType = "";
     
-    protected int currentPage = 1;
-    protected int pageSize = 10;
-    protected int totalPages => (int)Math.Ceiling(filteredPokemon.Count / (double)pageSize);
+    private int currentPage = 1;
+    private int pageSize = 20;
+    private int totalPages => (int)Math.Ceiling(filteredPokemon.Count / (double)pageSize);
 
-    protected List<PokemonListItem> CurrentPagePokemon => filteredPokemon
+    private List<PokemonListItem> CurrentPagePokemon => filteredPokemon
         .Skip((currentPage - 1) * pageSize)
         .Take(pageSize)
         .ToList();
@@ -29,20 +28,18 @@ public class PokedexExampleBase : ComponentBase
         await LoadPokemonAsync();
     }
 
-    public async Task LoadPokemonAsync()
+    private async Task LoadPokemonAsync()
     {
         isLoading = true;
         errorMessage = string.Empty;
 
         try
         {
-            var http = HttpClientFactory.CreateClient("PokeApi");
-            var response = await http.GetFromJsonAsync<PokemonListResponse>(
+            var response = await Http.GetFromJsonAsync<PokemonListResponse>(
                 "https://pokeapi.co/api/v2/pokemon?limit=151");
 
             if (response?.Results != null)
             {
-                allPokemon.Clear();
                 foreach (var result in response.Results)
                 {
                     var id = int.Parse(result.Url.TrimEnd('/').Split('/').Last());
@@ -50,26 +47,22 @@ public class PokedexExampleBase : ComponentBase
                     {
                         Id = id,
                         Name = result.Name,
-                        Url = result.Url,
-                        SpriteUrl = $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png"
+                        SpriteUrl = GetSpriteUrl(id)
                     });
                 }
-
-                // Load types for first 50 Pokemon for filtering
+                
+                // Load types for first 50 Pokemon (for type filtering)
                 var typeTasks = allPokemon.Take(50).Select(async p =>
                 {
-                    try
+                    var apiResponse = await Http.GetFromJsonAsync<PokemonApiResponse>(
+                        $"https://pokeapi.co/api/v2/pokemon/{p.Id}");
+                    if (apiResponse?.Types != null)
                     {
-                        var details = await http.GetFromJsonAsync<PokemonDetailResponse>(p.Url);
-                        if (details?.Types != null)
-                        {
-                            p.Types = details.Types.Select(t => t.Type.Name).ToList();
-                        }
+                        p.Types = apiResponse.Types.Select(t => t.Type.Name).ToList();
                     }
-                    catch { }
                 });
                 await Task.WhenAll(typeTasks);
-
+                
                 ApplyFilters();
             }
         }
@@ -83,7 +76,7 @@ public class PokedexExampleBase : ComponentBase
         }
     }
 
-    protected void ApplyFilters()
+    private void ApplyFilters()
     {
         filteredPokemon = allPokemon.Where(p =>
         {
@@ -91,361 +84,264 @@ public class PokedexExampleBase : ComponentBase
                 p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
             
             var matchesType = string.IsNullOrWhiteSpace(selectedType) ||
-                (p.Types?.Contains(selectedType) ?? false);
+                (p.Types?.Any(t => t.Equals(selectedType, 
+                    StringComparison.OrdinalIgnoreCase)) ?? false);
             
             return matchesSearch && matchesType;
         }).ToList();
 
         currentPage = 1;
-        StateHasChanged();
     }
 
-    protected void PreviousPage()
+    private void PreviousPage()
     {
-        if (currentPage > 1)
-        {
-            currentPage--;
-        }
+        if (currentPage > 1) currentPage--;
     }
 
-    protected void NextPage()
+    private void NextPage()
     {
-        if (currentPage < totalPages)
-        {
-            currentPage++;
-        }
+        if (currentPage < totalPages) currentPage++;
     }
 
-    protected async Task ShowDetails(int id)
+    private async Task ShowDetails(int id)
     {
-        isLoading = true;
         try
         {
-            var http = HttpClientFactory.CreateClient("PokeApi");
-            var details = await http.GetFromJsonAsync<PokemonDetailResponse>(
+            var apiResponse = await Http.GetFromJsonAsync<PokemonApiResponse>(
                 $"https://pokeapi.co/api/v2/pokemon/{id}");
-
-            if (details != null)
+            if (apiResponse != null)
             {
-                selectedPokemon = new PokemonDetail
-                {
-                    Id = details.Id,
-                    Name = details.Name,
-                    SpriteUrl = $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png",
-                    Height = details.Height,
-                    Weight = details.Weight,
-                    BaseExperience = details.BaseExperience,
-                    Types = details.Types?.Select(t => t.Type.Name).ToList() ?? new(),
-                    Abilities = details.Abilities?.Select(a => a.Ability.Name).ToList() ?? new(),
-                    Hp = details.Stats?.FirstOrDefault(s => s.Stat.Name == "hp")?.BaseStat ?? 0,
-                    Attack = details.Stats?.FirstOrDefault(s => s.Stat.Name == "attack")?.BaseStat ?? 0,
-                    Defense = details.Stats?.FirstOrDefault(s => s.Stat.Name == "defense")?.BaseStat ?? 0,
-                    Speed = details.Stats?.FirstOrDefault(s => s.Stat.Name == "speed")?.BaseStat ?? 0
-                };
+                selectedPokemon = PokemonDetail.FromApiResponse(apiResponse);
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"Failed to load Pokemon details: {ex.Message}";
-        }
-        finally
-        {
-            isLoading = false;
+            errorMessage = $"Failed to load details: {ex.Message}";
         }
     }
 
-    protected void CloseModal()
-    {
-        selectedPokemon = null;
-    }
+    private void CloseModal() => selectedPokemon = null;
 
-    protected int GetPokemonId(string url)
-    {
-        var parts = url.TrimEnd('/').Split('/');
-        return int.Parse(parts[^1]);
-    }
+    private static string GetSpriteUrl(int id) =>
+        $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png";
 
-    protected string GetSpriteUrl(int id)
-    {
-        return $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png";
-    }
-
-    protected string GetTypeBadgeClass(string type) => type.ToLower() switch
+    // Type color mapping methods
+    private string GetTypeBadgeClass(string type) => type.ToLower() switch
     {
         "fire" => "px-2.5 py-1 bg-red-50 text-red-700 border border-red-200 rounded-md text-xs font-medium capitalize",
         "water" => "px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-xs font-medium capitalize",
         "grass" => "px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-md text-xs font-medium capitalize",
         "electric" => "px-2.5 py-1 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-md text-xs font-medium capitalize",
-        "ice" => "px-2.5 py-1 bg-cyan-50 text-cyan-700 border border-cyan-200 rounded-md text-xs font-medium capitalize",
-        "fighting" => "px-2.5 py-1 bg-orange-50 text-orange-700 border border-orange-200 rounded-md text-xs font-medium capitalize",
-        "poison" => "px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-md text-xs font-medium capitalize",
-        "ground" => "px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-md text-xs font-medium capitalize",
-        "flying" => "px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-md text-xs font-medium capitalize",
-        "psychic" => "px-2.5 py-1 bg-pink-50 text-pink-700 border border-pink-200 rounded-md text-xs font-medium capitalize",
-        "bug" => "px-2.5 py-1 bg-lime-50 text-lime-700 border border-lime-200 rounded-md text-xs font-medium capitalize",
-        "rock" => "px-2.5 py-1 bg-stone-50 text-stone-700 border border-stone-200 rounded-md text-xs font-medium capitalize",
-        "ghost" => "px-2.5 py-1 bg-violet-50 text-violet-700 border border-violet-200 rounded-md text-xs font-medium capitalize",
-        "dragon" => "px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-300 rounded-md text-xs font-medium capitalize",
-        "dark" => "px-2.5 py-1 bg-gray-800 text-gray-100 border border-gray-700 rounded-md text-xs font-medium capitalize",
-        "steel" => "px-2.5 py-1 bg-slate-50 text-slate-700 border border-slate-200 rounded-md text-xs font-medium capitalize",
-        "fairy" => "px-2.5 py-1 bg-pink-50 text-pink-700 border border-pink-300 rounded-md text-xs font-medium capitalize",
-        "normal" => "px-2.5 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-md text-xs font-medium capitalize",
+        // ... add all 18 types
         _ => "px-2.5 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-md text-xs font-medium capitalize"
     };
 
-    protected string GetTypeChipClass(string type) => type.ToLower() switch
+    private string GetTypeChipClass(string type) => type.ToLower() switch
     {
-        "grass" => "px-4 py-1.5 bg-green-500 text-white rounded-full text-sm font-semibold capitalize",
-        "poison" => "px-4 py-1.5 bg-purple-500 text-white rounded-full text-sm font-semibold capitalize",
         "fire" => "px-4 py-1.5 bg-red-500 text-white rounded-full text-sm font-semibold capitalize",
         "water" => "px-4 py-1.5 bg-blue-500 text-white rounded-full text-sm font-semibold capitalize",
-        "electric" => "px-4 py-1.5 bg-yellow-500 text-white rounded-full text-sm font-semibold capitalize",
-        "ice" => "px-4 py-1.5 bg-cyan-500 text-white rounded-full text-sm font-semibold capitalize",
-        "fighting" => "px-4 py-1.5 bg-orange-600 text-white rounded-full text-sm font-semibold capitalize",
-        "ground" => "px-4 py-1.5 bg-amber-600 text-white rounded-full text-sm font-semibold capitalize",
-        "flying" => "px-4 py-1.5 bg-indigo-500 text-white rounded-full text-sm font-semibold capitalize",
-        "psychic" => "px-4 py-1.5 bg-pink-500 text-white rounded-full text-sm font-semibold capitalize",
-        "bug" => "px-4 py-1.5 bg-lime-600 text-white rounded-full text-sm font-semibold capitalize",
-        "rock" => "px-4 py-1.5 bg-stone-600 text-white rounded-full text-sm font-semibold capitalize",
-        "ghost" => "px-4 py-1.5 bg-violet-600 text-white rounded-full text-sm font-semibold capitalize",
-        "dragon" => "px-4 py-1.5 bg-indigo-600 text-white rounded-full text-sm font-semibold capitalize",
-        "dark" => "px-4 py-1.5 bg-gray-800 text-white rounded-full text-sm font-semibold capitalize",
-        "steel" => "px-4 py-1.5 bg-slate-600 text-white rounded-full text-sm font-semibold capitalize",
-        "fairy" => "px-4 py-1.5 bg-pink-500 text-white rounded-full text-sm font-semibold capitalize",
-        "normal" => "px-4 py-1.5 bg-gray-500 text-white rounded-full text-sm font-semibold capitalize",
+        "grass" => "px-4 py-1.5 bg-green-500 text-white rounded-full text-sm font-semibold capitalize",
+        // ... add all 18 types
         _ => "px-4 py-1.5 bg-gray-500 text-white rounded-full text-sm font-semibold capitalize"
     };
 
-    protected string GetTypeBackgroundColor(string type) => type.ToLower() switch
+    private string GetTypeBackgroundColor(string type) => type.ToLower() switch
     {
-        "grass" => "bg-gradient-to-br from-green-300 to-green-200",
-        "poison" => "bg-gradient-to-br from-purple-300 to-purple-200",
         "fire" => "bg-gradient-to-br from-red-300 to-orange-200",
         "water" => "bg-gradient-to-br from-blue-300 to-blue-200",
+        "grass" => "bg-gradient-to-br from-green-300 to-green-200",
         "electric" => "bg-gradient-to-br from-yellow-300 to-yellow-200",
-        "ice" => "bg-gradient-to-br from-cyan-300 to-cyan-200",
-        "fighting" => "bg-gradient-to-br from-orange-400 to-orange-300",
-        "ground" => "bg-gradient-to-br from-amber-400 to-amber-300",
-        "flying" => "bg-gradient-to-br from-indigo-300 to-indigo-200",
-        "psychic" => "bg-gradient-to-br from-pink-300 to-pink-200",
-        "bug" => "bg-gradient-to-br from-lime-300 to-lime-200",
-        "rock" => "bg-gradient-to-br from-stone-400 to-stone-300",
-        "ghost" => "bg-gradient-to-br from-violet-400 to-violet-300",
-        "dragon" => "bg-gradient-to-br from-indigo-400 to-purple-300",
-        "dark" => "bg-gradient-to-br from-gray-700 to-gray-600",
-        "steel" => "bg-gradient-to-br from-slate-400 to-slate-300",
-        "fairy" => "bg-gradient-to-br from-pink-300 to-pink-200",
-        "normal" => "bg-gradient-to-br from-gray-300 to-gray-200",
+        // ... add all 18 types
         _ => "bg-gradient-to-br from-gray-300 to-gray-200"
     };
 
-    protected string GetWeaknessChipClass(string type) => type.ToLower() switch
+    private List<string> GetTypeWeaknesses(string type) => type.ToLower() switch
     {
-        "fire" => "px-3 py-1.5 bg-orange-500 text-white rounded-lg text-sm font-medium capitalize",
-        "ice" => "px-3 py-1.5 bg-cyan-400 text-white rounded-lg text-sm font-medium capitalize",
-        "psychic" => "px-3 py-1.5 bg-pink-500 text-white rounded-lg text-sm font-medium capitalize",
-        "flying" => "px-3 py-1.5 bg-indigo-400 text-white rounded-lg text-sm font-medium capitalize",
-        "water" => "px-3 py-1.5 bg-blue-500 text-white rounded-lg text-sm font-medium capitalize",
-        "grass" => "px-3 py-1.5 bg-green-500 text-white rounded-lg text-sm font-medium capitalize",
-        "electric" => "px-3 py-1.5 bg-yellow-500 text-white rounded-lg text-sm font-medium capitalize",
-        "ground" => "px-3 py-1.5 bg-amber-600 text-white rounded-lg text-sm font-medium capitalize",
-        "rock" => "px-3 py-1.5 bg-stone-600 text-white rounded-lg text-sm font-medium capitalize",
-        "fighting" => "px-3 py-1.5 bg-orange-600 text-white rounded-lg text-sm font-medium capitalize",
-        "bug" => "px-3 py-1.5 bg-lime-600 text-white rounded-lg text-sm font-medium capitalize",
-        "poison" => "px-3 py-1.5 bg-purple-500 text-white rounded-lg text-sm font-medium capitalize",
-        "ghost" => "px-3 py-1.5 bg-violet-600 text-white rounded-lg text-sm font-medium capitalize",
-        "dark" => "px-3 py-1.5 bg-gray-800 text-white rounded-lg text-sm font-medium capitalize",
-        "steel" => "px-3 py-1.5 bg-slate-600 text-white rounded-lg text-sm font-medium capitalize",
-        "fairy" => "px-3 py-1.5 bg-pink-500 text-white rounded-lg text-sm font-medium capitalize",
-        "dragon" => "px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium capitalize",
-        _ => "px-3 py-1.5 bg-gray-500 text-white rounded-lg text-sm font-medium capitalize"
+        "grass" => new() { "Fire", "Ice", "Poison", "Flying", "Bug" },
+        "fire" => new() { "Water", "Ground", "Rock" },
+        "water" => new() { "Electric", "Grass" },
+        "electric" => new() { "Ground" },
+        "normal" => new() { "Fighting" },
+        // ... add all 18 types
+        _ => new() { "Fighting" }
     };
 
-    protected List<string> GetTypeWeaknesses(string type) => type.ToLower() switch
+    private string GetWeaknessChipClass(string type) => type.ToLower() switch
     {
-        "grass" => new List<string> { "Fire", "Ice", "Poison", "Flying", "Bug" },
-        "poison" => new List<string> { "Ground", "Psychic" },
-        "fire" => new List<string> { "Water", "Ground", "Rock" },
-        "water" => new List<string> { "Electric", "Grass" },
-        "electric" => new List<string> { "Ground" },
-        "ice" => new List<string> { "Fire", "Fighting", "Rock", "Steel" },
-        "fighting" => new List<string> { "Flying", "Psychic", "Fairy" },
-        "ground" => new List<string> { "Water", "Grass", "Ice" },
-        "flying" => new List<string> { "Electric", "Ice", "Rock" },
-        "psychic" => new List<string> { "Bug", "Ghost", "Dark" },
-        "bug" => new List<string> { "Fire", "Flying", "Rock" },
-        "rock" => new List<string> { "Water", "Grass", "Fighting", "Ground", "Steel" },
-        "ghost" => new List<string> { "Ghost", "Dark" },
-        "dragon" => new List<string> { "Ice", "Dragon", "Fairy" },
-        "dark" => new List<string> { "Fighting", "Bug", "Fairy" },
-        "steel" => new List<string> { "Fire", "Fighting", "Ground" },
-        "fairy" => new List<string> { "Poison", "Steel" },
-        "normal" => new List<string> { "Fighting" },
-        _ => new List<string> { }
+        "fire" => "px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium capitalize",
+        "water" => "px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium capitalize",
+        "grass" => "px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium capitalize",
+        "electric" => "px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium capitalize",
+        "ice" => "px-3 py-1 bg-cyan-100 text-cyan-700 rounded-full text-xs font-medium capitalize",
+        "fighting" => "px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium capitalize",
+        "poison" => "px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium capitalize",
+        "ground" => "px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium capitalize",
+        "flying" => "px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium capitalize",
+        "psychic" => "px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium capitalize",
+        "bug" => "px-3 py-1 bg-lime-100 text-lime-700 rounded-full text-xs font-medium capitalize",
+        "rock" => "px-3 py-1 bg-stone-100 text-stone-700 rounded-full text-xs font-medium capitalize",
+        "ghost" => "px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-medium capitalize",
+        "dragon" => "px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium capitalize",
+        "dark" => "px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-xs font-medium capitalize",
+        "steel" => "px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium capitalize",
+        "fairy" => "px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium capitalize",
+        _ => "px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium capitalize"
     };
 
-    protected List<int> GetEvolutionChain(int pokemonId) => pokemonId switch
+    private List<int> GetEvolutionChain(int pokemonId) => pokemonId switch
     {
-        1 => new List<int> { 1, 2, 3 },
-        2 => new List<int> { 1, 2, 3 },
-        3 => new List<int> { 1, 2, 3 },
-        4 => new List<int> { 4, 5, 6 },
-        5 => new List<int> { 4, 5, 6 },
-        6 => new List<int> { 4, 5, 6 },
-        7 => new List<int> { 7, 8, 9 },
-        8 => new List<int> { 7, 8, 9 },
-        9 => new List<int> { 7, 8, 9 },
-        10 => new List<int> { 10, 11, 12 },
-        11 => new List<int> { 10, 11, 12 },
-        12 => new List<int> { 10, 11, 12 },
-        13 => new List<int> { 13, 14, 15 },
-        14 => new List<int> { 13, 14, 15 },
-        15 => new List<int> { 13, 14, 15 },
-        16 => new List<int> { 16, 17, 18 },
-        17 => new List<int> { 16, 17, 18 },
-        18 => new List<int> { 16, 17, 18 },
-        19 => new List<int> { 19, 20 },
-        20 => new List<int> { 19, 20 },
-        21 => new List<int> { 21, 22 },
-        22 => new List<int> { 21, 22 },
-        23 => new List<int> { 23, 24 },
-        24 => new List<int> { 23, 24 },
-        25 => new List<int> { 25, 26 },
-        26 => new List<int> { 25, 26 },
-        27 => new List<int> { 27, 28 },
-        28 => new List<int> { 27, 28 },
-        29 => new List<int> { 29, 30, 31 },
-        30 => new List<int> { 29, 30, 31 },
-        31 => new List<int> { 29, 30, 31 },
-        32 => new List<int> { 32, 33, 34 },
-        33 => new List<int> { 32, 33, 34 },
-        34 => new List<int> { 32, 33, 34 },
-        35 => new List<int> { 35, 36 },
-        36 => new List<int> { 35, 36 },
-        37 => new List<int> { 37, 38 },
-        38 => new List<int> { 37, 38 },
-        39 => new List<int> { 39, 40 },
-        40 => new List<int> { 39, 40 },
-        41 => new List<int> { 41, 42 },
-        42 => new List<int> { 41, 42 },
-        43 => new List<int> { 43, 44, 45 },
-        44 => new List<int> { 43, 44, 45 },
-        45 => new List<int> { 43, 44, 45 },
-        46 => new List<int> { 46, 47 },
-        47 => new List<int> { 46, 47 },
-        48 => new List<int> { 48, 49 },
-        49 => new List<int> { 48, 49 },
-        50 => new List<int> { 50, 51 },
-        51 => new List<int> { 50, 51 },
-        52 => new List<int> { 52, 53 },
-        53 => new List<int> { 52, 53 },
-        54 => new List<int> { 54, 55 },
-        55 => new List<int> { 54, 55 },
-        56 => new List<int> { 56, 57 },
-        57 => new List<int> { 56, 57 },
-        58 => new List<int> { 58, 59 },
-        59 => new List<int> { 58, 59 },
-        60 => new List<int> { 60, 61, 62 },
-        61 => new List<int> { 60, 61, 62 },
-        62 => new List<int> { 60, 61, 62 },
-        63 => new List<int> { 63, 64, 65 },
-        64 => new List<int> { 63, 64, 65 },
-        65 => new List<int> { 63, 64, 65 },
-        66 => new List<int> { 66, 67, 68 },
-        67 => new List<int> { 66, 67, 68 },
-        68 => new List<int> { 66, 67, 68 },
-        69 => new List<int> { 69, 70, 71 },
-        70 => new List<int> { 69, 70, 71 },
-        71 => new List<int> { 69, 70, 71 },
-        72 => new List<int> { 72, 73 },
-        73 => new List<int> { 72, 73 },
-        74 => new List<int> { 74, 75, 76 },
-        75 => new List<int> { 74, 75, 76 },
-        76 => new List<int> { 74, 75, 76 },
-        77 => new List<int> { 77, 78 },
-        78 => new List<int> { 77, 78 },
-        79 => new List<int> { 79, 80 },
-        80 => new List<int> { 79, 80 },
-        81 => new List<int> { 81, 82 },
-        82 => new List<int> { 81, 82 },
-        84 => new List<int> { 84, 85 },
-        85 => new List<int> { 84, 85 },
-        86 => new List<int> { 86, 87 },
-        87 => new List<int> { 86, 87 },
-        88 => new List<int> { 88, 89 },
-        89 => new List<int> { 88, 89 },
-        90 => new List<int> { 90, 91 },
-        91 => new List<int> { 90, 91 },
-        92 => new List<int> { 92, 93, 94 },
-        93 => new List<int> { 92, 93, 94 },
-        94 => new List<int> { 92, 93, 94 },
-        95 => new List<int> { 95, 208 },
-        96 => new List<int> { 96, 97 },
-        97 => new List<int> { 96, 97 },
-        98 => new List<int> { 98, 99 },
-        99 => new List<int> { 98, 99 },
-        100 => new List<int> { 100, 101 },
-        101 => new List<int> { 100, 101 },
-        102 => new List<int> { 102, 103 },
-        103 => new List<int> { 102, 103 },
-        104 => new List<int> { 104, 105 },
-        105 => new List<int> { 104, 105 },
-        106 => new List<int> { 106 },
-        107 => new List<int> { 107 },
-        108 => new List<int> { 108 },
-        109 => new List<int> { 109, 110 },
-        110 => new List<int> { 109, 110 },
-        111 => new List<int> { 111, 112 },
-        112 => new List<int> { 111, 112 },
-        113 => new List<int> { 113 },
-        114 => new List<int> { 114 },
-        115 => new List<int> { 115 },
-        116 => new List<int> { 116, 117 },
-        117 => new List<int> { 116, 117 },
-        118 => new List<int> { 118, 119 },
-        119 => new List<int> { 118, 119 },
-        120 => new List<int> { 120, 121 },
-        121 => new List<int> { 120, 121 },
-        123 => new List<int> { 123 },
-        125 => new List<int> { 125 },
-        126 => new List<int> { 126 },
-        127 => new List<int> { 127 },
-        128 => new List<int> { 128 },
-        129 => new List<int> { 129, 130 },
-        130 => new List<int> { 129, 130 },
-        131 => new List<int> { 131 },
-        133 => new List<int> { 133 },
-        137 => new List<int> { 137 },
-        138 => new List<int> { 138, 139 },
-        139 => new List<int> { 138, 139 },
-        140 => new List<int> { 140, 141 },
-        141 => new List<int> { 140, 141 },
-        142 => new List<int> { 142 },
-        143 => new List<int> { 143 },
-        144 => new List<int> { 144 },
-        145 => new List<int> { 145 },
-        146 => new List<int> { 146 },
-        147 => new List<int> { 147, 148, 149 },
-        148 => new List<int> { 147, 148, 149 },
-        149 => new List<int> { 147, 148, 149 },
-        150 => new List<int> { 150 },
-        151 => new List<int> { 151 },
-        _ => new List<int> { pokemonId }
+        // Starters
+        1 or 2 or 3 => new() { 1, 2, 3 },       // Bulbasaur -> Ivysaur -> Venusaur
+        4 or 5 or 6 => new() { 4, 5, 6 },       // Charmander -> Charmeleon -> Charizard
+        7 or 8 or 9 => new() { 7, 8, 9 },       // Squirtle -> Wartortle -> Blastoise
+        
+        // Bug types
+        10 or 11 or 12 => new() { 10, 11, 12 }, // Caterpie -> Metapod -> Butterfree
+        13 or 14 or 15 => new() { 13, 14, 15 }, // Weedle -> Kakuna -> Beedrill
+        
+        // Birds
+        16 or 17 or 18 => new() { 16, 17, 18 }, // Pidgey -> Pidgeotto -> Pidgeot
+        21 or 22 => new() { 21, 22 },           // Spearow -> Fearow
+        
+        // Rodents
+        19 or 20 => new() { 19, 20 },           // Rattata -> Raticate
+        25 or 26 => new() { 25, 26 },           // Pikachu -> Raichu
+        27 or 28 => new() { 27, 28 },           // Sandshrew -> Sandslash
+        
+        // Nidoran lines
+        29 or 30 or 31 => new() { 29, 30, 31 }, // Nidoran♀ -> Nidorina -> Nidoqueen
+        32 or 33 or 34 => new() { 32, 33, 34 }, // Nidoran♂ -> Nidorino -> Nidoking
+        
+        // Fairy/Normal
+        35 or 36 => new() { 35, 36 },           // Clefairy -> Clefable
+        39 or 40 => new() { 39, 40 },           // Jigglypuff -> Wigglytuff
+        
+        // Vulpix & Zubat
+        37 or 38 => new() { 37, 38 },           // Vulpix -> Ninetales
+        41 or 42 => new() { 41, 42 },           // Zubat -> Golbat
+        
+        // Grass
+        43 or 44 or 45 => new() { 43, 44, 45 }, // Oddish -> Gloom -> Vileplume
+        69 or 70 or 71 => new() { 69, 70, 71 }, // Bellsprout -> Weepinbell -> Victreebel
+        
+        // Bug/Grass
+        46 or 47 => new() { 46, 47 },           // Paras -> Parasect
+        48 or 49 => new() { 48, 49 },           // Venonat -> Venomoth
+        
+        // Ground
+        50 or 51 => new() { 50, 51 },           // Diglett -> Dugtrio
+        
+        // Meowth & Psyduck
+        52 or 53 => new() { 52, 53 },           // Meowth -> Persian
+        54 or 55 => new() { 54, 55 },           // Psyduck -> Golduck
+        
+        // Mankey & Growlithe
+        56 or 57 => new() { 56, 57 },           // Mankey -> Primeape
+        58 or 59 => new() { 58, 59 },           // Growlithe -> Arcanine
+        
+        // Poliwag line
+        60 or 61 or 62 => new() { 60, 61, 62 }, // Poliwag -> Poliwhirl -> Poliwrath
+        
+        // Abra line
+        63 or 64 or 65 => new() { 63, 64, 65 }, // Abra -> Kadabra -> Alakazam
+        
+        // Machop line
+        66 or 67 or 68 => new() { 66, 67, 68 }, // Machop -> Machoke -> Machamp
+        
+        // Tentacool & Geodude
+        72 or 73 => new() { 72, 73 },           // Tentacool -> Tentacruel
+        74 or 75 or 76 => new() { 74, 75, 76 }, // Geodude -> Graveler -> Golem
+        
+        // Ponyta & Slowpoke
+        77 or 78 => new() { 77, 78 },           // Ponyta -> Rapidash
+        79 or 80 => new() { 79, 80 },           // Slowpoke -> Slowbro
+        
+        // Magnemite & Doduo
+        81 or 82 => new() { 81, 82 },           // Magnemite -> Magneton
+        84 or 85 => new() { 84, 85 },           // Doduo -> Dodrio
+        
+        // Seel & Grimer
+        86 or 87 => new() { 86, 87 },           // Seel -> Dewgong
+        88 or 89 => new() { 88, 89 },           // Grimer -> Muk
+        
+        // Shellder & Gastly
+        90 or 91 => new() { 90, 91 },           // Shellder -> Cloyster
+        92 or 93 or 94 => new() { 92, 93, 94 }, // Gastly -> Haunter -> Gengar
+        
+        // Drowzee & Krabby
+        96 or 97 => new() { 96, 97 },           // Drowzee -> Hypno
+        98 or 99 => new() { 98, 99 },           // Krabby -> Kingler
+        
+        // Voltorb & Exeggcute
+        100 or 101 => new() { 100, 101 },       // Voltorb -> Electrode
+        102 or 103 => new() { 102, 103 },       // Exeggcute -> Exeggutor
+        
+        // Cubone & Koffing
+        104 or 105 => new() { 104, 105 },       // Cubone -> Marowak
+        109 or 110 => new() { 109, 110 },       // Koffing -> Weezing
+        
+        // Rhyhorn & Chansey
+        111 or 112 => new() { 111, 112 },       // Rhyhorn -> Rhydon
+        
+        // Horsea & Goldeen
+        116 or 117 => new() { 116, 117 },       // Horsea -> Seadra
+        118 or 119 => new() { 118, 119 },       // Goldeen -> Seaking
+        
+        // Staryu & Magikarp
+        120 or 121 => new() { 120, 121 },       // Staryu -> Starmie
+        129 or 130 => new() { 129, 130 },       // Magikarp -> Gyarados
+        
+        // Eevee evolutions
+        133 or 134 => new() { 133, 134 },       // Eevee -> Vaporeon
+        133 or 135 => new() { 133, 135 },       // Eevee -> Jolteon
+        133 or 136 => new() { 133, 136 },       // Eevee -> Flareon
+        
+        // Omanyte & Kabuto
+        138 or 139 => new() { 138, 139 },       // Omanyte -> Omastar
+        140 or 141 => new() { 140, 141 },       // Kabuto -> Kabutops
+        
+        // Dratini line
+        147 or 148 or 149 => new() { 147, 148, 149 }, // Dratini -> Dragonair -> Dragonite
+        
+        // Single stage Pokemon (Legendaries, etc.)
+        83 => new() { 83 },                     // Farfetch'd
+        95 => new() { 95 },                     // Onix
+        106 => new() { 106 },                   // Hitmonlee
+        107 => new() { 107 },                   // Hitmonchan
+        108 => new() { 108 },                   // Lickitung
+        113 => new() { 113 },                   // Chansey
+        114 => new() { 114 },                   // Tangela
+        115 => new() { 115 },                   // Kangaskhan
+        122 => new() { 122 },                   // Mr. Mime
+        123 => new() { 123 },                   // Scyther
+        124 => new() { 124 },                   // Jynx
+        125 => new() { 125 },                   // Electabuzz
+        126 => new() { 126 },                   // Magmar
+        127 => new() { 127 },                   // Pinsir
+        128 => new() { 128 },                   // Tauros
+        131 => new() { 131 },                   // Lapras
+        132 => new() { 132 },                   // Ditto
+        137 => new() { 137 },                   // Porygon
+        142 => new() { 142 },                   // Aerodactyl
+        143 => new() { 143 },                   // Snorlax
+        144 => new() { 144 },                   // Articuno
+        145 => new() { 145 },                   // Zapdos
+        146 => new() { 146 },                   // Moltres
+        150 => new() { 150 },                   // Mewtwo
+        151 => new() { 151 },                   // Mew
+        
+        _ => new() { pokemonId }                // Fallback
     };
 
-    // Data Models
+    // DTO Classes
     public class PokemonListResponse
     {
-        [JsonPropertyName("results")]
-        public List<PokemonItem> Results { get; set; } = new();
+        public List<PokemonResult> Results { get; set; } = new();
     }
 
-    public class PokemonItem
+    public class PokemonResult
     {
-        [JsonPropertyName("name")]
         public string Name { get; set; } = "";
-
-        [JsonPropertyName("url")]
         public string Url { get; set; } = "";
     }
 
@@ -453,90 +349,112 @@ public class PokedexExampleBase : ComponentBase
     {
         public int Id { get; set; }
         public string Name { get; set; } = "";
-        public string Url { get; set; } = "";
         public string SpriteUrl { get; set; } = "";
         public List<string>? Types { get; set; }
     }
 
-    public class PokemonDetailResponse
+    // API Response DTOs (matching PokeAPI structure)
+    public class PokemonApiResponse
     {
-        [JsonPropertyName("id")]
         public int Id { get; set; }
-
-        [JsonPropertyName("name")]
         public string Name { get; set; } = "";
-
-        [JsonPropertyName("height")]
         public int Height { get; set; }
-
-        [JsonPropertyName("weight")]
         public int Weight { get; set; }
-
-        [JsonPropertyName("base_experience")]
-        public int BaseExperience { get; set; }
-
-        [JsonPropertyName("types")]
-        public List<PokemonTypeSlot> Types { get; set; } = new();
-
-        [JsonPropertyName("abilities")]
-        public List<PokemonAbilitySlot> Abilities { get; set; } = new();
-
-        [JsonPropertyName("stats")]
-        public List<PokemonStatSlot> Stats { get; set; } = new();
+        public int Base_experience { get; set; }
+        public List<TypeSlot>? Types { get; set; }
+        public List<AbilitySlot>? Abilities { get; set; }
+        public PokemonSprites? Sprites { get; set; }
+        public List<StatSlot>? Stats { get; set; }
     }
 
-    public class PokemonTypeSlot
+    public class TypeSlot
     {
-        [JsonPropertyName("type")]
+        public int Slot { get; set; }
         public TypeInfo Type { get; set; } = new();
     }
 
     public class TypeInfo
     {
-        [JsonPropertyName("name")]
         public string Name { get; set; } = "";
+        public string Url { get; set; } = "";
     }
 
-    public class PokemonAbilitySlot
+    public class AbilitySlot
     {
-        [JsonPropertyName("ability")]
+        public bool Is_hidden { get; set; }
+        public int Slot { get; set; }
         public AbilityInfo Ability { get; set; } = new();
     }
 
     public class AbilityInfo
     {
-        [JsonPropertyName("name")]
         public string Name { get; set; } = "";
+        public string Url { get; set; } = "";
     }
 
-    public class PokemonStatSlot
+    public class PokemonSprites
     {
-        [JsonPropertyName("base_stat")]
-        public int BaseStat { get; set; }
+        public string? Front_default { get; set; }
+        public OtherSprites? Other { get; set; }
+    }
 
-        [JsonPropertyName("stat")]
+    public class OtherSprites
+    {
+        public OfficialArtwork? Official_artwork { get; set; }
+    }
+
+    public class OfficialArtwork
+    {
+        public string? Front_default { get; set; }
+    }
+
+    public class StatSlot
+    {
+        public int Base_stat { get; set; }
+        public int Effort { get; set; }
         public StatInfo Stat { get; set; } = new();
     }
 
     public class StatInfo
     {
-        [JsonPropertyName("name")]
         public string Name { get; set; } = "";
+        public string Url { get; set; } = "";
     }
 
+    // View Model for display
     public class PokemonDetail
     {
         public int Id { get; set; }
         public string Name { get; set; } = "";
-        public string SpriteUrl { get; set; } = "";
         public int Height { get; set; }
         public int Weight { get; set; }
         public int BaseExperience { get; set; }
-        public List<string> Types { get; set; } = new();
-        public List<string> Abilities { get; set; } = new();
+        public List<string>? Types { get; set; }
+        public List<string>? Abilities { get; set; }
+        public string SpriteUrl { get; set; } = "";
         public int Hp { get; set; }
         public int Attack { get; set; }
-        public int Defense { get; set; }
-        public int Speed { get; set; }
+
+        public static PokemonDetail FromApiResponse(PokemonApiResponse api)
+        {
+            return new PokemonDetail
+            {
+                Id = api.Id,
+                Name = api.Name,
+                Height = api.Height,
+                Weight = api.Weight,
+                BaseExperience = api.Base_experience,
+                Types = api.Types?.Select(t => t.Type.Name).ToList(),
+                Abilities = api.Abilities?.Select(a => a.Ability.Name).ToList(),
+                SpriteUrl = api.Sprites?.Other?.Official_artwork?.Front_default 
+                    ?? api.Sprites?.Front_default 
+                    ?? GetSpriteUrl(api.Id),
+                Hp = api.Stats?.FirstOrDefault(s => s.Stat.Name == "hp")?.Base_stat ?? 0,
+                Attack = api.Stats?.FirstOrDefault(s => s.Stat.Name == "attack")?.Base_stat ?? 0
+            };
+        }
+
+        private static string GetSpriteUrl(int id) =>
+            $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png";
     }
 }

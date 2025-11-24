@@ -1,8 +1,7 @@
 @page "/pokemon-examples/demo-collector"
-@inherits PokedexExampleBase
 @rendermode InteractiveServer
 
-<PageTitle>Pokedex - Interactive Demo</PageTitle>
+<PageTitle>Pokedex Demo</PageTitle>
 
 <style>
     @@keyframes fadeIn {
@@ -25,8 +24,19 @@
 <div class="py-2">
     <div class="w-full mx-auto p-6 max-w-7xl">
 
-        <!-- Filters Section -->
-        <!-- Search Bar -->
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="flex flex-col items-center justify-center gap-3 mb-4">
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+                    alt="Pikachu" class="w-20 h-20 sm:w-24 sm:h-24" />
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">Pokedex Demo</h1>
+            </div>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed">
+                Browse, search, filter by type, and explore Pokemon with rich details
+            </p>
+        </div>
+
+        <!-- Search Bar & Type Filter -->
         <div class="rounded-xl border border-gray-200 bg-white p-3 mb-4">
             <div class="flex flex-col sm:flex-row gap-2">
                 <div class="flex-1">
@@ -58,8 +68,6 @@
                     </select>
                 </div>
             </div>
-
-
         </div>
 
         <!-- Loading State -->
@@ -82,7 +90,7 @@
                         <h3 class="font-semibold text-gray-900 mb-1">Error Loading Pokemon</h3>
                         <p class="text-gray-600 text-sm mb-3">@errorMessage</p>
                         <button @onclick="LoadPokemonAsync"
-                            class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                            class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
                             Try Again
                         </button>
                     </div>
@@ -103,24 +111,20 @@
             }
             else
             {
-                <!-- Card Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-4 animate-fade-in">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-4 fade-in">
                     @foreach (var pokemon in CurrentPagePokemon)
                     {
-                        <div class="border-2 border-gray-200 rounded-xl overflow-hidden hover:border-blue-400 hover:shadow-xl transition-all duration-200 cursor-pointer group"
+                        <div class="border-2 border-gray-200 rounded-xl overflow-hidden hover:border-blue-400 
+                                                                                                hover:shadow-xl transition-all duration-200 cursor-pointer group"
                             @onclick="() => ShowDetails(pokemon.Id)">
-                            <div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100">
+                            <div class="aspect-square bg-linear-to-br from-gray-50 to-gray-100">
                                 <img src="@pokemon.SpriteUrl" alt="@pokemon.Name"
                                     class="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-300"
                                     loading="lazy" />
                             </div>
                             <div class="p-3 bg-white">
-                                <span class="text-xs text-gray-500 font-mono">
-                                    #@pokemon.Id.ToString("D3")
-                                </span>
-                                <p class="font-semibold text-gray-800 capitalize hover:text-blue-600 transition-colors">
-                                    @pokemon.Name
-                                </p>
+                                <span class="text-xs text-gray-500 font-mono">#@pokemon.Id.ToString("D3")</span>
+                                <p class="font-semibold text-gray-800 capitalize hover:text-blue-600">@pokemon.Name</p>
                             </div>
                         </div>
                     }
@@ -129,14 +133,14 @@
                 <!-- Pagination -->
                 <div class="flex items-center justify-between px-2 py-4">
                     <button @onclick="PreviousPage" disabled="@(currentPage == 1)"
-                        class="px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                        class="px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 
+                                                                       border border-gray-300 rounded disabled:opacity-40 disabled:cursor-not-allowed">
                         ← Previous
                     </button>
-                    <span class="text-sm text-gray-700 font-medium">
-                        Page @currentPage of @totalPages
-                    </span>
+                    <span class="text-sm text-gray-700 font-medium">Page @currentPage of @totalPages</span>
                     <button @onclick="NextPage" disabled="@(currentPage >= totalPages)"
-                        class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                        class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white 
+                                                                       rounded disabled:opacity-40 disabled:cursor-not-allowed">
                         Next →
                     </button>
                 </div>
@@ -146,7 +150,7 @@
         <!-- Detail Modal -->
         @if (selectedPokemon != null)
         {
-            var primaryType = selectedPokemon.Types.FirstOrDefault() ?? "normal";
+            var primaryType = selectedPokemon.Types?.FirstOrDefault() ?? "normal";
             var bgClass = GetTypeBackgroundColor(primaryType);
 
             <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
@@ -158,12 +162,12 @@
                     <!-- Colored Background Section with Image -->
                     <div class="@bgClass relative px-6 pt-8 pb-32">
                         <button @onclick="CloseModal"
-                            class="absolute top-4 left-4 w-10 h-10 bg-gray-800/30 hover:bg-gray-800/50 backdrop-blur rounded-full flex items-center justify-center text-white transition-colors">
+                            class="absolute top-4 left-4 w-10 h-10 bg-gray-800/30 hover:bg-gray-800/50 
+                                                       backdrop-blur rounded-full flex items-center justify-center text-white">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
-
                         <div class="flex items-center justify-center">
                             <img src="@selectedPokemon.SpriteUrl" alt="@selectedPokemon.Name"
                                 class="w-64 h-64 object-contain drop-shadow-2xl" />
@@ -186,8 +190,6 @@
                                     }
                                 }
                             </div>
-
-                            <!-- Description (placeholder since API doesn't provide it) -->
                             <p class="text-gray-600 text-sm leading-relaxed mb-6">
                                 This Pokemon has @selectedPokemon.Hp HP and @selectedPokemon.Attack attack power.
                                 It can be found in various regions and has unique abilities that make it special.
@@ -238,12 +240,12 @@
                                         var evoId = evolutionIds[i];
                                         <div class="flex flex-col items-center">
                                             <div @onclick="() => ShowDetails(evoId)"
-                                                class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-200 transition-colors">
+                                                class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center 
+                                                                                                                   overflow-hidden cursor-pointer hover:bg-gray-200">
                                                 <img src="@GetSpriteUrl(evoId)" alt="Evolution @(i + 1)"
                                                     class="w-full h-full object-contain" />
                                             </div>
                                         </div>
-
                                         @if (i < evolutionIds.Count - 1)
                                         {
                                             <div class="text-gray-400 text-xl">→</div>

@@ -26,7 +26,7 @@
         </p>
 
         <!-- What You'll Learn (Gradient Banner) -->
-        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+        <div class="bg-linear-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
 
             <p class="text-gray-700 mb-4 text-sm sm:text-base">
@@ -70,96 +70,448 @@
                     class="bg-gray-100 px-1.5 py-0.5 rounded text-xs">/demo/pokemon-collector</code>!
             </p>
 
-            <!-- Full Razor Component -->
+            <!-- Demo.razor.cs Code Block -->
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
-                <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/PokemonDemo/PokemonCollectorDemo.razor
-                    (Start)</div>
-                <p class="text-xs text-gray-600 mb-2">The complete Razor markup with search, filters, grid, and detail
-                    modal</p>
+                <div class="text-xs text-gray-500 mb-1">Components/Pages/Pokemon/Demo.razor.cs</div>
+                <p class="text-xs text-gray-600 mb-2">Code-behind with state, API calls, filtering, pagination, and type
+                    helpers</p>
                 <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
-                    <li>Page directive and dependency injection for HttpClient</li>
-                    <li>Search bar and type filter dropdown in the header</li>
-                    <li>Responsive Pokemon grid with hover effects (from Steps 5-6)</li>
-                    <li>Loading and error states for better UX</li>
-                    <li>Beautiful detail modal with type-based gradient backgrounds</li>
-                    <li>Stats grid, evolution chains, and type weaknesses</li>
+                    <li>Partial class pattern for clean code separation</li>
+                    <li>All state variables: allPokemon, filteredPokemon, selectedPokemon, pagination</li>
+                    <li>ApplyFilters() combines search and type filtering</li>
+                    <li>Type color mapping methods for badges, chips, and backgrounds</li>
+                    <li>Evolution chain and weakness data methods with all 151 Pokemon</li>
+                    <li>API response DTOs matching PokeAPI JSON structure</li>
                 </ul>
-                <pre data-code-title="Razor (PokemonCollectorDemo.razor - Part 1: Setup & Filters)"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/demo/pokemon-collector"
+                <pre data-code-title="C# (Demo.razor.cs)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">using Microsoft.AspNetCore.Components;
+
+namespace PokemonCollector.Components.Pages.Pokemon;
+
+public partial class Demo : ComponentBase
+{
+    [Inject] private HttpClient Http { get; set; } = default!;
+
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+    private List&lt;PokemonListItem&gt; allPokemon = new();
+    private List&lt;PokemonListItem&gt; filteredPokemon = new();
+    private PokemonDetail? selectedPokemon = null;
+    private string searchQuery = "";
+    private string selectedType = "";
+    
+    private int currentPage = 1;
+    private int pageSize = 20;
+    private int totalPages =&gt; (int)Math.Ceiling(filteredPokemon.Count / (double)pageSize);
+
+    private List&lt;PokemonListItem&gt; CurrentPagePokemon =&gt; filteredPokemon
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPokemonAsync();
+    }
+
+    private async Task LoadPokemonAsync()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            var response = await Http.GetFromJsonAsync&lt;PokemonListResponse&gt;(
+                "https://pokeapi.co/api/v2/pokemon?limit=151");
+
+            if (response?.Results != null)
+            {
+                foreach (var result in response.Results)
+                {
+                    var id = int.Parse(result.Url.TrimEnd('/').Split('/').Last());
+                    allPokemon.Add(new PokemonListItem
+                    {
+                        Id = id,
+                        Name = result.Name,
+                        SpriteUrl = GetSpriteUrl(id)
+                    });
+                }
+                
+                // Load types for first 50 Pokemon (for type filtering)
+                var typeTasks = allPokemon.Take(50).Select(async p =&gt;
+                {
+                    var apiResponse = await Http.GetFromJsonAsync&lt;PokemonApiResponse&gt;(
+                        $"https://pokeapi.co/api/v2/pokemon/{p.Id}");
+                    if (apiResponse?.Types != null)
+                    {
+                        p.Types = apiResponse.Types.Select(t =&gt; t.Type.Name).ToList();
+                    }
+                });
+                await Task.WhenAll(typeTasks);
+                
+                ApplyFilters();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load Pokemon: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ApplyFilters()
+    {
+        filteredPokemon = allPokemon.Where(p =&gt;
+        {
+            var matchesSearch = string.IsNullOrWhiteSpace(searchQuery) ||
+                p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
+            
+            var matchesType = string.IsNullOrWhiteSpace(selectedType) ||
+                (p.Types?.Any(t =&gt; t.Equals(selectedType, 
+                    StringComparison.OrdinalIgnoreCase)) ?? false);
+            
+            return matchesSearch &amp;&amp; matchesType;
+        }).ToList();
+
+        currentPage = 1;
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage &gt; 1) currentPage--;
+    }
+
+    private void NextPage()
+    {
+        if (currentPage &lt; totalPages) currentPage++;
+    }
+
+    private async Task ShowDetails(int id)
+    {
+        try
+        {
+            var apiResponse = await Http.GetFromJsonAsync&lt;PokemonApiResponse&gt;(
+                $"https://pokeapi.co/api/v2/pokemon/{id}");
+            if (apiResponse != null)
+            {
+                selectedPokemon = PokemonDetail.FromApiResponse(apiResponse);
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load details: {ex.Message}";
+        }
+    }
+
+    private void CloseModal() =&gt; selectedPokemon = null;
+
+    private static string GetSpriteUrl(int id) =&gt;
+        $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png";
+
+    // Type color mapping methods
+    private string GetTypeBadgeClass(string type) =&gt; type.ToLower() switch
+    {
+        "fire" =&gt; "px-2.5 py-1 bg-red-50 text-red-700 border border-red-200 rounded-md text-xs font-medium capitalize",
+        "water" =&gt; "px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-xs font-medium capitalize",
+        "grass" =&gt; "px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-md text-xs font-medium capitalize",
+        "electric" =&gt; "px-2.5 py-1 bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-md text-xs font-medium capitalize",
+        _ =&gt; "px-2.5 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-md text-xs font-medium capitalize"
+    };
+
+    private string GetTypeChipClass(string type) =&gt; type.ToLower() switch
+    {
+        "fire" =&gt; "px-4 py-1.5 bg-red-500 text-white rounded-full text-sm font-semibold capitalize",
+        "water" =&gt; "px-4 py-1.5 bg-blue-500 text-white rounded-full text-sm font-semibold capitalize",
+        "grass" =&gt; "px-4 py-1.5 bg-green-500 text-white rounded-full text-sm font-semibold capitalize",
+        _ =&gt; "px-4 py-1.5 bg-gray-500 text-white rounded-full text-sm font-semibold capitalize"
+    };
+
+    private string GetTypeBackgroundColor(string type) =&gt; type.ToLower() switch
+    {
+        "fire" =&gt; "bg-linear-to-br from-red-300 to-orange-200",
+        "water" =&gt; "bg-linear-to-br from-blue-300 to-blue-200",
+        "grass" =&gt; "bg-linear-to-br from-green-300 to-green-200",
+        "electric" =&gt; "bg-linear-to-br from-yellow-300 to-yellow-200",
+        _ =&gt; "bg-linear-to-br from-gray-300 to-gray-200"
+    };
+
+    private List&lt;string&gt; GetTypeWeaknesses(string type) =&gt; type.ToLower() switch
+    {
+        "grass" =&gt; new() { "Fire", "Ice", "Poison", "Flying", "Bug" },
+        "fire" =&gt; new() { "Water", "Ground", "Rock" },
+        "water" =&gt; new() { "Electric", "Grass" },
+        "electric" =&gt; new() { "Ground" },
+        "normal" =&gt; new() { "Fighting" },
+        _ =&gt; new() { "Fighting" }
+    };
+
+    private string GetWeaknessChipClass(string type) =&gt; type.ToLower() switch
+    {
+        "fire" =&gt; "px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium capitalize",
+        "water" =&gt; "px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium capitalize",
+        "grass" =&gt; "px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium capitalize",
+        "electric" =&gt; "px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium capitalize",
+        "ice" =&gt; "px-3 py-1 bg-cyan-100 text-cyan-700 rounded-full text-xs font-medium capitalize",
+        "fighting" =&gt; "px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium capitalize",
+        "poison" =&gt; "px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium capitalize",
+        "ground" =&gt; "px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium capitalize",
+        "flying" =&gt; "px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium capitalize",
+        "psychic" =&gt; "px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-xs font-medium capitalize",
+        "bug" =&gt; "px-3 py-1 bg-lime-100 text-lime-700 rounded-full text-xs font-medium capitalize",
+        "rock" =&gt; "px-3 py-1 bg-stone-100 text-stone-700 rounded-full text-xs font-medium capitalize",
+        _ =&gt; "px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium capitalize"
+    };
+
+    private List&lt;int&gt; GetEvolutionChain(int pokemonId) =&gt; pokemonId switch
+    {
+        // Starters
+        1 or 2 or 3 =&gt; new() { 1, 2, 3 },       // Bulbasaur -&gt; Ivysaur -&gt; Venusaur
+        4 or 5 or 6 =&gt; new() { 4, 5, 6 },       // Charmander -&gt; Charmeleon -&gt; Charizard
+        7 or 8 or 9 =&gt; new() { 7, 8, 9 },       // Squirtle -&gt; Wartortle -&gt; Blastoise
+        
+        // Bug types
+        10 or 11 or 12 =&gt; new() { 10, 11, 12 }, // Caterpie -&gt; Metapod -&gt; Butterfree
+        13 or 14 or 15 =&gt; new() { 13, 14, 15 }, // Weedle -&gt; Kakuna -&gt; Beedrill
+        
+        // Birds
+        16 or 17 or 18 =&gt; new() { 16, 17, 18 }, // Pidgey -&gt; Pidgeotto -&gt; Pidgeot
+        21 or 22 =&gt; new() { 21, 22 },           // Spearow -&gt; Fearow
+        
+        // Rodents &amp; Pikachu
+        19 or 20 =&gt; new() { 19, 20 },           // Rattata -&gt; Raticate
+        25 or 26 =&gt; new() { 25, 26 },           // Pikachu -&gt; Raichu
+        27 or 28 =&gt; new() { 27, 28 },           // Sandshrew -&gt; Sandslash
+        
+        // Nidoran lines
+        29 or 30 or 31 =&gt; new() { 29, 30, 31 }, // Nidoran♀ -&gt; Nidorina -&gt; Nidoqueen
+        32 or 33 or 34 =&gt; new() { 32, 33, 34 }, // Nidoran♂ -&gt; Nidorino -&gt; Nidoking
+        
+        // More evolution chains...
+        37 or 38 =&gt; new() { 37, 38 },           // Vulpix -&gt; Ninetales
+        63 or 64 or 65 =&gt; new() { 63, 64, 65 }, // Abra -&gt; Kadabra -&gt; Alakazam
+        92 or 93 or 94 =&gt; new() { 92, 93, 94 }, // Gastly -&gt; Haunter -&gt; Gengar
+        129 or 130 =&gt; new() { 129, 130 },       // Magikarp -&gt; Gyarados
+        147 or 148 or 149 =&gt; new() { 147, 148, 149 }, // Dratini -&gt; Dragonair -&gt; Dragonite
+        
+        _ =&gt; new() { pokemonId }                // Single stage Pokemon
+    };
+
+    // DTO Classes matching PokeAPI structure
+    public class PokemonListResponse
+    {
+        public List&lt;PokemonResult&gt; Results { get; set; } = new();
+    }
+
+    public class PokemonResult
+    {
+        public string Name { get; set; } = "";
+        public string Url { get; set; } = "";
+    }
+
+    public class PokemonListItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string SpriteUrl { get; set; } = "";
+        public List&lt;string&gt;? Types { get; set; }
+    }
+
+    // API Response DTOs (matching PokeAPI structure)
+    public class PokemonApiResponse
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public int Height { get; set; }
+        public int Weight { get; set; }
+        public int Base_experience { get; set; }
+        public List&lt;TypeSlot&gt;? Types { get; set; }
+        public List&lt;AbilitySlot&gt;? Abilities { get; set; }
+        public PokemonSprites? Sprites { get; set; }
+        public List&lt;StatSlot&gt;? Stats { get; set; }
+    }
+
+    public class TypeSlot { public TypeInfo Type { get; set; } = new(); }
+    public class TypeInfo { public string Name { get; set; } = ""; }
+    public class AbilitySlot { public AbilityInfo Ability { get; set; } = new(); }
+    public class AbilityInfo { public string Name { get; set; } = ""; }
+    public class StatSlot { public int Base_stat { get; set; } public StatInfo Stat { get; set; } = new(); }
+    public class StatInfo { public string Name { get; set; } = ""; }
+    public class PokemonSprites { public OtherSprites? Other { get; set; } }
+    public class OtherSprites { public OfficialArtwork? Official_artwork { get; set; } }
+    public class OfficialArtwork { public string? Front_default { get; set; } }
+
+    // View Model for display
+    public class PokemonDetail
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public int Height { get; set; }
+        public int Weight { get; set; }
+        public int BaseExperience { get; set; }
+        public List&lt;string&gt;? Types { get; set; }
+        public List&lt;string&gt;? Abilities { get; set; }
+        public string SpriteUrl { get; set; } = "";
+        public int Hp { get; set; }
+        public int Attack { get; set; }
+
+        public static PokemonDetail FromApiResponse(PokemonApiResponse api)
+        {
+            return new PokemonDetail
+            {
+                Id = api.Id,
+                Name = api.Name,
+                Height = api.Height,
+                Weight = api.Weight,
+                BaseExperience = api.Base_experience,
+                Types = api.Types?.Select(t =&gt; t.Type.Name).ToList(),
+                Abilities = api.Abilities?.Select(a =&gt; a.Ability.Name).ToList(),
+                SpriteUrl = api.Sprites?.Other?.Official_artwork?.Front_default 
+                    ?? GetSpriteUrl(api.Id),
+                Hp = api.Stats?.FirstOrDefault(s =&gt; s.Stat.Name == "hp")?.Base_stat ?? 0,
+                Attack = api.Stats?.FirstOrDefault(s =&gt; s.Stat.Name == "attack")?.Base_stat ?? 0
+            };
+        }
+
+        private static string GetSpriteUrl(int id) =&gt;
+            $"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png";
+    }
+}</pre>
+            </div>
+
+            <!-- Demo.razor Code Block -->
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
+                <div class="text-xs text-gray-500 mb-1">Components/Pages/Pokemon/Demo.razor</div>
+                <p class="text-xs text-gray-600 mb-2">The complete Razor markup with search, filters, grid, pagination,
+                    and detail modal</p>
+                <ul class="list-disc ml-4 mb-3 text-[11px] text-gray-600 space-y-1">
+                    <li>Page directive with route and render mode</li>
+                    <li>Search bar and type filter dropdown in the header</li>
+                    <li>Loading and error states for better UX</li>
+                    <li>Responsive Pokemon grid with hover effects</li>
+                    <li>Pagination controls</li>
+                    <li>Beautiful detail modal with type-based gradient backgrounds, stats, weaknesses, and evolutions
+                    </li>
+                </ul>
+                <pre data-code-title="Razor (Demo.razor)"
+                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">@@page "/pokemon/demo"
 @@rendermode InteractiveServer
-@@inject HttpClient Http
 
 &lt;PageTitle&gt;Pokedex Demo&lt;/PageTitle&gt;
 
-&lt;!-- Fade-in animation for grid --&gt;
 &lt;style&gt;
-    @@@@keyframes fade-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
+    @@@@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-    .animate-fade-in {
-        animation: fade-in 0.4s ease-out;
-    }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
 &lt;/style&gt;
 
-&lt;div class="min-h-screen py-8"&gt;
-    &lt;div class="w-full mx-auto px-4 max-w-7xl"&gt;
-        
+&lt;div class="py-2"&gt;
+    &lt;div class="w-full mx-auto p-6 max-w-7xl"&gt;
+
+       &lt;!-- Header --&gt;
+        &lt;div class="text-center mb-12"&gt;
+            &lt;div class="flex flex-col items-center justify-center gap-3 mb-4"&gt;
+                &lt;img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+                    alt="Pikachu" class="w-20 h-20 sm:w-24 sm:h-24" /&gt;
+                &lt;h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900"&gt;Pokedex Demo&lt;/h1&gt;
+            &lt;/div&gt;
+            &lt;p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed"&gt;
+                Browse, search, filter by type, and explore Pokemon with rich details
+            &lt;/p&gt;
+        &lt;/div&gt;
+
         &lt;!-- Search Bar & Type Filter --&gt;
-        &lt;div class="rounded-2xl border border-gray-200 bg-white p-4 mb-6"&gt;
-            &lt;div class="flex flex-col sm:flex-row gap-3"&gt;
+        &lt;div class="rounded-xl border border-gray-200 bg-white p-3 mb-4"&gt;
+            &lt;div class="flex flex-col sm:flex-row gap-2"&gt;
                 &lt;div class="flex-1"&gt;
-                    &lt;input type="text" @@bind="searchTerm" @@bind:event="oninput" @@bind:after="ApplyFilters"
+                    &lt;input type="text" @@bind="searchQuery" @@bind:event="oninput" @@bind:after="ApplyFilters"
                         placeholder="Search Pokemon..." class="w-full rounded-lg border border-gray-300 p-2" /&gt;
                 &lt;/div&gt;
                 &lt;div class="sm:w-48"&gt;
                     &lt;select @@bind="selectedType" @@bind:after="ApplyFilters"
                         class="w-full rounded-lg border border-gray-300 p-2"&gt;
                         &lt;option value=""&gt;All Types&lt;/option&gt;
+                        &lt;option value="normal"&gt;Normal&lt;/option&gt;
                         &lt;option value="fire"&gt;Fire&lt;/option&gt;
                         &lt;option value="water"&gt;Water&lt;/option&gt;
+                        &lt;option value="electric"&gt;Electric&lt;/option&gt;
                         &lt;option value="grass"&gt;Grass&lt;/option&gt;
-                        &lt;!-- Add all 18 Pokemon types --&gt;
+                        &lt;option value="ice"&gt;Ice&lt;/option&gt;
+                        &lt;option value="fighting"&gt;Fighting&lt;/option&gt;
+                        &lt;option value="poison"&gt;Poison&lt;/option&gt;
+                        &lt;option value="ground"&gt;Ground&lt;/option&gt;
+                        &lt;option value="flying"&gt;Flying&lt;/option&gt;
+                        &lt;option value="psychic"&gt;Psychic&lt;/option&gt;
+                        &lt;option value="bug"&gt;Bug&lt;/option&gt;
+                        &lt;option value="rock"&gt;Rock&lt;/option&gt;
+                        &lt;option value="ghost"&gt;Ghost&lt;/option&gt;
+                        &lt;option value="dragon"&gt;Dragon&lt;/option&gt;
+                        &lt;option value="dark"&gt;Dark&lt;/option&gt;
+                        &lt;option value="steel"&gt;Steel&lt;/option&gt;
+                        &lt;option value="fairy"&gt;Fairy&lt;/option&gt;
                     &lt;/select&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
-        &lt;/div&gt;</pre>
-            </div>
+        &lt;/div&gt;
 
-            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 overflow-x-auto mb-4">
-                <div class="text-xs text-gray-500 mb-1">Components/Pages/Demo/PokemonDemo/PokemonCollectorDemo.razor
-                    (Continue)</div>
-                <p class="text-xs text-gray-600 mb-2">Pokemon grid with Step 6 styling and pagination</p>
-                <pre data-code-title="Razor (Part 2: Grid & Pagination)"
-                    class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">        &lt;!-- Pokemon Grid --&gt;
-        @@if (!isLoading &amp;&amp; string.IsNullOrEmpty(errorMessage))
+        &lt;!-- Loading State --&gt;
+        @@if (isLoading)
+        {
+            &lt;div class="text-center py-8"&gt;
+                &lt;div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-blue-600"&gt;&lt;/div&gt;
+                &lt;p class="mt-3 text-sm text-gray-600"&gt;Loading Pokemon...&lt;/p&gt;
+            &lt;/div&gt;
+        }
+
+        &lt;!-- Error State --&gt;
+        @@if (!string.IsNullOrEmpty(errorMessage))
+        {
+            &lt;div class="max-w-2xl mx-auto bg-white border-2 border-red-200 rounded-xl p-4"&gt;
+                &lt;div class="flex items-start gap-3"&gt;
+                    &lt;span class="text-2xl"&gt;⚠️&lt;/span&gt;
+                    &lt;div&gt;
+                        &lt;h3 class="font-semibold text-gray-900 mb-1"&gt;Error Loading Pokemon&lt;/h3&gt;
+                        &lt;p class="text-gray-600 text-sm mb-3"&gt;@@errorMessage&lt;/p&gt;
+                        &lt;button @@onclick="LoadPokemonAsync"
+                            class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"&gt;
+                            Try Again
+                        &lt;/button&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        }
+
+        &lt;!-- Pokemon Grid --&gt;
+        @@if (!isLoading &amp;&amp; string.IsNullOrEmpty(errorMessage) &amp;&amp; filteredPokemon != null)
         {
             @@if (filteredPokemon.Count == 0)
             {
-                &lt;div class="text-center py-32"&gt;
-                    &lt;span class="text-5xl mb-3 block opacity-50"&gt;🔍&lt;/span&gt;
-                    &lt;h3 class="text-xl font-semibold text-gray-900 mb-2"&gt;No Pokemon Found&lt;/h3&gt;
+                &lt;div class="text-center py-8"&gt;
+                    &lt;span class="text-3xl mb-2 block opacity-50"&gt;🔍&lt;/span&gt;
+                    &lt;h3 class="text-lg font-semibold text-gray-900 mb-1"&gt;No Pokemon Found&lt;/h3&gt;
+                    &lt;p class="text-sm text-gray-500"&gt;Try adjusting your search or filter&lt;/p&gt;
                 &lt;/div&gt;
             }
             else
             {
-                &lt;div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8 animate-fade-in"&gt;
-                    @@foreach (var pokemon in GetPagedPokemon())
+                &lt;div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-4 fade-in"&gt;
+                    @@foreach (var pokemon in CurrentPagePokemon)
                     {
-                        &lt;div class="border-2 border-gray-200 rounded-xl overflow-hidden hover:border-blue-400 hover:shadow-xl transition-all duration-200 cursor-pointer group"
-                            @@onclick="() =&gt; SelectPokemon(pokemon)"&gt;
-                            &lt;div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100"&gt;
+                        &lt;div class="border-2 border-gray-200 rounded-xl overflow-hidden hover:border-blue-400 
+                                    hover:shadow-xl transition-all duration-200 cursor-pointer group"
+                            @@onclick="() =&gt; ShowDetails(pokemon.Id)"&gt;
+                            &lt;div class="aspect-square bg-linear-to-br from-gray-50 to-gray-100"&gt;
                                 &lt;img src="@@pokemon.SpriteUrl" alt="@@pokemon.Name"
                                     class="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-300"
                                     loading="lazy" /&gt;
                             &lt;/div&gt;
                             &lt;div class="p-3 bg-white"&gt;
-                                &lt;span class="text-xs text-gray-500 font-mono"&gt;
-                                    #@@pokemon.Id.ToString("D3")
-                                &lt;/span&gt;
-                                &lt;p class="font-semibold text-gray-800 capitalize hover:text-blue-600 transition-colors"&gt;
-                                    @@pokemon.Name
-                                &lt;/p&gt;
+                                &lt;span class="text-xs text-gray-500 font-mono"&gt;#@@pokemon.Id.ToString("D3")&lt;/span&gt;
+                                &lt;p class="font-semibold text-gray-800 capitalize hover:text-blue-600"&gt;@@pokemon.Name&lt;/p&gt;
                             &lt;/div&gt;
                         &lt;/div&gt;
                     }
@@ -168,16 +520,127 @@
                 &lt;!-- Pagination --&gt;
                 &lt;div class="flex items-center justify-between px-2 py-4"&gt;
                     &lt;button @@onclick="PreviousPage" disabled="@@(currentPage == 1)"
-                        class="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded transition-colors disabled:opacity-40"&gt;
+                        class="px-4 py-2 text-sm font-medium bg-white hover:bg-gray-50 text-gray-700 
+                               border border-gray-300 rounded disabled:opacity-40 disabled:cursor-not-allowed"&gt;
                         ← Previous
                     &lt;/button&gt;
                     &lt;span class="text-sm text-gray-700 font-medium"&gt;Page @@currentPage of @@totalPages&lt;/span&gt;
                     &lt;button @@onclick="NextPage" disabled="@@(currentPage &gt;= totalPages)"
-                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-40"&gt;
+                        class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white 
+                               rounded disabled:opacity-40 disabled:cursor-not-allowed"&gt;
                         Next →
                     &lt;/button&gt;
                 &lt;/div&gt;
             }
+        }
+
+        &lt;!-- Detail Modal --&gt;
+        @@if (selectedPokemon != null)
+        {
+            var primaryType = selectedPokemon.Types?.FirstOrDefault() ?? "normal";
+            var bgClass = GetTypeBackgroundColor(primaryType);
+
+            &lt;div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+                @@onclick="CloseModal"&gt;
+
+                &lt;div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden"
+                    @@onclick:stopPropagation="true"&gt;
+
+                    &lt;!-- Colored Background Section with Image --&gt;
+                    &lt;div class="@@bgClass relative px-6 pt-8 pb-32"&gt;
+                        &lt;button @@onclick="CloseModal"
+                            class="absolute top-4 left-4 w-10 h-10 bg-gray-800/30 hover:bg-gray-800/50 
+                                   backdrop-blur rounded-full flex items-center justify-center text-white"&gt;
+                            &lt;svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;
+                                &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /&gt;
+                            &lt;/svg&gt;
+                        &lt;/button&gt;
+                        &lt;div class="flex items-center justify-center"&gt;
+                            &lt;img src="@@selectedPokemon.SpriteUrl" alt="@@selectedPokemon.Name"
+                                class="w-64 h-64 object-contain drop-shadow-2xl" /&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+                    &lt;!-- White Content Card Overlapping --&gt;
+                    &lt;div class="bg-white rounded-t-3xl -mt-24 relative z-10 px-6 pt-6 pb-8 overflow-y-auto max-h-[calc(90vh-250px)]"&gt;
+                        
+                        &lt;!-- Pokemon Name & Types --&gt;
+                        &lt;div class="mb-4"&gt;
+                            &lt;h2 class="text-3xl font-bold text-gray-900 capitalize mb-2"&gt;@@selectedPokemon.Name&lt;/h2&gt;
+                            &lt;div class="flex gap-2 mb-4"&gt;
+                                @@if (selectedPokemon.Types != null)
+                                {
+                                    @@foreach (var type in selectedPokemon.Types)
+                                    {
+                                        &lt;span class="@@GetTypeChipClass(type)"&gt;@@type&lt;/span&gt;
+                                    }
+                                }
+                            &lt;/div&gt;
+                            &lt;p class="text-gray-600 text-sm leading-relaxed mb-6"&gt;
+                                This Pokemon has @@selectedPokemon.Hp HP and @@selectedPokemon.Attack attack power.
+                                It can be found in various regions and has unique abilities that make it special.
+                            &lt;/p&gt;
+                        &lt;/div&gt;
+
+                        &lt;!-- Stats Grid --&gt;
+                        &lt;div class="grid grid-cols-2 gap-4 mb-6"&gt;
+                            &lt;div class="bg-gray-50 rounded-xl p-3"&gt;
+                                &lt;div class="text-xs text-gray-500 mb-1"&gt;Height&lt;/div&gt;
+                                &lt;div class="text-lg font-bold text-gray-900"&gt;@@selectedPokemon.Height &lt;span class="text-sm font-normal text-gray-500"&gt;dm&lt;/span&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;div class="bg-gray-50 rounded-xl p-3"&gt;
+                                &lt;div class="text-xs text-gray-500 mb-1"&gt;Weight&lt;/div&gt;
+                                &lt;div class="text-lg font-bold text-gray-900"&gt;@@selectedPokemon.Weight &lt;span class="text-sm font-normal text-gray-500"&gt;hg&lt;/span&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;div class="bg-gray-50 rounded-xl p-3"&gt;
+                                &lt;div class="text-xs text-gray-500 mb-1"&gt;Base XP&lt;/div&gt;
+                                &lt;div class="text-lg font-bold text-gray-900"&gt;@@selectedPokemon.BaseExperience&lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;div class="bg-gray-50 rounded-xl p-3"&gt;
+                                &lt;div class="text-xs text-gray-500 mb-1"&gt;Abilities&lt;/div&gt;
+                                &lt;div class="text-lg font-bold text-gray-900"&gt;@@(selectedPokemon.Abilities?.Count ?? 0)&lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+
+                        &lt;!-- Weakness Section --&gt;
+                        &lt;div class="mb-6"&gt;
+                            &lt;h3 class="text-base font-bold text-gray-900 mb-3"&gt;Weakness&lt;/h3&gt;
+                            &lt;div class="flex flex-wrap gap-2"&gt;
+                                @@foreach (var weakness in GetTypeWeaknesses(primaryType))
+                                {
+                                    &lt;span class="@@GetWeaknessChipClass(weakness)"&gt;@@weakness&lt;/span&gt;
+                                }
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+
+                        &lt;!-- Evolutions Section --&gt;
+                        &lt;div class="mb-2"&gt;
+                            &lt;h3 class="text-base font-bold text-gray-900 mb-4"&gt;Evolutions&lt;/h3&gt;
+                            &lt;div class="flex items-center justify-center gap-4"&gt;
+                                @@{
+                                    var evolutionIds = GetEvolutionChain(selectedPokemon.Id);
+                                    for (int i = 0; i &lt; evolutionIds.Count; i++)
+                                    {
+                                        var evoId = evolutionIds[i];
+                                        &lt;div class="flex flex-col items-center"&gt;
+                                            &lt;div @@onclick="() =&gt; ShowDetails(evoId)"
+                                                class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center 
+                                                       overflow-hidden cursor-pointer hover:bg-gray-200"&gt;
+                                                &lt;img src="@@GetSpriteUrl(evoId)" alt="Evolution @@(i + 1)"
+                                                    class="w-full h-full object-contain" /&gt;
+                                            &lt;/div&gt;
+                                        &lt;/div&gt;
+                                        @@if (i &lt; evolutionIds.Count - 1)
+                                        {
+                                            &lt;div class="text-gray-400 text-xl"&gt;→&lt;/div&gt;
+                                        }
+                                    }
+                                }
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
         }
     &lt;/div&gt;
 &lt;/div&gt;</pre>
@@ -189,7 +652,7 @@
 
                 <!-- Step 1 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">PokemonCollectorDemo.razor</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor</div>
                     <div class="text-xs text-gray-500 mb-1">1. Set up the page and inject dependencies</div>
                     <p class="text-xs text-gray-600 mb-2">
                         Start with the page route, render mode, and inject HttpClient for API calls. Add a custom CSS
@@ -217,7 +680,7 @@
 
                 <!-- Step 2 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">PokemonCollectorDemo.razor</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor</div>
                     <div class="text-xs text-gray-500 mb-1">2. Create the search and type filter UI</div>
                     <p class="text-xs text-gray-600 mb-2">
                         Build the filter bar with a search input and type dropdown. Use <code>@@bind:after</code> to
@@ -225,26 +688,34 @@
                         filtering immediately when the user types or changes the selection.
                     </p>
                     <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
-                        <li><code>@@bind="searchTerm" @@bind:event="oninput"</code> updates as you type (not on blur)
+                        <li><code>@@bind="searchQuery" @@bind:event="oninput"</code> updates as you type (not on blur)
                         </li>
                         <li><code>@@bind:after="ApplyFilters"</code> calls your filter method after each change</li>
                         <li>Flex layout with <code>sm:flex-row</code> stacks on mobile, side-by-side on desktop</li>
                         <li>This is the NEW type filtering feature not in Step 6!</li>
                     </ul>
-                    <pre class="code-block text-xs font-mono text-gray-800">&lt;div class="flex flex-col sm:flex-row gap-3"&gt;
-    &lt;input type="text" @@bind="searchTerm" @@bind:event="oninput" @@bind:after="ApplyFilters"
-        placeholder="Search Pokemon..." class="w-full rounded-lg border p-2" /&gt;
-    &lt;select @@bind="selectedType" @@bind:after="ApplyFilters" class="w-full sm:w-48 rounded-lg border p-2"&gt;
-        &lt;option value=""&gt;All Types&lt;/option&gt;
-        &lt;option value="fire"&gt;Fire&lt;/option&gt;
-        &lt;!-- All 18 types --&gt;
-    &lt;/select&gt;
+                    <pre class="code-block text-xs font-mono text-gray-800">&lt;div class="rounded-xl border border-gray-200 bg-white p-3 mb-4"&gt;
+    &lt;div class="flex flex-col sm:flex-row gap-2"&gt;
+        &lt;div class="flex-1"&gt;
+            &lt;input type="text" @@bind="searchQuery" @@bind:event="oninput" @@bind:after="ApplyFilters"
+                placeholder="Search Pokemon..." class="w-full rounded-lg border border-gray-300 p-2" /&gt;
+        &lt;/div&gt;
+        &lt;div class="sm:w-48"&gt;
+            &lt;select @@bind="selectedType" @@bind:after="ApplyFilters"
+                class="w-full rounded-lg border border-gray-300 p-2"&gt;
+                &lt;option value=""&gt;All Types&lt;/option&gt;
+                &lt;option value="fire"&gt;Fire&lt;/option&gt;
+                &lt;option value="water"&gt;Water&lt;/option&gt;
+                &lt;!-- All 18 types --&gt;
+            &lt;/select&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
 &lt;/div&gt;</pre>
                 </div>
 
                 <!-- Step 3 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">PokemonCollectorDemo.razor</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor</div>
                     <div class="text-xs text-gray-500 mb-1">3. Build the responsive Pokemon grid</div>
                     <p class="text-xs text-gray-600 mb-2">
                         Use the exact same grid styling from Step 6: border-2, gradient backgrounds, hover effects, and
@@ -256,16 +727,20 @@
                         <li><code>group</code> class + <code>group-hover:scale-110</code> scales image when hovering the
                             card</li>
                         <li><code>loading="lazy"</code> only loads images when they scroll into view (performance!)</li>
-                        <li>Click handler <code>@@onclick="() =&gt; SelectPokemon(pokemon)"</code> opens the detail
+                        <li>Click handler <code>@@onclick="() =&gt; ShowDetails(pokemon.Id)"</code> opens the detail
                             modal</li>
+                        <li>Use <code>CurrentPagePokemon</code> computed property for paginated results</li>
                     </ul>
-                    <pre class="code-block text-xs font-mono text-gray-800">&lt;div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 animate-fade-in"&gt;
-    @@foreach (var pokemon in GetPagedPokemon())
+                    <pre class="code-block text-xs font-mono text-gray-800">&lt;div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-4 fade-in"&gt;
+    @@foreach (var pokemon in CurrentPagePokemon)
     {
-        &lt;div class="border-2 border-gray-200 rounded-xl overflow-hidden hover:border-blue-400 hover:shadow-xl transition-all cursor-pointer group"
-            @@onclick="() =&gt; SelectPokemon(pokemon)"&gt;
-            &lt;div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100"&gt;
-                &lt;img src="@@pokemon.SpriteUrl" class="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform" loading="lazy" /&gt;
+        &lt;div class="border-2 border-gray-200 rounded-xl overflow-hidden hover:border-blue-400 
+                    hover:shadow-xl transition-all duration-200 cursor-pointer group"
+            @@onclick="() =&gt; ShowDetails(pokemon.Id)"&gt;
+            &lt;div class="aspect-square bg-linear-to-br from-gray-50 to-gray-100"&gt;
+                &lt;img src="@@pokemon.SpriteUrl" alt="@@pokemon.Name"
+                    class="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-300"
+                    loading="lazy" /&gt;
             &lt;/div&gt;
             &lt;div class="p-3 bg-white"&gt;
                 &lt;span class="text-xs text-gray-500 font-mono"&gt;#@@pokemon.Id.ToString("D3")&lt;/span&gt;
@@ -278,7 +753,7 @@
 
                 <!-- Step 4 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">PokemonCollectorDemo.razor</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor</div>
                     <div class="text-xs text-gray-500 mb-1">4. Add pagination controls</div>
                     <p class="text-xs text-gray-600 mb-2">
                         Same pagination from Step 3, but now it works with your filtered results. The Previous/Next
@@ -306,7 +781,7 @@
 
                 <!-- Step 5 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">@@code block (C#)</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor.cs</div>
                     <div class="text-xs text-gray-500 mb-1">5. Set up state variables and data models</div>
                     <p class="text-xs text-gray-600 mb-2">
                         Define all the variables you need: lists for Pokemon, filters, pagination, loading states, and
@@ -317,31 +792,36 @@
                         <li><code>allPokemon</code> holds all 151 Pokemon, <code>filteredPokemon</code> after
                             search/filter</li>
                         <li><code>selectedPokemon</code> is the one shown in the detail modal (null when closed)</li>
-                        <li><code>searchTerm</code> and <code>selectedType</code> track user's filter choices</li>
+                        <li><code>searchQuery</code> and <code>selectedType</code> track user's filter choices</li>
+                        <li><code>CurrentPagePokemon</code> computed property for pagination</li>
                         <li>Data classes like <code>PokemonListItem</code> and <code>PokemonDetail</code> structure your
                             data</li>
                     </ul>
-                    <pre class="code-block text-xs font-mono text-gray-800">@@code {
-    private List&lt;PokemonListItem&gt; allPokemon = new();
-    private List&lt;PokemonListItem&gt; filteredPokemon = new();
-    private PokemonDetail? selectedPokemon;
-    private bool isLoading = true;
-    private string errorMessage = string.Empty;
-    private string searchTerm = string.Empty;
-    private string selectedType = string.Empty;
-    private int currentPage = 1;
-    private int pageSize = 20;
-    private int totalPages =&gt; (int)Math.Ceiling(filteredPokemon.Count / (double)pageSize);
-    
-    // Models match PokeAPI JSON structure
-    private class PokemonListItem { /* Id, Name, Url, SpriteUrl, Types */ }
-    private class PokemonDetail { /* Id, Name, Types, Stats, Abilities, etc. */ }
-}</pre>
+                    <pre class="code-block text-xs font-mono text-gray-800">private bool isLoading = true;
+private string errorMessage = string.Empty;
+private List&lt;PokemonListItem&gt; allPokemon = new();
+private List&lt;PokemonListItem&gt; filteredPokemon = new();
+private PokemonDetail? selectedPokemon = null;
+private string searchQuery = "";
+private string selectedType = "";
+
+private int currentPage = 1;
+private int pageSize = 20;
+private int totalPages =&gt; (int)Math.Ceiling(filteredPokemon.Count / (double)pageSize);
+
+private List&lt;PokemonListItem&gt; CurrentPagePokemon =&gt; filteredPokemon
+    .Skip((currentPage - 1) * pageSize)
+    .Take(pageSize)
+    .ToList();
+
+// Models match PokeAPI JSON structure
+public class PokemonListItem { public int Id; public string Name; public string SpriteUrl; public List&lt;string&gt;? Types; }
+public class PokemonDetail { public int Id; public string Name; public int Height; public int Weight; /* etc */ }</pre>
                 </div>
 
                 <!-- Step 6 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">@@code block (C#)</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor.cs</div>
                     <div class="text-xs text-gray-500 mb-1">6. Load Pokemon list with type information</div>
                     <p class="text-xs text-gray-600 mb-2">
                         On page load, fetch all 151 Pokemon from the API. Then, load type data for the first 50 Pokemon
@@ -355,39 +835,57 @@
                         <li>Build sprite URL: <code>PokeAPI/sprites/.../official-artwork/{id}.png</code></li>
                         <li>Load types for first 50: <code>allPokemon.Take(50)</code> to keep it fast</li>
                         <li><code>Task.WhenAll(typeTasks)</code> loads all type data in parallel</li>
+                        <li>Use <code>PokemonApiResponse</code> DTO to properly deserialize the API response</li>
                     </ul>
                     <pre class="code-block text-xs font-mono text-gray-800">protected override async Task OnInitializedAsync()
 {
-    await LoadPokemonList();
+    await LoadPokemonAsync();
 }
 
-private async Task LoadPokemonList()
+private async Task LoadPokemonAsync()
 {
     isLoading = true;
-    try {
-        var response = await Http.GetFromJsonAsync&lt;PokemonListResponse&gt;("https://pokeapi.co/api/v2/pokemon?limit=151");
-        if (response?.Results != null) {
-            foreach (var result in response.Results) {
+    errorMessage = string.Empty;
+
+    try
+    {
+        var response = await Http.GetFromJsonAsync&lt;PokemonListResponse&gt;(
+            "https://pokeapi.co/api/v2/pokemon?limit=151");
+
+        if (response?.Results != null)
+        {
+            foreach (var result in response.Results)
+            {
                 var id = int.Parse(result.Url.TrimEnd('/').Split('/').Last());
-                allPokemon.Add(new PokemonListItem {
+                allPokemon.Add(new PokemonListItem
+                {
                     Id = id,
                     Name = result.Name,
-                    SpriteUrl = $"https://raw.githubusercontent.com/PokeAPI/sprites/.../official-artwork/{id}.png"
+                    SpriteUrl = GetSpriteUrl(id)
                 });
             }
             
-            // Load types for first 50 Pokemon (for filtering)
-            var typeTasks = allPokemon.Take(50).Select(async p =&gt; {
-                var details = await Http.GetFromJsonAsync&lt;PokemonDetailResponse&gt;(p.Url);
-                if (details?.Types != null) {
-                    p.Types = details.Types.Select(t =&gt; t.Type.Name).ToList();
+            // Load types for first 50 Pokemon (for type filtering)
+            var typeTasks = allPokemon.Take(50).Select(async p =&gt;
+            {
+                var apiResponse = await Http.GetFromJsonAsync&lt;PokemonApiResponse&gt;(
+                    $"https://pokeapi.co/api/v2/pokemon/{p.Id}");
+                if (apiResponse?.Types != null)
+                {
+                    p.Types = apiResponse.Types.Select(t =&gt; t.Type.Name).ToList();
                 }
             });
             await Task.WhenAll(typeTasks);
             
             ApplyFilters();
         }
-    } finally {
+    }
+    catch (Exception ex)
+    {
+        errorMessage = $"Failed to load Pokemon: {ex.Message}";
+    }
+    finally
+    {
         isLoading = false;
     }
 }</pre>
@@ -395,7 +893,7 @@ private async Task LoadPokemonList()
 
                 <!-- Step 7 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">@@code block (C#)</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor.cs</div>
                     <div class="text-xs text-gray-500 mb-1">7. Implement combined search and type filtering</div>
                     <p class="text-xs text-gray-600 mb-2">
                         Filter the Pokemon list by BOTH name and type simultaneously. Use LINQ's <code>Where</code> with
@@ -403,9 +901,10 @@ private async Task LoadPokemonList()
                         for each filter, and reset to page 1 whenever filters change.
                     </p>
                     <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
-                        <li><code>IsNullOrWhiteSpace(searchTerm)</code> means no search filter applied (show all)</li>
+                        <li><code>IsNullOrWhiteSpace(searchQuery)</code> means no search filter applied (show all)</li>
                         <li><code>Contains(..., OrdinalIgnoreCase)</code> for case-insensitive name matching</li>
-                        <li><code>p.Types?.Contains(selectedType) ?? false</code> checks if Pokemon has that type</li>
+                        <li><code>p.Types?.Any(t =&gt; t.Equals(selectedType, ...))</code> checks if Pokemon has that
+                            type</li>
                         <li><code>matchesSearch && matchesType</code> means BOTH conditions must be true</li>
                         <li><code>currentPage = 1</code> resets to first page after filtering</li>
                     </ul>
@@ -413,61 +912,59 @@ private async Task LoadPokemonList()
 {
     filteredPokemon = allPokemon.Where(p =&gt;
     {
-        var matchesSearch = string.IsNullOrWhiteSpace(searchTerm) ||
-            p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
+        var matchesSearch = string.IsNullOrWhiteSpace(searchQuery) ||
+            p.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
         
         var matchesType = string.IsNullOrWhiteSpace(selectedType) ||
-            (p.Types?.Contains(selectedType) ?? false);
+            (p.Types?.Any(t =&gt; t.Equals(selectedType, 
+                StringComparison.OrdinalIgnoreCase)) ?? false);
         
-        return matchesSearch && matchesType;
+        return matchesSearch &amp;&amp; matchesType;
     }).ToList();
 
     currentPage = 1;
-    StateHasChanged();
 }</pre>
                 </div>
 
                 <!-- Step 8 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">@@code block (C#)</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor.cs</div>
                     <div class="text-xs text-gray-500 mb-1">8. Create pagination helper methods</div>
                     <p class="text-xs text-gray-600 mb-2">
-                        Slice the filtered list to show only the current page's Pokemon. Previous/Next methods update
-                        the page number
-                        with bounds checking to prevent going out of range.
+                        Use a computed property to slice the filtered list for the current page. Previous/Next methods
+                        update
+                        the page number with bounds checking to prevent going out of range.
                     </p>
                     <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li><code>CurrentPagePokemon</code> is a computed property using <code>=&gt;</code> syntax</li>
                         <li><code>Skip((currentPage - 1) * pageSize)</code> skips to the right position in the list</li>
                         <li><code>Take(pageSize)</code> grabs exactly 20 Pokemon for this page</li>
                         <li><code>if (currentPage &gt; 1)</code> prevents going below page 1</li>
                         <li><code>if (currentPage &lt; totalPages)</code> prevents going past the last page</li>
                     </ul>
-                    <pre class="code-block text-xs font-mono text-gray-800">private List&lt;PokemonListItem&gt; GetPagedPokemon()
-{
-    return filteredPokemon
-        .Skip((currentPage - 1) * pageSize)
-        .Take(pageSize)
-        .ToList();
-}
+                    <pre class="code-block text-xs font-mono text-gray-800">private int currentPage = 1;
+private int pageSize = 20;
+private int totalPages =&gt; (int)Math.Ceiling(filteredPokemon.Count / (double)pageSize);
+
+private List&lt;PokemonListItem&gt; CurrentPagePokemon =&gt; filteredPokemon
+    .Skip((currentPage - 1) * pageSize)
+    .Take(pageSize)
+    .ToList();
 
 private void PreviousPage()
 {
-    if (currentPage &gt; 1) {
-        currentPage--;
-    }
+    if (currentPage &gt; 1) currentPage--;
 }
 
 private void NextPage()
 {
-    if (currentPage &lt; totalPages) {
-        currentPage++;
-    }
+    if (currentPage &lt; totalPages) currentPage++;
 }</pre>
                 </div>
 
                 <!-- Step 9 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">@@code block (C#)</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor.cs</div>
                     <div class="text-xs text-gray-500 mb-1">9. Build type color mapping methods</div>
                     <p class="text-xs text-gray-600 mb-2">
                         Create switch expressions that map each Pokemon type (fire, water, grass, etc.) to beautiful,
@@ -477,9 +974,10 @@ private void NextPage()
                     <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
                         <li><code>type.ToLower()</code> normalizes input so "Fire" and "fire" both work</li>
                         <li>Switch expressions: <code>=&gt;</code> syntax is cleaner than if/else chains</li>
-                        <li>Badge classes use <code>bg-red-50 text-red-700</code> for subtle colored backgrounds</li>
-                        <li>Chip classes use <code>bg-red-500 text-white</code> for bold, vibrant colors</li>
-                        <li>Background classes use gradients: <code>from-red-300 to-orange-200</code></li>
+                        <li><code>GetTypeBadgeClass</code> - subtle colored backgrounds for grid cards</li>
+                        <li><code>GetTypeChipClass</code> - bold, vibrant colors for modal type chips</li>
+                        <li><code>GetTypeBackgroundColor</code> - gradients for modal header</li>
+                        <li><code>GetWeaknessChipClass</code> - lighter colors for weakness badges</li>
                     </ul>
                     <pre class="code-block text-xs font-mono text-gray-800">private string GetTypeBadgeClass(string type) =&gt; type.ToLower() switch
 {
@@ -491,22 +989,39 @@ private void NextPage()
 
 private string GetTypeBackgroundColor(string type) =&gt; type.ToLower() switch
 {
-    "fire" =&gt; "bg-gradient-to-br from-red-300 to-orange-200",
-    "water" =&gt; "bg-gradient-to-br from-blue-300 to-blue-200",
-    // Add all 18 types with beautiful gradients!
+    "fire" =&gt; "bg-linear-to-br from-red-300 to-orange-200",
+    "water" =&gt; "bg-linear-to-br from-blue-300 to-blue-200",
+    "grass" =&gt; "bg-linear-to-br from-green-300 to-green-200",
+    "electric" =&gt; "bg-linear-to-br from-yellow-300 to-yellow-200",
+    _ =&gt; "bg-linear-to-br from-gray-300 to-gray-200"
 };
 
 private string GetTypeChipClass(string type) =&gt; type.ToLower() switch
 {
     "fire" =&gt; "px-4 py-1.5 bg-red-500 text-white rounded-full text-sm font-semibold capitalize",
     "water" =&gt; "px-4 py-1.5 bg-blue-500 text-white rounded-full text-sm font-semibold capitalize",
-    // Vibrant colors for modal type chips
+    "grass" =&gt; "px-4 py-1.5 bg-green-500 text-white rounded-full text-sm font-semibold capitalize",
+    _ =&gt; "px-4 py-1.5 bg-gray-500 text-white rounded-full text-sm font-semibold capitalize"
+};
+
+private string GetWeaknessChipClass(string type) =&gt; type.ToLower() switch
+{
+    "fire" =&gt; "px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium capitalize",
+    "water" =&gt; "px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium capitalize",
+    "ice" =&gt; "px-3 py-1 bg-cyan-100 text-cyan-700 rounded-full text-xs font-medium capitalize",
+    "fighting" =&gt; "px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium capitalize",
+    "poison" =&gt; "px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium capitalize",
+    "ground" =&gt; "px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium capitalize",
+    "flying" =&gt; "px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium capitalize",
+    "bug" =&gt; "px-3 py-1 bg-lime-100 text-lime-700 rounded-full text-xs font-medium capitalize",
+    "rock" =&gt; "px-3 py-1 bg-stone-100 text-stone-700 rounded-full text-xs font-medium capitalize",
+    _ =&gt; "px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium capitalize"
 };</pre>
                 </div>
 
                 <!-- Step 10 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">@@code block (C#)</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor.cs</div>
                     <div class="text-xs text-gray-500 mb-1">10. Add type effectiveness (weaknesses) logic</div>
                     <p class="text-xs text-gray-600 mb-2">
                         Create a method that returns which types are super effective against each Pokemon type. This
@@ -546,32 +1061,45 @@ private string GetTypeChipClass(string type) =&gt; type.ToLower() switch
 
                 <!-- Step 11 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">@@code block (C#)</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor.cs</div>
                     <div class="text-xs text-gray-500 mb-1">11. Create evolution chain data</div>
                     <p class="text-xs text-gray-600 mb-2">
-                        Build a method that returns the full evolution chain for any Pokemon. Use hardcoded data for the
-                        first 151
-                        Pokemon (in a real app, you'd fetch this from the PokeAPI evolution endpoints).
+                        Build a method that returns the full evolution chain for any Pokemon. Use the <code>or</code>
+                        pattern
+                        in switch expressions to group all stages of an evolution line together.
                     </p>
                     <ul class="list-disc ml-4 mb-2 text-[11px] text-gray-600 space-y-1">
                         <li>Returns <code>List&lt;int&gt;</code> of Pokemon IDs in evolution order</li>
-                        <li>Example: Charmander (4) → Charmeleon (5) → Charizard (6)</li>
-                        <li>All 3 stages return the same chain: <code>new List&lt;int&gt; { 4, 5, 6 }</code></li>
+                        <li>Use <code>1 or 2 or 3 =&gt;</code> to return same chain for any stage</li>
+                        <li>Example: Charmander (4), Charmeleon (5), Charizard (6) all return <code>{ 4, 5, 6 }</code>
+                        </li>
+                        <li>Single-stage Pokemon return just their own ID</li>
                         <li>Display with clickable sprites and arrows in between</li>
-                        <li>Single-stage Pokemon just return their own ID: <code>{ pokemonId }</code></li>
                     </ul>
                     <pre class="code-block text-xs font-mono text-gray-800">private List&lt;int&gt; GetEvolutionChain(int pokemonId) =&gt; pokemonId switch
 {
-    1 =&gt; new List&lt;int&gt; { 1, 2, 3 }, // Bulbasaur → Ivysaur → Venusaur
-    2 =&gt; new List&lt;int&gt; { 1, 2, 3 },
-    3 =&gt; new List&lt;int&gt; { 1, 2, 3 },
-    4 =&gt; new List&lt;int&gt; { 4, 5, 6 }, // Charmander → Charmeleon → Charizard
-    5 =&gt; new List&lt;int&gt; { 4, 5, 6 },
-    6 =&gt; new List&lt;int&gt; { 4, 5, 6 },
-    25 =&gt; new List&lt;int&gt; { 25, 26 }, // Pikachu → Raichu
-    26 =&gt; new List&lt;int&gt; { 25, 26 },
-    // Add all evolution chains for 151 Pokemon
-    _ =&gt; new List&lt;int&gt; { pokemonId } // Single stage (no evolution)
+    // Starters
+    1 or 2 or 3 =&gt; new() { 1, 2, 3 },       // Bulbasaur -&gt; Ivysaur -&gt; Venusaur
+    4 or 5 or 6 =&gt; new() { 4, 5, 6 },       // Charmander -&gt; Charmeleon -&gt; Charizard
+    7 or 8 or 9 =&gt; new() { 7, 8, 9 },       // Squirtle -&gt; Wartortle -&gt; Blastoise
+    
+    // Bug types
+    10 or 11 or 12 =&gt; new() { 10, 11, 12 }, // Caterpie -&gt; Metapod -&gt; Butterfree
+    13 or 14 or 15 =&gt; new() { 13, 14, 15 }, // Weedle -&gt; Kakuna -&gt; Beedrill
+    
+    // Pikachu line
+    25 or 26 =&gt; new() { 25, 26 },           // Pikachu -&gt; Raichu
+    
+    // Abra line  
+    63 or 64 or 65 =&gt; new() { 63, 64, 65 }, // Abra -&gt; Kadabra -&gt; Alakazam
+    
+    // Ghost line
+    92 or 93 or 94 =&gt; new() { 92, 93, 94 }, // Gastly -&gt; Haunter -&gt; Gengar
+    
+    // Dragon line
+    147 or 148 or 149 =&gt; new() { 147, 148, 149 }, // Dratini -&gt; Dragonair -&gt; Dragonite
+    
+    _ =&gt; new() { pokemonId }                // Single stage (no evolution)
 };
 
 // In Razor modal:
@@ -584,8 +1112,9 @@ private string GetTypeChipClass(string type) =&gt; type.ToLower() switch
             &lt;div @@onclick="() =&gt; ShowDetails(evoId)" class="w-20 h-20 cursor-pointer"&gt;
                 &lt;img src="@@GetSpriteUrl(evoId)" class="w-full h-full object-contain" /&gt;
             &lt;/div&gt;
-            if (i &lt; evolutionIds.Count - 1) {
-                &lt;span class="text-xl text-gray-400"&gt;→&lt;/span&gt;
+            @@if (i &lt; evolutionIds.Count - 1)
+            {
+                &lt;div class="text-gray-400 text-xl"&gt;→&lt;/div&gt;
             }
         }
     }
@@ -594,7 +1123,7 @@ private string GetTypeChipClass(string type) =&gt; type.ToLower() switch
 
                 <!-- Step 12 -->
                 <div class="bg-gray-100 border border-gray-200 rounded-lg p-4">
-                    <div class="text-xs text-gray-500 mb-1">PokemonCollectorDemo.razor + @@code</div>
+                    <div class="text-xs text-gray-500 mb-1">Demo.razor</div>
                     <div class="text-xs text-gray-500 mb-1">12. Build the detail modal with stats and evolution</div>
                     <p class="text-xs text-gray-600 mb-2">
                         Create a beautiful, full-screen modal that shows when you click a Pokemon. Include a
@@ -721,7 +1250,7 @@ private string GetTypeChipClass(string type) =&gt; type.ToLower() switch
         </div>
 
         <!-- How to do it (Gradient Banner) -->
-        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+        <div class="bg-linear-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
             <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
             <ol class="list-decimal ml-5 space-y-2 text-gray-700 text-sm sm:text-base">
                 <li>
@@ -818,7 +1347,7 @@ private string GetTypeChipClass(string type) =&gt; type.ToLower() switch
         </div>
 
         <!-- Congratulations Banner -->
-        <div class="bg-gradient-to-r from-yellow-200 to-emerald-200 rounded-2xl p-6 mb-6">
+        <div class="bg-linear-to-r from-yellow-200 to-emerald-200 rounded-2xl p-6 mb-6">
             <h3 class="text-xl font-bold text-gray-900 mb-2">🎉 Congratulations!</h3>
             <p class="text-gray-700 mb-3">
                 You've built a complete, production-ready Pokedex from scratch! You learned API integration,
