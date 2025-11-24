@@ -323,7 +323,8 @@ else
                         <li>Height comes back in decimeters, weight in hectograms (weird units!)</li>
                         <li>Divide both by 10 to show normal meters and kilograms</li>
                         <li>Types and abilities are nested - you need <code>type.Type.Name</code>, not just
-                            <code>type.Name</code></li>
+                            <code>type.Name</code>
+                        </li>
                     </ul>
                     <pre
                         class="code-block text-xs sm:text-sm font-mono text-gray-800 w-full max-w-full overflow-x-auto">async Task ShowDetails(int id)
@@ -444,7 +445,8 @@ public class PokemonDetail
                                 StringComparison.OrdinalIgnoreCase for search</p>
                             <p class="text-xs text-blue-800">Users don't want to worry about capitalization. Using
                                 <code>OrdinalIgnoreCase</code> means "pika", "Pika", "PIKA" all work. It's a small
-                                detail that makes your search feel way more flexible and user-friendly!</p>
+                                detail that makes your search feel way more flexible and user-friendly!
+                            </p>
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-blue-900 mb-2">stopPropagation prevents click events
@@ -476,23 +478,28 @@ public class PokemonDetail
                     <ul class="list-disc ml-6 text-sm text-yellow-900 space-y-1">
                         <li><strong>Search doesn't find results:</strong> Double-check you're using
                             <code>StringComparison.OrdinalIgnoreCase</code>. Without it, "pikachu" won't match "Pikachu"
-                            and your search won't work right.</li>
+                            and your search won't work right.
+                        </li>
                         <li><strong>Stuck on a blank page after searching:</strong> You forgot to reset the page number!
                             Add <code>@@bind:after="OnSearchChanged"</code> to your search input, and inside that method
                             set <code>currentPage = 1</code>.</li>
                         <li><strong>Modal closes when I click inside it:</strong> You need
                             <code>@@onclick:stopPropagation</code> on the modal content div. The overlay has
                             <code>@@onclick="CloseModal"</code>, but the content should stop that event from bubbling
-                            up.</li>
+                            up.
+                        </li>
                         <li><strong>Can't close the modal:</strong> Make sure your <code>CloseModal()</code> method sets
                             <code>selectedPokemon = null</code>, and the modal only renders when
-                            <code>selectedPokemon != null</code>.</li>
+                            <code>selectedPokemon != null</code>.
+                        </li>
                         <li><strong>Types and abilities don't show up:</strong> Check the nested structure! It's
                             <code>type.Type.Name</code> and <code>ability.Ability.Name</code> (capital T and A). The API
-                            returns nested objects, not just strings.</li>
+                            returns nested objects, not just strings.
+                        </li>
                         <li><strong>Search only updates when I press Enter:</strong> Add
                             <code>@@bind:event="oninput"</code> to make it update with every keystroke instead of
-                            waiting for the default <code>onchange</code> behavior (which fires on blur).</li>
+                            waiting for the default <code>onchange</code> behavior (which fires on blur).
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -590,13 +597,13 @@ public class PokemonDetail
                             int id = GetPokemonId(pokemon.Url);
 
                             <div @onclick="@(async () => await ShowDetails(id))" class="border-2 border-gray-200 rounded-xl overflow-hidden 
-                                                hover:border-blue-400 hover:shadow-xl 
-                                                transition-all duration-200 cursor-pointer">
+                                                        hover:border-blue-400 hover:shadow-xl 
+                                                        transition-all duration-200 cursor-pointer">
 
                                 <div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100">
                                     <img src="@GetSpriteUrl(id)" class="w-full h-full object-contain p-2
-                                                        hover:scale-110 transition-transform duration-300" alt="@pokemon.Name"
-                                        loading="lazy" />
+                                                                hover:scale-110 transition-transform duration-300"
+                                        alt="@pokemon.Name" loading="lazy" />
                                 </div>
 
                                 <div class="p-3 bg-white">
@@ -604,7 +611,7 @@ public class PokemonDetail
                                         #@id.ToString("D3")
                                     </span>
                                     <p class="font-semibold text-gray-800 capitalize 
-                                                      hover:text-blue-600 transition-colors">
+                                                              hover:text-blue-600 transition-colors">
                                         @pokemon.Name
                                     </p>
                                 </div>
@@ -615,8 +622,8 @@ public class PokemonDetail
                     <!-- Pagination -->
                     <div class="flex items-center justify-between mt-6">
                         <button @onclick="PreviousPage" disabled="@(currentPage == 1)" class="px-4 py-2 bg-blue-600 text-white rounded-lg
-                                           hover:bg-blue-700 transition-colors
-                                           disabled:opacity-50 disabled:cursor-not-allowed">
+                                               hover:bg-blue-700 transition-colors
+                                               disabled:opacity-50 disabled:cursor-not-allowed">
                             ← Previous
                         </button>
 
@@ -625,8 +632,8 @@ public class PokemonDetail
                         </span>
 
                         <button @onclick="NextPage" disabled="@(currentPage >= totalPages)" class="px-4 py-2 bg-blue-600 text-white rounded-lg
-                                           hover:bg-blue-700 transition-colors
-                                           disabled:opacity-50 disabled:cursor-not-allowed">
+                                               hover:bg-blue-700 transition-colors
+                                               disabled:opacity-50 disabled:cursor-not-allowed">
                             Next →
                         </button>
                     </div>
@@ -675,7 +682,7 @@ public class PokemonDetail
                             @foreach (var type in selectedPokemon.Types)
                             {
                                 <span class="px-3 py-1 bg-blue-100 text-blue-700 
-                                                     rounded-full text-sm capitalize">
+                                                             rounded-full text-sm capitalize">
                                     @type.Type.Name
                                 </span>
                             }
@@ -689,7 +696,7 @@ public class PokemonDetail
                             @foreach (var ability in selectedPokemon.Abilities)
                             {
                                 <span class="px-3 py-1 bg-green-100 text-green-700 
-                                                     rounded-full text-sm capitalize">
+                                                             rounded-full text-sm capitalize">
                                     @ability.Ability.Name
                                 </span>
                             }
@@ -698,7 +705,7 @@ public class PokemonDetail
 
                     <!-- Close button -->
                     <button @onclick="CloseModal" class="w-full mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 
-                                       text-white rounded-lg transition-colors">
+                                           text-white rounded-lg transition-colors">
                         Close
                     </button>
                 </div>
@@ -737,7 +744,7 @@ public class PokemonDetail
                 <p class="text-lg sm:text-xl font-semibold mb-4">Great work! 🎉</p>
                 <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
                     You've learned search, filtering, and modals! Next, Step 7 will show you how to build the complete,
-                    polished Pokemon Collector demo with type filtering, evolution chains, and beautiful visualizations!
+                    polished Pokedex demo with type filtering, evolution chains, and beautiful visualizations!
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <a href="/pokemon-guide"

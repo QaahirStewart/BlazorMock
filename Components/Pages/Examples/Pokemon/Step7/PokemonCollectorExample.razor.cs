@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace BlazorMock.Components.Pages.Examples.Pokemon.Step7;
 
-public class PokemonCollectorExampleBase : ComponentBase
+public class PokedexExampleBase : ComponentBase
 {
     [Inject] private IHttpClientFactory HttpClientFactory { get; set; } = default!;
 
@@ -16,7 +16,7 @@ public class PokemonCollectorExampleBase : ComponentBase
     protected string selectedType = "";
     
     protected int currentPage = 1;
-    protected int pageSize = 20;
+    protected int pageSize = 10;
     protected int totalPages => (int)Math.Ceiling(filteredPokemon.Count / (double)pageSize);
 
     protected List<PokemonListItem> CurrentPagePokemon => filteredPokemon
@@ -29,7 +29,7 @@ public class PokemonCollectorExampleBase : ComponentBase
         await LoadPokemonAsync();
     }
 
-    private async Task LoadPokemonAsync()
+    public async Task LoadPokemonAsync()
     {
         isLoading = true;
         errorMessage = string.Empty;
@@ -191,6 +191,29 @@ public class PokemonCollectorExampleBase : ComponentBase
         "fairy" => "px-2.5 py-1 bg-pink-50 text-pink-700 border border-pink-300 rounded-md text-xs font-medium capitalize",
         "normal" => "px-2.5 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-md text-xs font-medium capitalize",
         _ => "px-2.5 py-1 bg-gray-100 text-gray-700 border border-gray-200 rounded-md text-xs font-medium capitalize"
+    };
+
+    protected string GetTypeChipClass(string type) => type.ToLower() switch
+    {
+        "grass" => "px-4 py-1.5 bg-green-500 text-white rounded-full text-sm font-semibold capitalize",
+        "poison" => "px-4 py-1.5 bg-purple-500 text-white rounded-full text-sm font-semibold capitalize",
+        "fire" => "px-4 py-1.5 bg-red-500 text-white rounded-full text-sm font-semibold capitalize",
+        "water" => "px-4 py-1.5 bg-blue-500 text-white rounded-full text-sm font-semibold capitalize",
+        "electric" => "px-4 py-1.5 bg-yellow-500 text-white rounded-full text-sm font-semibold capitalize",
+        "ice" => "px-4 py-1.5 bg-cyan-500 text-white rounded-full text-sm font-semibold capitalize",
+        "fighting" => "px-4 py-1.5 bg-orange-600 text-white rounded-full text-sm font-semibold capitalize",
+        "ground" => "px-4 py-1.5 bg-amber-600 text-white rounded-full text-sm font-semibold capitalize",
+        "flying" => "px-4 py-1.5 bg-indigo-500 text-white rounded-full text-sm font-semibold capitalize",
+        "psychic" => "px-4 py-1.5 bg-pink-500 text-white rounded-full text-sm font-semibold capitalize",
+        "bug" => "px-4 py-1.5 bg-lime-600 text-white rounded-full text-sm font-semibold capitalize",
+        "rock" => "px-4 py-1.5 bg-stone-600 text-white rounded-full text-sm font-semibold capitalize",
+        "ghost" => "px-4 py-1.5 bg-violet-600 text-white rounded-full text-sm font-semibold capitalize",
+        "dragon" => "px-4 py-1.5 bg-indigo-600 text-white rounded-full text-sm font-semibold capitalize",
+        "dark" => "px-4 py-1.5 bg-gray-800 text-white rounded-full text-sm font-semibold capitalize",
+        "steel" => "px-4 py-1.5 bg-slate-600 text-white rounded-full text-sm font-semibold capitalize",
+        "fairy" => "px-4 py-1.5 bg-pink-500 text-white rounded-full text-sm font-semibold capitalize",
+        "normal" => "px-4 py-1.5 bg-gray-500 text-white rounded-full text-sm font-semibold capitalize",
+        _ => "px-4 py-1.5 bg-gray-500 text-white rounded-full text-sm font-semibold capitalize"
     };
 
     protected string GetTypeBackgroundColor(string type) => type.ToLower() switch

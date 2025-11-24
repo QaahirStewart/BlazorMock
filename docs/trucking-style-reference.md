@@ -53,10 +53,10 @@ Use this as a checklist when building or updating any guide.
 ```razor
 <div class="text-center mb-12">
     <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 break-words">
-        🟡 Pokemon Collector Guide
+        🟡 Pokedex Guide
     </h1>
     <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed break-words">
-        Learn data fetching, search, and client-side state by building a Pokemon Collector.
+        Learn data fetching, search, and client-side state by building a Pokedex.
     </p>
 </div>
 ```

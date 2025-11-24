@@ -22,11 +22,11 @@ public partial class GuideHubBase : ComponentBase
         steps = await ProgressService.GetAllStepsAsync();
         completedCount = await ProgressService.GetCompletedCountAsync();
         pokemonCompletedCount = await ProgressService.GetCompletedCountAsync("pokemon");
-        adminCompletedCount = await ProgressService.GetCompletedCountAsync("admin");
+        adminCompletedCount = await ProgressService.GetCompletedCountAsync("admin-dashboard");
 
         var pokemonSteps = await ProgressService.GetAllStepsAsync("pokemon");
         pokemonTotalCount = pokemonSteps.Count;
-        var adminSteps = await ProgressService.GetAllStepsAsync("admin");
+        var adminSteps = await ProgressService.GetAllStepsAsync("admin-dashboard");
         adminTotalCount = adminSteps.Count;
     }
 }

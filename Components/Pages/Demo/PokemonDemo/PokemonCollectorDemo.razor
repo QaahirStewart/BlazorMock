@@ -2,7 +2,7 @@
 @rendermode InteractiveServer
 @inject HttpClient Http
 
-<PageTitle>Pokemon Collector Demo</PageTitle>
+<PageTitle>Pokedex Demo</PageTitle>
 
 <style>
     @@keyframes fade-in {
@@ -22,15 +22,16 @@
 
 <div class="min-h-screen py-8">
     <div class="w-full mx-auto px-4 max-w-7xl">
+
         <!-- Header -->
         <div class="text-center mb-12">
             <div class="flex flex-col items-center justify-center gap-3 mb-4">
                 <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
                     alt="Pikachu" class="w-20 h-20 sm:w-24 sm:h-24" />
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">Pokemon Collector Demo</h1>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">Pokedex Demo</h1>
             </div>
             <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-4 leading-relaxed">
-                Browse, search, and explore Pokemon from the PokeAPI
+                Browse, search, filter by type, and explore Pokemon with rich details
             </p>
         </div>
 
@@ -120,26 +121,23 @@
                 </div>
 
                 <!-- Card Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 mb-8 animate-fade-in">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8 animate-fade-in">
                     @foreach (var pokemon in GetPagedPokemon())
                     {
-                        <div class="bg-white rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:shadow-lg transition-all duration-200 cursor-pointer p-0"
+                        <div class="border-2 border-gray-200 rounded-xl overflow-hidden hover:border-blue-400 hover:shadow-xl transition-all duration-200 cursor-pointer group"
                             @onclick="() => SelectPokemon(pokemon)">
-                            <div class="p-4 sm:p-6">
-                                <div class="text-xs font-medium text-gray-400 mb-2">#@pokemon.Id.ToString("D3")</div>
-                                <div class="aspect-square mb-3 flex items-center justify-center">
-                                    <img src="@pokemon.SpriteUrl" alt="@pokemon.Name"
-                                        class="w-full h-full object-contain hover:scale-110 transition-transform duration-200" />
-                                </div>
-                                <h3 class="font-bold text-gray-900 capitalize text-sm sm:text-base mb-2 truncate">
+                            <div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100">
+                                <img src="@pokemon.SpriteUrl" alt="@pokemon.Name"
+                                    class="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-300"
+                                    loading="lazy" />
+                            </div>
+                            <div class="p-3 bg-white">
+                                <span class="text-xs text-gray-500 font-mono">
+                                    #@pokemon.Id.ToString("D3")
+                                </span>
+                                <p class="font-semibold text-gray-800 capitalize hover:text-blue-600 transition-colors">
                                     @pokemon.Name
-                                </h3>
-                                @if (!string.IsNullOrEmpty(pokemon.PrimaryType))
-                                {
-                                    <span class="@GetTypeBadgeClass(pokemon.PrimaryType)">
-                                        @pokemon.PrimaryType
-                                    </span>
-                                }
+                                </p>
                             </div>
                         </div>
                     }
@@ -255,8 +253,8 @@
                                     {
                                         var evoId = evolutionIds[i];
                                         <div class="flex flex-col items-center">
-                                            <div
-                                                class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                                            <div @onclick="async () => { var pokemon = allPokemon.FirstOrDefault(p => p.Id == evoId); if (pokemon != null) await SelectPokemon(pokemon); }"
+                                                class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-200 transition-colors">
                                                 <img src="@GetPokemonSpriteUrl(evoId)" alt="Evolution @(i + 1)"
                                                     class="w-full h-full object-contain" />
                                             </div>
@@ -653,8 +651,141 @@
             7 => new List<int> { 7, 8, 9 }, // Squirtle -> Wartortle -> Blastoise
             8 => new List<int> { 7, 8, 9 },
             9 => new List<int> { 7, 8, 9 },
+            10 => new List<int> { 10, 11, 12 },
+            11 => new List<int> { 10, 11, 12 },
+            12 => new List<int> { 10, 11, 12 },
+            13 => new List<int> { 13, 14, 15 },
+            14 => new List<int> { 13, 14, 15 },
+            15 => new List<int> { 13, 14, 15 },
+            16 => new List<int> { 16, 17, 18 },
+            17 => new List<int> { 16, 17, 18 },
+            18 => new List<int> { 16, 17, 18 },
+            19 => new List<int> { 19, 20 },
+            20 => new List<int> { 19, 20 },
+            21 => new List<int> { 21, 22 },
+            22 => new List<int> { 21, 22 },
+            23 => new List<int> { 23, 24 },
+            24 => new List<int> { 23, 24 },
             25 => new List<int> { 25, 26 }, // Pikachu -> Raichu
             26 => new List<int> { 25, 26 },
+            27 => new List<int> { 27, 28 },
+            28 => new List<int> { 27, 28 },
+            29 => new List<int> { 29, 30, 31 },
+            30 => new List<int> { 29, 30, 31 },
+            31 => new List<int> { 29, 30, 31 },
+            32 => new List<int> { 32, 33, 34 },
+            33 => new List<int> { 32, 33, 34 },
+            34 => new List<int> { 32, 33, 34 },
+            35 => new List<int> { 35, 36 },
+            36 => new List<int> { 35, 36 },
+            37 => new List<int> { 37, 38 },
+            38 => new List<int> { 37, 38 },
+            39 => new List<int> { 39, 40 },
+            40 => new List<int> { 39, 40 },
+            41 => new List<int> { 41, 42 },
+            42 => new List<int> { 41, 42 },
+            43 => new List<int> { 43, 44, 45 },
+            44 => new List<int> { 43, 44, 45 },
+            45 => new List<int> { 43, 44, 45 },
+            46 => new List<int> { 46, 47 },
+            47 => new List<int> { 46, 47 },
+            48 => new List<int> { 48, 49 },
+            49 => new List<int> { 48, 49 },
+            50 => new List<int> { 50, 51 },
+            51 => new List<int> { 50, 51 },
+            52 => new List<int> { 52, 53 },
+            53 => new List<int> { 52, 53 },
+            54 => new List<int> { 54, 55 },
+            55 => new List<int> { 54, 55 },
+            56 => new List<int> { 56, 57 },
+            57 => new List<int> { 56, 57 },
+            58 => new List<int> { 58, 59 },
+            59 => new List<int> { 58, 59 },
+            60 => new List<int> { 60, 61, 62 },
+            61 => new List<int> { 60, 61, 62 },
+            62 => new List<int> { 60, 61, 62 },
+            63 => new List<int> { 63, 64, 65 },
+            64 => new List<int> { 63, 64, 65 },
+            65 => new List<int> { 63, 64, 65 },
+            66 => new List<int> { 66, 67, 68 },
+            67 => new List<int> { 66, 67, 68 },
+            68 => new List<int> { 66, 67, 68 },
+            69 => new List<int> { 69, 70, 71 },
+            70 => new List<int> { 69, 70, 71 },
+            71 => new List<int> { 69, 70, 71 },
+            72 => new List<int> { 72, 73 },
+            73 => new List<int> { 72, 73 },
+            74 => new List<int> { 74, 75, 76 },
+            75 => new List<int> { 74, 75, 76 },
+            76 => new List<int> { 74, 75, 76 },
+            77 => new List<int> { 77, 78 },
+            78 => new List<int> { 77, 78 },
+            79 => new List<int> { 79, 80 },
+            80 => new List<int> { 79, 80 },
+            81 => new List<int> { 81, 82 },
+            82 => new List<int> { 81, 82 },
+            84 => new List<int> { 84, 85 },
+            85 => new List<int> { 84, 85 },
+            86 => new List<int> { 86, 87 },
+            87 => new List<int> { 86, 87 },
+            88 => new List<int> { 88, 89 },
+            89 => new List<int> { 88, 89 },
+            90 => new List<int> { 90, 91 },
+            91 => new List<int> { 90, 91 },
+            92 => new List<int> { 92, 93, 94 },
+            93 => new List<int> { 92, 93, 94 },
+            94 => new List<int> { 92, 93, 94 },
+            95 => new List<int> { 95, 208 },
+            96 => new List<int> { 96, 97 },
+            97 => new List<int> { 96, 97 },
+            98 => new List<int> { 98, 99 },
+            99 => new List<int> { 98, 99 },
+            100 => new List<int> { 100, 101 },
+            101 => new List<int> { 100, 101 },
+            102 => new List<int> { 102, 103 },
+            103 => new List<int> { 102, 103 },
+            104 => new List<int> { 104, 105 },
+            105 => new List<int> { 104, 105 },
+            106 => new List<int> { 106 },
+            107 => new List<int> { 107 },
+            108 => new List<int> { 108 },
+            109 => new List<int> { 109, 110 },
+            110 => new List<int> { 109, 110 },
+            111 => new List<int> { 111, 112 },
+            112 => new List<int> { 111, 112 },
+            113 => new List<int> { 113 },
+            114 => new List<int> { 114 },
+            115 => new List<int> { 115 },
+            116 => new List<int> { 116, 117 },
+            117 => new List<int> { 116, 117 },
+            118 => new List<int> { 118, 119 },
+            119 => new List<int> { 118, 119 },
+            120 => new List<int> { 120, 121 },
+            121 => new List<int> { 120, 121 },
+            123 => new List<int> { 123 },
+            125 => new List<int> { 125 },
+            126 => new List<int> { 126 },
+            127 => new List<int> { 127 },
+            128 => new List<int> { 128 },
+            129 => new List<int> { 129, 130 },
+            130 => new List<int> { 129, 130 },
+            131 => new List<int> { 131 },
+            133 => new List<int> { 133 },
+            137 => new List<int> { 137 },
+            138 => new List<int> { 138, 139 },
+            139 => new List<int> { 138, 139 },
+            140 => new List<int> { 140, 141 },
+            141 => new List<int> { 140, 141 },
+            142 => new List<int> { 142 },
+            143 => new List<int> { 143 },
+            144 => new List<int> { 144 },
+            145 => new List<int> { 145 },
+            146 => new List<int> { 146 },
+            147 => new List<int> { 147, 148, 149 },
+            148 => new List<int> { 147, 148, 149 },
+            149 => new List<int> { 147, 148, 149 },
+            150 => new List<int> { 150 },
+            151 => new List<int> { 151 },
             _ => new List<int> { pokemonId } // Default: no evolution
         };
     }

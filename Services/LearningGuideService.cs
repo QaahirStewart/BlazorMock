@@ -44,7 +44,7 @@ public class LearningGuideService : ILearningGuideService
             ProjectKey: "trucking"
         ),
 
-        // Pokemon Collector phases (projectKey = "pokemon")
+        // Pokedex phases (projectKey = "pokemon")
         new Phase(
             Id: "pokemon-phase-1",
             Title: "Phase 1: Setup & API Connection",
@@ -65,7 +65,7 @@ public class LearningGuideService : ILearningGuideService
             Id: "pokemon-phase-3",
             Title: "Phase 3: Details & Search",
             Subtitle: "Polish the experience",
-            Description: "Build detail views, search, and filtering for your Pokemon collector.",
+            Description: "Build detail views, search, and filtering for your Pokedex.",
             StepNumbers: new[] { 6, 7 },
             ProjectKey: "pokemon"
         ),

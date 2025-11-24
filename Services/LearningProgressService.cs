@@ -61,7 +61,7 @@ public class LearningProgressService : ILearningProgressService
             new() { StepNumber = 12, StepId = "step12", Title = "Pay Calculation", ProjectKey = "trucking", IsComplete = false },
             new() { StepNumber = 13, StepId = "step13", Title = "Dashboard & Reports", ProjectKey = "trucking", IsComplete = false },
 
-            // Pokemon Collector steps (projectKey = "pokemon")
+            // Pokedex steps (projectKey = "pokemon")
             new() { StepNumber = 0, StepId = "pokemon-step0", Title = "Prerequisites & VS Code Setup", ProjectKey = "pokemon", IsComplete = false },
             new() { StepNumber = 1, StepId = "pokemon-step1", Title = "New Clean Project", ProjectKey = "pokemon", IsComplete = false },
             new() { StepNumber = 2, StepId = "pokemon-step2", Title = "Configure HttpClient for PokéAPI", ProjectKey = "pokemon", IsComplete = false },
@@ -69,7 +69,7 @@ public class LearningProgressService : ILearningProgressService
             new() { StepNumber = 4, StepId = "pokemon-step4", Title = "Add paging to the Pokémon list", ProjectKey = "pokemon", IsComplete = false },
             new() { StepNumber = 5, StepId = "pokemon-step5", Title = "Show loading and error states", ProjectKey = "pokemon", IsComplete = false },
             new() { StepNumber = 6, StepId = "pokemon-step6", Title = "Add search, filtering, and a details view", ProjectKey = "pokemon", IsComplete = false },
-            new() { StepNumber = 7, StepId = "pokemon-step7", Title = "Build the complete Pokemon Collector demo", ProjectKey = "pokemon", IsComplete = false },
+            new() { StepNumber = 7, StepId = "pokemon-step7", Title = "Build the complete Pokedex demo", ProjectKey = "pokemon", IsComplete = false },
 
             // Admin Dashboard steps (projectKey = "admin-dashboard")
             new() { StepNumber = 0, StepId = "admin-dashboard-step0", Title = "Prerequisites & VS Code Setup", ProjectKey = "admin-dashboard", IsComplete = false },

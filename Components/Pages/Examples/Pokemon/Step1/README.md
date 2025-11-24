@@ -2,7 +2,7 @@
 
 ## Overview
 
-This step teaches students how to create a new Blazor Server application from scratch and set up Tailwind CSS v4 for styling. This is a foundational configuration step that establishes the development environment for the Pokemon Collector app.
+This step teaches students how to create a new Blazor Server application from scratch and set up Tailwind CSS v4 for styling. This is a foundational configuration step that establishes the development environment for the Pokedex app.
 
 ## Files in This Folder
 

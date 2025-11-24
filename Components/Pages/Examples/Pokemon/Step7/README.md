@@ -1,8 +1,8 @@
-# Step 7: Complete Pokemon Collector Demo
+# Step 7: Complete Pokedex Demo
 
 ## Overview
 
-This step brings together everything you've learned in Steps 1-6 and adds advanced features to create a fully-polished, production-ready Pokemon Collector application.
+This step brings together everything you've learned in Steps 1-6 and adds advanced features to create a fully-polished, production-ready Pokedex application.
 
 **What's NEW in Step 7 (vs Step 6):**
 
@@ -15,7 +15,7 @@ This step brings together everything you've learned in Steps 1-6 and adds advanc
 
 ## What You'll Build
 
-- **Complete Pokemon Explorer** with search, type filtering, and pagination
+- **Complete Pokedex** with search, type filtering, and pagination
 - **Rich Detail Modals** showing stats, abilities, types, and weaknesses
 - **Visual Stat Bars** displaying HP, Attack, Defense, and Speed
 - **Evolution Chains** with clickable sprites for 100+ Pokemon
@@ -121,4 +121,4 @@ By completing this tutorial, you now know how to:
 4. Match official Pokemon type colors for an authentic feel
 5. Combine search and type filtering for powerful user control
 
-Congratulations on completing the Pokemon Collector tutorial! 🎉
+Congratulations on completing the Pokedex tutorial! 🎉
