@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Components",
+    "\\Components\\Pages",
+    "\\Components\\Pages\\Examples",
+    "\\Components\\Pages\\Examples\\Pokemon",
+    "\\Components\\Pages\\Examples\\Pokemon\\Step3"
+  ],
+  "SelectedNode": "\\Components\\Pages\\Examples\\Pokemon\\Step3\\Example.razor.cs",
+  "PreviewInSolutionExplorer": false
+}

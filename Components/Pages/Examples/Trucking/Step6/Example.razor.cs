@@ -13,6 +13,7 @@ public class ExampleBase : ComponentBase, IDisposable
 
     protected bool isComplete;
     protected string currentUri = string.Empty;
+    protected string activeTab = "home";
     private IJSObjectReference? _copyModule;
 
     protected override async Task OnInitializedAsync()
@@ -62,6 +63,32 @@ public class ExampleBase : ComponentBase, IDisposable
     protected void NavigateToPage(string url)
     {
         Navigation.NavigateTo(url);
+    }
+
+    // Demo methods for the interactive NavLink simulation
+    protected void SetActiveTab(string tab)
+    {
+        activeTab = tab;
+    }
+
+    protected string GetNavClass(string tab)
+    {
+        var baseClass = "px-3 py-2 rounded transition-colors";
+        return activeTab == tab 
+            ? $"{baseClass} bg-blue-800 font-semibold" 
+            : $"{baseClass} hover:bg-blue-700";
+    }
+
+    protected string GetSimulatedRoute()
+    {
+        return activeTab switch
+        {
+            "home" => "/",
+            "drivers" => "/drivers",
+            "trucks" => "/trucks",
+            "routes" => "/routes",
+            _ => "/"
+        };
     }
 
     public void Dispose()

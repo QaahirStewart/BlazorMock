@@ -13,28 +13,46 @@
                 <span>←</span> Back to Trucking Guide
             </a>
             <h1 class="text-4xl font-bold text-gray-900 mb-4">
-                🎯 Step 5: Forms & Validation
+                📝 Step 5: Forms & Validation
             </h1>
             <p class="text-xl text-gray-600">
-                Create forms with validation using EditForm, DataAnnotationsValidator, and validation attributes to
-                ensure data quality.
+                Time to collect user input! You'll build a driver registration form that checks for valid data before
+                submitting — no more typos or missing fields slipping through.
             </p>
         </div>
 
         <!-- What You'll Learn -->
-        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">📘 What You'll Learn</h2>
-            <p class="text-gray-700 mb-3">
-                Blazor provides powerful form handling with built-in validation through the EditForm component and data
-                annotations.
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">What You'll Learn</h2>
+            <p class="text-gray-700 mb-4 text-sm sm:text-base">
+                Every real app needs forms! Blazor makes it easy to build forms that validate user input automatically.
+                You'll create a driver registration form that shows helpful error messages when something's wrong.
             </p>
-            <ul class="list-disc pl-5 text-gray-700 space-y-2">
-                <li>Use EditForm to bind models and handle form submission</li>
-                <li>Enable validation with DataAnnotationsValidator</li>
-                <li>Display validation errors with ValidationSummary and ValidationMessage</li>
-                <li>Use built-in input components (InputText, InputNumber, InputSelect, InputCheckbox)</li>
-                <li>Apply validation attributes ([Required], [EmailAddress], [Range], [StringLength])</li>
+            <ul class="list-disc ml-6 text-sm sm:text-base text-gray-700 space-y-2 mb-4">
+                <li>Wrap your form in <code class="px-1 rounded bg-gray-100">EditForm</code> to enable validation and
+                    submission handling</li>
+                <li>Add validation rules to your model with simple attributes like <code
+                        class="px-1 rounded bg-gray-100">[Required]</code> and <code
+                        class="px-1 rounded bg-gray-100">[EmailAddress]</code></li>
+                <li>Show error messages right where users need them with <code
+                        class="px-1 rounded bg-gray-100">ValidationMessage</code></li>
+                <li>Use Blazor's built-in input components that work seamlessly with validation</li>
+                <li>Handle form submission only when all validation passes</li>
             </ul>
+            <div class="mt-2 pt-3 border-t border-blue-200">
+                <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                    <strong>💡 Key Concepts:</strong> EditForm, DataAnnotationsValidator, ValidationMessage, Input
+                    Components, Data Annotations
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs sm:text-sm text-gray-600">→ Related tips:</span>
+                    <a href="/tips#forms"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Blazor
+                        Forms</a>
+                    <a href="/tips#validation"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[11px] sm:text-xs font-medium hover:bg-blue-200 transition-colors">Validation</a>
+                </div>
+            </div>
         </div>
 
         <!-- Code Example: EditForm Structure -->
@@ -161,6 +179,183 @@ public class DriverRegistrationModel
             </div>
         </div>
 
+        <!-- Step-by-step breakdown -->
+        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🔨 Step-by-Step: Build Your First Form</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Let's break down how to create a validated form from scratch. Follow along with these steps!
+            </p>
+
+            <div class="grid gap-4">
+                <!-- Step 1 -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">1</span>
+                        <span class="text-sm font-semibold text-gray-800">Create your model class with validation
+                            attributes</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2 ml-8">
+                        Start by creating a C# class that represents the data your form collects. Add validation
+                        attributes to each property.
+                    </p>
+                    <ul class="list-disc ml-12 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li>Add <code
+                                class="px-1 rounded bg-gray-100">using System.ComponentModel.DataAnnotations;</code> at
+                            the top</li>
+                        <li>Use <code class="px-1 rounded bg-gray-100">[Required]</code> for fields that can't be empty
+                        </li>
+                        <li>Use nullable types like <code class="px-1 rounded bg-gray-100">int?</code> so "not set" is
+                            different from 0</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs font-mono text-gray-800 ml-8 bg-gray-100 rounded p-2 overflow-x-auto">[Required(ErrorMessage = "First name is required")]
+public string FirstName { get; set; } = string.Empty;</pre>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">2</span>
+                        <span class="text-sm font-semibold text-gray-800">Add an instance of your model in the code
+                            section</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2 ml-8">
+                        Create a variable to hold the form data. This is what EditForm binds to.
+                    </p>
+                    <pre
+                        class="code-block text-xs font-mono text-gray-800 ml-8 bg-gray-100 rounded p-2 overflow-x-auto">@@code {
+    private DriverModel driver = new();
+}</pre>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">3</span>
+                        <span class="text-sm font-semibold text-gray-800">Wrap your form in EditForm with Model and
+                            OnValidSubmit</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2 ml-8">
+                        EditForm is the magic wrapper that makes validation work. Point it at your model and tell it
+                        what to do on valid submit.
+                    </p>
+                    <ul class="list-disc ml-12 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li><code class="px-1 rounded bg-gray-100">Model="driver"</code> connects your data to the form
+                        </li>
+                        <li><code class="px-1 rounded bg-gray-100">OnValidSubmit</code> only fires when ALL validation
+                            passes</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs font-mono text-gray-800 ml-8 bg-gray-100 rounded p-2 overflow-x-auto">&lt;EditForm Model="driver" OnValidSubmit="HandleValidSubmit"&gt;
+    &lt;!-- Form content goes here --&gt;
+&lt;/EditForm&gt;</pre>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">4</span>
+                        <span class="text-sm font-semibold text-gray-800">Add DataAnnotationsValidator inside the
+                            form</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2 ml-8">
+                        This one line enables all your <code class="px-1 rounded bg-gray-100">[Required]</code>, <code
+                            class="px-1 rounded bg-gray-100">[EmailAddress]</code>, etc. attributes to work!
+                    </p>
+                    <pre
+                        class="code-block text-xs font-mono text-gray-800 ml-8 bg-gray-100 rounded p-2 overflow-x-auto">&lt;EditForm Model="driver" OnValidSubmit="HandleValidSubmit"&gt;
+    &lt;DataAnnotationsValidator /&gt;
+    ...
+&lt;/EditForm&gt;</pre>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">5</span>
+                        <span class="text-sm font-semibold text-gray-800">Add a ValidationSummary to show all errors at
+                            once</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2 ml-8">
+                        This displays a list of ALL validation errors at the top of your form. Great for users who
+                        scroll past individual errors.
+                    </p>
+                    <pre
+                        class="code-block text-xs font-mono text-gray-800 ml-8 bg-gray-100 rounded p-2 overflow-x-auto">&lt;ValidationSummary class="text-red-600 bg-red-50 rounded p-3 mb-4" /&gt;</pre>
+                </div>
+
+                <!-- Step 6 -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">6</span>
+                        <span class="text-sm font-semibold text-gray-800">Use Blazor input components with
+                            @@bind-Value</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2 ml-8">
+                        Use <code class="px-1 rounded bg-gray-100">InputText</code>, <code
+                            class="px-1 rounded bg-gray-100">InputNumber</code>, <code
+                            class="px-1 rounded bg-gray-100">InputSelect</code> instead of regular HTML inputs. They
+                        integrate with validation automatically.
+                    </p>
+                    <ul class="list-disc ml-12 mb-2 text-[11px] text-gray-600 space-y-1">
+                        <li><code class="px-1 rounded bg-gray-100">@@bind-Value</code> creates two-way binding to your
+                            model property</li>
+                        <li>These components update validation state as the user types</li>
+                    </ul>
+                    <pre
+                        class="code-block text-xs font-mono text-gray-800 ml-8 bg-gray-100 rounded p-2 overflow-x-auto">&lt;InputText @@bind-Value="driver.FirstName" placeholder="Enter first name" /&gt;
+&lt;InputNumber @@bind-Value="driver.YearsExperience" /&gt;
+&lt;InputSelect @@bind-Value="driver.LicenseLevel"&gt;...&lt;/InputSelect&gt;</pre>
+                </div>
+
+                <!-- Step 7 -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">7</span>
+                        <span class="text-sm font-semibold text-gray-800">Add ValidationMessage for each field</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2 ml-8">
+                        Place this right below each input to show field-specific errors. The <code
+                            class="px-1 rounded bg-gray-100">For</code> attribute tells it which property to watch.
+                    </p>
+                    <pre
+                        class="code-block text-xs font-mono text-gray-800 ml-8 bg-gray-100 rounded p-2 overflow-x-auto">&lt;InputText @@bind-Value="driver.FirstName" /&gt;
+&lt;ValidationMessage For="() =&gt; driver.FirstName" class="text-red-600 text-xs" /&gt;</pre>
+                </div>
+
+                <!-- Step 8 -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span
+                            class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">8</span>
+                        <span class="text-sm font-semibold text-gray-800">Add a submit button and handler method</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2 ml-8">
+                        The submit button triggers validation. Your handler only runs if everything passes!
+                    </p>
+                    <pre
+                        class="code-block text-xs font-mono text-gray-800 ml-8 bg-gray-100 rounded p-2 overflow-x-auto">&lt;button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded"&gt;
+    Submit Registration
+&lt;/button&gt;
+
+@@code {
+    private void HandleValidSubmit()
+    {
+        // This only runs when ALL validation passes!
+        Console.WriteLine($"Registered: {driver.FirstName}");
+    }
+}</pre>
+                </div>
+            </div>
+        </div>
+
         <!-- Important Notes & Tips -->
         <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">💡 Important Notes & Tips</h2>
@@ -199,83 +394,56 @@ public class DriverRegistrationModel
         </div>
 
         <!-- How to do it -->
-        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-xl p-6 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🛠️ How to do it</h2>
+        <div class="bg-gradient-to-r from-gray-100 to-blue-100 rounded-2xl p-5 sm:p-6 mb-6">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">🛠️ Quick Start Checklist</h2>
+            <p class="text-sm text-gray-600 mb-4">Ready to build your own form? Here's the quick version:</p>
+            
+            <ol class="list-decimal ml-5 space-y-3 text-gray-700 text-sm sm:text-base">
+                <li>
+                    <strong>Create your model</strong> in a <code class="px-1 rounded bg-white/70">Models/</code> folder or <code class="px-1 rounded bg-white/70">@@code</code> block with validation attributes
+                </li>
+                <li>
+                    <strong>Wrap your form</strong> in <code class="px-1 rounded bg-white/70">&lt;EditForm Model="..." OnValidSubmit="..."&gt;</code>
+                </li>
+                <li>
+                    <strong>Add the validator</strong>: <code class="px-1 rounded bg-white/70">&lt;DataAnnotationsValidator /&gt;</code> inside the form
+                </li>
+                <li>
+                    <strong>Use Blazor inputs</strong>: <code class="px-1 rounded bg-white/70">InputText</code>, <code class="px-1 rounded bg-white/70">InputNumber</code>, <code class="px-1 rounded bg-white/70">InputSelect</code> with <code class="px-1 rounded bg-white/70">@@bind-Value</code>
+                </li>
+                <li>
+                    <strong>Show errors</strong>: Add <code class="px-1 rounded bg-white/70">&lt;ValidationMessage For="() =&gt; model.Property" /&gt;</code> after each input
+                </li>
+                <li>
+                    <strong>Add submit button</strong>: <code class="px-1 rounded bg-white/70">&lt;button type="submit"&gt;</code> and implement your handler
+                </li>
+            </ol>
 
-            <div class="space-y-6">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">1️⃣ Create a Model with Validation</h3>
-                    <p class="text-gray-700 mb-2">
-                        Define your model class and decorate properties with validation attributes like [Required],
-                        [EmailAddress], [Range], and [StringLength].
-                    </p>
-                    <div class="bg-white rounded-lg p-3 border border-gray-200">
-                        <code class="text-xs text-gray-700">
-                            Add using System.ComponentModel.DataAnnotations; and apply attributes to your model properties.
-                        </code>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">2️⃣ Create the EditForm</h3>
-                    <p class="text-gray-700 mb-2">
-                        Use the &lt;EditForm&gt; component with Model and OnValidSubmit parameters. Add
-                        &lt;DataAnnotationsValidator /&gt; to enable validation.
-                    </p>
-                    <div class="bg-white rounded-lg p-3 border border-gray-200">
-                        <code class="text-xs text-gray-700">
-                            &lt;EditForm Model="driver" OnValidSubmit="HandleValidSubmit"&gt; with &lt;DataAnnotationsValidator /&gt;
-                        </code>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">3️⃣ Add Input Components</h3>
-                    <p class="text-gray-700 mb-2">
-                        Use InputText, InputNumber, InputSelect, InputCheckbox with @@bind-Value for two-way data
-                        binding. Add ValidationMessage for each field.
-                    </p>
-                    <div class="bg-white rounded-lg p-3 border border-gray-200">
-                        <code class="text-xs text-gray-700">
-                            &lt;InputText @@bind-Value="model.Property" /&gt; followed by &lt;ValidationMessage For="() =&gt; model.Property" /&gt;
-                        </code>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">4️⃣ Display Validation Errors</h3>
-                    <p class="text-gray-700 mb-2">
-                        Add &lt;ValidationSummary /&gt; to show all errors, and &lt;ValidationMessage /&gt; next to each
-                        input for field-specific errors.
-                    </p>
-                    <div class="bg-white rounded-lg p-3 border border-gray-200">
-                        <code class="text-xs text-gray-700">
-                            ValidationSummary shows all errors; ValidationMessage shows errors for specific fields
-                        </code>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">5️⃣ Handle Form Submission</h3>
-                    <p class="text-gray-700 mb-2">
-                        Implement the OnValidSubmit handler method to process form data when validation passes.
-                    </p>
-                    <div class="bg-white rounded-lg p-3 border border-gray-200">
-                        <code class="text-xs text-gray-700">
-                            private void HandleValidSubmit() { /* Process validated data */ }
-                        </code>
-                    </div>
-                </div>
+            <div class="mt-4 pt-3 border-t border-blue-200">
+                <p class="text-xs text-gray-600">
+                    📌 <strong>File to create:</strong> <code class="px-1 rounded bg-white/70">Components/Pages/DriverForm.razor</code> (or add to existing page)
+                </p>
             </div>
         </div>
 
         <!-- Interactive Demo -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🚗 Interactive Demo: Driver Registration Form</h2>
-            <p class="text-gray-700 mb-6">Try submitting the form with invalid data to see validation in action. All
-                fields have specific requirements.</p>
+        <div class="bg-black/3 rounded-2xl p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎬 Try It Yourself: Driver Registration Form</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                This is a working form with all the validation we just learned! Try these experiments:
+            </p>
+            <ul class="list-disc ml-6 text-sm text-gray-600 mb-6 space-y-1">
+                <li><strong>Submit empty:</strong> Click "Submit" without filling anything — see all the errors appear!
+                </li>
+                <li><strong>Invalid email:</strong> Type "notanemail" in the email field and watch the validation
+                    message</li>
+                <li><strong>Out of range:</strong> Enter 100 for "Years of Experience" — the range validation will catch
+                    it</li>
+                <li><strong>Fill it correctly:</strong> Complete all fields properly and watch the success message
+                    appear</li>
+            </ul>
 
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <div class="bg-white rounded-2xl border border-gray-200 p-6">
                 <EditForm Model="driver" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator />
 
@@ -445,9 +613,10 @@ public class DriverRegistrationModel
         <!-- Navigation -->
         <div class="mt-8">
             <div class="bg-black/90 rounded-2xl p-6 sm:p-8 text-white text-center">
-                <p class="text-lg sm:text-xl font-semibold mb-4">Continue Learning</p>
+                <p class="text-lg sm:text-xl font-semibold mb-4">Great work on forms! 🎉</p>
                 <p class="text-sm text-gray-300 mb-6 max-w-2xl mx-auto">
-                    Validation is in place! Time to learn about services and dependency injection.
+                    Your form now validates user input like a pro! Next up: routing and navigation — you'll learn how to
+                    move between pages and build navigation menus.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <a href="/trucking-guide"
